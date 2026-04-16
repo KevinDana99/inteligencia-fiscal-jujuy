@@ -317,3 +317,25 @@ export default withSuspense(Module, <Loading />);
 9. Add/update component in `presentation/components/`
 10. Update types in `types.ts` if needed
 11. Add cache tags in `cacheConfig.ts` if needed
+
+## Codex implementation files
+
+1. `codex/constraints/`: You will find the "Iron Rules." This includes specific feature constraints in `feature.rule.md` and agency-wide standards in `global.rule.md`. You must never violate these laws. If a feature rule contradicts a global rule, the feature rule takes precedence.
+
+2. `codex/specs/`: You will find the Single Source of Truth in `feature.spec.md`. This defines the "WHAT": business logic, data structures, API contracts, and UI states. Never write code that hasn't been validated against a spec.
+
+3. `codex/prompts/`: You will consult the `.prompt.md` file for the current task. This is your tactical execution plan and step-by-step guide.
+
+4. `references/assets/`: You will analyze the supporting material to gain context.
+
+5. Review `references/assets/design/` to understand the visual requirements and UX through images or mockups (`.png`, `.jpg`, `.svg`).
+
+6. Read `references/assets/docs/` to master technical integrations, APIs, and manuals (`.pdf`, `.md`, `.txt`).
+
+7. Clone the style found in `references/assets/examples/` to maintain coding signature.
+
+8. Consult `references/architecture-patterns.md` to implement my Senior-level preferences (error handling, directory structures, clean code).
+
+9. Use `references/output-template.md` to format your responses exactly as requested.
+
+10. Closing Phase: Upon successful completion of a task, you MUST generate a change report in `codex/history/feature.story.md`. This report should document the changes made, technical decisions taken, and rules followed to ensure project traceability.
