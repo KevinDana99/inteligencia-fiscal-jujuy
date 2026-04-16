@@ -54,7 +54,7 @@ Implemented the first authentication foundation for the project with:
 - Restricted that route to the `admin` role only.
 - Added a distinct mock normal user and kept a separate mock `admin`.
 - Redirected authenticated non-admin users from `/admin` to `/login` without clearing the active session.
-- Replaced visible `next=/admin` login query params with an internal admin-intent cookie flow so `/login` stays clean.
+- Preserved the explicit admin escalation flow through `/login?mode=admin` for users who need to reauthenticate as `admin`.
 
 ### Mock credentials
 

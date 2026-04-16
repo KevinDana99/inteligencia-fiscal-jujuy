@@ -22,6 +22,7 @@ Estas reglas aplican a todo el proyecto salvo que una regla específica de una f
 1. Todos los componentes, páginas y elementos de interfaz deben usar Mantine como librería UI por defecto.
 2. No se deben mezclar múltiples librerías UI en una misma feature salvo requerimiento explícito.
 3. Se deben priorizar componentes y theming de Mantine antes de introducir estilos custom innecesarios.
+4. Todos los componentes y paginas deben estar adaptadas a diseño responsivo.
 
 ## Datos e Integración
 
