@@ -11,8 +11,12 @@ export function useSignIn() {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const signIn = (email: string, password: string) => {
+  const clearError = () => {
     setError(null);
+  };
+
+  const signIn = (email: string, password: string) => {
+    clearError();
     setIsPending(true);
 
     startTransition(() => {
@@ -21,8 +25,8 @@ export function useSignIn() {
           if ('error' in result) {
             setError(
               result.error === 'Invalid credentials'
-                ? 'Invalid email or password'
-                : 'Unable to sign in. Please try again.'
+                ? 'El correo electronico o la contrasena son incorrectos. Verifica tus datos e intenta nuevamente.'
+                : 'No fue posible iniciar sesion. Intenta nuevamente.'
             );
             return;
           }
@@ -34,7 +38,7 @@ export function useSignIn() {
           router.refresh();
         })
         .catch(() => {
-          setError('Unable to sign in. Please try again.');
+          setError('No fue posible iniciar sesion. Intenta nuevamente.');
         })
         .finally(() => {
           setIsPending(false);
@@ -45,6 +49,7 @@ export function useSignIn() {
   return {
     signIn,
     isPending,
-    error
+    error,
+    clearError
   };
 }

@@ -1,5 +1,4 @@
 import { Suspense } from 'react';
-import { Container } from '@mantine/core';
 import LoginPageGate from './LoginPageGate';
 
 export default function LoginPage({
@@ -10,10 +9,8 @@ export default function LoginPage({
   }>;
 }) {
   return (
-    <Container size="xs" py={80}>
-      <Suspense fallback={null}>
-        <LoginPageGate searchParams={searchParams} />
-      </Suspense>
-    </Container>
+    <Suspense fallback={null}>
+      <LoginPageGate searchParams={searchParams} />
+    </Suspense>
   );
 }

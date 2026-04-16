@@ -9,6 +9,28 @@
 1. Se debe estilizar el login actual de la pagina `app/(auth)/login`.
 2. La versión normal del login debe respetar visualmente la referencia definida en `codex/assets/design/auth/login.design.png`.
 3. La versión de error del login debe respetar visualmente la referencia definida en `codex/assets/design/auth/error/login.error.png`.
+4. El logo del login no debe estar hardcodeado y debe utilizar el asset `codex/assets/design/logo.svg`.
+5. Todos los elementos visuales del login deben usar la fuente `Inter`.
+6. El contenedor principal del login en desktop debe usar `width: 542px` y `height: 621px`.
+7. El contenedor principal del login en desktop debe usar padding lateral de `92px` y padding vertical de `72px`.
+8. El contenedor principal del login debe usar fondo `#FFFFFF`.
+9. El contenedor principal del login debe usar sombra `0 4px 30px rgba(0, 0, 0, 0.25)`.
+10. El título debe usar `font-size: 36px` y `font-weight: 600`.
+11. El subtítulo debe usar `font-size: 14px` y `font-weight: 400`.
+12. Los placeholders e inputs deben usar `font-size: 16px` y `line-height: 24px`.
+13. Los textos secundarios deben usar el estilo visual equivalente a `c="dimmed"` de Mantine.
+14. El texto `¿Olvidaste tu contraseña?` debe usar `font-size: 14px` y `line-height: 20px`.
+15. El texto `Recuperar contraseña` debe usar color `indigo`.
+16. Cada bloque de input debe ocupar `width: 100%` y `height: 80px`.
+17. Los inputs específicos de usuario y contraseña deben ocupar `width: 100%` y `height: 38px`.
+18. En error, el borde del input debe reflejar un estado visual equivalente a `Border/error/default`.
+19. En error, el texto del mensaje debe usar un estilo visual equivalente a `c="dimmed"` de Mantine.
+20. El botón principal `Ingresar` debe usar fondo `#3483FA`.
+21. El espaciado vertical debe respetar:
+    - título a subtítulo: `4px`
+    - subtítulo a label de email: `16px`
+    - input email a input password: `8px`
+    - input password a mensaje de error: `16px`
 
 ## Alcance
 
