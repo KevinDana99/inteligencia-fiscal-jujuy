@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Frontend Architecture"
+  short_description: "Plan frontend architecture and delivery"
+  default_prompt: "Use $create-frontend-architecture to design a frontend architecture for this product request."
