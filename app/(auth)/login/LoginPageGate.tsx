@@ -14,19 +14,20 @@ export default async function LoginPageGate({
   await connection();
   const resolvedSearchParams = await searchParams;
   const session = await getServerAuthSession();
-  const mode = resolvedSearchParams.mode ?? AUTH_MODE.user;
+  const mode =
+    resolvedSearchParams.mode === AUTH_MODE.admin ? AUTH_MODE.admin : AUTH_MODE.user;
 
   if (mode === AUTH_MODE.admin) {
     if (session?.user.role === 'admin') {
       redirect(AUTH_ROUTES.admin);
     }
 
-    return <LoginForm />;
+    return <LoginForm mode={mode} />;
   }
 
   if (session) {
     redirect(AUTH_ROUTES.home);
   }
 
-  return <LoginForm />;
+  return <LoginForm mode={mode} />;
 }

@@ -35,11 +35,14 @@
   position: relative;
   z-index: 1;
   width: min(100%, 542px);
-  height: 621px;
+  min-height: 589px;
+  height: auto;
+  max-height: 621px;
   padding: 72px 92px;
   border-radius: 24px;
   background: #ffffff;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+  overflow: visible;
 }
 
 .header {
@@ -102,8 +105,7 @@
 }
 
 .textInput :global(.mantine-Input-input),
-.passwordInput :global(.mantine-Input-input),
-.passwordInput :global(.mantine-PasswordInput-innerInput) {
+.passwordInput :global(.mantine-Input-input) {
   height: 38px;
   border-radius: 4px;
   border: 1px solid #edf1f5;
@@ -117,29 +119,47 @@
   transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
 }
 
+.passwordInput :global(.mantine-PasswordInput-root),
+.passwordInput :global(.mantine-PasswordInput-wrapper),
+.passwordInput :global(.mantine-Input-wrapper) {
+  border: 0;
+  box-shadow: none;
+}
+
 .textInput :global(.mantine-Input-input)::placeholder,
-.passwordInput :global(.mantine-PasswordInput-input)::placeholder,
 .passwordInput :global(.mantine-PasswordInput-innerInput)::placeholder {
   color: #9ba5b3;
 }
 
+.passwordInput :global(.mantine-PasswordInput-innerInput)::placeholder {
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
 .textInput :global(.mantine-Input-input:focus),
-.passwordInput :global(.mantine-Input-input:focus),
-.passwordInput :global(.mantine-PasswordInput-innerInput:focus) {
+.passwordInput :global(.mantine-Input-input:focus-within) {
   border-color: rgba(58, 125, 233, 0.46);
   box-shadow: 0 0 0 3px rgba(58, 125, 233, 0.1);
 }
 
-.inputError :global(.mantine-Input-input),
-.inputError :global(.mantine-Input-input),
-.inputError :global(.mantine-PasswordInput-innerInput) {
+.inputError :global(.mantine-Input-input) {
   border-color: #ff8f8f;
   background: #fffdfd;
 }
 
+.inputError :global(.mantine-PasswordInput-innerInput) {
+  border: 0;
+  background: #fffdfd;
+  box-shadow: none;
+}
+
 .passwordInput :global(.mantine-ActionIcon-root) {
   background: transparent;
-  color: #7f8896;
+  color: var(--mantine-color-gray-6);
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
 }
 
 .passwordInput :global(.mantine-ActionIcon-root:hover),
@@ -151,7 +171,6 @@
 }
 
 .passwordInput :global(.mantine-PasswordInput-root),
-.passwordInput :global(.mantine-PasswordInput-innerInput),
 .passwordInput :global(.mantine-Input-input) {
   overflow: visible;
 }
@@ -162,6 +181,12 @@
 }
 
 .passwordInput :global(.mantine-PasswordInput-innerInput) {
+  height: 100%;
+  border: 0;
+  background: transparent;
+  line-height: 38px;
+  padding-top: 0;
+  padding-bottom: 0;
   letter-spacing: 6px;
 }
 
@@ -256,7 +281,9 @@
 
   .card {
     width: 100%;
+    min-height: auto;
     height: auto;
+    max-height: none;
     padding: 40px 24px 28px;
     border-radius: 24px;
   }

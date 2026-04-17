@@ -13,6 +13,7 @@ import {
   TextInput,
   Title
 } from '@mantine/core';
+import { AUTH_MODE } from '@/lib/auth/constants';
 import { useLoginForm } from './useLoginForm';
 import classes from './LoginForm.module.css';
 
@@ -47,7 +48,15 @@ const inter = localFont({
   display: 'swap'
 });
 
-export default function LoginForm() {
+export default function LoginForm({
+  mode
+}: {
+  mode: (typeof AUTH_MODE)[keyof typeof AUTH_MODE];
+}) {
+  return <LoginFormContent key={mode} />;
+}
+
+function LoginFormContent() {
   const {
     email,
     password,
