@@ -4,119 +4,90 @@
   min-height: 100vh;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
+  padding: 48px 24px 140px;
   background:
-    radial-gradient(circle at top left, rgba(52, 131, 250, 0.08), transparent 30%),
-    linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-}
-
-.shell::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(249, 251, 255, 0.98));
-  pointer-events: none;
+    radial-gradient(circle at top center, rgba(76, 114, 255, 0.06), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
 }
 
 .brand {
   position: absolute;
-  top: 28px;
-  left: 24px;
-  z-index: 1;
+  top: 24px;
+  left: 28px;
+  z-index: 2;
 }
 
 .brandLogo {
-  width: 238px;
+  width: 170px;
   height: auto;
   display: block;
 }
 
 .card {
   position: relative;
-  z-index: 1;
-  width: min(100%, 542px);
-  min-height: 589px;
-  height: auto;
-  max-height: 621px;
-  padding: 72px 92px;
-  border-radius: 24px;
+  z-index: 2;
+  width: 100%;
+  max-width: 440px;
   background: #ffffff;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
-  overflow: visible;
+  box-shadow: 0 12px 40px rgba(60, 88, 163, 0.12);
 }
 
 .header {
-  gap: 4px;
   text-align: center;
 }
 
 .title {
   margin: 0;
-  width: 450px;
-  height: 96px;
-  align-self: center;
-  color: #0d1117;
-  font-family: inherit !important;
-  font-size: 36px;
-  line-height: 1.2;
-  font-weight: 600;
+  color: var(--mantine-color-gray-9);
+  font-family: var(--font-body), 'Segoe UI', sans-serif !important;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: -0.3px;
 }
 
 .subtitle {
-  margin: 0;
-  color: var(--mantine-color-dimmed);
-  font-size: 14px;
-  font-weight: 400;
+  color: var(--mantine-color-gray-6);
+  font-size: 12.5px;
   line-height: 1.4;
 }
 
 .form {
   gap: 0;
-  margin-top: 16px;
-}
-
-.fieldGroup {
-  width: 100%;
-  min-height: 80px;
-  gap: 8px;
-  overflow: visible;
 }
 
 .fieldLabel {
-  color: var(--mantine-color-dimmed);
-  font-size: 14px;
-  font-weight: 400;
+  color: var(--mantine-color-gray-7);
+  font-size: 12px;
+  font-weight: 700;
   line-height: 1.2;
-}
-
-.fieldLabelRequired {
-  color: #ff6b6b;
-}
-
-.fieldGroup + .fieldGroup {
-  margin-top: 8px;
-}
-
-.textInput :global(.mantine-Input-wrapper),
-.passwordInput :global(.mantine-PasswordInput-root),
-.passwordInput :global(.mantine-Input-wrapper) {
-  width: 100%;
-  overflow: visible;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
 
 .textInput :global(.mantine-Input-input),
 .passwordInput :global(.mantine-Input-input) {
-  height: 38px;
-  border-radius: 4px;
-  border: 1px solid #edf1f5;
-  background: #f8fafc;
-  color: #4f5d70;
-  font-size: 16px;
-  line-height: 38px;
-  font-weight: 400;
-  padding-top: 0;
-  padding-bottom: 0;
-  transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+  height: auto;
+  padding: 10px 14px;
+  border: 1.5px solid var(--mantine-color-gray-3);
+  border-radius: var(--mantine-radius-md);
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-9);
+  font-family: var(--font-body), 'Segoe UI', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.2;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.textInput :global(.mantine-Input-input)::placeholder,
+.passwordInput :global(.mantine-PasswordInput-innerInput)::placeholder {
+  color: #adb5bd;
+}
+
+.passwordInput :global(.mantine-Input-input:focus),
+.textInput :global(.mantine-Input-input:focus) {
+  border-color: #91a7ff;
+  box-shadow: 0 0 0 3px rgba(76, 114, 255, 0.1);
 }
 
 .passwordInput :global(.mantine-PasswordInput-root),
@@ -124,42 +95,38 @@
 .passwordInput :global(.mantine-Input-wrapper) {
   border: 0;
   box-shadow: none;
+  overflow: visible;
 }
 
-.textInput :global(.mantine-Input-input)::placeholder,
-.passwordInput :global(.mantine-PasswordInput-innerInput)::placeholder {
-  color: #9ba5b3;
-}
-
-.passwordInput :global(.mantine-PasswordInput-innerInput)::placeholder {
-  font-size: 11px;
-  letter-spacing: 2px;
-}
-
-.textInput :global(.mantine-Input-input:focus),
-.passwordInput :global(.mantine-Input-input:focus-within) {
-  border-color: rgba(58, 125, 233, 0.46);
-  box-shadow: 0 0 0 3px rgba(58, 125, 233, 0.1);
-}
-
-.inputError :global(.mantine-Input-input) {
-  border-color: #ff8f8f;
-  background: #fffdfd;
-}
-
-.inputError :global(.mantine-PasswordInput-innerInput) {
+.passwordInput :global(.mantine-PasswordInput-innerInput) {
+  height: 100%;
   border: 0;
-  background: #fffdfd;
-  box-shadow: none;
+  background: transparent;
+  color: var(--mantine-color-gray-9);
+  font-family: var(--font-body), 'Segoe UI', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.2;
+  padding: 10px 14px;
+  letter-spacing: 3px;
+}
+
+.passwordInput :global(.mantine-PasswordInput-innerInput)::placeholder {
+  font-size: 13.5px;
+  letter-spacing: 0;
+}
+
+.passwordInput :global(.mantine-Input-section),
+.passwordInput :global(.mantine-PasswordInput-section) {
+  height: 100%;
 }
 
 .passwordInput :global(.mantine-ActionIcon-root) {
-  background: transparent;
-  color: var(--mantine-color-gray-6);
   width: 24px;
   height: 24px;
   min-width: 24px;
   min-height: 24px;
+  color: var(--mantine-color-gray-5);
+  background: transparent;
 }
 
 .passwordInput :global(.mantine-ActionIcon-root:hover),
@@ -170,88 +137,23 @@
   background: transparent;
 }
 
-.passwordInput :global(.mantine-PasswordInput-root),
-.passwordInput :global(.mantine-Input-input) {
-  overflow: visible;
+.inputError :global(.mantine-Input-input) {
+  border-color: #ff8787;
+  background: #fff5f5;
 }
 
-.passwordInput :global(.mantine-Input-section),
-.passwordInput :global(.mantine-PasswordInput-section) {
-  height: 38px;
-}
-
-.passwordInput :global(.mantine-PasswordInput-innerInput) {
-  height: 100%;
+.inputError :global(.mantine-PasswordInput-innerInput) {
   border: 0;
-  background: transparent;
-  line-height: 38px;
-  padding-top: 0;
-  padding-bottom: 0;
-  letter-spacing: 6px;
-}
-
-.footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-top: 16px;
-  color: var(--mantine-color-dimmed);
-  font-size: 14px;
-}
-
-.footerHint {
-  margin: 0;
-  color: var(--mantine-color-dimmed);
-  font-size: 14px;
-  line-height: 20px;
-}
-
-.link {
-  color: var(--mantine-color-indigo-6);
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 400;
-  text-decoration: none;
-}
-
-.link:hover {
-  text-decoration: underline;
-}
-
-.button {
-  height: 44px;
-  margin-top: 16px;
-  border-radius: 999px;
-  border: 0;
-  font-size: 16px;
-  font-weight: 500;
-  background: #3483fa;
-  box-shadow: none;
-  transition: transform 120ms ease, opacity 120ms ease, box-shadow 120ms ease;
-  --button-hover: #3483fa;
-  --button-bg: #3483fa;
-  --button-bd: transparent;
-  --button-hover-color: #ffffff;
-}
-
-.button:hover,
-.button:focus,
-.button:focus-visible,
-.button[data-hovered],
-.button[data-active] {
-  background: #3483fa;
-  color: #ffffff;
-  transform: none;
+  background: #fff5f5;
   box-shadow: none;
 }
 
 .errorAlert {
-  align-items: flex-start;
-  border-radius: 8px;
-  border: 1px solid #ffb1b1;
-  background: #fff7f7;
-  margin-top: 16px;
+  margin-top: 12px;
+  border: 1px solid #ffa8a8;
+  border-left: 4px solid var(--mantine-color-red-5);
+  border-radius: 10px;
+  background: #fff0f0;
 }
 
 .errorAlert :global(.mantine-Alert-label) {
@@ -259,43 +161,113 @@
 }
 
 .errorAlert :global(.mantine-Alert-message) {
-  color: var(--mantine-color-dimmed);
-  font-size: 0.88rem;
+  color: var(--mantine-color-red-6);
+  font-size: 12.5px;
   line-height: 1.45;
+}
+
+.supportRow {
+  margin-top: 12px;
+}
+
+.supportHint {
+  color: var(--mantine-color-gray-6);
+  font-size: 12.5px;
+}
+
+.supportButton {
+  color: #4c6fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.supportButton:hover {
+  text-decoration: underline;
+}
+
+.button {
+  margin-top: 14px;
+  background: linear-gradient(180deg, #5973f6 0%, #4c64eb 100%);
+  color: #ffffff;
+  --button-hover: #4c64eb;
+  --button-bg: #4c64eb;
+  --button-bd: transparent;
+  --button-hover-color: #ffffff;
+  box-shadow: none;
+}
+
+.button:hover,
+.button:focus,
+.button:focus-visible,
+.button[data-hovered],
+.button[data-active] {
+  background: #4c64eb;
+  color: #ffffff;
+  box-shadow: none;
+  transform: none;
+}
+
+.loader {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #ffffff;
+  border-radius: 999px;
+  animation: spin 0.9s linear infinite;
+}
+
+.credentialsHint {
+  margin-top: 14px;
+  text-align: center;
+  color: var(--mantine-color-gray-6);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.credentialsHint strong {
+  color: #6c757d;
+  font-weight: 700;
+}
+
+.wave {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 720px) {
   .shell {
-    padding: 104px 18px 28px;
+    padding: 88px 16px 110px;
     align-items: flex-start;
   }
 
   .brand {
-    top: 22px;
+    top: 18px;
     left: 18px;
   }
 
   .brandLogo {
-    width: 180px;
+    width: 150px;
   }
 
   .card {
-    width: 100%;
-    min-height: auto;
-    height: auto;
-    max-height: none;
-    padding: 40px 24px 28px;
-    border-radius: 24px;
+    max-width: 100%;
   }
 
-  .title {
-    width: 100%;
-    height: auto;
-    font-size: 30px;
-  }
-
-  .footer {
-    flex-direction: column;
+  .supportRow {
     align-items: flex-start;
+    gap: 8px;
   }
 }

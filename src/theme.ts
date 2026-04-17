@@ -2,11 +2,11 @@ import { createTheme } from '@mantine/core';
 
 export const theme = createTheme({
   primaryColor: 'terra',
-  fontFamily: "var(--font-body), 'Segoe UI', sans-serif",
+  fontFamily: "var(--font-dm-sans), var(--font-body), 'Segoe UI', sans-serif",
   fontFamilyMonospace:
     "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace",
   headings: {
-    fontFamily: "var(--font-display), Georgia, serif"
+    fontFamily: "var(--font-dm-sans), var(--font-display), 'Segoe UI', sans-serif"
   },
   colors: {
     terra: [

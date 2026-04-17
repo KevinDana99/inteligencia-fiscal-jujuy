@@ -1,126 +1,166 @@
-# Login Implementation Prompt
+# Login Restyle Prompt
 
 ## Objetivo
 
-Implementar el rediseño visual de la pantalla de login respetando:
+Actualizar la UI del login existente respetando:
 
 - `codex/specs/auth/login.spec.md`
 - `codex/constraints/auth/login.rule.md`
 - `codex/constraints/global.rule.md`
 - la arquitectura definida por `create-frontend-architecture`
 
-Esta iteración es principalmente visual. La funcionalidad actual del login ya existe y debe
-preservarse.
+Esta iteración corresponde a un restyling del mismo login. La funcionalidad base ya existe y
+debe conservarse.
 
 ## Contexto Actual
 
-- La ruta pública actual del login es `app/(auth)/login/page.tsx`.
+- La ruta pública del login ya existe en `app/(auth)/login/page.tsx`.
 - El formulario actual vive en `src/modules/auth/presentation/components/LoginForm/`.
-- El flujo actual de escalado administrativo usa `/login?mode=admin`.
-- Si un usuario `user` intenta entrar a `/admin`, la aplicación lo redirige a
-  `/login?mode=admin`.
-- Si un usuario inicia sesión correctamente con rol `admin` en ese flujo, termina en `/admin`.
-- La UI del login debe verse igual en modo normal y en `mode=admin`.
+- El flujo de auth ya está implementado.
+- El escalado de permisos hacia admin sigue usando `/login?mode=admin`.
+- La UI del login no debe diferir visualmente entre modo normal y `mode=admin`.
+- La navegación hacia `/login?mode=admin` debe resetear el estado visual del formulario.
 
-## Referencias de Diseño
+## Referencias
 
-- Estado normal: `codex/assets/design/auth/login.design.png`
-- Estado error: `codex/assets/design/auth/error/login.error.png`
+- Diseño principal: `codex/assets/design/auth/login.design.png`
+- Estado de error: `codex/assets/design/auth/error/`
+- SVG adicional: `codex/design/svg/login-wave.svg`
 
-La implementación debe acercarse visualmente a esas referencias usando Mantine y estilos
-coherentes con el proyecto.
+## Alcance de la tarea
 
-## Alcance de Implementación
+La implementación debe:
 
-La tarea debe cubrir:
+- restylar el login actual sin reconstruir la feature de auth
+- mantener el formulario de `email` y `password`
+- mantener el botón `Ingresar`
+- mantener el flujo actual de submit y redirección
+- rediseñar la composición usando Mantine primitives
+- incorporar el SVG decorativo al pie del container visual del login
+- actualizar la sección `¿Olvidaste tu contraseña?` para que ya no navegue y muestre feedback
+- mantener responsive la pantalla
 
-- rediseñar visualmente el login actual
-- respetar el layout, colores y jerarquía visual de la referencia
-- mantener campos de mail y contraseña
-- mantener el botón de ingreso
-- agregar o ajustar el toggle de mostrar/ocultar contraseña
-- agregar el enlace de recuperación de contraseña según el flujo administrativo definido
-- implementar el estado visual de loading del botón
-- implementar el estado visual de error por credenciales inválidas
-- implementar el estado visual de error para campos vacíos
-- mantener responsive el login
+## Composición requerida
 
-## Restricciones Obligatorias
+1. El contenedor principal del login debe construirse con `Paper` de Mantine.
+   Debe usar `shadow="xl"`, `radius="lg"` y `p="xl"`.
+   Debe ocupar `width: 100%` y `max-width: 440px`.
 
-1. No modificar la funcionalidad actual del login salvo lo estrictamente necesario para
-   conectar estados visuales requeridos por el spec.
-2. No reemplazar ni romper el flujo actual basado en `/login?mode=admin`.
-3. No cambiar la lógica de redirección post-login ya implementada.
-4. No introducir librerías UI nuevas; usar Mantine.
-5. No usar estilos inline si puede resolverse con Mantine, `className` o estilos ya
-   consistentes con el proyecto.
-6. No hacer que `mode=admin` cambie la UI del login.
-7. No alterar el mock de desarrollo actual.
+2. El bloque de título y subtítulo debe construirse con `Stack`.
+   Debe usar `gap="xs"`, `mb="lg"` y alineación visual centrada.
 
-## Comportamiento Visual Esperado
+3. El título debe construirse con `Title`.
+   Debe usar `order={2}`.
+   Debe tener un salto de línea `<br />` antes de `Fiscal`.
+   Debe reflejar:
+   - `font-family: var(--font)`
+   - `font-weight: 800`
+   - `color: var(--gray-9)`
+   - `letter-spacing: -0.3px`
+   - `font-size: 22px`
 
-### Estado normal
+4. El subtítulo debe construirse con `Text`.
+   Debe usar `c="dimmed"` y `fz="sm"`.
+   Debe ser exactamente:
+   `Panel de Administración — Acceso restringido`
 
-- El login debe respetar la referencia de `codex/assets/design/auth/login.design.png`.
-- El formulario debe mostrar mail, contraseña, CTA principal y enlace secundario.
-- El botón principal debe verse deshabilitado mientras no corresponda permitir envío según la
-  lógica actual del formulario.
+5. Los labels de `email` y `password` deben respetar:
+   - `font-size: 12px`
+   - `font-weight: 700`
+   - `color: var(--gray-7)`
+   - `text-transform: uppercase`
+   - `letter-spacing: 0.3px`
 
-### Estado loading
+6. Los inputs deben usar Mantine y respetar:
+   - `width: 100%`
+   - `padding: 10px 14px`
+   - `border: 1.5px solid var(--gray-3)`
+   - `border-radius: var(--radius-md)`
+   - `font-family: var(--font)`
+   - `font-size: 13.5px`
+   - `color: var(--gray-9)`
+   - `background: var(--gray-0)`
+   - `transition: border-color .15s, box-shadow .15s`
 
-- Al enviar el formulario, el botón principal debe entrar en estado cargando.
-- El loader del botón debe seguir la referencia del spec: circular, blanco y gris.
+7. El toggle de contraseña debe mantenerse funcional y usar:
+   - caja visual de `16px`
+   - color `gray-5`
+   - SVG de `24px`
 
-### Estado error por credenciales inválidas
+8. La alerta de error debe implementarse con `Alert` de Mantine en variante `light`, usando
+   un estilo visual equivalente a:
+   - `background: #fff0f0`
+   - `border: 1px solid #ffa8a8`
+   - `border-left: 4px solid var(--red-5)`
+   - `color: var(--red-6)`
 
-- Si las credenciales son inválidas, el login debe mostrar el mensaje de error con el mismo
-  formato visual de `codex/assets/design/auth/error/login.error.png`.
-- En ese estado, los inputs deben verse con borde rojo como en la referencia.
+9. El botón principal debe implementarse con `Button` de Mantine usando:
+   - `variant="filled"`
+   - azul equivalente a `blue-5`
+   - `size="lg"`
+   - radio tipo pill/full
+   - `fullWidth`
 
-### Estado error por campos vacíos
+10. La página debe incluir `codex/design/svg/login-wave.svg` al pie del container visual del
+    login, alineado a `bottom: 0`.
 
-- Si se intenta enviar con el mail vacío, se debe mostrar al final del formulario un mensaje
-  visible con el mismo formato visual del estado error indicando que el campo mail está vacío.
-- Si se intenta enviar con la contraseña vacía, se debe mostrar al final del formulario un
-  mensaje visible con el mismo formato visual del estado error indicando que el campo
-  contraseña está vacío.
-- Estas validaciones no deben resolverse únicamente con el botón deshabilitado; el error debe
-  quedar visible al final del formulario cuando el usuario intente enviar.
+## Comportamiento funcional que debe preservarse
 
-## Flujo del enlace secundario
+1. No romper el flujo actual de autenticación.
+2. No romper el flujo `/login?mode=admin`.
+3. Si un usuario `user` intenta acceder a `/admin`, debe seguir siendo redirigido a
+   `/login?mode=admin`.
+4. Si un usuario con rol `admin` inicia sesión correctamente en ese flujo, debe seguir
+   terminando en `/admin`.
+5. La UI debe verse igual en modo normal y en `mode=admin`.
+6. Al pasar a `/login?mode=admin`, el formulario debe resetear su estado visual y no arrastrar
+   errores anteriores.
 
-El enlace de recuperación de contraseña debe respetar el contrato actual:
+## Reglas específicas nuevas
 
-- si el usuario autenticado actual tiene rol `user`, debe dirigir al flujo
-  `/login?mode=admin`
-- si el usuario ya posee rol `admin`, debe permitir acceder a `/admin`
+1. La acción `¿Olvidaste tu contraseña?` ya no debe navegar.
+2. En lugar de redirección, debe mostrar un `Alert` indicando que el usuario debe
+   contactarse con soporte para cambiar la contraseña.
+3. El login debe seguir mostrando errores de credenciales inválidas.
+4. El login debe seguir mostrando validaciones visibles cuando falte `mail` o `contraseña`.
+5. Al volver a escribir después de un error, el formulario debe volver al estado visual
+   normal.
 
-Si el enlace necesita apoyarse en información de sesión actual, resolverlo sin romper la
-arquitectura existente.
+## Restricciones
 
-## Archivos Esperados
+1. No introducir librerías UI nuevas.
+2. No mover la lógica de auth fuera de la arquitectura actual.
+3. No usar estilos inline si puede resolverse con Mantine o CSS module.
+4. No hardcodear el logo dentro del componente.
+5. No cambiar contratos ni comportamiento de backend/mock.
+
+## Archivos esperados
 
 La implementación debería concentrarse principalmente en:
 
+- `app/(auth)/login/page.tsx`
+- `app/(auth)/login/LoginPageGate.tsx`
 - `src/modules/auth/presentation/components/LoginForm/index.tsx`
 - `src/modules/auth/presentation/components/LoginForm/useLoginForm.ts`
+- `src/modules/auth/presentation/components/LoginForm/LoginForm.module.css`
 
-Y sólo tocar archivos adicionales si son necesarios para soportar el diseño o estados
-visuales requeridos.
+Y tocar archivos adicionales sólo si son estrictamente necesarios para incorporar assets o
+alinear la metadata de la ruta.
 
-## Validación Final
+## Validación final
 
-Antes de dar la tarea por cerrada:
+Antes de cerrar la tarea:
 
-- verificar que el login siga funcionando en `/login`
-- verificar que el flujo `/login?mode=admin` siga funcionando
-- verificar que el usuario `admin` termine en `/admin`
-- verificar que el usuario `user` no rompa el flujo de escalado
+- verificar que `/login` siga funcionando
+- verificar que `/login?mode=admin` siga funcionando
+- verificar que `/admin` siga requiriendo el flujo actual de escalado
+- verificar que el login no arrastre errores al cambiar de modo
 - verificar responsive
 - correr `bun run lint`
 - correr `bun run build`
 
-## Resultado Esperado
+## Resultado esperado
 
-El resultado final debe ser un login visualmente alineado con las referencias del diseño,
-sin romper el flujo actual de autenticación ni el escalado administrativo existente.
+El resultado final debe ser el mismo login funcional que ya existe, pero restilizado según la
+nueva dirección visual basada en Mantine, con el cambio de comportamiento de `¿Olvidaste tu
+contraseña?` resuelto dentro del propio formulario.

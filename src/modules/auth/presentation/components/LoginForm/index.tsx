@@ -1,52 +1,21 @@
 'use client';
 
-import Link from 'next/link';
-import localFont from 'next/font/local';
 import {
   Alert,
   Anchor,
   Button,
-  Loader,
+  Group,
+  Paper,
   PasswordInput,
   Stack,
   Text,
   TextInput,
   Title
 } from '@mantine/core';
+import Link from 'next/link';
 import { AUTH_MODE } from '@/lib/auth/constants';
 import { useLoginForm } from './useLoginForm';
 import classes from './LoginForm.module.css';
-
-const inter = localFont({
-  src: [
-    {
-      path: '../../../../../../public/fonts/inter/Inter-Regular.otf',
-      weight: '400',
-      style: 'normal'
-    },
-    {
-      path: '../../../../../../public/fonts/inter/Inter-Medium.otf',
-      weight: '500',
-      style: 'normal'
-    },
-    {
-      path: '../../../../../../public/fonts/inter/Inter-SemiBold.otf',
-      weight: '600',
-      style: 'normal'
-    },
-    {
-      path: '../../../../../../public/fonts/inter/Inter-Bold.otf',
-      weight: '700',
-      style: 'normal'
-    },
-    {
-      path: '../../../../../../public/fonts/inter/Inter-Black.otf',
-      weight: '900',
-      style: 'normal'
-    }
-  ],
-  display: 'swap'
-});
 
 export default function LoginForm({
   mode
@@ -71,7 +40,7 @@ function LoginFormContent() {
   const hasError = Boolean(error);
 
   return (
-    <section className={`${classes.shell} ${inter.className}`}>
+    <section className={classes.shell}>
       <div className={classes.brand} aria-label="Direccion Provincial de Rentas">
         <img
           src="/assets/branding/logo.svg"
@@ -80,23 +49,35 @@ function LoginFormContent() {
         />
       </div>
 
-      <div className={classes.card}>
-        <Stack className={classes.header}>
-          <Title order={1} className={classes.title}>
+      <Paper
+        shadow="xl"
+        radius="lg"
+        p="xl"
+        className={classes.card}
+        component="section"
+      >
+        <Stack gap="xs" mb="lg" className={classes.header}>
+          <Title order={2} className={classes.title}>
             Sistema de Inteligencia
             <br />
             Fiscal de Rentas
           </Title>
-          <Text className={classes.subtitle}>Iniciá el análisis de contribuyentes</Text>
+          <Text c="dimmed" fz="sm" className={classes.subtitle}>
+            Panel de Administración — Acceso restringido
+          </Text>
         </Stack>
 
-        <Stack className={classes.form} component="form" onSubmit={(event) => {
-          event.preventDefault();
-          handleSubmit();
-        }}>
-          <Stack className={classes.fieldGroup}>
-            <Text component="label" htmlFor="login-email" className={classes.fieldLabel} c="dimmed">
-              Email<span className={classes.fieldLabelRequired}>*</span>
+        <Stack
+          component="form"
+          className={classes.form}
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleSubmit();
+          }}
+        >
+          <Stack gap={6}>
+            <Text component="label" htmlFor="login-email" className={classes.fieldLabel}>
+              EMAIL
             </Text>
             <TextInput
               id="login-email"
@@ -109,9 +90,9 @@ function LoginFormContent() {
             />
           </Stack>
 
-          <Stack className={classes.fieldGroup}>
-            <Text component="label" htmlFor="login-password" className={classes.fieldLabel} c="dimmed">
-              Contraseña<span className={classes.fieldLabelRequired}>*</span>
+          <Stack gap={6} mt={8}>
+            <Text component="label" htmlFor="login-password" className={classes.fieldLabel}>
+              PASSWORD
             </Text>
             <PasswordInput
               id="login-password"
@@ -126,39 +107,58 @@ function LoginFormContent() {
 
           {error ? (
             <Alert
-              color="gray"
               variant="light"
+              color="red"
               className={classes.errorAlert}
-              title=""
             >
               {error}
             </Alert>
           ) : null}
 
-          <div className={classes.footer}>
-            <Text className={classes.footerHint}>¿Olvidaste tu contraseña?</Text>
+          <Group justify="space-between" mt="sm" className={classes.supportRow}>
+            <Text c="dimmed" className={classes.supportHint}>
+              ¿Olvidaste tu contraseña?
+            </Text>
             <Anchor
               component={Link}
               href={recoveryHref as never}
-              className={classes.link}
+              className={classes.supportButton}
             >
               Recuperar contraseña
             </Anchor>
-          </div>
+          </Group>
 
           <Button
             type="submit"
+            variant="filled"
+            color="blue"
+            size="lg"
+            radius="xl"
+            fullWidth
             disabled={isPending}
             className={classes.button}
             loaderProps={{
-              children: <Loader size={18} color="white" />
+              children: <div className={classes.loader} />
             }}
             loading={isPending}
           >
             Ingresar
           </Button>
+
+          <Text className={classes.credentialsHint}>
+            Credenciales de prueba:
+            {' '}
+            <strong>admin@rentas.gob.ar / admin123</strong>
+          </Text>
         </Stack>
-      </div>
+      </Paper>
+
+      <img
+        src="/assets/branding/login-wave.svg"
+        alt=""
+        aria-hidden="true"
+        className={classes.wave}
+      />
     </section>
   );
 }
