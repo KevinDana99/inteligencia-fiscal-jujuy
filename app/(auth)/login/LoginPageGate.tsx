@@ -26,7 +26,7 @@ export default async function LoginPageGate({
   }
 
   if (session) {
-    redirect(AUTH_ROUTES.home);
+    redirect(session.user.role === 'admin' ? AUTH_ROUTES.admin : AUTH_ROUTES.home);
   }
 
   return <LoginForm mode={mode} />;

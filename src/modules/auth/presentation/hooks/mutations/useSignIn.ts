@@ -2,7 +2,7 @@
 
 import { startTransition, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AUTH_MODE, AUTH_ROUTES } from '@/lib/auth/constants';
+import { AUTH_MODE, AUTH_MOCK_USERS, AUTH_ROUTES } from '@/lib/auth/constants';
 import { signInAction } from '../../../data/actions';
 
 export function useSignIn(
@@ -33,12 +33,16 @@ export function useSignIn(
             return;
           }
 
-          const mode =
+          const requestedMode =
             forcedMode ??
             (searchParams.get('mode') === AUTH_MODE.admin
               ? AUTH_MODE.admin
               : AUTH_MODE.user);
-          const targetPath = mode === AUTH_MODE.admin ? AUTH_ROUTES.admin : AUTH_ROUTES.home;
+          const isAdminUser = result.usuario.correo === AUTH_MOCK_USERS.admin.email;
+          const targetPath =
+            isAdminUser || requestedMode === AUTH_MODE.admin
+              ? AUTH_ROUTES.admin
+              : AUTH_ROUTES.home;
 
           router.replace(targetPath as never);
           router.refresh();
