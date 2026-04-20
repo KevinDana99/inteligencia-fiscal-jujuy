@@ -6,7 +6,11 @@
   justify-content: center;
   padding: 48px 24px 140px;
   background:
-    radial-gradient(circle at top center, rgba(76, 114, 255, 0.06), transparent 24%),
+    radial-gradient(
+      circle at top center,
+      rgba(76, 114, 255, 0.06),
+      transparent 24%
+    ),
     linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
 }
 
@@ -39,17 +43,11 @@
 .title {
   margin: 0;
   color: var(--mantine-color-gray-9);
-  font-family: var(--font-body), 'Segoe UI', sans-serif !important;
+  font-family: var(--font-body) !important;
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.35;
   letter-spacing: -0.3px;
-}
-
-.subtitle {
-  color: var(--mantine-color-gray-6);
-  font-size: 12.5px;
-  line-height: 1.4;
 }
 
 .form {
@@ -65,6 +63,10 @@
   text-transform: uppercase;
 }
 
+.requiredMark {
+  color: #fa5252;
+}
+
 .textInput :global(.mantine-Input-input),
 .passwordInput :global(.mantine-Input-input) {
   height: auto;
@@ -73,10 +75,12 @@
   border-radius: var(--mantine-radius-md);
   background: var(--mantine-color-gray-0);
   color: var(--mantine-color-gray-9);
-  font-family: var(--font-body), 'Segoe UI', sans-serif;
+  font-family: var(--font-body);
   font-size: 13.5px;
   line-height: 1.2;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .textInput :global(.mantine-Input-input)::placeholder,
@@ -103,7 +107,7 @@
   border: 0;
   background: transparent;
   color: var(--mantine-color-gray-9);
-  font-family: var(--font-body), 'Segoe UI', sans-serif;
+  font-family: var(--font-body);
   font-size: 13.5px;
   line-height: 1.2;
   padding: 10px 14px;
@@ -129,6 +133,12 @@
   background: transparent;
 }
 
+.eyeIcon {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
 .passwordInput :global(.mantine-ActionIcon-root:hover),
 .passwordInput :global(.mantine-ActionIcon-root:focus),
 .passwordInput :global(.mantine-ActionIcon-root:focus-visible),
@@ -150,10 +160,30 @@
 
 .errorAlert {
   margin-top: 12px;
+  color: #fa5252;
   border: 1px solid #ffa8a8;
-  border-left: 4px solid var(--mantine-color-red-5);
+  border-left: 4px solid #fa5252;
   border-radius: 10px;
   background: #fff0f0;
+}
+
+.alertIcon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  color: #fa5252;
+}
+
+.errorAlert :global(.mantine-Alert-wrapper) {
+  align-items: center;
+}
+
+.errorAlert :global(.mantine-Alert-icon) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 5px;
+  margin-top: 0;
 }
 
 .errorAlert :global(.mantine-Alert-label) {
@@ -161,8 +191,10 @@
 }
 
 .errorAlert :global(.mantine-Alert-message) {
-  color: var(--mantine-color-red-6);
+  color: #fa5252;
+  font-family: var(--font-body);
   font-size: 12.5px;
+  font-weight: 500;
   line-height: 1.45;
 }
 
@@ -188,13 +220,14 @@
 
 .button {
   margin-top: 14px;
-  background: linear-gradient(180deg, #5973f6 0%, #4c64eb 100%);
   color: #ffffff;
-  --button-hover: #4c64eb;
-  --button-bg: #4c64eb;
+  --button-bg: var(--mantine-color-blue-5);
   --button-bd: transparent;
   --button-hover-color: #ffffff;
   box-shadow: none;
+  font-size: 15px;
+  font-weight: 700;
+  height: 46px;
 }
 
 .button:hover,
@@ -202,7 +235,7 @@
 .button:focus-visible,
 .button[data-hovered],
 .button[data-active] {
-  background: #4c64eb;
+  background: var(--mantine-color-blue-6);
   color: #ffffff;
   box-shadow: none;
   transform: none;
@@ -239,6 +272,7 @@
   width: 100%;
   height: auto;
   pointer-events: none;
+  height: 200px;
 }
 
 @keyframes spin {

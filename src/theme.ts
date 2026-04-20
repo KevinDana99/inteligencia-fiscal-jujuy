@@ -1,4 +1,4 @@
-import { createTheme } from '@mantine/core';
+import { createTheme } from '@mantine/core'
 
 export const theme = createTheme({
   primaryColor: 'terra',
@@ -6,9 +6,22 @@ export const theme = createTheme({
   fontFamilyMonospace:
     "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace",
   headings: {
-    fontFamily: "var(--font-dm-sans), var(--font-display), 'Segoe UI', sans-serif"
+    fontFamily:
+      "var(--font-dm-sans), var(--font-display), 'Segoe UI', sans-serif"
   },
   colors: {
+    blue: [
+      '#EBF0FE',
+      '#d0dcfd',
+      '#a8bef9',
+      '#7b9ef5',
+      '#6b94f5',
+      '#4375EE',
+      '#2f5fd4',
+      '#2348b0',
+      '#1d4ed8',
+      '#153aaa'
+    ],
     terra: [
       '#fff3eb',
       '#fbe1d1',
@@ -39,4 +52,4 @@ export const theme = createTheme({
     xxl: '2rem'
   },
   defaultRadius: 'xl'
-});
+})
