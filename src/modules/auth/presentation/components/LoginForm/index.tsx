@@ -23,7 +23,7 @@ export default function LoginForm({
 }: {
   mode: (typeof AUTH_MODE)[keyof typeof AUTH_MODE]
 }) {
-  return <LoginFormContent key={mode} />
+  return <LoginFormContent key={mode} mode={mode} />
 }
 
 function EyeIcon({ off }: { off: boolean }) {
@@ -64,7 +64,11 @@ function EyeIcon({ off }: { off: boolean }) {
   )
 }
 
-function LoginFormContent() {
+function LoginFormContent({
+  mode
+}: {
+  mode: (typeof AUTH_MODE)[keyof typeof AUTH_MODE]
+}) {
   const {
     email,
     password,
@@ -74,7 +78,7 @@ function LoginFormContent() {
     setEmail,
     setPassword,
     handleSubmit
-  } = useLoginForm()
+  } = useLoginForm(mode)
 
   const hasError = Boolean(error)
 

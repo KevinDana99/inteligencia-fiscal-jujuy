@@ -1,8 +1,14 @@
 import { Container, Paper, Stack, Text, Title } from '@mantine/core';
-import { requireAdminSession } from '@/lib/auth/require-admin-session';
+import { redirect } from 'next/navigation';
+import { AUTH_MODE, AUTH_ROUTES } from '@/lib/auth/constants';
+import { getServerAuthSession } from '@/lib/auth/get-server-session';
 
 export default async function AdminPage() {
-  await requireAdminSession();
+  const session = await getServerAuthSession();
+
+  if (session?.user.role !== 'admin') {
+    redirect(`${AUTH_ROUTES.login}?mode=${AUTH_MODE.admin}` as never);
+  }
 
   return (
     <Container size="md" py={56}>

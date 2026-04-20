@@ -5,7 +5,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AUTH_MODE, AUTH_ROUTES } from '@/lib/auth/constants';
 import { signInAction } from '../../../data/actions';
 
-export function useSignIn() {
+export function useSignIn(
+  forcedMode?: (typeof AUTH_MODE)[keyof typeof AUTH_MODE]
+) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, setIsPending] = useState(false);
@@ -31,7 +33,11 @@ export function useSignIn() {
             return;
           }
 
-          const mode = searchParams.get('mode') ?? AUTH_MODE.user;
+          const mode =
+            forcedMode ??
+            (searchParams.get('mode') === AUTH_MODE.admin
+              ? AUTH_MODE.admin
+              : AUTH_MODE.user);
           const targetPath = mode === AUTH_MODE.admin ? AUTH_ROUTES.admin : AUTH_ROUTES.home;
 
           router.replace(targetPath as never);

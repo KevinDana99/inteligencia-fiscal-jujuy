@@ -1,14 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import { AUTH_MODE } from '@/lib/auth/constants';
 import { useAuthSession, useSignIn } from '../../hooks';
 
-export function useLoginForm() {
+export function useLoginForm(
+  mode: (typeof AUTH_MODE)[keyof typeof AUTH_MODE]
+) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
   const { data: session } = useAuthSession();
-  const { signIn, isPending, error, clearError } = useSignIn();
+  const { signIn, isPending, error, clearError } = useSignIn(mode);
 
   const resetErrors = () => {
     setValidationError(null);
@@ -45,7 +48,10 @@ export function useLoginForm() {
     password,
     isPending,
     error: validationError ?? error,
-    recoveryHref: session?.user.role === 'admin' ? '/admin' : '/login?mode=admin',
+    recoveryHref:
+      session?.user.role === 'admin' || mode === AUTH_MODE.admin
+        ? '/admin'
+        : '/login?mode=admin',
     setEmail: handleEmailChange,
     setPassword: handlePasswordChange,
     handleSubmit

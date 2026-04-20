@@ -15,7 +15,7 @@ import { refreshAuthSession } from '@/lib/auth/refresh-session';
 import { isSessionExpired } from '@/lib/auth/session-mapper';
 
 function isPrivatePath(pathname: string): boolean {
-  return pathname !== AUTH_ROUTES.login;
+  return pathname !== AUTH_ROUTES.login && pathname !== AUTH_ROUTES.admin;
 }
 
 function isRefreshWindowValid(expiresAt?: string): boolean {
@@ -49,16 +49,6 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (pathname === AUTH_ROUTES.admin && hasValidAccessToken) {
-    if (session?.user.role === 'admin') {
-      return NextResponse.next();
-    }
-
-    return NextResponse.redirect(
-      new URL(`${AUTH_ROUTES.login}?mode=${AUTH_MODE.admin}`, request.url)
-    );
-  }
-
   if (hasValidAccessToken) {
     return NextResponse.next();
   }
@@ -83,14 +73,6 @@ export async function proxy(request: NextRequest) {
     });
 
     if (refreshedSession) {
-      if (pathname === AUTH_ROUTES.admin && refreshedSession.user.role !== 'admin') {
-        const response = NextResponse.redirect(
-          new URL(`${AUTH_ROUTES.login}?mode=${AUTH_MODE.admin}`, request.url)
-        );
-        setResponseAuthCookies(response, refreshedSession);
-        return response;
-      }
-
       const response = NextResponse.next();
       setResponseAuthCookies(response, refreshedSession);
       return response;
