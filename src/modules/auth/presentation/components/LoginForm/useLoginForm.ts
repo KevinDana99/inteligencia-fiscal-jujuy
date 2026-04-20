@@ -18,6 +18,11 @@ export function useLoginForm(
     clearError();
   };
 
+  const resetForm = () => {
+    setEmail('');
+    setPassword('');
+  };
+
   const handleEmailChange = (value: string) => {
     resetErrors();
     setRecoveryNoticeVisible(false);
@@ -31,10 +36,14 @@ export function useLoginForm(
   };
 
   const showRecoveryNotice = () => {
+    resetErrors();
+    resetForm();
     setRecoveryNoticeVisible(true);
   };
 
   const handleSubmit = () => {
+    setRecoveryNoticeVisible(false);
+
     if (!email.trim()) {
       setValidationError('El campo mail esta vacio.');
       return;
