@@ -79,7 +79,7 @@ function LoginFormContent({
     handleSubmit
   } = useLoginForm(mode)
 
-  const hasError = Boolean(error)
+  const hasError = Boolean(error) && !recoveryNoticeVisible
 
   return (
     <section className={classes.shell}>
@@ -159,7 +159,7 @@ function LoginFormContent({
             />
           </Stack>
 
-          {error ? (
+          {hasError ? (
             <Alert
               variant='light'
               color='red'
