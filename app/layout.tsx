@@ -7,7 +7,7 @@ import { Providers } from '@/components/core/providers'
 import { DM_Sans } from 'next/font/google'
 const dmSans = DM_Sans({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
+  weight: ['300', '400', '500', '600', '700', '800', '1000'],
   variable: '--font-dm-sans',
   display: 'swap'
 })

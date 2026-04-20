@@ -45,8 +45,9 @@
   color: var(--mantine-color-gray-9);
   font-family: var(--font-body) !important;
   font-size: 22px;
-  font-weight: 700;
+  font-weight: bold;
   line-height: 1.35;
+  unicode-bidi: isolate;
   letter-spacing: -0.3px;
 }
 
