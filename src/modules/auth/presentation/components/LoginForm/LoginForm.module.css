@@ -176,15 +176,17 @@
 }
 
 .errorAlert :global(.mantine-Alert-wrapper) {
-  align-items: center;
+  align-items: flex-start;
 }
 
 .errorAlert :global(.mantine-Alert-icon) {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 5px;
-  margin-top: 0;
+  margin-top: -1px;
+  padding-top: 0;
 }
 
 .errorAlert :global(.mantine-Alert-label) {
@@ -199,6 +201,53 @@
   line-height: 1.45;
 }
 
+.infoAlert {
+  margin-top: 12px;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  background: #eef5ff;
+}
+
+.infoIcon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  color: #228be6;
+}
+
+.infoAlert :global(.mantine-Alert-wrapper) {
+  align-items: flex-start;
+}
+
+.infoAlert :global(.mantine-Alert-icon) {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  margin-top: -2px;
+  padding-top: 0;
+}
+
+.infoAlert :global(.mantine-Alert-label) {
+  display: none;
+}
+
+.infoAlert :global(.mantine-Alert-body) {
+  flex: 1;
+}
+
+.infoAlert :global(.mantine-Alert-message) {
+  color: #6b7280;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  text-align: left;
+  margin-top: 0;
+  padding-top: 0;
+}
+
 .supportRow {
   margin-top: 12px;
 }
@@ -209,10 +258,14 @@
 }
 
 .supportButton {
+  border: 0;
+  padding: 0;
+  background: transparent;
   color: #4c6fff;
   font-size: 12.5px;
   font-weight: 700;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .supportButton:hover {

@@ -2,7 +2,6 @@
 
 import {
   Alert,
-  Anchor,
   Button,
   Group,
   Paper,
@@ -12,8 +11,7 @@ import {
   TextInput,
   Title
 } from '@mantine/core'
-import { IconAlertCircle } from '@tabler/icons-react'
-import Link from 'next/link'
+import { IconAlertCircle, IconInfoCircle } from '@tabler/icons-react'
 import { AUTH_MODE } from '@/lib/auth/constants'
 import { useLoginForm } from './useLoginForm'
 import classes from './LoginForm.module.css'
@@ -74,9 +72,10 @@ function LoginFormContent({
     password,
     isPending,
     error,
-    recoveryHref,
+    recoveryNoticeVisible,
     setEmail,
     setPassword,
+    showRecoveryNotice,
     handleSubmit
   } = useLoginForm(mode)
 
@@ -173,17 +172,31 @@ function LoginFormContent({
             </Alert>
           ) : null}
 
+          {recoveryNoticeVisible ? (
+            <Alert
+              variant='light'
+              color='blue'
+              icon={<IconInfoCircle className={classes.infoIcon} stroke={1.8} />}
+              className={classes.infoAlert}
+            >
+              Para recuperar o cambiar la contraseña,
+              <br />
+              deberá comunicarse con el equipo técnico.
+            </Alert>
+          ) : null}
+
           <Group justify='space-between' mt='sm' className={classes.supportRow}>
             <Text c='dimmed' className={classes.supportHint}>
               ¿Olvidaste tu contraseña?
             </Text>
-            <Anchor
-              component={Link}
-              href={recoveryHref as never}
+            <Text
+              component='button'
+              type='button'
+              onClick={showRecoveryNotice}
               className={classes.supportButton}
             >
               Recuperar contraseña
-            </Anchor>
+            </Text>
           </Group>
 
           <Button
