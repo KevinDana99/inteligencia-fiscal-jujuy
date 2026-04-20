@@ -4,10 +4,31 @@ import type { Metadata } from 'next'
 import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core'
 import type { ReactNode } from 'react'
 import { Providers } from '@/components/core/providers'
-import { DM_Sans } from 'next/font/google'
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800', '1000'],
+import localFont from 'next/font/local'
+
+const dmSans = localFont({
+  src: [
+    {
+      path: '../src/fonts/dm-sans/DMSans-Regular.ttf',
+      weight: '400',
+      style: 'normal'
+    },
+    {
+      path: '../src/fonts/dm-sans/DMSans-Medium.ttf',
+      weight: '500',
+      style: 'normal'
+    },
+    {
+      path: '../src/fonts/dm-sans/DMSans-Bold.ttf',
+      weight: '700',
+      style: 'normal'
+    },
+    {
+      path: '../src/fonts/dm-sans/DMSans-ExtraBold.woff2',
+      weight: '800',
+      style: 'normal'
+    }
+  ],
   variable: '--font-dm-sans',
   display: 'swap'
 })

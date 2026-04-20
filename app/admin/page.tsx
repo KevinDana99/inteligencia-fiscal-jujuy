@@ -1,26 +1,32 @@
-import { Container, Paper, Stack, Text, Title } from '@mantine/core';
+import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
+import { connection } from 'next/server';
+import { Center, Loader } from '@mantine/core';
 import { AUTH_MODE, AUTH_ROUTES } from '@/lib/auth/constants';
 import { getServerAuthSession } from '@/lib/auth/get-server-session';
+import AdminPanelModule from '@/modules/admin-panel';
 
-export default async function AdminPage() {
+export default function AdminPage() {
+  return (
+    <Suspense
+      fallback={
+        <Center mih="100vh">
+          <Loader color="blue" />
+        </Center>
+      }
+    >
+      <AdminPageContent />
+    </Suspense>
+  );
+}
+
+async function AdminPageContent() {
+  await connection();
   const session = await getServerAuthSession();
 
   if (session?.user.role !== 'admin') {
     redirect(`${AUTH_ROUTES.login}?mode=${AUTH_MODE.admin}` as never);
   }
 
-  return (
-    <Container size="md" py={56}>
-      <Paper withBorder radius="lg" p="xl">
-        <Stack gap="sm">
-          <Title order={1}>Admin Panel</Title>
-          <Text c="dimmed">
-            This route is reserved for the future user management panel. The panel
-            itself is intentionally not implemented yet.
-          </Text>
-        </Stack>
-      </Paper>
-    </Container>
-  );
+  return <AdminPanelModule session={session} />;
 }
