@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
+import { useSignOut } from '@/modules/auth/presentation/hooks';
 import type {
   AdminPanelSection,
   IAdminPanelCreateUserInput,
@@ -9,8 +10,7 @@ import type {
   IAdminPanelMetrics,
   IAdminPanelUpdateUserInput,
   IAdminPanelUser
-} from '../../../data/models/AdminPanel';
-import { useSignOut } from '@/modules/auth/presentation/hooks';
+} from '../../data/models/AdminPanel';
 
 const USER_ROLE_OPTIONS = ['Fiscal', 'Inspectora', 'Analista', 'Coordinadora'] as const;
 const USER_AVATAR_COLORS = ['indigo', 'green', 'orange', 'grape', 'cyan'] as const;
@@ -72,10 +72,7 @@ export function useAdminPanelShell(initialData: IAdminPanelData) {
     [historicalPasswordChanges, users]
   );
 
-  const activeUsers = useMemo(
-    () => users.filter((user) => !user.isDeleted),
-    [users]
-  );
+  const activeUsers = useMemo(() => users.filter((user) => !user.isDeleted), [users]);
 
   const filteredUsers = useMemo(() => {
     const normalizedSearch = searchValue.trim().toLowerCase();
