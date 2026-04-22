@@ -1,18 +1,17 @@
-import Image from 'next/image';
-import { Avatar, Button, Text } from '@mantine/core';
-import { IconLogout2 } from '@tabler/icons-react';
-import type { IAuthSession } from '@/modules/auth/data/models/Auth';
-import { getInitials } from '../../utils/getInitials';
-import classes from '../AdminPanelShell/AdminPanelShell.module.css';
+import Image from 'next/image'
+import { Avatar, Button, Text } from '@mantine/core'
+import type { IAuthSession } from '@/modules/auth/data/models/Auth'
+import { getInitials } from '../../utils/getInitials'
+import classes from '../AdminPanelShell/AdminPanelShell.module.css'
 
 export function AdminPanelNavbar({
   session,
   isSignOutPending,
   signOut
 }: {
-  session: IAuthSession;
-  isSignOutPending: boolean;
-  signOut: () => void;
+  session: IAuthSession
+  isSignOutPending: boolean
+  signOut: () => void
 }) {
   return (
     <header className={classes.header}>
@@ -20,31 +19,37 @@ export function AdminPanelNavbar({
         <div className={classes.brand}>
           <div className={classes.brandMark}>
             <Image
-              src="/assets/branding/logo.svg"
-              alt="Dirección Provincial de Rentas"
+              src='/assets/branding/logo.svg'
+              alt='Dirección Provincial de Rentas'
               width={101}
               height={30}
               className={classes.brandLogo}
             />
           </div>
           <span className={classes.divider} />
-          <Text className={classes.headerTitle}>Panel de Administración</Text>
+          <Text size='sm' fw={600} className={classes.headerTitle}>
+            Panel de Administración
+          </Text>
         </div>
 
         <div className={classes.headerActions}>
           <div className={classes.profileChip}>
-            <Avatar size="sm" color="blue" radius="xl" className={classes.profileAvatar}>
+            <Avatar
+              size={30}
+              color='blue.5'
+              radius='xl'
+              className={classes.profileAvatar}
+            >
               {getInitials(session.user.userName)}
             </Avatar>
             <Text className={classes.profileLabel}>Administrador</Text>
           </div>
 
           <Button
-            variant="default"
-            color="gray"
-            size="sm"
-            radius="md"
-            leftSection={<IconLogout2 size={16} stroke={1.8} />}
+            variant='default'
+            color='gray'
+            size='sm'
+            radius='md'
             onClick={signOut}
             loading={isSignOutPending}
             className={classes.secondaryButton}
@@ -54,5 +59,5 @@ export function AdminPanelNavbar({
         </div>
       </div>
     </header>
-  );
+  )
 }
