@@ -1,4 +1,6 @@
 .page {
+  --admin-header-height: 68px;
+
   min-height: 100vh;
   background: #eef1ff;
 }
@@ -7,7 +9,7 @@
   display: grid;
   min-height: 100vh;
   grid-template:
-    'header header' 68px
+    'header header' var(--admin-header-height)
     'sidebar main' 1fr
     / 226px 1fr;
 }
@@ -18,11 +20,16 @@
   top: 0;
   right: 0;
   left: 0;
-  z-index: 40;
-  height: 68px;
-  border-bottom: 1px solid rgba(119, 133, 179, 0.12);
-  background: #ffffff;
-  box-shadow: 0 8px 24px rgba(69, 83, 133, 0.06);
+  z-index: 20;
+  display: flex;
+  flex-shrink: 0;
+  height: var(--admin-header-height);
+  align-items: center;
+  gap: var(--mantine-spacing-md);
+  padding: 0 var(--mantine-spacing-lg);
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+  box-shadow: var(--mantine-shadow-xs);
 }
 
 .headerInner {
@@ -31,14 +38,13 @@
   height: 100%;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  padding: 0 16px 0 18px;
+  gap: var(--mantine-spacing-md);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--mantine-spacing-md);
 }
 
 .brandMark {
@@ -48,45 +54,54 @@
 }
 
 .brandLogo {
-  width: auto;
-  height: 28px;
+  width: 100.938px;
+  height: 30px;
+  object-fit: contain;
 }
 
 .divider {
   width: 1px;
-  height: 20px;
-  background: rgba(74, 85, 104, 0.12);
+  height: 22px;
+  background: var(--mantine-color-gray-2);
 }
 
 .headerTitle {
-  color: #8a90a0;
-  font-size: 13px;
-  font-weight: 500;
+  height: 16px;
+  color: var(--mantine-color-gray-5);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 16px;
 }
 
 .headerActions {
   display: flex;
+  width: 217.797px;
+  height: 40px;
   align-items: center;
-  gap: 10px;
+  justify-content: flex-end;
+  gap: var(--mantine-spacing-xs);
 }
 
 .profileChip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 10px 4px 4px;
+  gap: var(--mantine-spacing-xs);
+  padding: 5px 14px 5px 5px;
   border-radius: 999px;
-  background: #edf0ff;
+  background: var(--mantine-color-blue-0);
+  box-sizing: border-box;
 }
 
 .profileAvatar {
+  --avatar-bg: var(--mantine-color-blue-5);
+
   flex-shrink: 0;
 }
 
 .profileLabel {
-  color: #4c5de6;
-  font-size: 12px;
-  font-weight: 700;
+  color: var(--mantine-color-blue-8);
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 600;
 }
 
 .signOutButton {
@@ -99,8 +114,11 @@
 }
 
 .secondaryButton {
-  height: 32px;
-  padding-inline: 14px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  height: 39px;
+  min-width: 72px;
+  padding: 9px 16px;
   border-color: rgba(119, 133, 179, 0.24);
   background: #ffffff;
   color: #343c4f;
@@ -111,7 +129,7 @@
 .sidebar {
   grid-area: sidebar;
   position: fixed;
-  top: 68px;
+  top: var(--admin-header-height);
   bottom: 0;
   left: 0;
   z-index: 30;

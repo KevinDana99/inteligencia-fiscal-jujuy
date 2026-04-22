@@ -22,8 +22,8 @@ export function AdminPanelNavbar({
             <Image
               src="/assets/branding/logo.svg"
               alt="Dirección Provincial de Rentas"
-              width={96}
-              height={32}
+              width={101}
+              height={30}
               className={classes.brandLogo}
             />
           </div>
@@ -33,7 +33,7 @@ export function AdminPanelNavbar({
 
         <div className={classes.headerActions}>
           <div className={classes.profileChip}>
-            <Avatar size={30} color="indigo" radius="xl" className={classes.profileAvatar}>
+            <Avatar size="sm" color="blue" radius="xl" className={classes.profileAvatar}>
               {getInitials(session.user.userName)}
             </Avatar>
             <Text className={classes.profileLabel}>Administrador</Text>
@@ -42,6 +42,7 @@ export function AdminPanelNavbar({
           <Button
             variant="default"
             color="gray"
+            size="sm"
             radius="md"
             leftSection={<IconLogout2 size={16} stroke={1.8} />}
             onClick={signOut}
