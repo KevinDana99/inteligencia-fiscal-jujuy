@@ -5,39 +5,34 @@ export const ADMIN_PANEL_MOCK_DATA: IAdminPanelData = {
   users: [
     {
       id: 'admin',
-      fullName: 'Administrador Principal',
+      fullName: 'Administrador',
       email: 'admin@plantilla.local',
       roleLabel: 'Administrador',
-      avatarColor: 'indigo',
       isAdmin: true
     },
     {
       id: 'carlos-gomez',
       fullName: 'Carlos Gómez',
       email: 'cgomez@rentas.gob.ar',
-      roleLabel: 'Fiscal',
-      avatarColor: 'indigo'
+      roleLabel: 'Fiscal'
     },
     {
       id: 'maria-rodriguez',
       fullName: 'María Rodríguez',
       email: 'mrodriguez@rentas.gob.ar',
-      roleLabel: 'Inspectora',
-      avatarColor: 'green'
+      roleLabel: 'Inspectora'
     },
     {
       id: 'lucas-fernandez',
       fullName: 'Lucas Fernández',
       email: 'lfernandez@rentas.gob.ar',
-      roleLabel: 'Analista',
-      avatarColor: 'orange'
+      roleLabel: 'Analista'
     },
     {
       id: 'sofia-lopez',
       fullName: 'Sofía López',
       email: 'slopez@rentas.gob.ar',
-      roleLabel: 'Coordinadora',
-      avatarColor: 'grape'
+      roleLabel: 'Coordinadora'
     }
   ]
 };

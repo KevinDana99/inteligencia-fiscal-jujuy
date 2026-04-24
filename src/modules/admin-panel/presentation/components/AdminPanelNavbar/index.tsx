@@ -27,7 +27,7 @@ export function AdminPanelNavbar({
             />
           </div>
           <span className={classes.divider} />
-          <Text size='sm' fw={600} className={classes.headerTitle}>
+          <Text size='sm' className={classes.headerTitle}>
             Panel de Administración
           </Text>
         </div>

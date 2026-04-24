@@ -12,15 +12,75 @@ export const theme = createTheme({
   colors: {
     blue: [
       '#EBF0FE',
-      '#d0dcfd',
-      '#a8bef9',
-      '#7b9ef5',
-      '#6b94f5',
+      '#D0DCFD',
+      '#A8BEF9',
+      '#7B9EF5',
+      '#6B94F5',
       '#4375EE',
-      '#2f5fd4',
-      '#2348b0',
-      '#1d4ed8',
-      '#153aaa'
+      '#2F5FD4',
+      '#2348B0',
+      '#1D4ED8',
+      '#153AAA'
+    ],
+    gray: [
+      '#F8F9FA',
+      '#F1F3F5',
+      '#E9ECEF',
+      '#DEE2E6',
+      '#CED4DA',
+      '#ADB5BD',
+      '#868E96',
+      '#495057',
+      '#343A40',
+      '#212529'
+    ],
+    red: [
+      '#FFF5F5',
+      '#FFE3E3',
+      '#FFC9C9',
+      '#FFA8A8',
+      '#FF8787',
+      '#FA5252',
+      '#F03E3E',
+      '#E03131',
+      '#C92A2A',
+      '#A61E1E'
+    ],
+    green: [
+      '#EBFBEE',
+      '#D7F5DD',
+      '#B0EBBB',
+      '#84D996',
+      '#5FC47A',
+      '#3FAE5C',
+      '#2F9E44',
+      '#2B8A3E',
+      '#237032',
+      '#1B5727'
+    ],
+    yellow: [
+      '#FFF9DB',
+      '#FFF3BF',
+      '#FFEC99',
+      '#FFE066',
+      '#FFD43B',
+      '#FAB005',
+      '#E67700',
+      '#D9480F',
+      '#B45309',
+      '#8F3F07'
+    ],
+    cyan: [
+      '#ECFEFF',
+      '#CFFAFE',
+      '#A5F3FC',
+      '#67E8F9',
+      '#22D3EE',
+      '#06B6D4',
+      '#0891B2',
+      '#0E7490',
+      '#155E75',
+      '#164E63'
     ],
     terra: [
       '#fff3eb',

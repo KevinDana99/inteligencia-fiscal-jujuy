@@ -27,9 +27,8 @@ Implementar la UI del panel de administracion de forma incremental, usando un un
 
 1. `Prompt 1: Navbar`
 2. `Prompt 2: Sidebar`
-3. `Prompt 3: Widgets Section`
-4. `Prompt 4: User Gestion Table`
-5. `Prompt 5: Modals`
+3. `Prompt 3: User Gestion Table`
+4. `Prompt 4: Modals`
 
 ## Prompt 1: Navbar
 
@@ -213,6 +212,5 @@ size="sm"
 Pendientes de completar en `codex/prompts/admin/admin-ui.prompt.md` cuando el spec tenga el detalle correspondiente:
 
 1. `Prompt 2: Sidebar`
-2. `Prompt 3: Widgets Section`
-3. `Prompt 4: User Gestion Table`
-4. `Prompt 5: Modals`
+2. `Prompt 3: User Gestion Table`
+3. `Prompt 4: Modals`

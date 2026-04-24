@@ -145,18 +145,12 @@ Pendiente de completar cuando `codex/specs/admin/admin-ui.spec.md` tenga el deta
 
 ---
 
-## Prompt 3: Widgets Section
-
-Pendiente de completar cuando `codex/specs/admin/admin-ui.spec.md` tenga el detalle final de la widgets section.
-
----
-
-## Prompt 4: User Gestion Table
+## Prompt 3: User Gestion Table
 
 Pendiente de completar cuando `codex/specs/admin/admin-ui.spec.md` tenga el detalle final de la user gestion table.
 
 ---
 
-## Prompt 5: Modals
+## Prompt 4: Modals
 
 Pendiente de completar cuando `codex/specs/admin/admin-ui.spec.md` tenga el detalle final de los modals.

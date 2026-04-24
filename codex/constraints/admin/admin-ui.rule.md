@@ -2,12 +2,12 @@
 
 ## Objetivo
 
-Estas reglas complementan `codex/constraints/admin/admin-panel.rule.md` para implementar la UI del admin panel por partes. La primera parte cubierta por este documento es el navbar definido en `codex/specs/admin/admin-ui.spec.md`.
+Estas reglas complementan `codex/constraints/admin/admin-panel.rule.md` para implementar la UI del admin panel por partes. Este documento cubre las secciones definidas en `codex/specs/admin/admin-ui.spec.md`.
 
-## Alcance de esta iteracion
+## Alcance general
 
-1. Esta iteracion solo puede modificar el navbar/header superior del admin panel.
-2. No se debe implementar ni redisenar sidebar, contenido principal, widgets, tabla, buscador ni modales.
+1. Cada iteracion solo puede modificar la seccion puntual que este siendo trabajada.
+2. No se debe redisenar ni modificar secciones fuera del alcance inmediato del prompt activo.
 3. No se deben crear rutas nuevas.
 4. No se debe modificar auth, login, logout, cookies, sesion, proxy ni el flujo de elevacion a admin.
 5. El logout puede reutilizar el handler existente, pero no se debe cambiar su contrato funcional.

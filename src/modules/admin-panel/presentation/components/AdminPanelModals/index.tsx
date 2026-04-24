@@ -13,7 +13,7 @@ import {
   TextInput,
   Title
 } from '@mantine/core';
-import { IconChevronDown, IconEye, IconEyeOff, IconKey } from '@tabler/icons-react';
+import { IconChevronDown, IconEye, IconEyeOff } from '@tabler/icons-react';
 import type {
   IAdminPanelCreateUserInput,
   IAdminPanelUpdateUserInput,
@@ -187,39 +187,6 @@ function UserFormModal({
   );
 }
 
-function PasswordModal({
-  opened,
-  user,
-  onClose,
-  onConfirm
-}: {
-  opened: boolean;
-  user: IAdminPanelUser | null;
-  onClose: () => void;
-  onConfirm: () => void;
-}) {
-  return (
-    <Modal opened={opened} onClose={onClose} title="Registrar cambio de contraseña" centered>
-      <Stack gap="md">
-        <Text className={classes.modalHint}>
-          Esta acción registrará un cambio de contraseña para{' '}
-          <strong>{user?.fullName ?? 'el usuario seleccionado'}</strong> dentro del
-          histórico del panel.
-        </Text>
-
-        <Group justify="flex-end">
-          <Button variant="default" onClick={onClose}>
-            Cancelar
-          </Button>
-          <Button leftSection={<IconKey size={16} />} onClick={onConfirm}>
-            Confirmar cambio
-          </Button>
-        </Group>
-      </Stack>
-    </Modal>
-  );
-}
-
 function DeleteModal({
   opened,
   user,
@@ -262,31 +229,25 @@ export function AdminPanelModals({
   selectedUser,
   createOpened,
   editOpened,
-  passwordOpened,
   deleteOpened,
   roleOptions,
   closeCreateModal,
   closeEditModal,
-  closePasswordModal,
   closeDeleteModal,
   createUser,
   updateUser,
-  registerPasswordChange,
   deleteUser
 }: {
   selectedUser: IAdminPanelUser | null;
   createOpened: boolean;
   editOpened: boolean;
-  passwordOpened: boolean;
   deleteOpened: boolean;
   roleOptions: string[];
   closeCreateModal: () => void;
   closeEditModal: () => void;
-  closePasswordModal: () => void;
   closeDeleteModal: () => void;
   createUser: (input: IAdminPanelCreateUserInput) => void;
   updateUser: (input: IAdminPanelUpdateUserInput) => void;
-  registerPasswordChange: () => void;
   deleteUser: () => void;
 }) {
   return (
@@ -313,12 +274,6 @@ export function AdminPanelModals({
             updateUser(payload);
           }
         }}
-      />
-      <PasswordModal
-        opened={passwordOpened}
-        user={selectedUser}
-        onClose={closePasswordModal}
-        onConfirm={registerPasswordChange}
       />
       <DeleteModal
         opened={deleteOpened}

@@ -2,18 +2,83 @@
 
 import { useMemo, useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import { useSignOut } from '@/modules/auth/presentation/hooks';
 import type {
-  AdminPanelSection,
   IAdminPanelCreateUserInput,
   IAdminPanelData,
-  IAdminPanelMetrics,
   IAdminPanelUpdateUserInput,
   IAdminPanelUser
 } from '../../data/models/AdminPanel';
+import {
+  AVATAR_COLOR_TOKENS,
+  type AvatarColorTone
+} from '../utils/getAvatarColorStyles';
 
 const USER_ROLE_OPTIONS = ['Fiscal', 'Inspectora', 'Analista', 'Coordinadora'] as const;
-const USER_AVATAR_COLORS = ['indigo', 'green', 'orange', 'grape', 'cyan'] as const;
+const ADMIN_AVATAR_COLOR: AvatarColorTone = 'blue';
+
+function getSeededNumber(seed: string): number {
+  return [...seed].reduce(
+    (accumulator, char) => (accumulator * 31 + char.charCodeAt(0)) % 2147483647,
+    7
+  );
+}
+
+function shuffleAvatarColors(
+  colors: readonly AvatarColorTone[],
+  seed = `${colors.join('-')}-${colors.length}`
+): AvatarColorTone[] {
+  const shuffledColors = [...colors];
+  let currentSeed = getSeededNumber(seed);
+
+  for (let currentIndex = shuffledColors.length - 1; currentIndex > 0; currentIndex -= 1) {
+    currentSeed = (currentSeed * 48271) % 2147483647;
+    const randomIndex = currentSeed % (currentIndex + 1);
+    [shuffledColors[currentIndex], shuffledColors[randomIndex]] = [
+      shuffledColors[randomIndex],
+      shuffledColors[currentIndex]
+    ];
+  }
+
+  return shuffledColors;
+}
+
+function drawAvatarColor(availableColors: AvatarColorTone[], seed?: string) {
+  const nextAvailableColors =
+    availableColors.length > 0
+      ? [...availableColors]
+      : shuffleAvatarColors(AVATAR_COLOR_TOKENS, seed);
+
+  const nextColor = nextAvailableColors.shift() ?? 'blue';
+
+  return {
+    nextColor,
+    nextAvailableColors
+  };
+}
+
+function buildInitialAvatarPalette(users: IAdminPanelUser[]) {
+  let availableColors = shuffleAvatarColors(
+    AVATAR_COLOR_TOKENS.filter((color) => color !== ADMIN_AVATAR_COLOR),
+    users.map((user) => user.id).join('|')
+  );
+
+  const avatarColorByUserId = users.reduce<Record<string, AvatarColorTone>>((accumulator, user) => {
+    if (user.isAdmin) {
+      accumulator[user.id] = ADMIN_AVATAR_COLOR;
+      return accumulator;
+    }
+
+    const { nextColor, nextAvailableColors } = drawAvatarColor(availableColors, user.id);
+    availableColors = nextAvailableColors;
+    accumulator[user.id] = nextColor;
+    return accumulator;
+  }, {});
+
+  return {
+    avatarColorByUserId,
+    availableColors
+  };
+}
 
 function slugify(value: string): string {
   return value
@@ -25,21 +90,6 @@ function slugify(value: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-function buildMetrics(
-  users: IAdminPanelUser[],
-  historicalPasswordChanges: number
-): IAdminPanelMetrics {
-  const activeUsers = users.filter((user) => !user.isDeleted);
-  const distinctRoles = new Set(activeUsers.map((user) => user.roleLabel)).size;
-
-  return {
-    activeUsers: activeUsers.length,
-    deletedUsers: users.filter((user) => user.isDeleted).length,
-    passwordChanges: historicalPasswordChanges,
-    distinctRoles
-  };
-}
-
 function buildUserFromInput(
   input: IAdminPanelCreateUserInput,
   existingUsersLength: number
@@ -48,29 +98,18 @@ function buildUserFromInput(
     id: `${slugify(input.fullName)}-${existingUsersLength + 1}`,
     fullName: input.fullName.trim(),
     email: input.email.trim().toLowerCase(),
-    roleLabel: input.roleLabel,
-    avatarColor: USER_AVATAR_COLORS[existingUsersLength % USER_AVATAR_COLORS.length]
+    roleLabel: input.roleLabel
   };
 }
 
 export function useAdminPanelShell(initialData: IAdminPanelData) {
-  const { signOut, isPending: isSignOutPending } = useSignOut();
-  const [section, setSection] = useState<AdminPanelSection>('home');
   const [users, setUsers] = useState(initialData.users);
-  const [historicalPasswordChanges, setHistoricalPasswordChanges] = useState(
-    initialData.historicalPasswordChanges
-  );
+  const [avatarPalette, setAvatarPalette] = useState(() => buildInitialAvatarPalette(initialData.users));
   const [searchValue, setSearchValue] = useState('');
   const [selectedUser, setSelectedUser] = useState<IAdminPanelUser | null>(null);
   const [createOpened, createHandlers] = useDisclosure(false);
   const [editOpened, editHandlers] = useDisclosure(false);
-  const [passwordOpened, passwordHandlers] = useDisclosure(false);
   const [deleteOpened, deleteHandlers] = useDisclosure(false);
-
-  const metrics = useMemo(
-    () => buildMetrics(users, historicalPasswordChanges),
-    [historicalPasswordChanges, users]
-  );
 
   const activeUsers = useMemo(() => users.filter((user) => !user.isDeleted), [users]);
 
@@ -88,7 +127,31 @@ export function useAdminPanelShell(initialData: IAdminPanelData) {
   }, [activeUsers, searchValue]);
 
   const createUser = (input: IAdminPanelCreateUserInput) => {
-    setUsers((currentUsers) => [...currentUsers, buildUserFromInput(input, currentUsers.length)]);
+    setUsers((currentUsers) => {
+      const nextUser = buildUserFromInput(input, currentUsers.length);
+
+      setAvatarPalette((currentPalette) => {
+        const availablePool =
+          currentPalette.availableColors.length > 0
+            ? currentPalette.availableColors
+            : shuffleAvatarColors(
+                AVATAR_COLOR_TOKENS.filter((color) => color !== ADMIN_AVATAR_COLOR),
+                nextUser.id
+              );
+
+        const { nextColor, nextAvailableColors } = drawAvatarColor(availablePool, nextUser.id);
+
+        return {
+          avatarColorByUserId: {
+            ...currentPalette.avatarColorByUserId,
+            [nextUser.id]: nextColor
+          },
+          availableColors: nextAvailableColors
+        };
+      });
+
+      return [...currentUsers, nextUser];
+    });
     createHandlers.close();
   };
 
@@ -107,12 +170,6 @@ export function useAdminPanelShell(initialData: IAdminPanelData) {
     );
     setSelectedUser(null);
     editHandlers.close();
-  };
-
-  const registerPasswordChange = () => {
-    setHistoricalPasswordChanges((currentValue) => currentValue + 1);
-    setSelectedUser(null);
-    passwordHandlers.close();
   };
 
   const deleteUser = () => {
@@ -135,11 +192,6 @@ export function useAdminPanelShell(initialData: IAdminPanelData) {
     editHandlers.open();
   };
 
-  const openPasswordModal = (user: IAdminPanelUser) => {
-    setSelectedUser(user);
-    passwordHandlers.open();
-  };
-
   const openDeleteModal = (user: IAdminPanelUser) => {
     setSelectedUser(user);
     deleteHandlers.open();
@@ -150,42 +202,29 @@ export function useAdminPanelShell(initialData: IAdminPanelData) {
     editHandlers.close();
   };
 
-  const closePasswordModal = () => {
-    setSelectedUser(null);
-    passwordHandlers.close();
-  };
-
   const closeDeleteModal = () => {
     setSelectedUser(null);
     deleteHandlers.close();
   };
 
   return {
-    section,
-    metrics,
     searchValue,
     activeUsersCount: activeUsers.length,
     filteredUsers,
+    avatarColorByUserId: avatarPalette.avatarColorByUserId,
     selectedUser,
     createOpened,
     editOpened,
-    passwordOpened,
     deleteOpened,
-    isSignOutPending,
     roleOptions: [...USER_ROLE_OPTIONS],
-    setSection,
     setSearchValue,
-    signOut,
     createUser,
     updateUser,
-    registerPasswordChange,
     deleteUser,
     openCreateModal: createHandlers.open,
     closeCreateModal: createHandlers.close,
     openEditModal,
     closeEditModal,
-    openPasswordModal,
-    closePasswordModal,
     openDeleteModal,
     closeDeleteModal
   };

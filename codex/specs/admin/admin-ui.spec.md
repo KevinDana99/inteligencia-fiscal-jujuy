@@ -2,6 +2,8 @@
 
 ## Diseño
 
+## Navbar UI
+
 1. Navbar:
 
 <AppShell.Header>
@@ -59,21 +61,3 @@ size-sm bg-blue-5 border-radius:50%
 <Button> variant-default size-sm
 <Group>
 </AppShell.Header>
-
-2. Widgets-section:
-
-title:
-
-<h2> Title.order-2 {
-font-size: 22px;
-font-family: 'DM Sans', sans-serif;
-font-weight: 800;
-letter-spacing: -.3px;
-}
-subtitle:
- <Text> fz-sm c-dimmed
-color: gray-5
-fz-sm :
-font-size: 12.5px;
-entre el <h2> y <Text> debe haber un gap de 8px
-El total de height de los dos titulos debe ser de 54

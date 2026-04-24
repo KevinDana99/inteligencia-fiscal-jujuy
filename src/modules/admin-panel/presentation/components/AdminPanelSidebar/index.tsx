@@ -1,38 +1,37 @@
-import { IconHome, IconSettings } from '@tabler/icons-react'
-import type { AdminPanelSection } from '../../../data/models/AdminPanel'
-import classes from '../AdminPanelShell/AdminPanelShell.module.css'
+import Link from 'next/link';
+import { IconHome, IconSettings } from '@tabler/icons-react';
+import type { AdminPanelSection } from '../../../data/models/AdminPanel';
+import classes from '../AdminPanelShell/AdminPanelShell.module.css';
 
 export function AdminPanelSidebar({
-  section,
-  setSection
+  currentSection
 }: {
-  section: AdminPanelSection
-  setSection: (section: AdminPanelSection) => void
+  currentSection: AdminPanelSection
 }) {
   return (
     <aside className={classes.sidebar}>
       <div className={classes.sidebarInner}>
-        <nav className={classes.navList} aria-label='Secciones del panel admin'>
-          <button
-            type='button'
-            className={`${classes.navItem} ${section === 'home' ? classes.navItemActive : ''}`}
-            onClick={() => setSection('home')}
+        <nav className={classes.navList} aria-label="Secciones del panel admin">
+          <Link
+            href="/admin"
+            className={`${classes.navItem} ${
+              currentSection === 'dashboard' ? classes.navItemActive : ''
+            }`}
           >
             <IconHome size={18} />
             Inicio
-          </button>
-          <button
-            type='button'
+          </Link>
+          <Link
+            href="/admin/configuracion"
             className={`${classes.navItem} ${
-              section === 'settings' ? classes.navItemActive : ''
+              currentSection === 'settings' ? classes.navItemActive : ''
             }`}
-            onClick={() => setSection('settings')}
           >
             <IconSettings size={18} />
             Configuración
-          </button>
+          </Link>
         </nav>
       </div>
     </aside>
-  )
+  );
 }

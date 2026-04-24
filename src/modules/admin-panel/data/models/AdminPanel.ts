@@ -1,11 +1,10 @@
-export type AdminPanelSection = 'home' | 'settings';
+export type AdminPanelSection = 'dashboard' | 'settings';
 
 export interface IAdminPanelUser {
   id: string;
   fullName: string;
   email: string;
   roleLabel: string;
-  avatarColor: string;
   isAdmin?: boolean;
   isDeleted?: boolean;
 }

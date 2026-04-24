@@ -1,16 +1,29 @@
 # Admin UI Feature Story
 
-## Presentation Structure Refactor
+## Presentation Refactor And UI Iteration
 
-Refactored the admin panel presentation layer to follow the `create-frontend-architecture` component folder convention.
+Refined the admin panel presentation layer so the UI can be iterated by section while keeping the visual implementation aligned with `admin-ui.spec.md`.
 
 ### Main Changes
 
-- Kept `AdminPanelShell` as the screen-level composition component.
-- Extracted navbar, sidebar, home section, widgets section, metric card, user gestion table, modals, and settings section into dedicated folders under `presentation/components`.
+- Refactored `presentation/components` into dedicated component folders:
+  - `AdminPanelNavbar`
+  - `AdminPanelSidebar`
+  - `AdminPanelShell`
+  - `AdminPanelSettingsSection`
+  - `AdminPanelSettingsPage`
+  - `AdminPanelHomeSection`
+  - `AdminPanelUserGestionTable`
+  - `AdminPanelModals`
 - Moved `useAdminPanelShell` into `presentation/hooks` and exposed it through the hooks barrel.
-- Added `presentation/utils/getInitials.ts` for shared presentation formatting.
-- Preserved the current UI behavior and visual classes during the structural refactor.
+- Added shared presentation utilities such as `getInitials` and avatar color helpers.
+- Implemented the navbar visual iteration from `admin-ui.spec.md`.
+- Adjusted the sidebar visual behavior and converted section items to real Next.js links.
+- Iterated the user management table UI:
+  - admin avatar fixed in `blue-5`
+  - non-admin avatars rotate through palette colors without repetition until the set is exhausted
+  - admin row has no destructive or editing actions
+  - admin row includes crown affordance
 
 ### Validation
 
@@ -19,5 +32,5 @@ Refactored the admin panel presentation layer to follow the `create-frontend-arc
 
 ### Notes
 
-- The refactor intentionally kept the existing CSS module shared from `AdminPanelShell` to avoid visual churn while separating component ownership.
-- Future UI prompts can move styles closer to each component when each section is iterated.
+- The admin UI is tracked separately from the feature-level module history so functional changes and visual changes do not get mixed.
+- The removed widgets section should not be reintroduced unless the spec explicitly adds it again.
