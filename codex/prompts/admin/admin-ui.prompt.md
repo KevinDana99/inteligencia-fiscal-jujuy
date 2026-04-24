@@ -153,4 +153,158 @@ Pendiente de completar cuando `codex/specs/admin/admin-ui.spec.md` tenga el deta
 
 ## Prompt 4: Modals
 
-Pendiente de completar cuando `codex/specs/admin/admin-ui.spec.md` tenga el detalle final de los modals.
+### Alcance
+
+La implementacion debe:
+
+1. Ajustar solamente los modales del admin panel y las acciones estrictamente necesarias para abrirlos.
+2. Mantener el flujo actual de crear usuario, editar usuario, eliminar usuario y logout.
+3. Hacer que crear usuario y editar usuario compartan la misma base visual y estructural.
+4. Hacer que logout y eliminar usuario compartan la misma base visual y estructural.
+5. Cambiar el boton `Salir` del navbar para que primero abra un modal de confirmacion y solo despues, si el usuario confirma, ejecute el handler de logout.
+6. Mantener intactos sidebar, layout general, tabla fuera de sus triggers modales, auth, cookies, sesion y rutas.
+7. No crear un modal separado para cambio de contraseña. Ese flujo no debe existir como modal independiente.
+
+### Reglas funcionales principales
+
+1. El boton `Salir` no debe cerrar sesion de forma directa.
+2. El click en `Salir` debe abrir un modal de confirmacion.
+3. Si el usuario confirma logout, recien ahi debe ejecutarse el handler existente.
+4. Si el usuario cancela, el modal solo debe cerrarse.
+5. El modal de eliminar usuario debe seguir apuntando al flujo de delete actual.
+6. El modal de crear usuario debe seguir apuntando al flujo de alta actual.
+7. El modal de editar usuario debe seguir apuntando al flujo de actualizacion actual.
+8. No reintroducir el icono ni el modal intermedio de cambio de contraseña.
+
+### Reglas visuales del modal create/update usuario
+
+Debe usar `Modal` de Mantine y alinearse al spec:
+
+```css
+background: var(--m-white);
+border-radius: var(--m-radius-lg);
+width: 100%;
+max-width: 480px;
+box-shadow: var(--m-shadow-xl);
+```
+
+Header:
+
+```css
+padding: 22px 26px 18px;
+border-bottom: 1px solid var(--m-gray-2);
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+```
+
+Body:
+
+```css
+padding: 22px 26px;
+```
+
+Orden obligatorio:
+
+1. nombre
+2. apellido
+3. email
+4. cargo
+5. contraseña
+6. verificador de dureza
+
+Reglas:
+
+- Solo nombre y apellido van en una grilla de dos columnas.
+- Email, cargo y contraseña ocupan ancho completo.
+- El campo contraseña debe tener toggle para mostrar/ocultar.
+- El verificador de dureza debe mostrar progresion visual con la paleta actual:
+  - rojo
+  - naranja
+  - amarillo
+  - verde
+  - verde oscuro
+- El select de cargo puede reutilizar el control actual si ya coincide visualmente.
+- Los botones pueden conservar base actual, pero se deben quitar los hovers custom indicados en el spec.
+
+### Reglas visuales del modal logout/delete usuario
+
+Debe usar `Modal` de Mantine y compartir la misma estructura base para ambas acciones.
+
+Contenedor:
+
+```css
+padding: 32px 28px 24px;
+text-align: center;
+```
+
+ThemeIcon:
+
+```css
+width: 52px;
+height: 52px;
+border-radius: 50%;
+margin: 0 auto var(--m-md);
+```
+
+Logout:
+
+- usa semantica azul
+- icono de logout
+- boton principal azul
+- el icono de logout tambien debe estar en el boton `Salir` del navbar
+
+Delete user:
+
+- usa semantica roja
+- icono semantico de delete
+- boton principal rojo
+
+Footer:
+
+```css
+padding: 16px 26px;
+border-top: 1px solid var(--m-gray-2);
+display: flex;
+gap: 10px;
+```
+
+Para logout/delete, el footer debe centrarse.
+
+### Archivos esperados
+
+La implementacion deberia concentrarse en:
+
+- `src/modules/admin-panel/presentation/components/AdminPanelModals/index.tsx`
+- `src/modules/admin-panel/presentation/components/AdminPanelNavbar/index.tsx`
+- `src/modules/admin-panel/presentation/components/AdminPanelUserGestionTable/index.tsx`
+- `src/modules/admin-panel/presentation/components/AdminPanelShell/index.tsx`
+- `src/modules/admin-panel/presentation/hooks/useAdminPanelShell.ts`
+- `src/modules/admin-panel/presentation/components/AdminPanelShell/AdminPanelShell.module.css`
+
+No crear archivos fuera del modulo salvo que sea estrictamente necesario.
+
+### Validacion final
+
+Antes de cerrar la tarea:
+
+1. Verificar que crear y editar usuario abran el mismo tipo de modal con distinto copy/accion.
+2. Verificar que eliminar usuario y logout usen la misma base visual con distinto color semantico.
+3. Verificar que `Salir` ya no haga logout directo.
+4. Verificar que `Salir` abra el modal y que confirmar ejecute logout.
+5. Verificar que cancelar cierre el modal sin cerrar la sesion.
+6. Verificar que no exista modal separado de cambio de contraseña.
+7. Correr los checks disponibles del proyecto, preferentemente:
+
+```bash
+bun run lint
+bun run build
+```
+
+### Fuera de alcance
+
+- No tocar sidebar.
+- No tocar layout general fuera de ajustes necesarios para abrir el modal de logout.
+- No crear rutas nuevas.
+- No modificar auth, cookies o contratos de sesion.
+- No reintroducir widgets.

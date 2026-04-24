@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { Avatar, Button, Text } from '@mantine/core'
+import { IconDoorExit } from '@tabler/icons-react'
 import type { IAuthSession } from '@/modules/auth/data/models/Auth'
 import { getInitials } from '../../utils/getInitials'
 import classes from '../AdminPanelShell/AdminPanelShell.module.css'
@@ -7,11 +8,11 @@ import classes from '../AdminPanelShell/AdminPanelShell.module.css'
 export function AdminPanelNavbar({
   session,
   isSignOutPending,
-  signOut
+  onSignOutClick
 }: {
   session: IAuthSession
   isSignOutPending: boolean
-  signOut: () => void
+  onSignOutClick: () => void
 }) {
   return (
     <header className={classes.header}>
@@ -50,8 +51,9 @@ export function AdminPanelNavbar({
             color='gray'
             size='sm'
             radius='md'
-            onClick={signOut}
+            onClick={onSignOutClick}
             loading={isSignOutPending}
+            leftSection={<IconDoorExit size={16} />}
             className={classes.secondaryButton}
           >
             Salir
