@@ -134,9 +134,9 @@ export function AdminPanelUserGestionTable({
                     <Badge
                       color='blue'
                       radius='xl'
-                      variant='light'
+                      variant={user.isAdmin ? 'filled' : 'light'}
                       classNames={{
-                        root: classes.roleBadge,
+                        root: user.isAdmin ? classes.roleBadgeAdmin : classes.roleBadge,
                         label: classes.roleBadgeLabel
                       }}
                     >
