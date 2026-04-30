@@ -20,6 +20,8 @@ export default function AdminPanelShell({
     activeUsersCount,
     filteredUsers,
     avatarColorByUserId,
+    actionError,
+    isActionPending,
     selectedUser,
     createOpened,
     editOpened,
@@ -43,6 +45,8 @@ export default function AdminPanelShell({
         activeUsersCount={activeUsersCount}
         filteredUsers={filteredUsers}
         avatarColorByUserId={avatarColorByUserId}
+        actionError={actionError}
+        isActionPending={isActionPending}
         formattedDate={formattedDate}
         selectedUser={selectedUser}
         createOpened={createOpened}

@@ -18,17 +18,26 @@ export interface IAdminPanelMetrics {
 
 export interface IAdminPanelData {
   users: IAdminPanelUsers;
-  historicalPasswordChanges: number;
 }
 
 export interface IAdminPanelCreateUserInput {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   roleLabel: string;
+  password: string;
 }
 
 export interface IAdminPanelUpdateUserInput extends IAdminPanelCreateUserInput {
   id: string;
+}
+
+export interface IAdminPanelCommandResult<TData = null> {
+  success: boolean;
+  data?: TData;
+  error?: string;
+  code?: string;
+  status?: number;
 }
 
 export interface IModuleQueryResult<TData> {

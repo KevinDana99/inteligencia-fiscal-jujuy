@@ -13,6 +13,8 @@ export function AdminPanelHomeSection({
   activeUsersCount,
   filteredUsers,
   avatarColorByUserId,
+  actionError,
+  isActionPending,
   formattedDate,
   selectedUser,
   createOpened,
@@ -34,6 +36,8 @@ export function AdminPanelHomeSection({
   activeUsersCount: number;
   filteredUsers: IAdminPanelUser[];
   avatarColorByUserId: Record<string, AvatarColorTone>;
+  actionError: string | null;
+  isActionPending: boolean;
   formattedDate: string;
   selectedUser: IAdminPanelUser | null;
   createOpened: boolean;
@@ -48,9 +52,9 @@ export function AdminPanelHomeSection({
   closeCreateModal: () => void;
   closeEditModal: () => void;
   closeDeleteModal: () => void;
-  createUser: (input: IAdminPanelCreateUserInput) => void;
-  updateUser: (input: IAdminPanelUpdateUserInput) => void;
-  deleteUser: () => void;
+  createUser: (input: IAdminPanelCreateUserInput) => Promise<boolean>;
+  updateUser: (input: IAdminPanelUpdateUserInput) => Promise<boolean>;
+  deleteUser: () => Promise<boolean>;
 }) {
   return (
     <>
@@ -79,6 +83,8 @@ export function AdminPanelHomeSection({
         createOpened={createOpened}
         editOpened={editOpened}
         deleteOpened={deleteOpened}
+        actionError={actionError}
+        isActionPending={isActionPending}
         roleOptions={roleOptions}
         closeCreateModal={closeCreateModal}
         closeEditModal={closeEditModal}

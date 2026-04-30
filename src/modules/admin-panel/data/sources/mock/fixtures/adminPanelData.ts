@@ -1,7 +1,6 @@
 import type { IAdminPanelData } from '../../../models/AdminPanel';
 
 export const ADMIN_PANEL_MOCK_DATA: IAdminPanelData = {
-  historicalPasswordChanges: 9,
   users: [
     {
       id: 'admin',

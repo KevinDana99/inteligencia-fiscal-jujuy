@@ -61,7 +61,9 @@ function UserFormModal({
   initialUser,
   roleOptions,
   onClose,
-  onSubmit
+  onSubmit,
+  error,
+  isPending = false
 }: {
   opened: boolean;
   title: string;
@@ -70,7 +72,11 @@ function UserFormModal({
   initialUser?: IAdminPanelUser | null;
   roleOptions: string[];
   onClose: () => void;
-  onSubmit: (payload: IAdminPanelCreateUserInput | IAdminPanelUpdateUserInput) => void;
+  onSubmit: (
+    payload: IAdminPanelCreateUserInput | IAdminPanelUpdateUserInput
+  ) => Promise<boolean>;
+  error?: string | null;
+  isPending?: boolean;
 }) {
   const [firstName, setFirstName] = useState(initialUser?.fullName?.split(' ')[0] ?? '');
   const [lastName, setLastName] = useState(
@@ -92,7 +98,7 @@ function UserFormModal({
             ? 'green'
             : 'teal';
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const nextErrors: Record<string, string> = {};
 
     if (!firstName.trim()) {
@@ -113,7 +119,10 @@ function UserFormModal({
       nextErrors.roleLabel = 'Seleccioná un cargo.';
     }
 
-    if (password.trim().length < 8) {
+    const requiresPassword = !initialUser;
+    const hasPasswordValue = password.trim().length > 0;
+
+    if ((requiresPassword || hasPasswordValue) && password.trim().length < 8) {
       nextErrors.password = 'Mínimo 8 caracteres.';
     }
 
@@ -123,22 +132,24 @@ function UserFormModal({
       return;
     }
 
-    const resolvedFullName = `${firstName.trim()} ${lastName.trim()}`;
-
     if (initialUser) {
-      onSubmit({
+      await onSubmit({
         id: initialUser.id,
-        fullName: resolvedFullName,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
         email,
-        roleLabel
+        roleLabel,
+        password
       });
       return;
     }
 
-    onSubmit({
-      fullName: resolvedFullName,
+    await onSubmit({
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
       email,
-      roleLabel
+      roleLabel,
+      password
     });
   };
 
@@ -267,11 +278,13 @@ function UserFormModal({
             size="sm"
             onClick={handleSubmit}
             leftSection={<IconCheck size={16} />}
+            loading={isPending}
             className={classes.primaryButton}
           >
             {submitLabel}
           </Button>
         </Group>
+        {error ? <Text className={classes.modalError}>{error}</Text> : null}
       </div>
     </Modal>
   );
@@ -286,7 +299,8 @@ export function AdminPanelActionModal({
   confirmLabel,
   loading = false,
   onClose,
-  onConfirm
+  onConfirm,
+  error
 }: {
   opened: boolean;
   title: string;
@@ -296,7 +310,8 @@ export function AdminPanelActionModal({
   confirmLabel: string;
   loading?: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: () => Promise<boolean> | void;
+  error?: string | null;
 }) {
   const isDanger = semantic === 'red';
 
@@ -347,6 +362,7 @@ export function AdminPanelActionModal({
             {confirmLabel}
           </Button>
         </Group>
+        {error ? <Text className={classes.modalError}>{error}</Text> : null}
       </div>
     </Modal>
   );
@@ -357,6 +373,8 @@ export function AdminPanelModals({
   createOpened,
   editOpened,
   deleteOpened,
+  actionError,
+  isActionPending,
   roleOptions,
   closeCreateModal,
   closeEditModal,
@@ -369,13 +387,15 @@ export function AdminPanelModals({
   createOpened: boolean;
   editOpened: boolean;
   deleteOpened: boolean;
+  actionError: string | null;
+  isActionPending: boolean;
   roleOptions: string[];
   closeCreateModal: () => void;
   closeEditModal: () => void;
   closeDeleteModal: () => void;
-  createUser: (input: IAdminPanelCreateUserInput) => void;
-  updateUser: (input: IAdminPanelUpdateUserInput) => void;
-  deleteUser: () => void;
+  createUser: (input: IAdminPanelCreateUserInput) => Promise<boolean>;
+  updateUser: (input: IAdminPanelUpdateUserInput) => Promise<boolean>;
+  deleteUser: () => Promise<boolean>;
 }) {
   return (
     <>
@@ -388,6 +408,8 @@ export function AdminPanelModals({
         roleOptions={roleOptions}
         onClose={closeCreateModal}
         onSubmit={createUser}
+        error={createOpened ? actionError : null}
+        isPending={isActionPending}
       />
 
       <UserFormModal
@@ -399,11 +421,14 @@ export function AdminPanelModals({
         initialUser={selectedUser}
         roleOptions={roleOptions}
         onClose={closeEditModal}
-        onSubmit={(payload) => {
+        onSubmit={async (payload) => {
           if ('id' in payload) {
-            updateUser(payload);
+            return updateUser(payload);
           }
+          return false;
         }}
+        error={editOpened ? actionError : null}
+        isPending={isActionPending}
       />
 
       <AdminPanelActionModal
@@ -413,6 +438,8 @@ export function AdminPanelModals({
         icon="delete"
         semantic="red"
         confirmLabel="Eliminar usuario"
+        loading={isActionPending}
+        error={deleteOpened ? actionError : null}
         onClose={closeDeleteModal}
         onConfirm={deleteUser}
       />

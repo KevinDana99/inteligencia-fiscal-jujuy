@@ -1,7 +1,16 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { startTransition, useMemo, useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
+import {
+  createAdminUserAction,
+  deleteAdminUserAction,
+  updateAdminUserAction
+} from '../../data/actions';
+import type {
+  ApiCreateAdminUserRequestDto,
+  ApiUpdateAdminUserRequestDto
+} from '../../data/sources/rest/dtos/ApiAdminPanelDtos';
 import type {
   IAdminPanelCreateUserInput,
   IAdminPanelData,
@@ -95,8 +104,8 @@ function buildUserFromInput(
   existingUsersLength: number
 ): IAdminPanelUser {
   return {
-    id: `${slugify(input.fullName)}-${existingUsersLength + 1}`,
-    fullName: input.fullName.trim(),
+    id: `${slugify(`${input.firstName} ${input.lastName}`)}-${existingUsersLength + 1}`,
+    fullName: `${input.firstName.trim()} ${input.lastName.trim()}`.trim(),
     email: input.email.trim().toLowerCase(),
     roleLabel: input.roleLabel
   };
@@ -107,6 +116,8 @@ export function useAdminPanelShell(initialData: IAdminPanelData) {
   const [avatarPalette, setAvatarPalette] = useState(() => buildInitialAvatarPalette(initialData.users));
   const [searchValue, setSearchValue] = useState('');
   const [selectedUser, setSelectedUser] = useState<IAdminPanelUser | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [isActionPending, setIsActionPending] = useState(false);
   const [createOpened, createHandlers] = useDisclosure(false);
   const [editOpened, editHandlers] = useDisclosure(false);
   const [deleteOpened, deleteHandlers] = useDisclosure(false);
@@ -126,83 +137,180 @@ export function useAdminPanelShell(initialData: IAdminPanelData) {
     });
   }, [activeUsers, searchValue]);
 
-  const createUser = (input: IAdminPanelCreateUserInput) => {
-    setUsers((currentUsers) => {
-      const nextUser = buildUserFromInput(input, currentUsers.length);
+  const createUser = async (input: IAdminPanelCreateUserInput) => {
+    setActionError(null);
+    setIsActionPending(true);
 
-      setAvatarPalette((currentPalette) => {
-        const availablePool =
-          currentPalette.availableColors.length > 0
-            ? currentPalette.availableColors
-            : shuffleAvatarColors(
-                AVATAR_COLOR_TOKENS.filter((color) => color !== ADMIN_AVATAR_COLOR),
-                nextUser.id
-              );
-
-        const { nextColor, nextAvailableColors } = drawAvatarColor(availablePool, nextUser.id);
-
-        return {
-          avatarColorByUserId: {
-            ...currentPalette.avatarColorByUserId,
-            [nextUser.id]: nextColor
-          },
-          availableColors: nextAvailableColors
+    return new Promise<boolean>((resolve) => {
+      startTransition(() => {
+        const payload: ApiCreateAdminUserRequestDto = {
+          nombre: input.firstName.trim(),
+          apellido: input.lastName.trim(),
+          correo: input.email.trim().toLowerCase(),
+          cargo: input.roleLabel,
+          contrasena: input.password
         };
-      });
 
-      return [...currentUsers, nextUser];
-    });
-    createHandlers.close();
-  };
-
-  const updateUser = (input: IAdminPanelUpdateUserInput) => {
-    setUsers((currentUsers) =>
-      currentUsers.map((user) =>
-        user.id === input.id
-          ? {
-              ...user,
-              fullName: input.fullName.trim(),
-              email: input.email.trim().toLowerCase(),
-              roleLabel: input.roleLabel
+        void createAdminUserAction(payload)
+          .then((result) => {
+            if (!result.success || !result.data) {
+              setActionError(result.error ?? 'No fue posible crear el usuario.');
+              resolve(false);
+              return;
             }
-          : user
-      )
-    );
-    setSelectedUser(null);
-    editHandlers.close();
+
+            setUsers((currentUsers) => {
+              const nextUser = result.data ?? buildUserFromInput(input, currentUsers.length);
+
+              setAvatarPalette((currentPalette) => {
+                const availablePool =
+                  currentPalette.availableColors.length > 0
+                    ? currentPalette.availableColors
+                    : shuffleAvatarColors(
+                        AVATAR_COLOR_TOKENS.filter((color) => color !== ADMIN_AVATAR_COLOR),
+                        nextUser.id
+                      );
+
+                const { nextColor, nextAvailableColors } = drawAvatarColor(
+                  availablePool,
+                  nextUser.id
+                );
+
+                return {
+                  avatarColorByUserId: {
+                    ...currentPalette.avatarColorByUserId,
+                    [nextUser.id]: nextColor
+                  },
+                  availableColors: nextAvailableColors
+                };
+              });
+
+              return [...currentUsers, nextUser];
+            });
+
+            createHandlers.close();
+            resolve(true);
+          })
+          .catch(() => {
+            setActionError('No fue posible crear el usuario.');
+            resolve(false);
+          })
+          .finally(() => {
+            setIsActionPending(false);
+          });
+      });
+    });
   };
 
-  const deleteUser = () => {
+  const updateUser = async (input: IAdminPanelUpdateUserInput) => {
+    setActionError(null);
+    setIsActionPending(true);
+
+    return new Promise<boolean>((resolve) => {
+      startTransition(() => {
+        const payload: ApiUpdateAdminUserRequestDto = {
+          nombre: input.firstName.trim(),
+          apellido: input.lastName.trim(),
+          correo: input.email.trim().toLowerCase(),
+          cargo: input.roleLabel,
+          nuevaContrasena: input.password.trim() ? input.password : null,
+          confirmarContrasena: input.password.trim() ? input.password : null
+        };
+
+        void updateAdminUserAction(input.id, payload)
+          .then((result) => {
+            if (!result.success) {
+              setActionError(result.error ?? 'No fue posible actualizar el usuario.');
+              resolve(false);
+              return;
+            }
+
+            setUsers((currentUsers) =>
+              currentUsers.map((user) =>
+                user.id === input.id
+                  ? {
+                      ...user,
+                      fullName: `${input.firstName.trim()} ${input.lastName.trim()}`.trim(),
+                      email: input.email.trim().toLowerCase(),
+                      roleLabel: input.roleLabel
+                    }
+                  : user
+              )
+            );
+            setSelectedUser(null);
+            editHandlers.close();
+            resolve(true);
+          })
+          .catch(() => {
+            setActionError('No fue posible actualizar el usuario.');
+            resolve(false);
+          })
+          .finally(() => {
+            setIsActionPending(false);
+          });
+      });
+    });
+  };
+
+  const deleteUser = async () => {
     if (!selectedUser || selectedUser.isAdmin) {
       deleteHandlers.close();
-      return;
+      return false;
     }
 
-    setUsers((currentUsers) =>
-      currentUsers.map((user) =>
-        user.id === selectedUser.id ? { ...user, isDeleted: true } : user
-      )
-    );
-    setSelectedUser(null);
-    deleteHandlers.close();
+    setActionError(null);
+    setIsActionPending(true);
+
+    return new Promise<boolean>((resolve) => {
+      startTransition(() => {
+        void deleteAdminUserAction(selectedUser.id)
+          .then((result) => {
+            if (!result.success) {
+              setActionError(result.error ?? 'No fue posible eliminar el usuario.');
+              resolve(false);
+              return;
+            }
+
+            setUsers((currentUsers) =>
+              currentUsers.map((user) =>
+                user.id === selectedUser.id ? { ...user, isDeleted: true } : user
+              )
+            );
+            setSelectedUser(null);
+            deleteHandlers.close();
+            resolve(true);
+          })
+          .catch(() => {
+            setActionError('No fue posible eliminar el usuario.');
+            resolve(false);
+          })
+          .finally(() => {
+            setIsActionPending(false);
+          });
+      });
+    });
   };
 
   const openEditModal = (user: IAdminPanelUser) => {
+    setActionError(null);
     setSelectedUser(user);
     editHandlers.open();
   };
 
   const openDeleteModal = (user: IAdminPanelUser) => {
+    setActionError(null);
     setSelectedUser(user);
     deleteHandlers.open();
   };
 
   const closeEditModal = () => {
+    setActionError(null);
     setSelectedUser(null);
     editHandlers.close();
   };
 
   const closeDeleteModal = () => {
+    setActionError(null);
     setSelectedUser(null);
     deleteHandlers.close();
   };
@@ -212,6 +320,8 @@ export function useAdminPanelShell(initialData: IAdminPanelData) {
     activeUsersCount: activeUsers.length,
     filteredUsers,
     avatarColorByUserId: avatarPalette.avatarColorByUserId,
+    actionError,
+    isActionPending,
     selectedUser,
     createOpened,
     editOpened,
@@ -221,11 +331,18 @@ export function useAdminPanelShell(initialData: IAdminPanelData) {
     createUser,
     updateUser,
     deleteUser,
-    openCreateModal: createHandlers.open,
-    closeCreateModal: createHandlers.close,
+    openCreateModal: () => {
+      setActionError(null);
+      createHandlers.open();
+    },
+    closeCreateModal: () => {
+      setActionError(null);
+      createHandlers.close();
+    },
     openEditModal,
     closeEditModal,
     openDeleteModal,
-    closeDeleteModal
+    closeDeleteModal,
+    clearActionError: () => setActionError(null)
   };
 }
