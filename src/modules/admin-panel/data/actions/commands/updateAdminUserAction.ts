@@ -9,12 +9,12 @@ export async function updateAdminUserAction(
   userId: string,
   params: ApiUpdateAdminUserRequestDto
 ): Promise<IAdminPanelCommandResult> {
-  console.log('[admin-panel][update-user][request]', {
+  const requestPayload = {
     usuarioId: userId,
     ...params,
     nuevaContrasena: params.nuevaContrasena ? '[REDACTED]' : null,
     confirmarContrasena: params.confirmarContrasena ? '[REDACTED]' : null
-  });
+  };
 
   const source = await createServerAdminPanelSource();
   const result = await source.updateAdminUser({
@@ -26,12 +26,18 @@ export async function updateAdminUserAction(
     password: params.nuevaContrasena ?? ''
   });
 
-  console.log('[admin-panel][update-user][response]', {
-    success: result.success,
-    status: result.status,
-    code: result.code,
-    error: result.error,
-    data: result.success ? null : undefined
+  console.log({
+    endpoint: `/api/super-administrador/usuarios/${userId}`,
+    action: 'updateAdminUserAction',
+    METHOD: 'PATCH',
+    REQUEST: requestPayload,
+    RESPONSE: {
+      success: result.success,
+      status: result.status,
+      code: result.code,
+      error: result.error,
+      data: result.success ? null : undefined
+    }
   });
 
   if (result.success) {

@@ -25,10 +25,10 @@ function mapUserToContractLog(user: IAdminPanelUser) {
 export async function createAdminUserAction(
   params: ApiCreateAdminUserRequestDto
 ): Promise<IAdminPanelCommandResult<IAdminPanelUser>> {
-  console.log('[admin-panel][create-user][request]', {
+  const requestPayload = {
     ...params,
     contrasena: params.contrasena ? '[REDACTED]' : ''
-  });
+  };
 
   const source = await createServerAdminPanelSource();
   const result = await source.createAdminUser({
@@ -39,12 +39,18 @@ export async function createAdminUserAction(
     password: params.contrasena
   });
 
-  console.log('[admin-panel][create-user][response]', {
-    success: result.success,
-    status: result.status,
-    code: result.code,
-    error: result.error,
-    data: result.data ? mapUserToContractLog(result.data) : null
+  console.log({
+    endpoint: '/api/super-administrador/usuarios',
+    action: 'createAdminUserAction',
+    METHOD: 'POST',
+    REQUEST: requestPayload,
+    RESPONSE: {
+      success: result.success,
+      status: result.status,
+      code: result.code,
+      error: result.error,
+      data: result.data ? mapUserToContractLog(result.data) : null
+    }
   });
 
   if (result.success) {

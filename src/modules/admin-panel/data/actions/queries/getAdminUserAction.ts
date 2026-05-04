@@ -20,20 +20,37 @@ function mapUserToContractLog(user: IAdminPanelUser) {
 export async function getAdminUserAction(
   userId: string
 ): Promise<IModuleQueryResult<IAdminPanelUser>> {
+  const endpoint = `/api/super-administrador/usuarios/${userId}`;
+  const action = 'getAdminUserAction';
+  const METHOD = 'GET';
+  const REQUEST = {
+    usuarioId: userId
+  };
+
   try {
-    console.log('[admin-panel][get-user][request]', { usuarioId: userId });
     const source = await createServerAdminPanelSource();
     const data = await source.getAdminUser(userId);
 
-    console.log('[admin-panel][get-user][response]', mapUserToContractLog(data));
+    console.log({
+      endpoint,
+      action,
+      METHOD,
+      REQUEST,
+      RESPONSE: mapUserToContractLog(data)
+    });
 
     return {
       data
     };
   } catch (error) {
-    console.log('[admin-panel][get-user][error]', {
-      usuarioId: userId,
-      error: error instanceof Error ? error.message : 'Unknown error'
+    console.log({
+      endpoint,
+      action,
+      METHOD,
+      REQUEST,
+      RESPONSE: {
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }
     });
 
     return {

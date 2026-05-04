@@ -20,24 +20,40 @@ function mapUserToContractLog(user: IAdminPanelData['users'][number]) {
 export async function getAdminPanelAction(): Promise<
   IModuleQueryResult<IAdminPanelData>
 > {
+  const endpoint = '/api/super-administrador/usuarios';
+  const action = 'getAdminPanelAction';
+  const METHOD = 'GET';
+  const REQUEST = null;
+
   try {
-    console.log('[admin-panel][list-users][request]');
     const source = await createServerAdminPanelSource();
     const data = await source.getAdminPanelData();
 
-    console.log('[admin-panel][list-users][response]', {
-      resumen: {
-        cantidadUsuariosActivos: data.users.filter((user) => !user.isDeleted).length
-      },
-      usuarios: data.users.map(mapUserToContractLog)
+    console.log({
+      endpoint,
+      action,
+      METHOD,
+      REQUEST,
+      RESPONSE: {
+        resumen: {
+          cantidadUsuariosActivos: data.users.filter((user) => !user.isDeleted).length
+        },
+        usuarios: data.users.map(mapUserToContractLog)
+      }
     });
 
     return {
       data
     };
   } catch (error) {
-    console.log('[admin-panel][list-users][error]', {
-      error: error instanceof Error ? error.message : 'Unknown error'
+    console.log({
+      endpoint,
+      action,
+      METHOD,
+      REQUEST,
+      RESPONSE: {
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }
     });
 
     return {

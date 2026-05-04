@@ -7,19 +7,25 @@ import type { IAdminPanelCommandResult } from '../../models/AdminPanel';
 export async function deleteAdminUserAction(
   userId: string
 ): Promise<IAdminPanelCommandResult> {
-  console.log('[admin-panel][delete-user][request]', {
+  const requestPayload = {
     usuarioId: userId
-  });
+  };
 
   const source = await createServerAdminPanelSource();
   const result = await source.deleteAdminUser(userId);
 
-  console.log('[admin-panel][delete-user][response]', {
-    success: result.success,
-    status: result.status,
-    code: result.code,
-    error: result.error,
-    data: result.success ? null : undefined
+  console.log({
+    endpoint: `/api/super-administrador/usuarios/${userId}`,
+    action: 'deleteAdminUserAction',
+    METHOD: 'DELETE',
+    REQUEST: requestPayload,
+    RESPONSE: {
+      success: result.success,
+      status: result.status,
+      code: result.code,
+      error: result.error,
+      data: result.success ? null : undefined
+    }
   });
 
   if (result.success) {
