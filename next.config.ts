@@ -14,7 +14,9 @@ const nextConfig: NextConfig = {
     '192.168.*.*',
     '10.*.*.*',
     '172.*.*.*',
-    '*.ngrok-free.app'
+    '*.ngrok-free.app',
+    'app.rentas-if.dev.local',
+    '192.168.119.106'
   ]
 }
 
