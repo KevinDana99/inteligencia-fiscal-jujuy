@@ -213,6 +213,137 @@
   line-height: 1.2;
 }
 
+.configCard {
+  max-width: 640px;
+  border: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+  box-shadow: var(--mantine-shadow-sm);
+}
+
+.configHeaderIcon {
+  flex-shrink: 0;
+}
+
+.configCardTitle {
+  color: var(--mantine-color-gray-9);
+}
+
+.configCardSubtitle {
+  color: var(--mantine-color-gray-5);
+  font-size: 12px;
+}
+
+.configDivider {
+  border-top-color: var(--mantine-color-gray-2);
+}
+
+.configDomainItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 8px;
+  background: var(--mantine-color-gray-0);
+}
+
+.configDomainPoint {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--mantine-color-green-6);
+}
+
+.configDomainText {
+  color: var(--mantine-color-gray-8);
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 700;
+}
+
+.configDeleteButton {
+  color: var(--mantine-color-red-5);
+}
+
+.configSectionLabel {
+  color: var(--mantine-color-gray-5);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.configDomainInput {
+  flex: 1;
+}
+
+.configDomainField {
+  flex: 1;
+}
+
+.configDomainError {
+  display: block;
+  height: 16px;
+  margin-top: 3px;
+  color: var(--mantine-color-red-5);
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.configAddButton {
+  background: var(--mantine-color-blue-5);
+  border-color: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+}
+
+.configAddButton:hover,
+.configAddButton:focus,
+.configAddButton[data-hovered],
+.configAddButton[data-active] {
+  background: var(--mantine-color-blue-5);
+  border-color: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+}
+
+.configInfoCard {
+  max-width: 640px;
+  border: 1px solid var(--mantine-color-blue-2);
+  background: #f0f4ff;
+}
+
+.configInfoRow {
+  display: flex;
+  align-items: flex-start;
+}
+
+.configInfoContent {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.configInfoIcon {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  flex-shrink: 0;
+  color: var(--mantine-color-blue-5);
+}
+
+.configInfoTitle {
+  color: var(--mantine-color-blue-7);
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 700;
+}
+
+.configInfoText {
+  color: var(--mantine-color-blue-6);
+  font-size: var(--mantine-font-size-xs);
+  line-height: 1.6;
+}
+
 .sectionTitle {
   color: #2f3748;
   font-size: 14px;

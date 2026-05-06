@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rentas-if-frontend
+  namespace: rentas-if
+  labels:
+    app.kubernetes.io/name: rentas-if-frontend
+    app.kubernetes.io/part-of: rentas-if
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: app.rentas-if.dev.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rentas-if-frontend
+                port:
+                  name: http

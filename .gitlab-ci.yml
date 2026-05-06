@@ -1,0 +1,76 @@
+stages:
+  - validar
+  - construir
+  - desplegar
+  - smoke
+
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - when: never
+
+default:
+  tags:
+    - rentas-if-k3s-dev
+  before_script:
+    - set -euo pipefail
+    - export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
+variables:
+  BUN_IMAGE: docker.io/oven/bun:1.3.9-alpine
+  KUBE_NAMESPACE: rentas-if
+  IMAGE_NAME: localhost/rentas-if-frontend
+  IMAGE_LOCAL: rentas-if-frontend:dev
+  SMOKE_URL: http://192.168.119.106/login
+  SMOKE_HOST: app.rentas-if.dev.local
+
+validar_frontend:
+  stage: validar
+  interruptible: true
+  script:
+    - >
+      sudo -n podman run --pull=missing --rm
+      -v "$CI_PROJECT_DIR:/src:ro,Z"
+      "$BUN_IMAGE"
+      sh -lc 'cp -a /src/. /tmp/app && cd /tmp/app && bun install --frozen-lockfile && bun run build'
+
+construir_imagen:
+  stage: construir
+  needs:
+    - validar_frontend
+  interruptible: true
+  script:
+    - export IMAGE_TAG="$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+    - >
+      sudo -n podman build --pull=missing
+      -t "$IMAGE_TAG"
+      -t "$IMAGE_LOCAL"
+      .
+    - sudo -n podman save "$IMAGE_TAG" | sudo -n /usr/local/bin/k3s ctr -n k8s.io images import -
+
+desplegar_dev:
+  stage: desplegar
+  needs:
+    - construir_imagen
+  resource_group: rentas-if-frontend-dev
+  environment:
+    name: dev
+    url: http://app.rentas-if.dev.local/login
+  script:
+    - export IMAGE_TAG="$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+    - sudo -n /usr/local/bin/kubectl apply -f k3s/namespace.yaml
+    - >
+      sudo -n /usr/local/bin/kubectl kustomize k3s |
+      sed "s|image: $IMAGE_LOCAL|image: $IMAGE_TAG|g" |
+      sudo -n /usr/local/bin/kubectl apply -f -
+    - sudo -n /usr/local/bin/kubectl -n "$KUBE_NAMESPACE" rollout status deployment/rentas-if-frontend --timeout=300s
+
+smoke_dev:
+  stage: smoke
+  needs:
+    - desplegar_dev
+  script:
+    - export SMOKE_FILE="/tmp/rentas-if-frontend-smoke-$CI_JOB_ID.html"
+    - 'curl -fsS -H "Host: $SMOKE_HOST" "$SMOKE_URL" -o "$SMOKE_FILE"'
+    - grep -q "Sistema de Inteligencia" "$SMOKE_FILE"
+    - rm -f "$SMOKE_FILE"
