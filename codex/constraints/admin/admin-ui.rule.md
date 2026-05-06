@@ -314,3 +314,129 @@ border: 1.5px solid var(--m-gray-3);
 3. El usuario admin no debe ganar acciones nuevas por este refactor.
 4. El modal de logout y el de delete user deben compartir estructura base sin duplicar patrones innecesarios.
 5. El build y el lint deben seguir pasando.
+
+## Config Section
+
+1. La iteracion de configuracion solo puede tocar:
+   - la vista `Configuración` del admin panel
+   - la validacion frontend de email en create/update user
+   - el estado global estrictamente necesario para compartir la config
+2. No se debe modificar auth, sesion, routing ni contratos del backend para resolver esta feature.
+3. No se debe mover la configuracion fuera del modulo `admin-panel`.
+
+## Reglas funcionales de configuracion
+
+1. Debe existir una configuracion global del modulo admin accesible tanto desde:
+   - la seccion `Configuración`
+   - los formularios de crear usuario y editar usuario
+2. Esa configuracion debe vivir en un provider del modulo.
+3. El provider debe persistir el estado en `localStorage`.
+4. El provider debe:
+   - leer configuracion persistida
+   - agregar dominios a la whitelist
+   - eliminar dominios de la whitelist
+   - exponer el estado a los consumidores del modulo
+5. No se debe implementar edicion inline ni edicion modal de dominios existentes.
+6. Solo se deben permitir estas operaciones sobre dominios:
+   - agregar
+   - eliminar
+7. La whitelist debe ser la fuente de verdad para validar emails permitidos en create/update user.
+8. La validacion del email debe ocurrir en frontend al guardar create/update user.
+9. Si el dominio del email no pertenece a la whitelist activa, se debe mostrar error y no se debe permitir guardar.
+
+## Reglas del estado global
+
+1. La forma base del estado debe ser:
+
+```ts
+adminConfig: {
+  whitelist: ['@rentas.gob.ar', '@jujuy.gob.ar', '_dpr@jujuy.gob.ar']
+}
+```
+
+2. La estructura debe quedar preparada para crecer con nuevas claves en el futuro.
+3. `whitelist` debe mantenerse como array de strings.
+4. Si no existe configuracion persistida, si fue borrada o si el valor de `localStorage` es invalido, el provider debe usar este fallback seguro:
+
+```ts
+adminConfig: {
+  whitelist: []
+}
+```
+
+5. La UI no debe romperse si el fallback entra en uso.
+
+## Reglas visuales de la seccion Configuración
+
+1. La pagina de configuracion debe mantener el title y subtitle ya definidos por el spec:
+   - `Configuración`
+   - `Administrá los parámetros generales del sistema`
+2. El contenedor general de esta seccion debe comportarse como `Stack gap="xl"`.
+3. El panel principal de whitelist debe usar `Card` de Mantine como base y no debe superar aproximadamente `640px` de ancho.
+4. El bloque superior del card debe contener:
+   - icono mail
+   - titulo `Dominios de email permitidos`
+   - subtitulo explicativo
+5. El icono mail del bloque superior debe respetar aproximadamente:
+
+```css
+width: 32px;
+height: 32px;
+background: var(--m-blue-0);
+border-radius: 8px;
+display: flex;
+align-items: center;
+justify-content: center;
+flex-shrink: 0;
+```
+
+6. Debe existir una separacion visual con borde superior gris entre el header del card y la lista.
+7. Cada dominio listado debe renderizarse dentro de un item visual con:
+
+```css
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 10px 14px;
+background: var(--m-gray-0);
+border: 1px solid var(--m-gray-2);
+border-radius: 8px;
+```
+
+8. Cada item debe mostrar:
+   - punto verde de estado
+   - texto del dominio
+   - accion de eliminar con `IconTrash`
+9. La accion de eliminar debe usar semantica roja y no debe renderizarse como boton primario.
+10. Debe existir una seccion inferior `Agregar nuevo dominio` con:
+   - label uppercase chico
+   - input con icono mail
+   - boton `Agregar`
+11. El input de agregar dominio debe usar la misma base visual de inputs del resto del admin panel cuando sea posible.
+12. El boton `Agregar` debe usar semantica azul y mantenerse consistente con la paleta actual.
+
+## Reglas visuales del bloque informativo
+
+1. Debe existir un card informativo separado debajo del panel principal.
+2. Ese card debe usar semantica azul suave:
+   - fondo azul muy claro
+   - borde azul claro
+   - icono informativo azul
+3. El titulo visible debe ser:
+
+```text
+¿Cómo funciona la validación?
+```
+
+4. El texto debe explicar que al crear o modificar un usuario, el email debe terminar con uno de los dominios listados o no se podra guardar.
+
+## Validacion de configuracion
+
+1. La seccion `Configuración` debe seguir cargando dentro de `/admin/configuracion`.
+2. Debe ser posible agregar dominios a la whitelist.
+3. Debe ser posible eliminar dominios de la whitelist.
+4. La configuracion debe persistir entre recargas via `localStorage`.
+5. Si `localStorage` no tiene configuracion valida, la UI debe caer en `whitelist: []` sin errores.
+6. Los formularios de create/update user deben leer la whitelist desde el provider.
+7. Si el email no coincide con la whitelist, create/update user no debe poder guardarse.
+8. El build y el lint deben seguir pasando.

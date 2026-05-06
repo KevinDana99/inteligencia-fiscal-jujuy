@@ -26,6 +26,7 @@ import type {
   IAdminPanelUpdateUserInput,
   IAdminPanelUser
 } from '../../../data/models/AdminPanel';
+import { useAdminConfig } from '../../contexts';
 import classes from '../AdminPanelShell/AdminPanelShell.module.css';
 
 const modalInputClasses = {
@@ -78,6 +79,7 @@ function UserFormModal({
   error?: string | null;
   isPending?: boolean;
 }) {
+  const { isEmailAllowed } = useAdminConfig();
   const [firstName, setFirstName] = useState(initialUser?.fullName?.split(' ')[0] ?? '');
   const [lastName, setLastName] = useState(
     initialUser?.fullName?.split(' ').slice(1).join(' ') ?? ''
@@ -113,6 +115,8 @@ function UserFormModal({
       nextErrors.email = 'El email es obligatorio.';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       nextErrors.email = 'Ingresá un email válido.';
+    } else if (!isEmailAllowed(email.trim())) {
+      nextErrors.email = 'El dominio del email no está permitido.';
     }
 
     if (!roleLabel.trim()) {

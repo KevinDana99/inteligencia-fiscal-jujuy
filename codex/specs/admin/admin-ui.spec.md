@@ -268,3 +268,164 @@ IconTrash
 
 `codex/assets/design/admin/modals/modal-delete-logout/default/*.png`
 `codex/assets/design/admin/modals/modal-delete-logout/error/*.png`
+
+## Config Section
+
+Requerimiento de caso de uso:
+
+- Se informo sobre una configuracion a realizar para los dominios que usen el contrato establecido. Por ende esta configuracion debe afectar al panel de administrador en la parte de creacion de usuarios. Cuando se cree un usuario se debe validar que en la white list que vamos a armar a continuacion esten los dominios de correo electronico permitidos en esa whitelist.
+
+### Requisitos
+
+1. Validacion de dominios con whitelist en el formulario de creacion o update de usuario
+2. En la config se debe crear un panel como el proporcionado en la siguiente referencia:
+
+- panel de configuracion de whitelist para todos los usuarios de la plataforma:
+  referencia visual: `codex/assets/design/admin/config/whitelist.png`.
+
+3. Se deben poder agregar y eliminar los dominios configurables.
+4. El estado de la config debe ser un estado global en un provider que use localstorage para persistir los datos de la config de los dominios permitidos.
+5. La forma del estado global de configuracion debe ser escalable y debe comenzar con esta estructura:
+
+```ts
+adminConfig: {
+  whitelist: ['@rentas.gob.ar', '@jujuy.gob.ar', '_dpr@jujuy.gob.ar']
+}
+```
+
+6. La clave `whitelist` debe ser la fuente de verdad para validar emails permitidos.
+7. La estructura debe permitir agregar mas claves de configuracion en el futuro sin romper el shape base del objeto.
+8. Si no existe configuracion persistida, si el objeto fue borrado o si el valor de localstorage no es valido, el provider debe usar un fallback seguro sin romper la UI.
+9. El fallback minimo debe ser:
+
+```ts
+adminConfig: {
+  whitelist: []
+}
+```
+
+10. La validacion de los formularios debe ser realizada en el front a la hora de crear un usuario o modificarlo.
+
+### Diseño
+
+- El container general de esta seccion debe tener la siguiente estructura:
+  <Stack gap-xl>
+
+white-list container:
+<Stack gap-xs>MNB
+
+<Title order-2>title: `Configuración`
+<p Text fz-sm c-dimmed>subtitle: `Administrá los parámetros generales del sistema`
+</Stack>
+
+- El Whitelist component debe contener el siguiente diseño:
+
+  <Card p-lg>max-width:640px
+  <Stack gap-md>
+  <Stack gap-xs>
+  <Group gap-sm> align-items: center;
+
+<IconMail class="icon"> (<i class="ti ti-mail"></i> ese icono)
+.icon{ width: 32px;
+height: 32px;
+background: var(--m-blue-0);
+border-radius: 8px;
+display: flex;
+align-items: center;
+justify-content: center;
+flex-shrink: 0;}
+
+  <Title order-5>Dominios de email permitidos
+  <Text fz-xs c-dimmed>
+  Solo los emails con estos dominios podrán registrarse en el sistema
+   </Stack>
+  </Stack>
+  </Group>
+  <hr style="border:none;border-top:1px solid var(--m-gray-2);margin:0">
+<Stack gap-sm>
+<div class="item">(x2 en el mock)
+.item{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--m-gray-0);
+    border: 1px solid var(--m-gray-2);
+    border-radius: 8px;
+}
+<Group gap-sm>
+<div class="point">
+.point{width:8px;height:8px;border-radius:50%;background:#2F9E44;flex-shrink:0}
+</div>
+<Text fz-sm fw-700>@jujuy.gob.ar
+</Group>
+
+<IconTrash class="btn-delete-domain"/>(<i class="ti ti-trash"></i>)
+.btn-delete-domain{
+background: none;
+border: none;
+cursor: pointer;
+padding: 4px;
+border-radius: 6px;
+color: var(--m-red-5);
+display: flex;
+align-items: center;
+}
+
+</div>
+<Stack gap-xs>
+<Text fz-xs fw-700 tt-uppercase c-dimmed style="letter-spacing:.5px;">(Label) Agregar nuevo dominio
+<Group gap-sm> 
+<Input-wrapper style="flex:1;">
+<Input placeholder="@ejemplo.gob.ar">
+.Input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--m-gray-3);
+    border-radius: var(--m-radius-md);
+    font-family: inherit;
+    font-size: 13.5px;
+    color: var(--m-gray-9);
+    background: var(--m-gray-0);
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+    padding-left: 36px;
+}
+</Input>
+<IconMail class="input-icon">
+.input-icon{
+      left: 10px;
+    right: auto;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+}
+</Input-wrapper>
+<Button variant-filled bg-blue-5 size-sm radius-full><IconPlus w="15px" h="15px"/>Agregar</Button>
+</Group>
+</Stack>
+
+<Card p-md style="max-width:640px;background:#f0f4ff;border:1px solid var(--m-blue-2)">
+<Group gap-sm style=align-items:flex-start>
+<IconInfoCircle class="info-icon"/>
+.info-icon{
+  width: 18px;
+    height: 18px;
+    color: var(--m-blue-5);
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+<Stack gap-xs>
+<Text fz-sm fw-700 style="color:var(--m-blue-7)">
+¿Cómo funciona la validación?
+</Text>
+<Text fz-xs style="color:var(--m-blue-6);line-height:1.6">
+Al crear un nuevo usuario, el sistema verificará que el email ingresado termine con alguno de los dominios listados arriba. Si el email no coincide, se mostrará un error y no se podrá guardar el usuario.
+</Text>
+</Group>
+</Card>
+</Stack>
