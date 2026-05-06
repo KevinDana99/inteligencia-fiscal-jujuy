@@ -6,5 +6,9 @@ export default function PrivateLayout({
 }: {
   children: ReactNode;
 }) {
-  return <Suspense fallback={null}><PrivateLayoutGate>{children}</PrivateLayoutGate></Suspense>;
+  return (
+    <Suspense fallback={null}>
+      <PrivateLayoutGate>{children}</PrivateLayoutGate>
+    </Suspense>
+  );
 }
