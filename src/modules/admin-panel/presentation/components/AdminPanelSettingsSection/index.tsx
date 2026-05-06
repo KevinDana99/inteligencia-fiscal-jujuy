@@ -57,12 +57,12 @@ export function AdminPanelSettingsSection() {
         </Text>
       </Stack>
 
-      <Card className={classes.configCard} radius="lg" padding="lg">
+      <Card className={classes.configCard} radius="md" padding={24}>
         <Stack gap="md">
           <Group gap="sm" align="center">
             <ThemeIcon
-              variant="light"
-              color="blue"
+              variant="transparent"
+              color="blue.5"
               radius={8}
               size={32}
               className={classes.configHeaderIcon}
@@ -80,7 +80,7 @@ export function AdminPanelSettingsSection() {
             </Stack>
           </Group>
 
-          <Divider />
+          <Divider className={classes.configDivider} />
 
           <Stack gap="sm">
             {adminConfig.whitelist.map((domain) => (
@@ -106,23 +106,25 @@ export function AdminPanelSettingsSection() {
               <Text className={classes.configSectionLabel}>Agregar nuevo dominio</Text>
 
               <Group gap="sm" align="flex-start">
-                <TextInput
-                  placeholder="@ejemplo.gob.ar"
-                  value={domainValue}
-                  onChange={(event) => {
-                    setDomainValue(event.currentTarget.value);
-                    if (domainError) {
-                      setDomainError(null);
-                    }
-                  }}
-                  leftSection={<IconMail size={16} />}
-                  className={classes.configDomainInput}
-                  classNames={{
-                    input: classes.modalInput,
-                    section: classes.modalInputSection
-                  }}
-                  error={domainError}
-                />
+                <div className={classes.configDomainField}>
+                  <TextInput
+                    placeholder="@ejemplo.gob.ar"
+                    value={domainValue}
+                    onChange={(event) => {
+                      setDomainValue(event.currentTarget.value);
+                      if (domainError) {
+                        setDomainError(null);
+                      }
+                    }}
+                    leftSection={<IconMail size={16} />}
+                    className={classes.configDomainInput}
+                    classNames={{
+                      input: `${classes.modalInput} ${domainError ? classes.modalInputError : ''}`,
+                      section: classes.modalInputSection
+                    }}
+                  />
+                  <Text className={classes.configDomainError}>{domainError ?? ''}</Text>
+                </div>
 
                 <Button
                   onClick={handleAddDomain}
@@ -139,17 +141,17 @@ export function AdminPanelSettingsSection() {
       </Card>
 
       <Card className={classes.configInfoCard} radius="md" padding="md">
-        <Group gap="sm" align="flex-start">
+        <Group gap="sm" align="flex-start" className={classes.configInfoRow}>
           <IconInfoCircle className={classes.configInfoIcon} />
 
-          <Stack gap="xs">
+          <div className={classes.configInfoContent}>
             <Text className={classes.configInfoTitle}>¿Cómo funciona la validación?</Text>
             <Text className={classes.configInfoText}>
               Al crear o modificar un usuario, el sistema verificará que el email
               ingresado termine con alguno de los dominios listados arriba. Si el email
               no coincide, se mostrará un error y no se podrá guardar el usuario.
             </Text>
-          </Stack>
+          </div>
         </Group>
       </Card>
     </Stack>
