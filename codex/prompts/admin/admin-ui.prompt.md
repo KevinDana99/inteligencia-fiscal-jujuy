@@ -308,3 +308,110 @@ bun run build
 - No crear rutas nuevas.
 - No modificar auth, cookies o contratos de sesion.
 - No reintroducir widgets.
+
+---
+
+## Prompt 5: Config Section
+
+### Alcance
+
+La implementacion debe:
+
+1. Agregar la seccion de configuracion de dominios permitidos dentro de `/admin/configuracion`.
+2. Crear un provider global del modulo `admin-panel` para compartir la configuracion.
+3. Persistir la configuracion en `localStorage`.
+4. Exponer esa configuracion tanto a:
+   - la vista `Configuración`
+   - los formularios de crear usuario y editar usuario
+5. Validar en frontend que los emails de create/update user coincidan con la whitelist configurada.
+6. Permitir solo estas operaciones sobre dominios:
+   - agregar
+   - eliminar
+7. Mantener intactos auth, rutas, contratos backend y el resto del panel fuera de los ajustes necesarios para consumir la config.
+
+### Reglas funcionales principales
+
+1. La configuracion debe vivir en un provider del modulo, no a nivel page.
+2. El provider debe leer y persistir un estado con esta forma base:
+
+```ts
+adminConfig: {
+  whitelist: ['@rentas.gob.ar', '@jujuy.gob.ar', '_dpr@jujuy.gob.ar']
+}
+```
+
+3. Si no existe configuracion persistida o si `localStorage` contiene un valor invalido, debe caer en:
+
+```ts
+adminConfig: {
+  whitelist: []
+}
+```
+
+4. `whitelist` debe ser la fuente de verdad para validar emails permitidos.
+5. Si el email no coincide con la whitelist, create/update user no debe poder guardarse y debe mostrar error en el formulario.
+6. No debe existir edicion inline ni modal de edicion de dominios; solo agregar y eliminar.
+
+### Reglas visuales principales
+
+La seccion `Configuración` debe mantener:
+
+- title: `Configuración`
+- subtitle: `Administrá los parámetros generales del sistema`
+
+El panel principal de whitelist debe contener:
+
+1. header con:
+   - icono mail
+   - `Dominios de email permitidos`
+   - `Solo los emails con estos dominios podrán registrarse en el sistema`
+2. lista de dominios en items visuales con:
+   - punto verde
+   - texto del dominio
+   - accion `IconTrash` roja
+3. bloque inferior `Agregar nuevo dominio` con:
+   - label uppercase
+   - input con icono mail
+   - boton azul `Agregar`
+4. card informativo azul con:
+   - `¿Cómo funciona la validación?`
+   - texto explicando que al crear o modificar un usuario el email debe coincidir con la whitelist
+
+### Archivos esperados
+
+La implementacion deberia concentrarse en:
+
+- `src/modules/admin-panel/presentation/contexts/**`
+- `src/modules/admin-panel/presentation/components/AdminPanelSettingsSection/index.tsx`
+- `src/modules/admin-panel/presentation/components/AdminPanelModals/index.tsx`
+- `src/modules/admin-panel/presentation/components/AdminPanelTemplate/index.tsx`
+- `src/modules/admin-panel/presentation/hooks/**`
+- `src/modules/admin-panel/presentation/components/AdminPanelShell/AdminPanelShell.module.css`
+
+Si hace falta agregar utilidades o tipos de configuracion dentro del modulo, deben quedar dentro de `admin-panel` y no fuera de la feature.
+
+### Validacion final
+
+Antes de cerrar la tarea:
+
+1. Verificar que `/admin/configuracion` muestre la seccion de whitelist.
+2. Verificar que se puedan agregar dominios.
+3. Verificar que se puedan eliminar dominios.
+4. Verificar que la config persista al recargar.
+5. Verificar que create/update user lean la whitelist desde el provider.
+6. Verificar que un email fuera de whitelist no pueda guardarse.
+7. Verificar el fallback seguro cuando no existe config persistida.
+8. Correr los checks disponibles del proyecto, preferentemente:
+
+```bash
+bun run lint
+bun run build
+```
+
+### Fuera de alcance
+
+- No tocar auth.
+- No crear rutas nuevas.
+- No mover la configuracion fuera del modulo `admin-panel`.
+- No agregar contrato backend nuevo para esta feature.
+- No implementar edicion de dominios existentes.
