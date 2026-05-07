@@ -452,6 +452,13 @@
 .searchRow {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.searchRowContent {
+  display: flex;
+  align-items: center;
   gap: 14px;
 }
 

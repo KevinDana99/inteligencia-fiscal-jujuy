@@ -54,6 +54,21 @@ export function AdminPanelUserGestionTable({
             Administrá las cuentas del sistema
           </Text>
         </Stack>
+      </div>
+
+      <div className={classes.searchRow}>
+        <div className={classes.searchRowContent}>
+          <TextInput
+            leftSection={<IconSearch size={16} />}
+            placeholder={`Buscar entre ${activeUsersCount} usuarios...`}
+            value={searchValue}
+            onChange={(event) => setSearchValue(event.currentTarget.value)}
+            className={classes.searchInput}
+          />
+          <Text className={classes.searchCounter}>
+            {filteredUsers.length} usuarios activos
+          </Text>
+        </div>
 
         <Button
           leftSection={<IconPlus size={18} />}
@@ -64,19 +79,6 @@ export function AdminPanelUserGestionTable({
         >
           Nuevo usuario
         </Button>
-      </div>
-
-      <div className={classes.searchRow}>
-        <TextInput
-          leftSection={<IconSearch size={16} />}
-          placeholder={`Buscar entre ${activeUsersCount} usuarios...`}
-          value={searchValue}
-          onChange={(event) => setSearchValue(event.currentTarget.value)}
-          className={classes.searchInput}
-        />
-        <Text className={classes.searchCounter}>
-          {filteredUsers.length} usuarios activos
-        </Text>
       </div>
 
       <div className={classes.tableWrap}>
