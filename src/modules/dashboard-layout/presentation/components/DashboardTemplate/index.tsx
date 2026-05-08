@@ -32,7 +32,10 @@ export function DashboardTemplate({
         seguimientoItems={seguimientoItems}
       />
 
-      <DashboardNavbar currentSectionLabel={currentSectionLabel} />
+      <DashboardNavbar
+        currentSection={currentSection}
+        currentSectionLabel={currentSectionLabel}
+      />
 
       <main className={classes.main}>
         <div className={classes.content}>{children}</div>

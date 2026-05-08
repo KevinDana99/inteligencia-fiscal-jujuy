@@ -23,16 +23,16 @@ export const theme = createTheme({
       '#153AAA'
     ],
     gray: [
-      '#F8F9FA',
-      '#F1F3F5',
-      '#E9ECEF',
-      '#DEE2E6',
-      '#CED4DA',
-      '#ADB5BD',
-      '#868E96',
-      '#495057',
-      '#343A40',
-      '#212529'
+      '#F8FAFC',
+      '#F1F5F9',
+      '#E2E8F0',
+      '#CBD5E1',
+      '#94A3B8',
+      '#64748B',
+      '#475569',
+      '#334155',
+      '#1E293B',
+      '#0F172A'
     ],
     red: [
       '#FFF5F5',

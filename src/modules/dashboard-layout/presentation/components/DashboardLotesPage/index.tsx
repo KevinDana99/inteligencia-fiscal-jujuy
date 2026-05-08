@@ -7,6 +7,39 @@ const LOTES_STATS = [
   { label: 'Última corrida', value: '09:24' }
 ];
 
+const LOTES_PANELS = [
+  {
+    title: 'Resumen operativo',
+    description:
+      'Vista consolidada del estado actual de lotes procesados, pendientes y con incidencias.'
+  },
+  {
+    title: 'Validaciones recientes',
+    description:
+      'Registro de las últimas ejecuciones sobre lotes y reglas aplicadas durante el análisis.'
+  },
+  {
+    title: 'Lotes observados',
+    description:
+      'Listado preliminar de lotes que requieren revisión manual por inconsistencias detectadas.'
+  },
+  {
+    title: 'Historial de corridas',
+    description:
+      'Trazabilidad de ejecuciones anteriores con referencias de fecha, hora y resultado final.'
+  },
+  {
+    title: 'Pendientes de aprobación',
+    description:
+      'Elementos en espera de validación funcional antes de continuar con la siguiente etapa.'
+  },
+  {
+    title: 'Monitoreo de integraciones',
+    description:
+      'Estado general de los cruces de datos y disponibilidad de fuentes vinculadas al proceso.'
+  }
+];
+
 export function DashboardLotesPage() {
   return (
     <Stack gap="xl">
@@ -41,17 +74,16 @@ export function DashboardLotesPage() {
         ))}
       </div>
 
-      <Card className={classes.panelCard} radius="lg" padding="xl">
-        <Stack gap="sm">
-          <Title order={3} className={classes.pageTitle}>
-            Próxima iteración
-          </Title>
-          <Text className={classes.pageSubtitle}>
-            Esta vista ya usa el layout definitivo del dashboard y queda lista para sumar
-            buscadores, filtros y tabla de lotes en la siguiente etapa.
-          </Text>
-        </Stack>
-      </Card>
+      {LOTES_PANELS.map((panel) => (
+        <Card key={panel.title} className={classes.panelCard} radius="lg" padding="xl">
+          <Stack gap="sm">
+            <Title order={3} className={classes.pageTitle}>
+              {panel.title}
+            </Title>
+            <Text className={classes.pageSubtitle}>{panel.description}</Text>
+          </Stack>
+        </Card>
+      ))}
     </Stack>
   );
 }
