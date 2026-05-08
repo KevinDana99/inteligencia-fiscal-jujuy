@@ -1,20 +1,20 @@
 'use client';
 
-import { Button } from '@mantine/core';
-import { IconChevronRight, IconDoorExit, IconPlus } from '@tabler/icons-react';
-import type { DashboardSection } from '../../../data/models/DashboardLayout';
+import { Avatar, Button, Group, Text } from '@mantine/core';
+import { IconChevronRight, IconDoorExit } from '@tabler/icons-react';
+import type { IAuthSession } from '@/modules/auth/data/models/Auth';
 import { useSignOut } from '@/modules/auth/presentation/hooks';
+import { getInitials } from '../../utils/getInitials';
 import classes from '../DashboardLayoutShell/DashboardLayoutShell.module.css';
 
 export function DashboardNavbar({
-  currentSection,
+  session,
   currentSectionLabel
 }: {
-  currentSection: DashboardSection;
+  session: IAuthSession;
   currentSectionLabel: string;
 }) {
   const { signOut, isPending } = useSignOut();
-  const showCreateLoteButton = currentSection === 'gestion-de-lotes';
 
   return (
     <header className={classes.header}>
@@ -25,16 +25,14 @@ export function DashboardNavbar({
       </div>
 
       <div className={classes.headerActions}>
-        {showCreateLoteButton ? (
-          <Button
-            leftSection={<IconPlus size={16} />}
-            radius="xl"
-            size="sm"
-            className={classes.headerActionButton}
-          >
-            Nuevo Lote
-          </Button>
-        ) : null}
+        <Group gap="xs" className={classes.profileChip}>
+          <Avatar size={30} radius="xl" className={classes.profileAvatar}>
+            {getInitials(session.user.userName)}
+          </Avatar>
+          <Text size="sm" fw={600} className={classes.profileLabel}>
+            {session.user.userName}
+          </Text>
+        </Group>
 
         <Button
           variant="default"

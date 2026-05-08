@@ -33,7 +33,7 @@ export function DashboardTemplate({
       />
 
       <DashboardNavbar
-        currentSection={currentSection}
+        session={session}
         currentSectionLabel={currentSectionLabel}
       />
 

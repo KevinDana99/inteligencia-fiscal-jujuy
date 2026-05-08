@@ -173,7 +173,7 @@ export function DashboardSidebar({
 
       <div className={classes.sidebarFooter}>
         <div className={classes.userRow}>
-          <Avatar size={32} radius="xl" color="blue">
+          <Avatar size={32} radius="xl" className={classes.sidebarAvatar}>
             {getInitials(session.user.userName)}
           </Avatar>
 
