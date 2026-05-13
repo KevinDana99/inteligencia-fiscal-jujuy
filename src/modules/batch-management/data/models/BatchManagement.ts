@@ -5,6 +5,12 @@ export interface IBatchManagementCuit {
   regime: string
 }
 
+export interface IBatchCrossFilters {
+  fromYear: string
+  toYear: string
+  crossTypes: string[]
+}
+
 export interface IBatchManagementItem {
   id: string
   batchNumber: string

@@ -3,6 +3,7 @@
 import { Button, Group, Stack, Text, TextInput, Title } from '@mantine/core'
 import { IconPlus, IconSearch } from '@tabler/icons-react'
 import { useBatchManagement } from '../../hooks'
+import { BatchManagementCreateModal } from '../BatchManagementCreateModal'
 import { BatchManagementTable } from '../BatchManagementTable'
 import classes from './BatchManagementPage.module.css'
 
@@ -12,8 +13,17 @@ export function BatchManagementPage() {
     filteredBatches,
     searchValue,
     expandedBatchId,
+    isCreateModalOpen,
+    createForm,
+    getBatchCrossFilters,
     setSearchValue,
-    toggleExpandedBatch
+    toggleExpandedBatch,
+    setBatchCrossYear,
+    toggleBatchCrossType,
+    confirmBatchCrossFilters,
+    openCreateModal,
+    closeCreateModal,
+    setCreateFormField
   } = useBatchManagement()
 
   return (
@@ -35,12 +45,13 @@ export function BatchManagementPage() {
           radius="xl"
           leftSection={<IconPlus size={14} />}
           className={classes.createButton}
+          onClick={openCreateModal}
         >
           Nuevo Lote
         </Button>
       </Group>
 
-      <Group gap="md" className={classes.searchGroup}>
+      <Group justify="space-between" gap="md" className={classes.searchGroup}>
         <TextInput
           leftSection={<IconSearch size={16} />}
           radius="xl"
@@ -48,6 +59,10 @@ export function BatchManagementPage() {
           value={searchValue}
           onChange={(event) => setSearchValue(event.currentTarget.value)}
           className={classes.searchInput}
+          classNames={{
+            input: classes.searchInputField,
+            section: classes.searchInputSection
+          }}
         />
         <Text size="sm" className={classes.searchCounter}>
           {filteredBatches.length} de {totalBatches} lotes
@@ -58,6 +73,21 @@ export function BatchManagementPage() {
         batches={filteredBatches}
         expandedBatchId={expandedBatchId}
         onToggleBatch={toggleExpandedBatch}
+        getBatchCrossFilters={getBatchCrossFilters}
+        onBatchCrossYearChange={setBatchCrossYear}
+        onBatchCrossTypeToggle={toggleBatchCrossType}
+        onBatchCrossConfirm={confirmBatchCrossFilters}
+      />
+
+      <BatchManagementCreateModal
+        opened={isCreateModalOpen}
+        batchNumber={createForm.batchNumber}
+        name={createForm.name}
+        regime={createForm.regime}
+        description={createForm.description}
+        cuitsText={createForm.cuitsText}
+        onClose={closeCreateModal}
+        onFieldChange={setCreateFormField}
       />
     </Stack>
   )

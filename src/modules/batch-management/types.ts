@@ -1,4 +1,5 @@
 export type {
+  IBatchCrossFilters,
   IBatchManagementCuit,
   IBatchManagementItem,
   IBatchManagementItems

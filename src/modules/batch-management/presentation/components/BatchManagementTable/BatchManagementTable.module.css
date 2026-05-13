@@ -1,7 +1,8 @@
 .tableWrap {
-  overflow: hidden;
+  position: relative;
+  overflow: visible;
   border: 1px solid var(--mantine-color-gray-2);
-  border-radius: var(--mantine-radius-lg);
+  border-radius: 12px;
   background: var(--mantine-color-white);
 }
 
@@ -10,31 +11,63 @@
 }
 
 .table :global(table) {
-  --table-border-color: var(--mantine-color-gray-2);
-  border-collapse: separate;
-  border-spacing: 0;
+  --table-border-color: var(--mantine-color-gray-1);
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table :global(thead) {
+  background: var(--mantine-color-gray-0);
+  border-bottom: 1px solid var(--mantine-color-gray-1);
 }
 
 .table th {
   color: var(--mantine-color-gray-5);
   font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   text-align: left;
-  padding: 11px 20px;
-  background: var(--mantine-color-white);
+  white-space: nowrap;
+  padding: 10px 14px;
+  background: transparent;
+  border-bottom: 1px solid var(--mantine-color-gray-1);
 }
 
 .table td {
-  padding: 12px 20px;
+  padding: 12px 14px;
   background: var(--mantine-color-white);
   color: var(--mantine-color-gray-7);
   font-size: 12px;
+  border-bottom: 1px solid var(--mantine-color-gray-1);
+}
+
+.table tbody tr:first-child td {
+  border-top: 0 !important;
+}
+
+.chevronColumn {
+  width: 32px;
+  padding-left: 14px !important;
+  padding-right: 6px !important;
+}
+
+.chevronCell {
+  width: 32px;
+  padding-left: 14px !important;
+  padding-right: 6px !important;
 }
 
 .row {
   cursor: pointer;
+}
+
+.rowExpanded td {
+  background: var(--mantine-color-blue-1) !important;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
 }
 
 .chevron {
@@ -54,6 +87,10 @@
   font-weight: 700;
 }
 
+.batchCell {
+  text-align: left;
+}
+
 .batchName {
   color: var(--mantine-color-gray-9);
   font-weight: 600;
@@ -66,29 +103,59 @@
   color: var(--mantine-color-gray-5);
 }
 
+.expandActionButton {
+  border: 0;
+  background: transparent;
+  color: var(--mantine-color-blue-5);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: 0;
+}
+
 .cuitCountCell {
   text-align: center;
 }
 
+.cuitCountValue {
+  display: block;
+  color: var(--mantine-color-gray-9);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.cuitCountHeader {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.batchNumberHeader {
+  text-align: left;
+}
+
 .detailCell {
-  padding: 0;
-  background: var(--mantine-color-gray-0);
+  padding: 0 !important;
+  background: transparent;
 }
 
 .detailInner {
-  padding: 16px 20px 18px;
+  padding: 12px 16px 14px 48px;
 }
 
 .detailTitle {
+  display: block;
   color: var(--mantine-color-gray-5);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.05em;
+  text-align: left;
   text-transform: uppercase;
 }
 
 .nestedTable :global(table) {
-  --table-border-color: var(--mantine-color-gray-2);
+  --table-border-color: var(--mantine-color-gray-1);
 }
 
 .nestedTable th {
@@ -101,6 +168,11 @@
   font-size: 12px;
 }
 
+.regimeBadge {
+  background: var(--mantine-color-blue-1);
+  color: var(--mantine-color-blue-5);
+}
+
 .monoText {
   font-family:
     'SFMono-Regular',
@@ -110,7 +182,12 @@
     monospace;
 }
 
+.menuSection {
+  border-bottom: 1px solid var(--mantine-color-gray-1);
+}
+
 .menuLabel {
+  padding: 14px 16px 12px;
   color: var(--mantine-color-gray-5);
   font-size: 11px;
   font-weight: 700;
@@ -118,20 +195,132 @@
   text-transform: uppercase;
 }
 
+.menuSection .menuLabel {
+  margin: 0 0 8px;
+}
+
+.menuSectionLabel {
+  padding: 0;
+}
+
+.menuLabelHint {
+  color: var(--mantine-color-gray-3);
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.rowActionButton {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--mantine-color-gray-5);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.rowActionButton:hover,
+.rowActionButton:focus,
+.rowActionButton[data-hovered],
+.rowActionButton[data-active] {
+  background: transparent;
+  color: var(--mantine-color-gray-5);
+}
+
+.crossMenuDropdown {
+  position: absolute;
+  min-width: 230px;
+  overflow: hidden;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 10px;
+  background: var(--mantine-color-white);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 9999;
+}
+
+.crossMenuSelectDropdown {
+  position: fixed;
+  min-width: 230px;
+  overflow: hidden;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 10px;
+  background: var(--mantine-color-white);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 9999;
+}
+
+.crossMenuSelect {
+  width: 100%;
+}
+
+.crossMenuSelectInput {
+  width: 100%;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-family: var(--font-dm-sans), var(--font-body), 'Segoe UI', sans-serif;
+  font-size: 13px;
+  color: var(--mantine-color-gray-7);
+  outline: none;
+  background: var(--mantine-color-white);
+}
+
+.crossMenuCheckbox,
+.crossMenuCheckboxBody {
+  background: transparent;
+  margin: 0;
+}
+
+.crossMenuCheckboxBody {
+  padding: 7px 8px;
+}
+
+.crossMenuCheckboxInput {
+  background: transparent;
+}
+
+.crossMenuCheckboxLabel {
+  background: transparent;
+  margin: 0;
+}
+
+.periodBody {
+  padding: 0 16px 12px;
+}
+
 .menuBody {
-  padding: 0 14px 10px;
+  padding: 10px 16px 6px;
+}
+
+.menuFooter {
+  padding: 10px 16px;
+  border-top: 1px solid var(--mantine-color-gray-1);
+  display: flex;
+  justify-content: flex-end;
 }
 
 .periodRow {
   align-items: flex-end;
 }
 
+.periodField {
+  flex: 1;
+}
+
 .periodArrow {
+  flex: 0 0 auto;
   color: var(--mantine-color-gray-5);
   margin-bottom: 10px;
 }
 
 .menuHint {
+  display: block;
+  margin: 0 0 4px;
   color: var(--mantine-color-gray-5);
   font-size: 12px;
 }

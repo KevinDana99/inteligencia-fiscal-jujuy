@@ -1,0 +1,174 @@
+.content {
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--mantine-color-white);
+  box-shadow: var(--mantine-shadow-xl);
+}
+
+.overlay {
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.header {
+  padding: 22px 28px 18px;
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.title {
+  color: var(--mantine-color-gray-9);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.description {
+  color: var(--mantine-color-gray-5);
+  font-size: 14px;
+}
+
+.closeButton {
+  color: var(--mantine-color-gray-5);
+}
+
+.closeButton:hover,
+.closeButton:focus,
+.closeButton[data-hovered],
+.closeButton[data-active] {
+  background: transparent;
+  color: var(--mantine-color-gray-7);
+}
+
+.body {
+  padding: 0;
+  background: var(--mantine-color-white);
+}
+
+.form {
+  padding: 22px 28px 0;
+  background: var(--mantine-color-white);
+}
+
+.section {
+  padding-bottom: 22px;
+}
+
+.fieldLabel {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--mantine-color-gray-9);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.required {
+  color: var(--mantine-color-red-6);
+}
+
+.fieldHint {
+  display: block;
+  margin-top: 8px;
+  color: var(--mantine-color-gray-5);
+  font-size: 13px;
+}
+
+.fieldInput,
+.fieldTextarea,
+.fieldSelectInput {
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 12px;
+  color: var(--mantine-color-gray-7);
+  font-size: 14px;
+  background: var(--mantine-color-white);
+}
+
+.fieldInput,
+.fieldSelectInput {
+  height: 46px;
+  padding: 0 16px;
+}
+
+.readonlyInput {
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-6);
+}
+
+.fieldTextarea {
+  min-height: 92px;
+  padding: 14px 16px;
+}
+
+.cuitsTextarea {
+  min-height: 90px;
+  border-style: dashed;
+}
+
+.helperText {
+  display: block;
+  margin-top: 10px;
+  color: var(--mantine-color-gray-5);
+  font-size: 13px;
+}
+
+.fieldRow {
+  align-items: flex-start;
+}
+
+.importButton {
+  width: fit-content;
+  padding: 0 14px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 999px;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+}
+
+.importButton:hover,
+.importButton:focus,
+.importButton[data-hovered],
+.importButton[data-active] {
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+}
+
+.footer {
+  margin-top: 22px;
+  padding: 18px 28px 22px;
+  border-top: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+}
+
+.cancelButton {
+  min-width: 112px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 999px;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+}
+
+.cancelButton:hover,
+.cancelButton:focus,
+.cancelButton[data-hovered],
+.cancelButton[data-active] {
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+}
+
+.submitButton {
+  min-width: 132px;
+  border-radius: 999px;
+  background: var(--mantine-color-blue-3);
+  border-color: var(--mantine-color-blue-3);
+  color: var(--mantine-color-white);
+}
+
+.submitButton:hover,
+.submitButton:focus,
+.submitButton[data-hovered],
+.submitButton[data-active] {
+  background: var(--mantine-color-blue-3);
+  border-color: var(--mantine-color-blue-3);
+  color: var(--mantine-color-white);
+}
