@@ -1,0 +1,142 @@
+.tableWrap {
+  overflow: hidden;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: var(--mantine-radius-lg);
+  background: var(--mantine-color-white);
+}
+
+.table {
+  width: 100%;
+}
+
+.table :global(table) {
+  --table-border-color: var(--mantine-color-gray-2);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table th {
+  color: var(--mantine-color-gray-5);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 11px 20px;
+  background: var(--mantine-color-white);
+}
+
+.table td {
+  padding: 12px 20px;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+  font-size: 12px;
+}
+
+.row {
+  cursor: pointer;
+}
+
+.chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mantine-color-gray-5);
+  transition: transform 0.15s;
+}
+
+.chevronOpen {
+  transform: rotate(90deg);
+}
+
+.batchNumber {
+  color: var(--mantine-color-gray-9);
+  font-weight: 700;
+}
+
+.batchName {
+  color: var(--mantine-color-gray-9);
+  font-weight: 600;
+}
+
+.batchDescription,
+.batchDate,
+.emptyState,
+.expandHint {
+  color: var(--mantine-color-gray-5);
+}
+
+.cuitCountCell {
+  text-align: center;
+}
+
+.detailCell {
+  padding: 0;
+  background: var(--mantine-color-gray-0);
+}
+
+.detailInner {
+  padding: 16px 20px 18px;
+}
+
+.detailTitle {
+  color: var(--mantine-color-gray-5);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.nestedTable :global(table) {
+  --table-border-color: var(--mantine-color-gray-2);
+}
+
+.nestedTable th {
+  padding: 10px 14px;
+  font-size: 10.5px;
+}
+
+.nestedTable td {
+  padding: 10px 14px;
+  font-size: 12px;
+}
+
+.monoText {
+  font-family:
+    'SFMono-Regular',
+    Consolas,
+    'Liberation Mono',
+    Menlo,
+    monospace;
+}
+
+.menuLabel {
+  color: var(--mantine-color-gray-5);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.menuBody {
+  padding: 0 14px 10px;
+}
+
+.periodRow {
+  align-items: flex-end;
+}
+
+.periodArrow {
+  color: var(--mantine-color-gray-5);
+  margin-bottom: 10px;
+}
+
+.menuHint {
+  color: var(--mantine-color-gray-5);
+  font-size: 12px;
+}
+
+.menuButton {
+  background: var(--mantine-color-blue-5);
+  border-color: var(--mantine-color-blue-5);
+}

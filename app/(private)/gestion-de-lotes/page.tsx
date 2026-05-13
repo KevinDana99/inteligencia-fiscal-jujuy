@@ -1,5 +1,5 @@
-import { DashboardLotesPage } from '@/modules/dashboard-layout/presentation/components/DashboardLotesPage';
+import BatchManagementModule from '@/modules/batch-management'
 
 export default function GestionDeLotesPage() {
-  return <DashboardLotesPage />;
+  return <BatchManagementModule />
 }
