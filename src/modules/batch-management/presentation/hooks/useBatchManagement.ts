@@ -47,8 +47,10 @@ export function useBatchManagement() {
       return batches
     }
 
-    return batches.filter((batch) =>
-      batch.batchNumber.toLowerCase().includes(normalizedSearch)
+    return batches.filter(
+      (batch) =>
+        batch.batchNumber.toLowerCase().includes(normalizedSearch) ||
+        batch.name.toLowerCase().includes(normalizedSearch)
     )
   }, [batches, searchValue])
 
