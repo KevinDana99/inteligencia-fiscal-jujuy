@@ -1,0 +1,170 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.alertCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fff5f5;
+}
+
+.alertContent {
+  flex: 1;
+}
+
+.alertTitle {
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.alertDescription {
+  margin-top: 2px;
+  color: #991b1b;
+  font-size: 12px;
+}
+
+.alertBadge {
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: #dc2626;
+  color: var(--mantine-color-white);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.searchRow {
+  margin: 0 0 16px;
+}
+
+.searchInput {
+  width: 460px;
+  max-width: 100%;
+}
+
+.searchInputField {
+  height: 40px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 12px;
+  background: var(--mantine-color-white);
+  padding: 10px 16px 10px 40px;
+  color: var(--mantine-color-gray-7);
+}
+
+.searchInputSection {
+  color: var(--mantine-color-gray-5);
+}
+
+.tableWrap {
+  overflow: hidden;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 12px;
+  background: var(--mantine-color-white);
+}
+
+.table :global(table) {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table :global(thead) {
+  background: var(--mantine-color-gray-0);
+}
+
+.table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mantine-color-gray-5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--mantine-color-gray-2);
+}
+
+.table td {
+  padding: 14px;
+  border-bottom: 1px solid var(--mantine-color-gray-1);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.row {
+  cursor: pointer;
+}
+
+.row:hover td {
+  background: var(--mantine-color-gray-0);
+}
+
+.cuitCell {
+  color: var(--mantine-color-blue-5);
+  font-family:
+    'SFMono-Regular',
+    Consolas,
+    'Liberation Mono',
+    Menlo,
+    monospace;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.nameCell {
+  color: var(--mantine-color-gray-8);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mutedCell {
+  color: var(--mantine-color-gray-5);
+  font-size: 13px;
+}
+
+.notesCell {
+  color: var(--mantine-color-gray-5);
+  font-size: 12.5px;
+}
+
+.crossBadge {
+  background: #eff6ff;
+  color: var(--mantine-color-blue-5);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.actionCell {
+  width: 50px;
+}
+
+.removeButton {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #dc2626;
+}
+
+.removeButton:hover,
+.removeButton:focus,
+.removeButton[data-hovered],
+.removeButton[data-active] {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.emptyState {
+  padding: 32px 20px;
+  color: var(--mantine-color-gray-5);
+  font-size: 14px;
+  text-align: center;
+}
