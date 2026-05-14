@@ -23,7 +23,8 @@ export function BatchManagementPage() {
     confirmBatchCrossFilters,
     openCreateModal,
     closeCreateModal,
-    setCreateFormField
+    setCreateFormField,
+    createBatch
   } = useBatchManagement()
 
   return (
@@ -88,6 +89,7 @@ export function BatchManagementPage() {
         cuitsText={createForm.cuitsText}
         onClose={closeCreateModal}
         onFieldChange={setCreateFormField}
+        onSubmit={createBatch}
       />
     </Stack>
   )

@@ -1,7 +1,11 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import type { IBatchCrossFilters } from '../../data/models/BatchManagement'
+import type {
+  IBatchCrossFilters,
+  IBatchManagementItem,
+  IBatchManagementItems
+} from '../../data/models/BatchManagement'
 import { batchManagementMock } from '../../data/sources/mock/fixtures/batches'
 
 const DEFAULT_BATCH_CROSS_FILTERS: IBatchCrossFilters = {
@@ -27,6 +31,7 @@ const EMPTY_BATCH_CREATE_FORM: IBatchCreateForm = {
 }
 
 export function useBatchManagement() {
+  const [batches, setBatches] = useState<IBatchManagementItems>(batchManagementMock)
   const [searchValue, setSearchValue] = useState('')
   const [expandedBatchId, setExpandedBatchId] = useState<string | null>(null)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -39,20 +44,20 @@ export function useBatchManagement() {
     const normalizedSearch = searchValue.trim().toLowerCase()
 
     if (!normalizedSearch) {
-      return batchManagementMock
+      return batches
     }
 
-    return batchManagementMock.filter((batch) =>
+    return batches.filter((batch) =>
       batch.batchNumber.toLowerCase().includes(normalizedSearch)
     )
-  }, [searchValue])
+  }, [batches, searchValue])
 
   const toggleExpandedBatch = (batchId: string) => {
     setExpandedBatchId((current) => (current === batchId ? null : batchId))
   }
 
   const getNextBatchNumber = () => {
-    const maxBatchNumber = batchManagementMock.reduce((maxValue, batch) => {
+    const maxBatchNumber = batches.reduce((maxValue, batch) => {
       const numericValue = Number(batch.batchNumber)
       return Number.isNaN(numericValue) ? maxValue : Math.max(maxValue, numericValue)
     }, 0)
@@ -80,6 +85,56 @@ export function useBatchManagement() {
       ...current,
       [field]: value
     }))
+  }
+
+  const parseCuits = (cuitsText: string) => {
+    return cuitsText
+      .split(/[\n,]+/)
+      .map((item) => item.trim())
+      .filter(Boolean)
+  }
+
+  const getCurrentDateLabel = () => {
+    const now = new Date()
+    const day = String(now.getDate()).padStart(2, '0')
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const year = String(now.getFullYear())
+
+    return `${day}/${month}/${year}`
+  }
+
+  const createBatch = () => {
+    const batchNumber = createForm.batchNumber.trim()
+    const name = createForm.name.trim()
+    const regime = createForm.regime?.trim() ?? ''
+    const description = createForm.description.trim()
+    const parsedCuits = parseCuits(createForm.cuitsText)
+
+    if (!batchNumber || !name || !regime || !parsedCuits.length) {
+      return false
+    }
+
+    const newBatch: IBatchManagementItem = {
+      id: batchNumber,
+      batchNumber,
+      name,
+      description,
+      cuitCount: parsedCuits.length,
+      createdAt: getCurrentDateLabel(),
+      cuits: parsedCuits.map((cuit, index) => ({
+        id: `${batchNumber}-${index + 1}`,
+        cuit,
+        businessName: 'CUIT importado',
+        regime
+      }))
+    }
+
+    setBatches((current) => [newBatch, ...current])
+    setExpandedBatchId(newBatch.id)
+    setIsCreateModalOpen(false)
+    setCreateForm(EMPTY_BATCH_CREATE_FORM)
+
+    return true
   }
 
   const getBatchCrossFilters = (batchId: string) => {
@@ -126,7 +181,7 @@ export function useBatchManagement() {
   }
 
   return {
-    totalBatches: batchManagementMock.length,
+    totalBatches: batches.length,
     filteredBatches,
     searchValue,
     expandedBatchId,
@@ -140,6 +195,7 @@ export function useBatchManagement() {
     confirmBatchCrossFilters,
     openCreateModal,
     closeCreateModal,
-    setCreateFormField
+    setCreateFormField,
+    createBatch
   }
 }
