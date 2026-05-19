@@ -1,0 +1,113 @@
+import type {
+  IExplorerRegisterItems,
+  IExplorerRegisterPill
+} from '../../../data/models/ExplorerRegister';
+
+export const explorerRegisterPills: IExplorerRegisterPill[] = [
+  { key: 'rubro', label: 'Rubro' },
+  { key: 'actividad', label: 'Actividad' },
+  { key: 'tipo', label: 'Tipo Contribuyente' },
+  { key: 'domicilio', label: 'Domicilio' },
+  { key: 'localidad', label: 'Localidad' },
+  { key: 'provincia', label: 'Provincia' },
+  { key: 'riesgo', label: 'Matriz de riesgo' },
+  { key: 'control', label: 'Sistema de Control' },
+  { key: 'mercurio', label: 'Mercurio (Ruta)' },
+  { key: 'trufa', label: 'Trufa (Operativos)' },
+  { key: 'agente', label: 'Agente' },
+  { key: 'retenido', label: 'Sujeto Retenido' },
+  { key: 'convenio', label: 'Convenio Jurisdicción' }
+];
+
+export const explorerRegisterItemsFixture: IExplorerRegisterItems = [
+  {
+    id: 'volkswagen',
+    cuit: '30-50401884-5',
+    businessName: 'VOLKSWAGEN ARGENTINA S.A.',
+    rubro: 'Automotor',
+    actividad: 'Fabricación de vehículos',
+    tipo: 'Convenio',
+    domicilio: 'Av. Industrial 1240',
+    localidad: 'Palpalá',
+    provincia: 'Jujuy',
+    riesgo: 'Alto',
+    control: 'Activo',
+    mercurio: 'Ruta 9',
+    trufa: 'Operativo 2025',
+    agente: 'Percepción',
+    retenido: 'No',
+    convenio: 'Jujuy (J.910)'
+  },
+  {
+    id: 'andes-textil',
+    cuit: '30-50168521-2',
+    businessName: 'CERÁMICA DEL NORTE S.A.',
+    rubro: 'Construcción',
+    actividad: 'Fabricación de materiales cerámicos',
+    tipo: 'Local',
+    domicilio: 'Ruta 66 Km 4',
+    localidad: 'Perico',
+    provincia: 'Jujuy',
+    riesgo: 'Medio',
+    control: 'Activo',
+    mercurio: 'Ruta 34',
+    trufa: 'Operativo 2024',
+    agente: 'Retención',
+    retenido: 'Sí',
+    convenio: 'Jujuy (J.910)'
+  },
+  {
+    id: 'puna-tech',
+    cuit: '20-28456789-4',
+    businessName: 'COMERCIAL PUNA NORTE S.R.L.',
+    rubro: 'Tecnología',
+    actividad: 'Venta de equipamiento informático',
+    tipo: 'Convenio',
+    domicilio: 'Belgrano 550',
+    localidad: 'San Salvador de Jujuy',
+    provincia: 'Jujuy',
+    riesgo: 'Bajo',
+    control: 'Activo',
+    mercurio: 'Ruta 52',
+    trufa: 'Operativo 2025',
+    agente: 'Percepción',
+    retenido: 'No',
+    convenio: 'Buenos Aires'
+  },
+  {
+    id: 'gastronomia-andina',
+    cuit: '27-32178654-3',
+    businessName: 'SABORES DE LA QUEBRADA S.A.',
+    rubro: 'Gastronomía',
+    actividad: 'Servicios de restaurante',
+    tipo: 'Local',
+    domicilio: 'Lavalle 88',
+    localidad: 'Tilcara',
+    provincia: 'Jujuy',
+    riesgo: 'Medio',
+    control: 'Inactivo',
+    mercurio: 'Ruta 9',
+    trufa: 'Operativo 2024',
+    agente: 'Retención',
+    retenido: 'Sí',
+    convenio: 'Jujuy (J.910)'
+  },
+  {
+    id: 'textil-norte',
+    cuit: '30-70712345-6',
+    businessName: 'TEXTIL NORTE S.A.',
+    rubro: 'Textil',
+    actividad: 'Fabricación de prendas',
+    tipo: 'Convenio',
+    domicilio: 'Parque Industrial Lote 8',
+    localidad: 'Palpalá',
+    provincia: 'Jujuy',
+    riesgo: 'Alto',
+    control: 'Activo',
+    mercurio: 'Ruta 34',
+    trufa: 'Operativo 2025',
+    agente: 'Percepción',
+    retenido: 'No',
+    convenio: 'Jujuy (J.910)'
+  }
+];

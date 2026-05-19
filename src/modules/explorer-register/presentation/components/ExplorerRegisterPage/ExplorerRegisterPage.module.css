@@ -1,0 +1,211 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionLabel {
+  margin-bottom: 10px;
+  color: var(--mantine-color-gray-5);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.pillsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pillButton {
+  height: 32px;
+  padding-inline: 14px;
+  border-color: var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.pillButton:hover {
+  border-color: var(--mantine-color-blue-2);
+  background: var(--mantine-color-blue-0);
+  color: var(--mantine-color-blue-5);
+}
+
+.pillButtonActive {
+  border-color: var(--mantine-color-blue-2);
+  background: var(--mantine-color-blue-0);
+  color: var(--mantine-color-blue-5);
+}
+
+.filtersCard {
+  border: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+}
+
+.filtersHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.filtersTitle {
+  color: var(--mantine-color-gray-5);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.filtersActions {
+  display: flex;
+  gap: 8px;
+}
+
+.clearButton {
+  border-color: var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.clearButton:hover {
+  border-color: var(--mantine-color-gray-3);
+  background: var(--mantine-color-gray-0);
+}
+
+.searchButton {
+  background: var(--mantine-color-blue-5);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.searchButton:hover {
+  background: var(--mantine-color-blue-6);
+}
+
+.filtersGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.filterField {
+  min-width: 160px;
+}
+
+.filterFieldWide {
+  min-width: 200px;
+}
+
+.filterLabel {
+  margin-bottom: 5px;
+  color: var(--mantine-color-gray-7);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.filterSelect :global(.mantine-Input-input) {
+  min-width: 160px;
+  border-color: var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+}
+
+.filterSelect :global(.mantine-Input-input:hover),
+.filterSelect :global(.mantine-Input-input:focus),
+.filterSelect :global(.mantine-Input-input:focus-visible),
+.filterSelect :global(.mantine-Input-input[data-expanded]) {
+  border-color: var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+}
+
+.filterSelect :global(.mantine-Combobox-dropdown),
+.filterSelect :global(.mantine-Select-dropdown) {
+  background: var(--mantine-color-white);
+  border: 1px solid var(--mantine-color-gray-2);
+  color: var(--mantine-color-gray-7);
+}
+
+.filterSelect :global(.mantine-Combobox-option),
+.filterSelect :global(.mantine-Select-option) {
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+}
+
+.filterSelect :global(.mantine-Combobox-option:hover),
+.filterSelect :global(.mantine-Combobox-option[data-hovered]),
+.filterSelect :global(.mantine-Combobox-option[data-combobox-selected]),
+.filterSelect :global(.mantine-Select-option:hover),
+.filterSelect :global(.mantine-Select-option[data-hovered]),
+.filterSelect :global(.mantine-Select-option[data-checked]) {
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-9);
+}
+
+.tableWrap {
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 12px;
+  background: var(--mantine-color-white);
+  overflow: hidden;
+}
+
+.table {
+  --table-border-color: var(--mantine-color-gray-2);
+}
+
+.thead {
+  background: var(--mantine-color-gray-0);
+}
+
+.th {
+  padding: 10px 14px;
+  color: var(--mantine-color-gray-5);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.xHeader {
+  width: 40px;
+}
+
+.td {
+  padding: 12px 14px;
+  color: var(--mantine-color-gray-7);
+  font-size: 14px;
+}
+
+.businessName {
+  color: var(--mantine-color-gray-9);
+  font-weight: 700;
+}
+
+.removeButton {
+  width: 28px;
+  height: 28px;
+  color: var(--mantine-color-red-6);
+}
+
+.removeButton:hover {
+  background: #fff5f5;
+}
+
+.fallbackCard {
+  border: 1px dashed var(--mantine-color-gray-3);
+  background: var(--mantine-color-white);
+}
+
+.fallbackText {
+  color: var(--mantine-color-gray-6);
+  font-size: 14px;
+  text-align: center;
+}

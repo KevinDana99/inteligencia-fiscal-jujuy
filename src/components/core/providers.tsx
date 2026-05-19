@@ -6,7 +6,7 @@ import { theme } from '@/theme';
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <MantineProvider theme={theme}>
+    <MantineProvider theme={theme} forceColorScheme='light'>
       {children}
     </MantineProvider>
   );

@@ -1,20 +1,24 @@
 'use client';
 
 import { Avatar, Button, Group, Text } from '@mantine/core';
-import { IconChevronRight, IconDoorExit } from '@tabler/icons-react';
+import { IconChevronRight, IconDoorExit, IconPlus } from '@tabler/icons-react';
 import type { IAuthSession } from '@/modules/auth/data/models/Auth';
 import { useSignOut } from '@/modules/auth/presentation/hooks';
+import { useDashboardNavbarActionContext } from '../../contexts/DashboardNavbarActionContext';
 import { getInitials } from '../../utils/getInitials';
 import classes from '../DashboardLayoutShell/DashboardLayoutShell.module.css';
 
 export function DashboardNavbar({
   session,
+  currentSection,
   currentSectionLabel
 }: {
   session: IAuthSession;
+  currentSection: 'padron-unificado' | 'explorar-padron' | 'gestion-de-lotes' | 'gestion-de-cruces' | 'reproceso';
   currentSectionLabel: string;
 }) {
   const { signOut, isPending } = useSignOut();
+  const { explorerSelectedCount } = useDashboardNavbarActionContext();
 
   return (
     <header className={classes.header}>
@@ -25,6 +29,17 @@ export function DashboardNavbar({
       </div>
 
       <div className={classes.headerActions}>
+        {currentSection === 'explorar-padron' ? (
+          <Button
+            size="sm"
+            radius="xl"
+            leftSection={<IconPlus size={16} />}
+            className={classes.headerPrimaryActionButton}
+          >
+            Crear lote con {explorerSelectedCount} resultados
+          </Button>
+        ) : null}
+
         <Group gap="xs" className={classes.profileChip}>
           <Avatar size={30} radius="xl" className={classes.profileAvatar}>
             {getInitials(session.user.nombreUsuario ?? '')}

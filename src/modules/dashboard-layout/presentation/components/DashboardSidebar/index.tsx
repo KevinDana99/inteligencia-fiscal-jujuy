@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link'
 import { Avatar } from '@mantine/core'
 import type { IAuthSession } from '@/modules/auth/data/models/Auth'

@@ -53,6 +53,19 @@
   gap: var(--mantine-spacing-xs);
 }
 
+.headerPrimaryActionButton {
+  flex-shrink: 0;
+  height: 36px;
+  padding-inline: 16px;
+  background: var(--mantine-color-blue-5);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.headerPrimaryActionButton:hover {
+  background: var(--mantine-color-blue-6);
+}
+
 .profileChip {
   display: inline-flex;
   align-items: center;

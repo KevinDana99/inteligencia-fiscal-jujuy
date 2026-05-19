@@ -1,6 +1,7 @@
 import { IDashboardNavItem } from '@/modules/dashboard-layout/types'
 import {
   IconActivity,
+  IconAdjustmentsHorizontal,
   IconClockHour4,
   IconLayoutGrid,
   IconSearch
@@ -11,7 +12,8 @@ const iconMapList: Record<IconSchemaType, typeof IconLayoutGrid> = {
   grid: IconLayoutGrid,
   activity: IconActivity,
   clock: IconClockHour4,
-  search: IconSearch
+  search: IconSearch,
+  sliders: IconAdjustmentsHorizontal
 }
 
 const CustomIcon = (props: {
@@ -19,6 +21,7 @@ const CustomIcon = (props: {
   size?: number
   color?: string
 }) => {
+  console.log({ props })
   const SelectedIcon = iconMapList[props.name]
   return <SelectedIcon {...props} />
 }

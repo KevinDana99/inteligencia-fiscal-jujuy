@@ -2,6 +2,7 @@ import type { Route } from 'next';
 
 export type DashboardSection =
   | 'padron-unificado'
+  | 'explorar-padron'
   | 'gestion-de-lotes'
   | 'gestion-de-cruces'
   | 'reproceso';
@@ -13,7 +14,7 @@ export interface IDashboardNavItem {
   label: string;
   href: Route;
   group: DashboardNavGroup;
-  icon: 'search' | 'grid' | 'activity' | 'clock';
+  icon: 'search' | 'grid' | 'activity' | 'clock' | 'sliders';
 }
 
 export const DASHBOARD_NAV_ITEMS: IDashboardNavItem[] = [
@@ -23,6 +24,13 @@ export const DASHBOARD_NAV_ITEMS: IDashboardNavItem[] = [
     href: '/',
     group: 'analisis',
     icon: 'search'
+  },
+  {
+    section: 'explorar-padron',
+    label: 'Explorar Padrón',
+    href: '/explorar-padron',
+    group: 'analisis',
+    icon: 'sliders'
   },
   {
     section: 'gestion-de-lotes',
@@ -49,6 +57,8 @@ export const DASHBOARD_NAV_ITEMS: IDashboardNavItem[] = [
 
 export function getDashboardSectionFromPathname(pathname: string): DashboardSection {
   switch (pathname) {
+    case '/explorar-padron':
+      return 'explorar-padron';
     case '/gestion-de-lotes':
       return 'gestion-de-lotes';
     case '/gestion-de-cruces':
