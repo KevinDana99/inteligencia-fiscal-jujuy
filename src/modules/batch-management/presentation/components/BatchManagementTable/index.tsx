@@ -179,7 +179,7 @@ function BatchDetailRow({ batch }: { batch: IBatchManagementItem }) {
                   <Table.Th>#</Table.Th>
                   <Table.Th>CUIT</Table.Th>
                   <Table.Th>Razon Social</Table.Th>
-                  <Table.Th>Regimen</Table.Th>
+                  <Table.Th>Tipo de contribuyente</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>

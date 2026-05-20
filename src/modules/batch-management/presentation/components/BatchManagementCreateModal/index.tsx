@@ -1,7 +1,8 @@
 'use client'
 
-import { useRef } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import {
+  ActionIcon,
   Badge,
   Button,
   Group,
@@ -11,16 +12,26 @@ import {
   Table,
   Text,
   TextInput,
-  Textarea,
   Title
 } from '@mantine/core'
-import { IconAlertTriangleFilled, IconCheck, IconFileUpload } from '@tabler/icons-react'
-import type { IBatchPreviewData } from '../../../data/models/BatchManagement'
+import {
+  IconAlertTriangleFilled,
+  IconCheck,
+  IconPlus,
+  IconSearch,
+  IconTrash,
+  IconUpload
+} from '@tabler/icons-react'
+import type {
+  IBatchLoadedCuitRow,
+  IBatchPreviewData
+} from '../../../data/models/BatchManagement'
 import classes from './BatchManagementCreateModal.module.css'
 
 const REGIME_OPTIONS = [
   { value: 'CM', label: 'Convenio Multilateral' },
-  { value: 'Regimen Local', label: 'Regimen Local' }
+  { value: 'Regimen Local', label: 'Local' },
+  { value: 'No inscripto', label: 'No inscripto' }
 ]
 
 function ImportPreviewModal({
@@ -144,30 +155,13 @@ function ImportPreviewModal({
   )
 }
 
-export function BatchManagementCreateModal({
-  opened,
-  batchNumber,
-  name,
-  regime,
-  description,
-  cuitsText,
-  previewData,
-  isImportPreviewOpen,
-  isPreviewPending,
-  isCreatePending,
-  onClose,
-  onFieldChange,
-  onImportFileSelect,
-  onImportPreviewClose,
-  onImportPreviewConfirm,
-  onSubmit
-}: {
+type BatchManagementCreateModalProps = {
   opened: boolean
   batchNumber: string
   name: string
   regime: string | null
   description: string
-  cuitsText: string
+  loadedCuits: IBatchLoadedCuitRow[]
   previewData: IBatchPreviewData | null
   isImportPreviewOpen: boolean
   isPreviewPending: boolean
@@ -177,13 +171,54 @@ export function BatchManagementCreateModal({
     field: 'name' | 'regime' | 'description' | 'cuitsText' | 'file',
     value: string | File | null
   ) => void
+  onManualCuitsAdd: (value: string) => number
+  onLoadedCuitRemove: (rowId: string) => void
   onImportFileSelect: (file: File) => void
   onImportPreviewClose: () => void
   onImportPreviewConfirm: () => void
   onSubmit: () => boolean
-}) {
+}
+
+function BatchManagementCreateModalContent({
+  opened,
+  name,
+  regime,
+  description,
+  loadedCuits,
+  previewData,
+  isImportPreviewOpen,
+  isPreviewPending,
+  isCreatePending,
+  onClose,
+  onFieldChange,
+  onManualCuitsAdd,
+  onLoadedCuitRemove,
+  onImportFileSelect,
+  onImportPreviewClose,
+  onImportPreviewConfirm,
+  onSubmit
+}: BatchManagementCreateModalProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const isCreateReady = Boolean(name.trim() && regime && cuitsText.trim())
+  const [tableSearch, setTableSearch] = useState('')
+  const [isManualInputOpen, setIsManualInputOpen] = useState(false)
+  const [manualCuitValue, setManualCuitValue] = useState('')
+
+  const filteredLoadedCuits = useMemo(() => {
+    const normalizedSearch = tableSearch.trim().toLowerCase()
+
+    if (!normalizedSearch) {
+      return loadedCuits
+    }
+
+    return loadedCuits.filter((row) => {
+      const cuitValue = row.cuit.toLowerCase()
+      const businessName = row.businessName?.toLowerCase() ?? ''
+
+      return cuitValue.includes(normalizedSearch) || businessName.includes(normalizedSearch)
+    })
+  }, [loadedCuits, tableSearch])
+
+  const isCreateReady = Boolean(name.trim() && regime && loadedCuits.length)
 
   const handleImportButtonClick = () => {
     fileInputRef.current?.click()
@@ -213,6 +248,26 @@ export function BatchManagementCreateModal({
     onSubmit()
   }
 
+  const handleManualCuitSubmit = () => {
+    const addedCount = onManualCuitsAdd(manualCuitValue)
+
+    if (!addedCount) {
+      return
+    }
+
+    setManualCuitValue('')
+    setIsManualInputOpen(false)
+  }
+
+  const handleManualInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Enter') {
+      return
+    }
+
+    event.preventDefault()
+    handleManualCuitSubmit()
+  }
+
   return (
     <>
       <Modal
@@ -222,7 +277,7 @@ export function BatchManagementCreateModal({
         size={580}
         title={
           <Stack gap={4}>
-            <Title order={2} className={classes.title}>
+            <Title order={2} className={classes.modalTitle}>
               Crear nuevo lote
             </Title>
             <Text className={classes.description}>
@@ -232,27 +287,15 @@ export function BatchManagementCreateModal({
         }
         classNames={{
           content: classes.content,
-          header: classes.header,
-          body: classes.body,
+          header: classes.modalHeader,
+          body: classes.modalBody,
           close: classes.closeButton,
           overlay: classes.overlay
         }}
       >
-        <Stack gap={0} className={classes.form}>
-          <div className={classes.section}>
-            <Text className={classes.fieldLabel}>Nro de lote</Text>
-            <TextInput
-              value={batchNumber}
-              readOnly
-              classNames={{
-                input: `${classes.fieldInput} ${classes.readonlyInput}`
-              }}
-            />
-            <Text className={classes.fieldHint}>Generado automáticamente por el sistema.</Text>
-          </div>
-
-          <Group grow gap="md" className={`${classes.section} ${classes.fieldRow}`}>
-            <div>
+        <Stack gap={20} className={classes.form}>
+          <Group grow gap="md" align="flex-start" className={classes.topFieldRow}>
+            <div className={classes.fieldGroup}>
               <Text className={classes.fieldLabel}>
                 Nombre del lote <span className={classes.required}>*</span>
               </Text>
@@ -264,13 +307,13 @@ export function BatchManagementCreateModal({
               />
             </div>
 
-            <div>
+            <div className={classes.fieldGroup}>
               <Text className={classes.fieldLabel}>
-                Régimen <span className={classes.required}>*</span>
+                Tipo de contribuyente <span className={classes.required}>*</span>
               </Text>
               <Select
                 data={REGIME_OPTIONS}
-                placeholder="Seleccioná un régimen"
+                placeholder="Seleccioná tipo de contribuyente"
                 value={regime}
                 onChange={(value) => onFieldChange('regime', value)}
                 classNames={{
@@ -283,7 +326,7 @@ export function BatchManagementCreateModal({
             </div>
           </Group>
 
-          <div className={classes.section}>
+          <div className={classes.fieldGroup}>
             <Text className={classes.fieldLabel}>Descripción del lote</Text>
             <TextInput
               placeholder="Ej: Comercio mayorista con variación negativa 2024"
@@ -293,21 +336,43 @@ export function BatchManagementCreateModal({
             />
           </div>
 
-          <div className={classes.section}>
+          <div className={classes.fieldGroup}>
             <Text className={classes.fieldLabel}>
               CUITs a analizar <span className={classes.required}>*</span>
             </Text>
 
-            <Button
-              variant="default"
-              leftSection={<IconFileUpload size={14} />}
-              className={classes.importButton}
-              mb="md"
-              onClick={handleImportButtonClick}
-              loading={isPreviewPending}
-            >
-              Importar Excel
-            </Button>
+            <Group gap={8} align="center" wrap="nowrap" className={classes.cuitToolbar}>
+              <TextInput
+                leftSection={<IconSearch size={14} />}
+                placeholder="Buscar por CUIT o razón social..."
+                value={tableSearch}
+                onChange={(event) => setTableSearch(event.currentTarget.value)}
+                className={classes.cuitSearchInput}
+                classNames={{
+                  input: classes.cuitSearchField,
+                  section: classes.cuitSearchSection
+                }}
+              />
+
+              <Button
+                variant="default"
+                leftSection={<IconUpload size={13} />}
+                className={classes.toolbarButton}
+                onClick={handleImportButtonClick}
+                loading={isPreviewPending}
+              >
+                Importar Excel
+              </Button>
+
+              <Button
+                variant="default"
+                leftSection={<IconPlus size={13} />}
+                className={classes.toolbarButton}
+                onClick={() => setIsManualInputOpen((current) => !current)}
+              >
+                Cargar CUIT
+              </Button>
+            </Group>
 
             <input
               ref={fileInputRef}
@@ -317,18 +382,68 @@ export function BatchManagementCreateModal({
               onChange={handleImportFileChange}
             />
 
-            <Textarea
-              placeholder="Escribí o pegá CUITs..."
-              value={cuitsText}
-              onChange={(event) => onFieldChange('cuitsText', event.currentTarget.value)}
-              classNames={{
-                input: `${classes.fieldTextarea} ${classes.cuitsTextarea}`
-              }}
-            />
+            {isManualInputOpen ? (
+              <Group gap={8} wrap="nowrap" className={classes.manualInputRow}>
+                <TextInput
+                  value={manualCuitValue}
+                  onChange={(event) => setManualCuitValue(event.currentTarget.value)}
+                  onKeyDown={handleManualInputKeyDown}
+                  placeholder="Escribí o pegá un CUIT..."
+                  className={classes.manualCuitInput}
+                  classNames={{ input: classes.manualCuitField }}
+                />
+                <Button className={classes.submitInlineButton} onClick={handleManualCuitSubmit}>
+                  Agregar
+                </Button>
+              </Group>
+            ) : null}
 
-            <Text className={classes.helperText}>
-              Presioná Enter para agregar, o pegá varios separados por coma.
-            </Text>
+            <div className={classes.cuitTableContainer}>
+              <Table withTableBorder={false} withColumnBorders={false} className={classes.cuitTable}>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>#</Table.Th>
+                    <Table.Th>CUIT</Table.Th>
+                    <Table.Th>Razón Social</Table.Th>
+                    <Table.Th />
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {filteredLoadedCuits.length ? (
+                    filteredLoadedCuits.map((row, index) => (
+                      <Table.Tr key={row.id}>
+                        <Table.Td>{index + 1}</Table.Td>
+                        <Table.Td className={classes.tableMonoText}>{row.cuit}</Table.Td>
+                        <Table.Td>{row.businessName ?? '—'}</Table.Td>
+                        <Table.Td className={classes.removeColumn}>
+                          <ActionIcon
+                            variant="subtle"
+                            color="gray"
+                            className={classes.removeButton}
+                            onClick={() => onLoadedCuitRemove(row.id)}
+                          >
+                            <IconTrash size={14} />
+                          </ActionIcon>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  ) : (
+                    <Table.Tr>
+                      <Table.Td colSpan={4} className={classes.emptyTableCell}>
+                        Agregá CUITs usando el campo de arriba o importando un Excel.
+                      </Table.Td>
+                    </Table.Tr>
+                  )}
+                </Table.Tbody>
+              </Table>
+            </div>
+
+            <Group justify="space-between" align="center" className={classes.cuitMetaRow}>
+              <div className={classes.errorSlot} />
+              <Text className={classes.cuitCounter}>
+                {loadedCuits.length} CUITs cargados
+              </Text>
+            </Group>
           </div>
         </Stack>
 
@@ -355,4 +470,8 @@ export function BatchManagementCreateModal({
       />
     </>
   )
+}
+
+export function BatchManagementCreateModal(props: BatchManagementCreateModalProps) {
+  return <BatchManagementCreateModalContent key={props.batchNumber} {...props} />
 }

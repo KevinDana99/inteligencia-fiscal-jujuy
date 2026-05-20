@@ -328,4 +328,122 @@
 2. El usuario deberia poder generar un nuevo lote. (Lo implementaremos mas tarde).
 3. El usuario deberia poder seleccionar cruces y rango de fecha.
 4. El usuario deberia poder buscar entre los diferentes lotes.
-5. El usuario deberia poder desplegar cada item de la lista de lotes.
+5. El usuario deberia poder desplegar cada item de la lista de lotes
+
+## Update Modal Lotes
+
+## Estructura nuevo modal
+
+- En el nuevo diseño cambio un poco la estructura del modal, revisar la imagen de `codex/assets/design/dashboard/batch-management/newModal.png`
+
+## Diseño UI nuevo modal
+
+<div class="modal" style="width:580px;max-width:95vw">
+    <div class="modal-header" style="padding:24px 28px 18px">
+      <div>
+        <div class="modal-title" style="font-size:20px;font-weight:800">Crear nuevo lote</div>
+        <div class="modal-subtitle">Completá los datos y cargá los CUITs a analizar</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-nuevo-lote');resetForm()" style="font-size:20px;color:var(--gray-5)">×</button>
+    </div>
+    <div class="modal-body" style="padding:20px 28px;gap:20px">
+
+      <!-- Nombre + Régimen -->
+      <div class="form-row" id="lote-regimen-group">
+        <div class="form-group">
+          <label class="form-label" style="font-size:14px;font-weight:700;color:var(--gray-9)">Nombre del lote <span style="color:#FA5252">*</span></label>
+          <input class="form-input" id="lote-nombre" type="text" placeholder="Ej: ANOVA-623" style="border-radius:10px;padding:12px 16px" oninput="clearFieldError('lote-nombre','err-nombre')">
+          <div class="form-error" id="err-nombre"></div>
+        </div>
+        <div class="form-group" id="lote-regimen-field">
+          <label class="form-label" style="font-size:14px;font-weight:700;color:var(--gray-9)">Tipo de contribuyente <span style="color:#FA5252">*</span></label>
+          <select class="form-input form-select" id="lote-regimen" style="border-radius:10px;padding:12px 16px" onchange="clearFieldError('lote-regimen','err-regimen')">
+            <option value="">Seleccioná tipo de contribuyente</option>
+            <option value="cm">Convenio Multilateral</option>
+            <option value="local">Local</option>
+            <option value="noinscripto">No inscripto</option>
+          </select>
+          <div class="form-error" id="err-regimen"></div>
+        </div>
+      </div>
+
+      <!-- Tipo de contribuyente (informativo, solo desde Explorar Padrón) -->
+      <div id="lote-tipo-info" style="display:none;margin-bottom:4px">
+        <div style="font-size:13px;font-weight:700;color:var(--gray-9);margin-bottom:6px">Tipo de contribuyente</div>
+        <div id="lote-tipo-badge" style="display:inline-flex;align-items:center;gap:6px;background:var(--blue-1);border:1px solid #BFDBFE;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--blue-5)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <span id="lote-tipo-texto">Convenio Multilateral</span>
+        </div>
+        <div style="font-size:11.5px;color:var(--gray-5);margin-top:6px">Definido por los filtros de Explorar Padrón. No editable.</div>
+      </div>
+
+      <!-- Nombre solo (cuando viene desde Explorar Padrón) -->
+      <div class="form-group" id="lote-nombre-solo" style="display:none">
+        <label class="form-label" style="font-size:14px;font-weight:700;color:var(--gray-9)">Nombre del lote <span style="color:#FA5252">*</span></label>
+        <input class="form-input" id="lote-nombre-solo-input" type="text" placeholder="Ej: ANOVA-623" style="border-radius:10px;padding:12px 16px">
+        <div class="form-error" id="err-nombre-solo"></div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-group">
+        <label class="form-label" style="font-size:14px;font-weight:700;color:var(--gray-9)">Descripción del lote</label>
+        <input class="form-input" id="lote-desc" type="text" placeholder="Ej: Comercio mayorista con variación negativa 2024" style="border-radius:10px;padding:12px 16px">
+      </div>
+
+      <!-- CUITs -->
+      <div class="form-group">
+        <label class="form-label" style="font-size:14px;font-weight:700;color:var(--gray-9)">CUITs a analizar <span style="color:#FA5252">*</span></label>
+
+        <!-- Barra de acciones -->
+        <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
+          <div style="flex:1;display:flex;align-items:center;gap:8px;background:var(--gray-0);border:1px solid var(--gray-2);border-radius:8px;padding:7px 12px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input id="cuit-buscar" type="text" placeholder="Buscar por CUIT o razón social..." oninput="cuitTablaFiltrar(this.value)" style="border:none;outline:none;font-size:13px;background:transparent;font-family:'DM Sans',sans-serif;flex:1">
+          </div>
+          <div id="lote-importar-btn">
+            <button class="btn btn-outline btn-sm" onclick="simularImportExcel()" style="border-radius:8px;font-weight:600;gap:6px;white-space:nowrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              Importar Excel
+            </button>
+          </div>
+          <button onclick="toggleInputCuit()" id="btn-cargar-cuit" style="display: flex; align-items: center; gap: 6px; background: var(--gray-0); border-color: var(--gray-2); border-top-style: ; border-top-width: ; border-right-style: ; border-right-width: ; border-bottom-style: ; border-bottom-width: ; border-left-style: ; border-left-width: ; border-image-source: ; border-image-slice: ; border-image-width: ; border-image-outset: ; border-image-repeat: ; border-radius: 8px; padding: 7px 14px; font-family: &quot;DM Sans&quot;, sans-serif; font-size: 13px; font-weight: 600; color: var(--gray-7); cursor: pointer; white-space: nowrap;" onmouseover="this.style.background='var(--blue-1)';this.style.borderColor='var(--blue-5)';this.style.color='var(--blue-5)'" onmouseout="this.style.background='var(--gray-0)';this.style.borderColor='var(--gray-2)';this.style.color='var(--gray-7)'">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            Cargar CUIT
+          </button>
+        </div>
+
+        <!-- Input para agregar CUITs -->
+        <div id="input-cuit-container" style="display:none;margin-bottom:10px">
+          <input id="cuit-input" type="text" placeholder="Escribí o pegá un CUIT..." style="width:100%;border:1px solid var(--blue-5);border-radius:8px;padding:9px 14px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;box-shadow:0 0 0 3px rgba(67,117,238,.1);box-sizing:border-box" onkeydown="handleCuitInput(event)" onpaste="handleCuitPaste(event)">
+        </div>
+
+        <!-- Tabla de CUITs -->
+        <div style="border:1px solid var(--gray-2);border-radius:10px;overflow:hidden;max-height:280px;overflow-y:auto" id="cuit-tabla-container">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead style="background:var(--gray-0);position:sticky;top:0;z-index:1">
+              <tr>
+                <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--gray-5);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--gray-2);width:36px">#</th>
+                <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--gray-5);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--gray-2)">CUIT</th>
+                <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--gray-5);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--gray-2)">RAZÓN SOCIAL</th>
+                <th style="padding:8px 12px;width:40px;border-bottom:1px solid var(--gray-2)"></th>
+              </tr>
+            </thead>
+            <tbody id="cuit-tabla-tbody"><tr><td colspan="4" style="padding:24px;text-align:center;color:var(--gray-5);font-size:13px;font-style:italic">Agregá CUITs usando el campo de arriba o importando un Excel.</td></tr></tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+          <div class="form-error" id="err-cuits"></div>
+          <div style="font-size:12px;color:var(--gray-5)" id="cuit-contador">0 CUITs cargados</div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer" style="padding:16px 28px 24px;gap:10px">
+      <button class="btn btn-outline" onclick="closeModal('modal-nuevo-lote');resetForm()" style="border-radius:999px;padding:10px 24px;font-size:14px">Cancelar</button>
+      <button class="btn btn-primary" id="btn-cargar-lote" onclick="validarYCrearLote()" style="border-radius:999px;padding:10px 28px;font-size:14px;font-weight:700">
+        Cargar lote
+      </button>
+    </div>
+
+  </div>

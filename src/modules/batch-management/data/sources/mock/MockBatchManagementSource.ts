@@ -26,6 +26,10 @@ function normalizeRegime(regime: string) {
     return 'Convenio Multilateral' as const;
   }
 
+  if (regime === 'No inscripto' || regime === 'NoInscripto') {
+    return 'No inscripto' as const;
+  }
+
   return 'Regimen Local' as const;
 }
 
@@ -60,6 +64,67 @@ export class MockBatchManagementSource implements IBatchManagementSource {
   }
 
   async previewBatchLoad(payload: IBatchPreviewPayload): Promise<IBatchPreviewData> {
+    if (payload.file) {
+      return {
+        fileName: payload.file.name,
+        foundRecords: 6,
+        validCount: 5,
+        invalidCount: 1,
+        duplicatedCount: 0,
+        importableCount: 5,
+        records: [
+          {
+            record: 1,
+            originalCuit: '30-70123456-8',
+            normalizedCuit: '30701234568',
+            businessName: 'DISTRIBUIDORA NORTE ANDINO S.A.',
+            status: 'valid',
+            reason: null
+          },
+          {
+            record: 2,
+            originalCuit: '20-28456789-4',
+            normalizedCuit: '20284567894',
+            businessName: 'COMERCIAL PUNA NORTE S.R.L.',
+            status: 'valid',
+            reason: null
+          },
+          {
+            record: 3,
+            originalCuit: '30-61234567-2',
+            normalizedCuit: '30612345672',
+            businessName: 'TRANSPORTES QUEBRADA ALTA S.A.',
+            status: 'valid',
+            reason: null
+          },
+          {
+            record: 4,
+            originalCuit: '27-32178654-3',
+            normalizedCuit: '27321786543',
+            businessName: 'MINERA ALTIPLANO JUJUY S.A.',
+            status: 'valid',
+            reason: null
+          },
+          {
+            record: 5,
+            originalCuit: '30-55467891-0',
+            normalizedCuit: '30554678910',
+            businessName: 'AGRO HUMAHUACA S.R.L.',
+            status: 'valid',
+            reason: null
+          },
+          {
+            record: 6,
+            originalCuit: '99-00000000-0',
+            normalizedCuit: null,
+            businessName: null,
+            status: 'invalid',
+            reason: 'El CUIT no tiene un formato valido.'
+          }
+        ]
+      };
+    }
+
     const cuits = parseCuitsText(payload.cuitsText);
     const normalizedMap = new Set<string>();
     const records = cuits.map((cuit, index) => {

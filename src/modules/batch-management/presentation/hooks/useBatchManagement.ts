@@ -10,12 +10,12 @@ import {
 import type {
   IBatchCreatedSummary,
   IBatchCrossFilters,
+  IBatchLoadedCuitRow,
   IBatchListData,
   IBatchManagementItem,
   IBatchManagementItems,
   IBatchPreviewData
 } from '../../data/models/BatchManagement'
-import { batchManagementMock } from '../../data/sources/mock/fixtures/batches'
 
 const DEFAULT_BATCH_CROSS_FILTERS: IBatchCrossFilters = {
   fromYear: '2024',
@@ -64,19 +64,20 @@ function mapBatchForPresentation(batch: IBatchManagementItem): IBatchManagementI
   }
 }
 
+function getInitialBatches(initialBatchData?: IBatchListData | null): IBatchManagementItems {
+  return initialBatchData?.batches?.length
+    ? initialBatchData.batches.map(mapBatchForPresentation)
+    : []
+}
+
 export function useBatchManagement(initialBatchData?: IBatchListData | null) {
-  const [batches, setBatches] = useState<IBatchManagementItems>(
-    initialBatchData?.batches?.length
-      ? initialBatchData.batches.map(mapBatchForPresentation)
-      : batchManagementMock
-  )
-  const [totalBatches, setTotalBatches] = useState<number>(
-    initialBatchData?.totalItems ?? batchManagementMock.length
-  )
+  const [batches, setBatches] = useState<IBatchManagementItems>(getInitialBatches(initialBatchData))
+  const [totalBatches, setTotalBatches] = useState<number>(initialBatchData?.totalItems ?? 0)
   const [searchValue, setSearchValue] = useState('')
   const [expandedBatchId, setExpandedBatchId] = useState<string | null>(null)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [createForm, setCreateForm] = useState<IBatchCreateForm>(EMPTY_BATCH_CREATE_FORM)
+  const [loadedCuits, setLoadedCuits] = useState<IBatchLoadedCuitRow[]>([])
   const [previewData, setPreviewData] = useState<IBatchPreviewData | null>(null)
   const [isImportPreviewOpen, setIsImportPreviewOpen] = useState(false)
   const [batchCrossFilters, setBatchCrossFilters] = useState<
@@ -130,11 +131,17 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
       ...EMPTY_BATCH_CREATE_FORM,
       batchNumber: getNextBatchNumber()
     })
+    setLoadedCuits([])
+    setPreviewData(null)
+    setIsImportPreviewOpen(false)
     setIsCreateModalOpen(true)
   }
 
   const closeCreateModal = () => {
     setIsCreateModalOpen(false)
+    setLoadedCuits([])
+    setPreviewData(null)
+    setIsImportPreviewOpen(false)
   }
 
   const updateSearchValue = (value: string) => {
@@ -187,7 +194,7 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
     const name = createForm.name.trim()
     const regime = createForm.regime?.trim() ?? ''
     const description = createForm.description.trim()
-    const parsedCuits = parseCuits(createForm.cuitsText)
+    const parsedCuits = loadedCuits.map((row) => row.cuit)
 
     if (!batchNumber || !name || !regime || !parsedCuits.length) {
       return false
@@ -199,8 +206,8 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
           name,
           description,
           regime,
-          cuitsText: createForm.cuitsText,
-          file: createForm.file
+          cuitsText: parsedCuits.join('\n'),
+          file: null
         })
 
         if (!result.success || !result.data) {
@@ -231,6 +238,7 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
         setExpandedBatchId(newBatch.id)
         setIsCreateModalOpen(false)
         setCreateForm(EMPTY_BATCH_CREATE_FORM)
+        setLoadedCuits([])
         setPreviewData(null)
       })()
     })
@@ -271,16 +279,58 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
       return
     }
 
-    const validImportedCuits = previewData.records
+    const validImportedCuits: IBatchLoadedCuitRow[] = previewData.records
       .filter((row) => row.status === 'valid' && row.normalizedCuit)
-      .map((row) => row.originalCuit)
-      .join('\n')
+      .map((row, index) => ({
+        id: `import-${index + 1}-${row.normalizedCuit ?? row.originalCuit}`,
+        cuit: row.originalCuit,
+        businessName: row.businessName,
+        source: 'import'
+      }))
 
-    setCreateForm((current) => ({
-      ...current,
-      cuitsText: validImportedCuits
-    }))
+    setLoadedCuits(validImportedCuits)
     setIsImportPreviewOpen(false)
+  }
+
+  const addManualCuits = (rawValue: string) => {
+    const parsedValues = parseCuits(rawValue)
+
+    if (!parsedValues.length) {
+      return 0
+    }
+
+    const normalizedExisting = new Set(
+      loadedCuits.map((row) => row.cuit.replace(/\D/g, ''))
+    )
+
+    const nextRows = parsedValues.reduce<IBatchLoadedCuitRow[]>((accumulator, value, index) => {
+      const normalizedCuit = value.replace(/\D/g, '')
+
+      if (!normalizedCuit || normalizedExisting.has(normalizedCuit)) {
+        return accumulator
+      }
+
+      normalizedExisting.add(normalizedCuit)
+      accumulator.push({
+        id: `manual-${Date.now()}-${index}-${normalizedCuit}`,
+        cuit: value,
+        businessName: null,
+        source: 'manual'
+      })
+
+      return accumulator
+    }, [])
+
+    if (!nextRows.length) {
+      return 0
+    }
+
+    setLoadedCuits((current) => [...current, ...nextRows])
+    return nextRows.length
+  }
+
+  const removeLoadedCuit = (rowId: string) => {
+    setLoadedCuits((current) => current.filter((row) => row.id !== rowId))
   }
 
   const getBatchCrossFilters = (batchId: string) => {
@@ -334,6 +384,7 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
     expandedBatchId,
     isCreateModalOpen,
     createForm,
+    loadedCuits,
     previewData,
     isImportPreviewOpen,
     isPreviewPending,
@@ -348,6 +399,8 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
     closeCreateModal,
     setCreateFormField,
     createBatch,
+    addManualCuits,
+    removeLoadedCuit,
     openImportPreview,
     closeImportPreview,
     confirmImportPreview

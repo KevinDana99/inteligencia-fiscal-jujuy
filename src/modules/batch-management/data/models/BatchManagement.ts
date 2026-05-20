@@ -1,11 +1,13 @@
-export type BatchRegime = 'Convenio Multilateral' | 'Regimen Local';
+export type BatchRegime = 'Convenio Multilateral' | 'Regimen Local' | 'No inscripto';
 export type BatchRequestRegime =
   | 'CM'
   | 'Convenio Multilateral'
   | 'ConvenioMultilateral'
   | 'Convenio Multilateral (CM)'
   | 'Regimen Local'
-  | 'RegimenLocal';
+  | 'RegimenLocal'
+  | 'No inscripto'
+  | 'NoInscripto';
 
 export interface IBatchManagementAuthor {
   id: string;
@@ -18,6 +20,13 @@ export interface IBatchManagementCuit {
   businessName: string | null;
   regime: BatchRegime;
   order: number;
+}
+
+export interface IBatchLoadedCuitRow {
+  id: string;
+  cuit: string;
+  businessName: string | null;
+  source: 'manual' | 'import';
 }
 
 export interface IBatchCrossFilters {
