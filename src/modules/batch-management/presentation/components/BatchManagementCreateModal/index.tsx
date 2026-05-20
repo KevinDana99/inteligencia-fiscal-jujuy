@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import {
   Badge,
   Button,
@@ -15,66 +15,27 @@ import {
   Title
 } from '@mantine/core'
 import { IconAlertTriangleFilled, IconCheck, IconFileUpload } from '@tabler/icons-react'
+import type { IBatchPreviewData } from '../../../data/models/BatchManagement'
 import classes from './BatchManagementCreateModal.module.css'
 
 const REGIME_OPTIONS = [
   { value: 'CM', label: 'Convenio Multilateral' },
-  { value: 'RG', label: 'Régimen General' },
-  { value: 'SAF', label: 'SAF' }
+  { value: 'Regimen Local', label: 'Regimen Local' }
 ]
-
-const IMPORT_PREVIEW_ROWS = [
-  {
-    id: '1',
-    cuit: '30-70123456-8',
-    businessName: 'DISTRIBUIDORA NORTE ANDINO S.A.',
-    status: 'valid'
-  },
-  {
-    id: '2',
-    cuit: '20-28456789-4',
-    businessName: 'COMERCIAL PUNA NORTE S.R.L.',
-    status: 'valid'
-  },
-  {
-    id: '3',
-    cuit: '30-61234567-2',
-    businessName: 'TRANSPORTES QUEBRADA ALTA S.A.',
-    status: 'valid'
-  },
-  {
-    id: '4',
-    cuit: '27-32178654-3',
-    businessName: 'MINERA ALTIPLANO JUJUY S.A.',
-    status: 'valid'
-  },
-  {
-    id: '5',
-    cuit: '30-55467891-0',
-    businessName: 'AGRO HUMAHUACA S.R.L.',
-    status: 'valid'
-  },
-  {
-    id: '6',
-    cuit: '99-00000000-0',
-    businessName: '—',
-    status: 'invalid'
-  }
-] as const
 
 function ImportPreviewModal({
   opened,
-  fileName,
+  previewData,
   onClose,
   onConfirm
 }: {
   opened: boolean
-  fileName: string
+  previewData: IBatchPreviewData | null
   onClose: () => void
   onConfirm: () => void
 }) {
-  const validCount = IMPORT_PREVIEW_ROWS.filter((row) => row.status === 'valid').length
-  const invalidCount = IMPORT_PREVIEW_ROWS.length - validCount
+  const validCount = previewData?.validCount ?? 0
+  const invalidCount = (previewData?.invalidCount ?? 0) + (previewData?.duplicatedCount ?? 0)
 
   return (
     <Modal
@@ -88,7 +49,8 @@ function ImportPreviewModal({
             Vista previa — Importación Excel
           </Title>
           <Text className={classes.description}>
-            {fileName} · 6 registros encontrados
+            {previewData?.fileName ?? 'archivo.xlsx'} · {previewData?.foundRecords ?? 0}{' '}
+            registros encontrados
           </Text>
         </Stack>
       }
@@ -121,17 +83,20 @@ function ImportPreviewModal({
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {IMPORT_PREVIEW_ROWS.map((row, index) => {
-                const isInvalid = row.status === 'invalid'
+              {previewData?.records.map((row) => {
+                const isInvalid = row.status !== 'valid'
 
                 return (
-                  <Table.Tr key={row.id} className={isInvalid ? classes.previewInvalidRow : ''}>
-                    <Table.Td>{index + 1}</Table.Td>
+                  <Table.Tr
+                    key={`${row.record}-${row.originalCuit}`}
+                    className={isInvalid ? classes.previewInvalidRow : ''}
+                  >
+                    <Table.Td>{row.record}</Table.Td>
                     <Table.Td className={isInvalid ? classes.previewInvalidText : classes.previewMonoText}>
-                      {row.cuit}
+                      {row.originalCuit}
                     </Table.Td>
                     <Table.Td className={isInvalid ? classes.previewInvalidText : undefined}>
-                      {row.businessName}
+                      {row.businessName ?? '—'}
                     </Table.Td>
                     <Table.Td>
                       <Badge
@@ -140,7 +105,11 @@ function ImportPreviewModal({
                           isInvalid ? classes.invalidStateBadge : classes.validStateBadge
                         }
                       >
-                        {isInvalid ? '✕ Inválido' : '✓ Válido'}
+                        {row.status === 'duplicated'
+                          ? '✕ Duplicado'
+                          : isInvalid
+                            ? '✕ Inválido'
+                            : '✓ Válido'}
                       </Badge>
                     </Table.Td>
                   </Table.Tr>
@@ -182,8 +151,15 @@ export function BatchManagementCreateModal({
   regime,
   description,
   cuitsText,
+  previewData,
+  isImportPreviewOpen,
+  isPreviewPending,
+  isCreatePending,
   onClose,
   onFieldChange,
+  onImportFileSelect,
+  onImportPreviewClose,
+  onImportPreviewConfirm,
   onSubmit
 }: {
   opened: boolean
@@ -192,20 +168,22 @@ export function BatchManagementCreateModal({
   regime: string | null
   description: string
   cuitsText: string
+  previewData: IBatchPreviewData | null
+  isImportPreviewOpen: boolean
+  isPreviewPending: boolean
+  isCreatePending: boolean
   onClose: () => void
   onFieldChange: (
-    field: 'name' | 'regime' | 'description' | 'cuitsText',
-    value: string | null
+    field: 'name' | 'regime' | 'description' | 'cuitsText' | 'file',
+    value: string | File | null
   ) => void
+  onImportFileSelect: (file: File) => void
+  onImportPreviewClose: () => void
+  onImportPreviewConfirm: () => void
   onSubmit: () => boolean
 }) {
-  const [isImportPreviewOpen, setIsImportPreviewOpen] = useState(false)
-  const [selectedImportFileName, setSelectedImportFileName] = useState('archivo.xlsx')
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const isCreateReady = Boolean(name.trim() && regime && cuitsText.trim())
-  const validImportedCuits = IMPORT_PREVIEW_ROWS.filter((row) => row.status === 'valid')
-    .map((row) => row.cuit)
-    .join('\n')
 
   const handleImportButtonClick = () => {
     fileInputRef.current?.click()
@@ -218,14 +196,9 @@ export function BatchManagementCreateModal({
       return
     }
 
-    setSelectedImportFileName(file.name)
-    setIsImportPreviewOpen(true)
+    onFieldChange('file', file)
+    onImportFileSelect(file)
     event.currentTarget.value = ''
-  }
-
-  const handleConfirmImport = () => {
-    onFieldChange('cuitsText', validImportedCuits)
-    setIsImportPreviewOpen(false)
   }
 
   const handleNameChange = (value: string) => {
@@ -331,6 +304,7 @@ export function BatchManagementCreateModal({
               className={classes.importButton}
               mb="md"
               onClick={handleImportButtonClick}
+              loading={isPreviewPending}
             >
               Importar Excel
             </Button>
@@ -366,6 +340,7 @@ export function BatchManagementCreateModal({
             className={isCreateReady ? classes.submitButtonActive : classes.submitButton}
             disabled={!isCreateReady}
             onClick={handleCreateBatch}
+            loading={isCreatePending}
           >
             Cargar lote
           </Button>
@@ -374,9 +349,9 @@ export function BatchManagementCreateModal({
 
       <ImportPreviewModal
         opened={isImportPreviewOpen}
-        fileName={selectedImportFileName}
-        onClose={() => setIsImportPreviewOpen(false)}
-        onConfirm={handleConfirmImport}
+        previewData={previewData}
+        onClose={onImportPreviewClose}
+        onConfirm={onImportPreviewConfirm}
       />
     </>
   )

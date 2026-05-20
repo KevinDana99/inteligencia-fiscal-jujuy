@@ -12,34 +12,60 @@ interface ApiRequestInit extends RequestInit {
 
 export class ApiClientError extends Error {
   status: number;
+  data?: unknown;
 
-  constructor(status: number, message?: string) {
+  constructor(status: number, message?: string, data?: unknown) {
     super(message ?? `Request failed with status ${status}`);
     this.name = 'ApiClientError';
     this.status = status;
+    this.data = data;
   }
 }
 
-async function requestJson<T>(
+async function request<T>(
   method: 'GET' | 'POST',
   path: string,
   config?: ApiClientConfig,
   init?: ApiRequestInit
 ): Promise<T> {
   const baseUrl = config?.baseUrl ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
+  const hasFormDataBody = init?.body instanceof FormData;
+  const headers = new Headers(init?.headers);
+
+  if (!hasFormDataBody) {
+    headers.set('Content-Type', 'application/json');
+  }
+
+  if (config?.token) {
+    headers.set('Authorization', `Bearer ${config.token}`);
+  }
+
   const response = await fetch(`${baseUrl}${path}`, {
     ...init,
     method,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(config?.token ? { Authorization: `Bearer ${config.token}` } : {}),
-      ...init?.headers
-    },
+    headers,
     next: init?.next
   });
 
   if (!response.ok) {
-    throw new ApiClientError(response.status);
+    let errorData: unknown = undefined;
+    let errorMessage: string | undefined = undefined;
+
+    try {
+      errorData = await response.json();
+      if (
+        errorData &&
+        typeof errorData === 'object' &&
+        'mensaje' in errorData &&
+        typeof (errorData as { mensaje?: unknown }).mensaje === 'string'
+      ) {
+        errorMessage = (errorData as { mensaje: string }).mensaje;
+      }
+    } catch {
+      errorData = undefined;
+    }
+
+    throw new ApiClientError(response.status, errorMessage, errorData);
   }
 
   if (response.status === 204) {
@@ -54,7 +80,7 @@ export async function getJson<T>(
   config?: ApiClientConfig,
   init?: ApiRequestInit
 ): Promise<T> {
-  return requestJson<T>('GET', path, config, init);
+  return request<T>('GET', path, config, init);
 }
 
 export async function postJson<TResponse, TBody>(
@@ -63,8 +89,20 @@ export async function postJson<TResponse, TBody>(
   config?: ApiClientConfig,
   init?: ApiRequestInit
 ): Promise<TResponse> {
-  return requestJson<TResponse>(path ? 'POST' : 'POST', path, config, {
+  return request<TResponse>('POST', path, config, {
     ...init,
     body: JSON.stringify(body)
+  });
+}
+
+export async function postFormData<TResponse>(
+  path: string,
+  body: FormData,
+  config?: ApiClientConfig,
+  init?: ApiRequestInit
+): Promise<TResponse> {
+  return request<TResponse>('POST', path, config, {
+    ...init,
+    body
   });
 }

@@ -6,15 +6,25 @@ import { useBatchManagement } from '../../hooks'
 import { BatchManagementCreateModal } from '../BatchManagementCreateModal'
 import { BatchManagementTable } from '../BatchManagementTable'
 import classes from './BatchManagementPage.module.css'
+import type { IBatchListData } from '../../../data/models/BatchManagement'
 
-export function BatchManagementPage() {
+export function BatchManagementPage({
+  initialBatchData
+}: {
+  initialBatchData: IBatchListData | null
+}) {
   const {
     totalBatches,
     filteredBatches,
     searchValue,
+    isSearchPending,
     expandedBatchId,
     isCreateModalOpen,
     createForm,
+    previewData,
+    isImportPreviewOpen,
+    isPreviewPending,
+    isCreatePending,
     getBatchCrossFilters,
     setSearchValue,
     toggleExpandedBatch,
@@ -24,8 +34,11 @@ export function BatchManagementPage() {
     openCreateModal,
     closeCreateModal,
     setCreateFormField,
-    createBatch
-  } = useBatchManagement()
+    createBatch,
+    openImportPreview,
+    closeImportPreview,
+    confirmImportPreview
+  } = useBatchManagement(initialBatchData)
 
   return (
     <Stack gap="xl" className={classes.root}>
@@ -59,6 +72,7 @@ export function BatchManagementPage() {
           placeholder="Buscar por numero de lote..."
           value={searchValue}
           onChange={(event) => setSearchValue(event.currentTarget.value)}
+          rightSection={isSearchPending ? <IconSearch size={14} /> : null}
           className={classes.searchInput}
           classNames={{
             input: classes.searchInputField,
@@ -87,8 +101,15 @@ export function BatchManagementPage() {
         regime={createForm.regime}
         description={createForm.description}
         cuitsText={createForm.cuitsText}
+        previewData={previewData}
+        isImportPreviewOpen={isImportPreviewOpen}
+        isPreviewPending={isPreviewPending}
+        isCreatePending={isCreatePending}
         onClose={closeCreateModal}
         onFieldChange={setCreateFormField}
+        onImportFileSelect={openImportPreview}
+        onImportPreviewClose={closeImportPreview}
+        onImportPreviewConfirm={confirmImportPreview}
         onSubmit={createBatch}
       />
     </Stack>
