@@ -29,10 +29,18 @@ export interface IBatchLoadedCuitRow {
   source: 'manual' | 'import';
 }
 
-export interface IBatchCrossFilters {
+export interface IBatchCrossSectionFilters {
+  isOpen: boolean;
   fromYear: string;
   toYear: string;
+  fromMonth: string | null;
+  toMonth: string | null;
   crossTypes: string[];
+}
+
+export interface IBatchCrossFilters {
+  monthly: IBatchCrossSectionFilters;
+  annual: IBatchCrossSectionFilters;
 }
 
 export interface IBatchManagementItem {

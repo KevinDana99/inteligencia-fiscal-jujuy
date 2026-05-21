@@ -447,3 +447,132 @@
     </div>
 
   </div>
+
+---
+
+## Update Menu Cruces
+
+- Ref visual: `codex/assets/design/dashboard/batch-management/crossing-modal.png`
+
+## Casos de uso
+
+- Primer cambio grande debe poder el usuario seleccionar entre mensual o anual el periodo.
+- En los mensuales solo deben mostrarse los cruces permitidos mensuales como en la referencia de imagen, en los anuales solo los anuales esto deben ser items desplegables que permitan seleccionar dependiendo en caso cada formulario si el mensual o el anual.
+
+## Funcionalidades
+
+- Se debe poder seleccionar mensual o anual y deberia mostrarse los cruces en un item desplegable que conlleva cada uno segun el que despleguemos.
+- Al abrir el menu de cruces del lote, las secciones `Mensual` y `Anual` deben arrancar cerradas por defecto.
+- El usuario debe poder desplegar `Mensual`, `Anual` o ambas secciones al mismo tiempo.
+- El anual debe mostrar los cruces:
+
+Control de desvío de BI — Régimen CM
+Control de BI declarada por actividad
+Detección de no inscriptos
+Comparación de Bases Presuntivas
+Contribuyentes con más de dos inmuebles
+
+- El mensual debe mostrar los siguientes cruces:
+
+Control de desvío de BI — Régimen Gral
+Control de créditos
+Control de SAF
+Control de Agentes
+
+- El cruce mensual debe poder seleccionar mes y año en rango
+- El cruce de anual debe poder seleccionar solo años permitiendo poder acceder a registros con un limite de 5 años para atras solamente. Ese seria el max limit que podes acceder del pasado y del futuro seria como limite el ultimo año osea el actual.
+- Al desplegar por primera vez la seccion `Mensual`, los valores por defecto deben ser:
+  - `Desde`: mes actual + año actual
+  - `Hasta`: mes actual + año actual
+- Al desplegar por primera vez la seccion `Anual`, los valores por defecto deben ser:
+  - `Desde`: año actual
+  - `Hasta`: año actual
+- `Mensual` y `Anual` deben mantener estados independientes entre si.
+- Ambos bloques deben compartir una estructura uniforme de datos. `Mensual` agrega mes dentro de ese mismo shape general, pero no debe romper la forma del objeto.
+- No se deben ofrecer opciones fuera del rango permitido de 5 años hacia atras ni opciones futuras por encima del año actual.
+- Si el usuario especifica un rango invalido donde `Desde` sea mayor que `Hasta`, se debe mostrar el mensaje:
+  - `Debes especificar un rango válido para realizar el cruce`
+- `Confirmar` debe permanecer bloqueado hasta que exista al menos un cruce seleccionado en el estado de `Mensual`, `Anual` o ambos.
+- En esta iteracion, `Confirmar` debe:
+  - enviar al usuario a `Gestión de Cruces`
+- La consulta real al backend a partir de la configuracion de cruces no se implementa en esta branch. Esa integracion se hara cuando esta branch se mergee con la branch de `Gestión de Cruces` en `develop`.
+- `Mensual` y `Anual` pueden configurarse al mismo tiempo. La resolucion operativa de ambos conjuntos de datos se implementara luego desde `Gestión de Cruces` con contratos reales.
+- La distincion entre cruces mensuales y anuales sera devuelta luego por backend a traves de contratos para reflejarse en el flujo correspondiente.
+
+## Diseño y UI
+
+<div class="dropdown-menu open" id="menu-622" style="min-width: 420px; max-height: 80vh; overflow-y: auto; padding: 0px; position: fixed; top: 209px; left: 848px; width: 420px; z-index: 9999;">
+
+                    <!-- ── CRUCES MENSUALES ── -->
+                    <div style="border-bottom:1px solid var(--gray-1)">
+                      <div onclick="toggleSeccionCruces('lote-622-mensual')" style="display: flex; align-items: center; justify-content: space-between; padding: 11px 16px; cursor: pointer; background: var(--gray-0);" onmouseover="this.style.background='#EFF6FF'" onmouseout="this.style.background='var(--gray-0)'">
+                        <div style="display:flex;align-items:center;gap:8px">
+                          <span style="background:#DBEAFE;color:#2563EB;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px">MENSUAL</span>
+                          <span style="font-size:12.5px;font-weight:700;color:var(--gray-7)">Cruces mensuales</span>
+                        </div>
+                        <svg id="chevron-lote-622-mensual" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gray-5)" stroke-width="2" style="transition: transform 0.2s; transform: rotate(90deg);"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                      </div>
+                      <div id="seccion-lote-622-mensual" style="padding: 10px 16px; display: block;">
+                        <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:10px 12px;margin-bottom:8px">
+                          <div style="font-size:10px;font-weight:700;color:#2563EB;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Período</div>
+                          <div style="display:flex;align-items:center;gap:6px">
+                            <div style="flex:1">
+                              <div style="font-size:10px;color:#2563EB;margin-bottom:3px">Desde</div>
+                              <div style="display:flex;gap:3px">
+                                <select style="flex:1;border:1px solid #BFDBFE;border-radius:6px;padding:5px 6px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--gray-9);outline:none;background:white"><option>Ene</option><option>Feb</option><option>Mar</option><option>Abr</option><option>May</option><option>Jun</option><option selected="">Jul</option><option>Ago</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dic</option></select>
+                                <select style="width:60px;border:1px solid #BFDBFE;border-radius:6px;padding:5px 6px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--gray-9);outline:none;background:white"><option>2022</option><option>2023</option><option selected="">2024</option><option>2025</option></select>
+                              </div>
+                            </div>
+                            <div style="color:var(--gray-4);margin-top:12px">→</div>
+                            <div style="flex:1">
+                              <div style="font-size:10px;color:#2563EB;margin-bottom:3px">Hasta</div>
+                              <div style="display:flex;gap:3px">
+                                <select style="flex:1;border:1px solid #BFDBFE;border-radius:6px;padding:5px 6px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--gray-9);outline:none;background:white"><option>Ene</option><option>Feb</option><option>Mar</option><option>Abr</option><option>May</option><option>Jun</option><option>Jul</option><option>Ago</option><option>Sep</option><option>Oct</option><option>Nov</option><option selected="">Dic</option></select>
+                                <select style="width:60px;border:1px solid #BFDBFE;border-radius:6px;padding:5px 6px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--gray-9);outline:none;background:white"><option>2022</option><option>2023</option><option>2024</option><option selected="">2025</option></select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <label class="cruce-check-row" onmouseover="this.style.background='var(--blue-1)'" onmouseout="this.style.background=''" style=""><input type="checkbox" style="accent-color:var(--blue-5);width:13px;height:13px"> Control de desvío de BI — Régimen Gral</label>
+                        <label class="cruce-check-row" onmouseover="this.style.background='var(--blue-1)'" onmouseout="this.style.background=''" style=""><input type="checkbox" style="accent-color:var(--blue-5);width:13px;height:13px"> Control de créditos</label>
+                        <label class="cruce-check-row" onmouseover="this.style.background='var(--blue-1)'" onmouseout="this.style.background=''" style=""><input type="checkbox" style="accent-color:var(--blue-5);width:13px;height:13px" checked=""> Control de SAF</label>
+                        <label class="cruce-check-row" onmouseover="this.style.background='var(--blue-1)'" onmouseout="this.style.background=''" style=""><input type="checkbox" style="accent-color:var(--blue-5);width:13px;height:13px"> Control de Agentes</label>
+                      </div>
+                    </div>
+
+                    <!-- ── CRUCES ANUALES ── -->
+                    <div style="border-bottom:1px solid var(--gray-1)">
+                      <div onclick="toggleSeccionCruces('lote-622-anual')" style="display: flex; align-items: center; justify-content: space-between; padding: 11px 16px; cursor: pointer; background: var(--gray-0);" onmouseover="this.style.background='#F0FDF4'" onmouseout="this.style.background='var(--gray-0)'">
+                        <div style="display:flex;align-items:center;gap:8px">
+                          <span style="background:#D1FAE5;color:#059669;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px">ANUAL</span>
+                          <span style="font-size:12.5px;font-weight:700;color:var(--gray-7)">Cruces anuales</span>
+                        </div>
+                        <svg id="chevron-lote-622-anual" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gray-5)" stroke-width="2" style="transition: transform 0.2s; transform: rotate(90deg);"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                      </div>
+                      <div id="seccion-lote-622-anual" style="padding: 10px 16px; display: block;">
+                        <div style="background:#F0FDF4;border:1px solid #A7F3D0;border-radius:10px;padding:10px 12px;margin-bottom:8px">
+                          <div style="font-size:10px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Período</div>
+                          <div style="display:flex;align-items:center;gap:6px">
+                            <div style="flex:1">
+                              <div style="font-size:10px;color:#059669;margin-bottom:3px">Desde</div>
+                              <select style="width:100%;border:1px solid #A7F3D0;border-radius:6px;padding:5px 8px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--gray-9);outline:none;background:white"><option>2020</option><option>2021</option><option>2022</option><option selected="">2023</option><option>2024</option><option>2025</option></select>
+                            </div>
+                            <div style="color:var(--gray-4);margin-top:12px">→</div>
+                            <div style="flex:1">
+                              <div style="font-size:10px;color:#059669;margin-bottom:3px">Hasta</div>
+                              <select style="width:100%;border:1px solid #A7F3D0;border-radius:6px;padding:5px 8px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--gray-9);outline:none;background:white"><option>2020</option><option>2021</option><option>2022</option><option>2023</option><option>2024</option><option selected="">2025</option></select>
+                            </div>
+                          </div>
+                        </div>
+                        <label class="cruce-check-row" onmouseover="this.style.background='var(--blue-1)'" onmouseout="this.style.background=''" style=""><input type="checkbox" style="accent-color:var(--blue-5);width:13px;height:13px" checked=""> Control de desvío de BI — Régimen CM</label>
+                        <label class="cruce-check-row" onmouseover="this.style.background='var(--blue-1)'" onmouseout="this.style.background=''" style=""><input type="checkbox" style="accent-color:var(--blue-5);width:13px;height:13px"> Control de BI declarada por actividad</label>
+                        <label class="cruce-check-row" onmouseover="this.style.background='var(--blue-1)'" onmouseout="this.style.background=''" style=""><input type="checkbox" style="accent-color:var(--blue-5);width:13px;height:13px"> Detección de no inscriptos</label>
+                        <label class="cruce-check-row" onmouseover="this.style.background='var(--blue-1)'" onmouseout="this.style.background=''" style=""><input type="checkbox" style="accent-color:var(--blue-5);width:13px;height:13px"> Comparación de Bases Presuntivas</label>
+                        <label class="cruce-check-row" onmouseover="this.style.background='var(--blue-1)'" onmouseout="this.style.background=''" style=""><input type="checkbox" style="accent-color:var(--blue-5);width:13px;height:13px"> Contribuyentes con más de dos inmuebles</label>
+                      </div>
+                    </div>
+
+                    <div style="padding:10px 16px;display:flex;justify-content:flex-end">
+                      <button class="btn btn-primary btn-sm" onclick="confirmarCruceLote('622',this)">Confirmar</button>
+                    </div>
+                  </div>

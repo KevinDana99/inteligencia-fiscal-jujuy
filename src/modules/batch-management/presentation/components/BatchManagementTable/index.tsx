@@ -1,6 +1,7 @@
 'use client'
 
 import { Fragment } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   ActionIcon,
   Badge,
@@ -15,49 +16,95 @@ import {
 } from '@mantine/core'
 import {
   IconChevronRight,
+  IconChevronDown,
   IconDotsVertical,
   IconSearch
 } from '@tabler/icons-react'
 import type {
   IBatchCrossFilters,
+  IBatchCrossSectionFilters,
   IBatchManagementItem,
   IBatchManagementItems
 } from '../../../data/models/BatchManagement'
 import classes from './BatchManagementTable.module.css'
 
-const YEAR_OPTIONS = ['2021', '2022', '2023', '2024', '2025']
-const CROSS_OPTIONS = [
+const currentDate = new Date()
+const currentYear = currentDate.getFullYear()
+
+const YEAR_OPTIONS = Array.from({ length: 6 }, (_, index) => String(currentYear - 5 + index))
+const MONTH_OPTIONS = [
+  { value: '01', label: 'Ene' },
+  { value: '02', label: 'Feb' },
+  { value: '03', label: 'Mar' },
+  { value: '04', label: 'Abr' },
+  { value: '05', label: 'May' },
+  { value: '06', label: 'Jun' },
+  { value: '07', label: 'Jul' },
+  { value: '08', label: 'Ago' },
+  { value: '09', label: 'Sep' },
+  { value: '10', label: 'Oct' },
+  { value: '11', label: 'Nov' },
+  { value: '12', label: 'Dic' }
+]
+const MONTHLY_CROSS_OPTIONS = [
   'Control de desvio de BI - Regimen Gral',
-  'Control de desvio de BI - Regimen CM',
-  'Control de BI declarada por actividad',
   'Control de creditos',
   'Control de SAF',
-  'Control de Agentes',
+  'Control de Agentes'
+]
+const ANNUAL_CROSS_OPTIONS = [
+  'Control de desvio de BI - Regimen CM',
+  'Control de BI declarada por actividad',
   'Deteccion de no inscriptos',
-  'Comparacion de Bases Presuntivas'
+  'Comparacion de Bases Presuntivas',
+  'Contribuyentes con más de dos inmuebles'
 ]
 
 function BatchManagementMenu({
   batchId,
   filters,
+  validationMessage,
+  canConfirm,
+  onSectionToggle,
   onYearChange,
+  onMonthChange,
   onCrossTypeToggle,
   onConfirm
 }: {
   batchId: string
   filters: IBatchCrossFilters
+  validationMessage: string | null
+  canConfirm: boolean
+  onSectionToggle: (batchId: string, section: keyof IBatchCrossFilters) => void
   onYearChange: (
     batchId: string,
-    field: keyof Pick<IBatchCrossFilters, 'fromYear' | 'toYear'>,
+    section: keyof IBatchCrossFilters,
+    field: keyof Pick<IBatchCrossSectionFilters, 'fromYear' | 'toYear'>,
     value: string | null
   ) => void
-  onCrossTypeToggle: (batchId: string, crossType: string) => void
+  onMonthChange: (
+    batchId: string,
+    field: keyof Pick<IBatchCrossSectionFilters, 'fromMonth' | 'toMonth'>,
+    value: string | null
+  ) => void
+  onCrossTypeToggle: (
+    batchId: string,
+    section: keyof IBatchCrossFilters,
+    crossType: string
+  ) => void
   onConfirm: (batchId: string) => void
 }) {
+  const router = useRouter()
+
+  const handleConfirm = () => {
+    onConfirm(batchId)
+    router.push(`/gestion-de-cruces?batchId=${batchId}`)
+  }
+
   return (
     <Menu
       shadow="md"
-      width={320}
+      width={420}
       withinPortal={false}
       position="bottom-end"
       offset={8}
@@ -78,75 +125,184 @@ function BatchManagementMenu({
         onClick={(event) => event.stopPropagation()}
         className={classes.crossMenuDropdown}
       >
-        <div className={classes.menuSection}>
-          <Menu.Label className={classes.menuLabel}>
-            Periodo a fiscalizar <span className={classes.menuLabelHint}>(máx. 5 años)</span>
-          </Menu.Label>
-          <div className={classes.periodBody}>
-            <Group gap="xs" className={classes.periodRow}>
-              <div className={classes.periodField}>
-                <Text size="xs" className={classes.menuHint}>
-                  Desde
-                </Text>
-                <Select
-                  data={YEAR_OPTIONS}
-                  value={filters.fromYear}
-                  onChange={(value) => onYearChange(batchId, 'fromYear', value)}
-                  className={classes.crossMenuSelect}
-                  classNames={{
-                    input: classes.crossMenuSelectInput,
-                    dropdown: classes.crossMenuSelectDropdown
-                  }}
-                />
+        <div className={classes.crossSection}>
+          <button
+            type="button"
+            className={`${classes.crossSectionToggle} ${classes.monthlySectionToggle}`}
+            onClick={() => onSectionToggle(batchId, 'monthly')}
+          >
+            <span className={classes.crossSectionLeft}>
+              <span className={classes.monthlyPill}>Mensual</span>
+              <span className={classes.crossSectionTitle}>Cruces mensuales</span>
+            </span>
+            <IconChevronDown
+              size={13}
+              className={`${classes.crossSectionChevron} ${filters.monthly.isOpen ? classes.crossSectionChevronOpen : ''}`}
+            />
+          </button>
+          {filters.monthly.isOpen ? (
+            <div className={classes.crossSectionBody}>
+              <div className={`${classes.periodCard} ${classes.monthlyPeriodCard}`}>
+                <div className={classes.periodCardTitle}>Período</div>
+                <Group gap={6} wrap="nowrap" align="flex-end" className={classes.monthlyPeriodRow}>
+                  <div className={classes.periodField}>
+                    <Text className={`${classes.periodLabel} ${classes.monthlyPeriodLabel}`}>Desde</Text>
+                    <div className={classes.monthlySelectPair}>
+                      <Select
+                        data={MONTH_OPTIONS}
+                        value={filters.monthly.fromMonth}
+                        onChange={(value) => onMonthChange(batchId, 'fromMonth', value)}
+                        className={classes.crossMenuSelect}
+                        classNames={{
+                          input: classes.crossMenuSelectInput,
+                          dropdown: classes.crossMenuSelectDropdown
+                        }}
+                      />
+                      <Select
+                        data={YEAR_OPTIONS}
+                        value={filters.monthly.fromYear}
+                        onChange={(value) => onYearChange(batchId, 'monthly', 'fromYear', value)}
+                        className={classes.crossMenuSelect}
+                        classNames={{
+                          input: classes.crossMenuYearInput,
+                          dropdown: classes.crossMenuSelectDropdown
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <span className={classes.periodArrow}>→</span>
+                  <div className={classes.periodField}>
+                    <Text className={`${classes.periodLabel} ${classes.monthlyPeriodLabel}`}>Hasta</Text>
+                    <div className={classes.monthlySelectPair}>
+                      <Select
+                        data={MONTH_OPTIONS}
+                        value={filters.monthly.toMonth}
+                        onChange={(value) => onMonthChange(batchId, 'toMonth', value)}
+                        className={classes.crossMenuSelect}
+                        classNames={{
+                          input: classes.crossMenuSelectInput,
+                          dropdown: classes.crossMenuSelectDropdown
+                        }}
+                      />
+                      <Select
+                        data={YEAR_OPTIONS}
+                        value={filters.monthly.toYear}
+                        onChange={(value) => onYearChange(batchId, 'monthly', 'toYear', value)}
+                        className={classes.crossMenuSelect}
+                        classNames={{
+                          input: classes.crossMenuYearInput,
+                          dropdown: classes.crossMenuSelectDropdown
+                        }}
+                      />
+                    </div>
+                  </div>
+                </Group>
               </div>
-              <span className={classes.periodArrow}>→</span>
-              <div className={classes.periodField}>
-                <Text size="xs" className={classes.menuHint}>
-                  Hasta
-                </Text>
-                <Select
-                  data={YEAR_OPTIONS}
-                  value={filters.toYear}
-                  onChange={(value) => onYearChange(batchId, 'toYear', value)}
-                  className={classes.crossMenuSelect}
-                  classNames={{
-                    input: classes.crossMenuSelectInput,
-                    dropdown: classes.crossMenuSelectDropdown
-                  }}
-                />
-              </div>
-            </Group>
-          </div>
+
+              <Stack gap={0} className={classes.crossChecks}>
+                {MONTHLY_CROSS_OPTIONS.map((option) => (
+                  <Checkbox
+                    key={option}
+                    label={option}
+                    checked={filters.monthly.crossTypes.includes(option)}
+                    onChange={() => onCrossTypeToggle(batchId, 'monthly', option)}
+                    color="blue"
+                    size="xs"
+                    classNames={{
+                      root: classes.crossMenuCheckbox,
+                      body: classes.crossMenuCheckboxBody,
+                      input: classes.crossMenuCheckboxInput,
+                      label: classes.crossMenuCheckboxLabel
+                    }}
+                  />
+                ))}
+              </Stack>
+            </div>
+          ) : null}
         </div>
 
-        <div className={classes.menuSection}>
-          <Stack gap={0} className={classes.menuBody}>
-            <Menu.Label className={`${classes.menuLabel} ${classes.menuSectionLabel}`}>
-              Tipo de cruce
-            </Menu.Label>
-            {CROSS_OPTIONS.map((option) => (
-              <Checkbox
-                key={option}
-                label={option}
-                checked={filters.crossTypes.includes(option)}
-                onChange={() => onCrossTypeToggle(batchId, option)}
-                color="blue"
-                size="xs"
-                classNames={{
-                  root: classes.crossMenuCheckbox,
-                  body: classes.crossMenuCheckboxBody,
-                  input: classes.crossMenuCheckboxInput,
-                  label: classes.crossMenuCheckboxLabel
-                }}
-              />
-            ))}
-          </Stack>
+        <div className={classes.crossSection}>
+          <button
+            type="button"
+            className={`${classes.crossSectionToggle} ${classes.annualSectionToggle}`}
+            onClick={() => onSectionToggle(batchId, 'annual')}
+          >
+            <span className={classes.crossSectionLeft}>
+              <span className={classes.annualPill}>Anual</span>
+              <span className={classes.crossSectionTitle}>Cruces anuales</span>
+            </span>
+            <IconChevronDown
+              size={13}
+              className={`${classes.crossSectionChevron} ${filters.annual.isOpen ? classes.crossSectionChevronOpen : ''}`}
+            />
+          </button>
+          {filters.annual.isOpen ? (
+            <div className={classes.crossSectionBody}>
+              <div className={`${classes.periodCard} ${classes.annualPeriodCard}`}>
+                <div className={`${classes.periodCardTitle} ${classes.annualPeriodCardTitle}`}>Período</div>
+                <Group gap={6} wrap="nowrap" align="flex-end" className={classes.periodRow}>
+                  <div className={classes.periodField}>
+                    <Text className={`${classes.periodLabel} ${classes.annualPeriodLabel}`}>Desde</Text>
+                    <Select
+                      data={YEAR_OPTIONS}
+                      value={filters.annual.fromYear}
+                      onChange={(value) => onYearChange(batchId, 'annual', 'fromYear', value)}
+                      className={classes.crossMenuSelect}
+                      classNames={{
+                        input: classes.crossMenuSelectInput,
+                        dropdown: classes.crossMenuSelectDropdown
+                      }}
+                    />
+                  </div>
+                  <span className={classes.periodArrow}>→</span>
+                  <div className={classes.periodField}>
+                    <Text className={`${classes.periodLabel} ${classes.annualPeriodLabel}`}>Hasta</Text>
+                    <Select
+                      data={YEAR_OPTIONS}
+                      value={filters.annual.toYear}
+                      onChange={(value) => onYearChange(batchId, 'annual', 'toYear', value)}
+                      className={classes.crossMenuSelect}
+                      classNames={{
+                        input: classes.crossMenuSelectInput,
+                        dropdown: classes.crossMenuSelectDropdown
+                      }}
+                    />
+                  </div>
+                </Group>
+              </div>
+
+              <Stack gap={0} className={classes.crossChecks}>
+                {ANNUAL_CROSS_OPTIONS.map((option) => (
+                  <Checkbox
+                    key={option}
+                    label={option}
+                    checked={filters.annual.crossTypes.includes(option)}
+                    onChange={() => onCrossTypeToggle(batchId, 'annual', option)}
+                    color="blue"
+                    size="xs"
+                    classNames={{
+                      root: classes.crossMenuCheckbox,
+                      body: classes.crossMenuCheckboxBody,
+                      input: classes.crossMenuCheckboxInput,
+                      label: classes.crossMenuCheckboxLabel
+                    }}
+                  />
+                ))}
+              </Stack>
+            </div>
+          ) : null}
         </div>
+
+        {validationMessage ? (
+          <Text className={classes.crossValidationMessage}>{validationMessage}</Text>
+        ) : null}
+
         <Group justify="flex-end" className={classes.menuFooter}>
           <Button
             size="sm"
             className={classes.menuButton}
-            onClick={() => onConfirm(batchId)}
+            onClick={handleConfirm}
+            disabled={!canConfirm}
           >
             Confirmar
           </Button>
@@ -229,7 +385,11 @@ export function BatchManagementTable({
   expandedBatchId,
   onToggleBatch,
   getBatchCrossFilters,
+  getBatchCrossValidationMessage,
+  canConfirmBatchCrossFilters,
+  onBatchCrossSectionToggle,
   onBatchCrossYearChange,
+  onBatchCrossMonthChange,
   onBatchCrossTypeToggle,
   onBatchCrossConfirm
 }: {
@@ -237,12 +397,25 @@ export function BatchManagementTable({
   expandedBatchId: string | null
   onToggleBatch: (batchId: string) => void
   getBatchCrossFilters: (batchId: string) => IBatchCrossFilters
+  getBatchCrossValidationMessage: (batchId: string) => string | null
+  canConfirmBatchCrossFilters: (batchId: string) => boolean
+  onBatchCrossSectionToggle: (batchId: string, section: keyof IBatchCrossFilters) => void
   onBatchCrossYearChange: (
     batchId: string,
-    field: keyof Pick<IBatchCrossFilters, 'fromYear' | 'toYear'>,
+    section: keyof IBatchCrossFilters,
+    field: 'fromYear' | 'toYear',
     value: string | null
   ) => void
-  onBatchCrossTypeToggle: (batchId: string, crossType: string) => void
+  onBatchCrossMonthChange: (
+    batchId: string,
+    field: 'fromMonth' | 'toMonth',
+    value: string | null
+  ) => void
+  onBatchCrossTypeToggle: (
+    batchId: string,
+    section: keyof IBatchCrossFilters,
+    crossType: string
+  ) => void
   onBatchCrossConfirm: (batchId: string) => void
 }) {
   if (!batches.length) {
@@ -335,7 +508,11 @@ export function BatchManagementTable({
                     <BatchManagementMenu
                       batchId={batch.id}
                       filters={getBatchCrossFilters(batch.id)}
+                      validationMessage={getBatchCrossValidationMessage(batch.id)}
+                      canConfirm={canConfirmBatchCrossFilters(batch.id)}
+                      onSectionToggle={onBatchCrossSectionToggle}
                       onYearChange={onBatchCrossYearChange}
+                      onMonthChange={onBatchCrossMonthChange}
                       onCrossTypeToggle={onBatchCrossTypeToggle}
                       onConfirm={onBatchCrossConfirm}
                     />

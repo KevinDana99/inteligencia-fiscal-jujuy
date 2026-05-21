@@ -27,9 +27,13 @@ export function BatchManagementPage({
     isPreviewPending,
     isCreatePending,
     getBatchCrossFilters,
+    getBatchCrossValidationMessage,
+    canConfirmBatchCrossFilters,
     setSearchValue,
     toggleExpandedBatch,
+    toggleBatchCrossSection,
     setBatchCrossYear,
+    setBatchCrossMonth,
     toggleBatchCrossType,
     confirmBatchCrossFilters,
     openCreateModal,
@@ -92,7 +96,11 @@ export function BatchManagementPage({
         expandedBatchId={expandedBatchId}
         onToggleBatch={toggleExpandedBatch}
         getBatchCrossFilters={getBatchCrossFilters}
+        getBatchCrossValidationMessage={getBatchCrossValidationMessage}
+        canConfirmBatchCrossFilters={canConfirmBatchCrossFilters}
+        onBatchCrossSectionToggle={toggleBatchCrossSection}
         onBatchCrossYearChange={setBatchCrossYear}
+        onBatchCrossMonthChange={setBatchCrossMonth}
         onBatchCrossTypeToggle={toggleBatchCrossType}
         onBatchCrossConfirm={confirmBatchCrossFilters}
       />

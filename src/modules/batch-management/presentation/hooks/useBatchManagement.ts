@@ -10,6 +10,7 @@ import {
 import type {
   IBatchCreatedSummary,
   IBatchCrossFilters,
+  IBatchCrossSectionFilters,
   IBatchLoadedCuitRow,
   IBatchListData,
   IBatchManagementItem,
@@ -17,10 +18,28 @@ import type {
   IBatchPreviewData
 } from '../../data/models/BatchManagement'
 
-const DEFAULT_BATCH_CROSS_FILTERS: IBatchCrossFilters = {
-  fromYear: '2024',
-  toYear: '2025',
-  crossTypes: []
+const CURRENT_DATE = new Date()
+const CURRENT_YEAR = CURRENT_DATE.getFullYear()
+const CURRENT_MONTH = String(CURRENT_DATE.getMonth() + 1).padStart(2, '0')
+
+function createDefaultCrossSection(
+  type: 'monthly' | 'annual'
+): IBatchCrossSectionFilters {
+  return {
+    isOpen: false,
+    fromYear: String(CURRENT_YEAR),
+    toYear: String(CURRENT_YEAR),
+    fromMonth: type === 'monthly' ? CURRENT_MONTH : null,
+    toMonth: type === 'monthly' ? CURRENT_MONTH : null,
+    crossTypes: []
+  }
+}
+
+function createDefaultBatchCrossFilters(): IBatchCrossFilters {
+  return {
+    monthly: createDefaultCrossSection('monthly'),
+    annual: createDefaultCrossSection('annual')
+  }
 }
 
 const SEARCH_DEBOUNCE_MS = 300
@@ -334,12 +353,13 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
   }
 
   const getBatchCrossFilters = (batchId: string) => {
-    return batchCrossFilters[batchId] ?? DEFAULT_BATCH_CROSS_FILTERS
+    return batchCrossFilters[batchId] ?? createDefaultBatchCrossFilters()
   }
 
   const setBatchCrossYear = (
     batchId: string,
-    field: keyof Pick<IBatchCrossFilters, 'fromYear' | 'toYear'>,
+    section: keyof IBatchCrossFilters,
+    field: keyof Pick<IBatchCrossSectionFilters, 'fromYear' | 'toYear'>,
     value: string | null
   ) => {
     if (!value) {
@@ -350,30 +370,110 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
       ...current,
       [batchId]: {
         ...getBatchCrossFilters(batchId),
-        [field]: value
+        [section]: {
+          ...getBatchCrossFilters(batchId)[section],
+          [field]: value
+        }
       }
     }))
   }
 
-  const toggleBatchCrossType = (batchId: string, crossType: string) => {
+  const setBatchCrossMonth = (
+    batchId: string,
+    field: keyof Pick<IBatchCrossSectionFilters, 'fromMonth' | 'toMonth'>,
+    value: string | null
+  ) => {
+    if (!value) {
+      return
+    }
+
+    setBatchCrossFilters((current) => ({
+      ...current,
+      [batchId]: {
+        ...getBatchCrossFilters(batchId),
+        monthly: {
+          ...getBatchCrossFilters(batchId).monthly,
+          [field]: value
+        }
+      }
+    }))
+  }
+
+  const toggleBatchCrossSection = (batchId: string, section: keyof IBatchCrossFilters) => {
+    setBatchCrossFilters((current) => ({
+      ...current,
+      [batchId]: {
+        ...getBatchCrossFilters(batchId),
+        [section]: {
+          ...getBatchCrossFilters(batchId)[section],
+          isOpen: !getBatchCrossFilters(batchId)[section].isOpen
+        }
+      }
+    }))
+  }
+
+  const toggleBatchCrossType = (
+    batchId: string,
+    section: keyof IBatchCrossFilters,
+    crossType: string
+  ) => {
     setBatchCrossFilters((current) => {
-      const batchFilters = current[batchId] ?? DEFAULT_BATCH_CROSS_FILTERS
-      const isSelected = batchFilters.crossTypes.includes(crossType)
+      const batchFilters = current[batchId] ?? createDefaultBatchCrossFilters()
+      const sectionFilters = batchFilters[section]
+      const isSelected = sectionFilters.crossTypes.includes(crossType)
 
       return {
         ...current,
         [batchId]: {
           ...batchFilters,
-          crossTypes: isSelected
-            ? batchFilters.crossTypes.filter((item) => item !== crossType)
-            : [...batchFilters.crossTypes, crossType]
+          [section]: {
+            ...sectionFilters,
+            crossTypes: isSelected
+              ? sectionFilters.crossTypes.filter((item) => item !== crossType)
+              : [...sectionFilters.crossTypes, crossType]
+          }
         }
       }
     })
   }
 
+  const getBatchCrossValidationMessage = (batchId: string) => {
+    const filters = getBatchCrossFilters(batchId)
+    const monthlyFrom = Number(`${filters.monthly.fromYear}${filters.monthly.fromMonth ?? '01'}`)
+    const monthlyTo = Number(`${filters.monthly.toYear}${filters.monthly.toMonth ?? '01'}`)
+    const annualFrom = Number(filters.annual.fromYear)
+    const annualTo = Number(filters.annual.toYear)
+
+    if (
+      filters.monthly.crossTypes.length &&
+      filters.monthly.fromMonth &&
+      filters.monthly.toMonth &&
+      monthlyFrom > monthlyTo
+    ) {
+      return 'Debes especificar un rango válido para realizar el cruce'
+    }
+
+    if (filters.annual.crossTypes.length && annualFrom > annualTo) {
+      return 'Debes especificar un rango válido para realizar el cruce'
+    }
+
+    return null
+  }
+
+  const canConfirmBatchCrossFilters = (batchId: string) => {
+    const filters = getBatchCrossFilters(batchId)
+    const hasSelectedCrosses =
+      filters.monthly.crossTypes.length > 0 || filters.annual.crossTypes.length > 0
+
+    if (!hasSelectedCrosses) {
+      return false
+    }
+
+    return !getBatchCrossValidationMessage(batchId)
+  }
+
   const confirmBatchCrossFilters = (batchId: string) => {
-    return getBatchCrossFilters(batchId)
+    void batchId
   }
 
   return {
@@ -390,9 +490,13 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
     isPreviewPending,
     isCreatePending,
     getBatchCrossFilters,
+    getBatchCrossValidationMessage,
+    canConfirmBatchCrossFilters,
     setSearchValue: updateSearchValue,
     toggleExpandedBatch,
+    toggleBatchCrossSection,
     setBatchCrossYear,
+    setBatchCrossMonth,
     toggleBatchCrossType,
     confirmBatchCrossFilters,
     openCreateModal,
