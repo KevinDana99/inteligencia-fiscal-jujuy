@@ -3,12 +3,17 @@
 import { useRouter } from 'next/navigation';
 import { Badge, Button, Card, Group, Stack, Switch, Text } from '@mantine/core';
 import { IconChevronLeft, IconPlus } from '@tabler/icons-react';
-import { unifiedRegisterItemsFixture } from '../../../data/sources/mock/fixtures/unifiedRegisterItems';
+import type { IUnifiedRegisterItem } from '../../../data/models/UnifiedRegister';
 import classes from './UnifiedRegisterPreviewPage.module.css';
 
-export function UnifiedRegisterPreviewPage({ cuit }: { cuit: string }) {
+export function UnifiedRegisterPreviewPage({
+  cuit,
+  item
+}: {
+  cuit: string
+  item: IUnifiedRegisterItem | null
+}) {
   const router = useRouter();
-  const item = unifiedRegisterItemsFixture.find((entry) => entry.cuit === cuit);
 
   if (!item) {
     return (

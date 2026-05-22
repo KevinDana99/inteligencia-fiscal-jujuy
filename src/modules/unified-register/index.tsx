@@ -1,5 +1,8 @@
+import { getUnifiedRegisterAction } from './data/actions';
 import { UnifiedRegisterPage } from './presentation/components/UnifiedRegisterPage';
 
 export default async function UnifiedRegisterModule() {
-  return <UnifiedRegisterPage />;
+  const items = await getUnifiedRegisterAction();
+
+  return <UnifiedRegisterPage initialItems={items} />;
 }

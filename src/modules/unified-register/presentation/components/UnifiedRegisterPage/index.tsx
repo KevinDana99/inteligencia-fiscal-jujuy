@@ -2,12 +2,18 @@
 
 import { Card, Stack, Text, TextInput } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
+import type { IUnifiedRegisterItems } from '../../../data/models/UnifiedRegister';
 import { UnifiedRegisterCard } from '../UnifiedRegisterCard';
 import { useUnifiedRegister } from '../../hooks/useUnifiedRegister';
 import classes from './UnifiedRegisterPage.module.css';
 
-export function UnifiedRegisterPage() {
-  const { search, setSearch, filteredItems } = useUnifiedRegister();
+export function UnifiedRegisterPage({
+  initialItems
+}: {
+  initialItems: IUnifiedRegisterItems
+}) {
+  const { search, setSearch, filteredItems, isMarkPending, markingId, markForReprocessing } =
+    useUnifiedRegister(initialItems);
 
   return (
     <div className={classes.page}>
@@ -24,7 +30,12 @@ export function UnifiedRegisterPage() {
       {filteredItems.length > 0 ? (
         <div className={classes.cards}>
           {filteredItems.map((item) => (
-            <UnifiedRegisterCard key={item.cuit} item={item} />
+            <UnifiedRegisterCard
+              key={item.cuit}
+              item={item}
+              isMarkPending={isMarkPending && markingId === item.contribuyenteId}
+              onMarkReprocessing={markForReprocessing}
+            />
           ))}
         </div>
       ) : (
