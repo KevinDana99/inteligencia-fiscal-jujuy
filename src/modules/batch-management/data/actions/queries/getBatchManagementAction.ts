@@ -15,6 +15,7 @@ export async function getBatchManagementAction(
   } catch (error) {
     if (error instanceof ApiClientError) {
       const apiData = error.data as { codigo?: string; mensaje?: string; estado?: number } | undefined;
+
       return {
         data: null,
         error: apiData?.mensaje ?? error.message,

@@ -40,6 +40,20 @@ function appendCuits(formData: FormData, cuitsText?: string | null) {
   formData.append('cuits', cuitsText);
 }
 
+function getFormDataEntries(formData: FormData) {
+  return Array.from(formData.entries()).map(([key, value]) => ({
+    key,
+    value:
+      value instanceof File
+        ? {
+            name: value.name,
+            type: value.type,
+            size: value.size
+          }
+        : value
+  }));
+}
+
 export class RestBatchManagementSource implements IBatchManagementSource {
   constructor(private readonly config: ApiClientConfig) {}
 
@@ -54,16 +68,49 @@ export class RestBatchManagementSource implements IBatchManagementSource {
     searchParams.set('itemsPagina', String(params.itemsPerPage ?? 20));
 
     const path = searchParams.size ? `/api/lotes?${searchParams.toString()}` : '/api/lotes';
+    console.log({
+      endpoint: '/api/lotes',
+      action: 'RestBatchManagementSource.listBatches',
+      METHOD: 'GET',
+      REQUEST_RAW: {
+        busqueda: params.search ?? null,
+        pagina: params.page ?? 1,
+        itemsPagina: params.itemsPerPage ?? 20,
+        requestUrl: path
+      }
+    });
     const response = await getJson<ApiBatchListResponseDto>(path, this.config);
+    console.log({
+      endpoint: '/api/lotes',
+      action: 'RestBatchManagementSource.listBatches',
+      METHOD: 'GET',
+      RESPONSE_RAW: response
+    });
 
     return mapBatchListResponseDto(response);
   }
 
   async getBatch(batchId: string): Promise<IBatchManagementItem> {
+    const path = `/api/lotes/${batchId}`;
+    console.log({
+      endpoint: path,
+      action: 'RestBatchManagementSource.getBatch',
+      METHOD: 'GET',
+      REQUEST_RAW: {
+        loteId: batchId,
+        requestUrl: path
+      }
+    });
     const response = await getJson<ApiBatchDetailResponseDto>(
-      `/api/lotes/${batchId}`,
+      path,
       this.config
     );
+    console.log({
+      endpoint: path,
+      action: 'RestBatchManagementSource.getBatch',
+      METHOD: 'GET',
+      RESPONSE_RAW: response
+    });
 
     return mapBatchDetailResponseDto(response);
   }
@@ -80,12 +127,26 @@ export class RestBatchManagementSource implements IBatchManagementSource {
     }
 
     appendCuits(formData, payload.cuitsText);
+    console.log({
+      endpoint: '/api/lotes/previsualizaciones',
+      action: 'RestBatchManagementSource.previewBatchLoad',
+      METHOD: 'POST',
+      REQUEST_RAW: {
+        formDataEntries: getFormDataEntries(formData)
+      }
+    });
 
     const response = await postFormData<ApiBatchPreviewResponseDto>(
       '/api/lotes/previsualizaciones',
       formData,
       this.config
     );
+    console.log({
+      endpoint: '/api/lotes/previsualizaciones',
+      action: 'RestBatchManagementSource.previewBatchLoad',
+      METHOD: 'POST',
+      RESPONSE_RAW: response
+    });
 
     return mapBatchPreviewResponseDto(response);
   }
@@ -106,12 +167,26 @@ export class RestBatchManagementSource implements IBatchManagementSource {
     }
 
     appendCuits(formData, payload.cuitsText);
+    console.log({
+      endpoint: '/api/lotes',
+      action: 'RestBatchManagementSource.createBatch',
+      METHOD: 'POST',
+      REQUEST_RAW: {
+        formDataEntries: getFormDataEntries(formData)
+      }
+    });
 
     const response = await postFormData<ApiBatchCreateResponseDto>(
       '/api/lotes',
       formData,
       this.config
     );
+    console.log({
+      endpoint: '/api/lotes',
+      action: 'RestBatchManagementSource.createBatch',
+      METHOD: 'POST',
+      RESPONSE_RAW: response
+    });
 
     return mapBatchCreateResponseDto(response);
   }

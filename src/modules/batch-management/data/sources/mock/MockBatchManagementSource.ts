@@ -33,6 +33,55 @@ function normalizeRegime(regime: string) {
   return 'Regimen Local' as const;
 }
 
+function toRawAuthor(author: IBatchManagementItem['createdBy']) {
+  return author
+    ? {
+        id: author.id,
+        nombre: author.name
+      }
+    : null;
+}
+
+function toRawListItem(batch: IBatchManagementItem) {
+  return {
+    id: batch.id,
+    numeroLote: batch.batchNumber,
+    nombre: batch.name,
+    descripcion: batch.description,
+    regimen: batch.regime,
+    cantidadCuits: batch.cuitCount,
+    fechaGeneracion: batch.createdAt,
+    creadoPor: toRawAuthor(batch.createdBy)
+  };
+}
+
+function toRawDetailCuit(cuit: IBatchManagementItem['cuits'][number]) {
+  return {
+    id: cuit.id,
+    cuit: cuit.cuit,
+    razonSocial: cuit.businessName,
+    tipoContribuyente: cuit.regime,
+    orden: cuit.order
+  };
+}
+
+function toRawPreviewRecord(record: IBatchPreviewData['records'][number]) {
+  const statusMap = {
+    valid: 'valido',
+    invalid: 'invalido',
+    duplicated: 'duplicado'
+  } as const;
+
+  return {
+    registro: record.record,
+    cuitOriginal: record.originalCuit,
+    cuitNormalizado: record.normalizedCuit,
+    razonSocial: record.businessName,
+    estado: statusMap[record.status],
+    motivo: record.reason
+  };
+}
+
 export class MockBatchManagementSource implements IBatchManagementSource {
   async listBatches(params: IBatchListParams = {}): Promise<IBatchListData> {
     const normalizedSearch = normalizeSearchValue(params.search ?? '');
@@ -43,6 +92,35 @@ export class MockBatchManagementSource implements IBatchManagementSource {
             batch.batchNumber === normalizedSearch
         )
       : batchManagementMock;
+
+    const requestUrl = `/api/lotes?pagina=${params.page ?? 1}&itemsPagina=${params.itemsPerPage ?? 20}${
+      params.search?.trim() ? `&busqueda=${encodeURIComponent(params.search.trim())}` : ''
+    }`;
+
+    console.log(
+      JSON.stringify(
+        {
+          endpoint: '/api/lotes',
+          action: 'MockBatchManagementSource.listBatches',
+          METHOD: 'GET',
+          REQUEST_RAW: {
+            busqueda: params.search ?? null,
+            pagina: params.page ?? 1,
+            itemsPagina: params.itemsPerPage ?? 20,
+            requestUrl
+          },
+          RESPONSE_RAW: {
+            pagina: 1,
+            itemsPagina: 20,
+            totalItems: items.length,
+            totalPaginas: 1,
+            lotes: items.map(toRawListItem)
+          }
+        },
+        null,
+        2
+      )
+    );
 
     return {
       page: 1,
@@ -60,12 +138,32 @@ export class MockBatchManagementSource implements IBatchManagementSource {
       throw new Error('Batch not found');
     }
 
+    console.log(
+      JSON.stringify(
+        {
+          endpoint: `/api/lotes/${batchId}`,
+          action: 'MockBatchManagementSource.getBatch',
+          METHOD: 'GET',
+          REQUEST_RAW: {
+            loteId: batchId,
+            requestUrl: `/api/lotes/${batchId}`
+          },
+          RESPONSE_RAW: {
+            ...toRawListItem(batch),
+            cuits: batch.cuits.map(toRawDetailCuit)
+          }
+        },
+        null,
+        2
+      )
+    );
+
     return batch;
   }
 
   async previewBatchLoad(payload: IBatchPreviewPayload): Promise<IBatchPreviewData> {
     if (payload.file) {
-      return {
+      const response = {
         fileName: payload.file.name,
         foundRecords: 6,
         validCount: 5,
@@ -123,6 +221,38 @@ export class MockBatchManagementSource implements IBatchManagementSource {
           }
         ]
       };
+
+      console.log(
+        JSON.stringify(
+          {
+            endpoint: '/api/lotes/previsualizaciones',
+            action: 'MockBatchManagementSource.previewBatchLoad',
+            METHOD: 'POST',
+            REQUEST_RAW: {
+              archivo: {
+                name: payload.file.name,
+                type: payload.file.type,
+                size: payload.file.size
+              },
+              regimen: payload.regime ?? null,
+              cuits: payload.cuitsText ?? null
+            },
+            RESPONSE_RAW: {
+              nombreArchivo: response.fileName,
+              registrosEncontrados: response.foundRecords,
+              cantidadValidos: response.validCount,
+              cantidadInvalidos: response.invalidCount,
+              cantidadDuplicados: response.duplicatedCount,
+              cantidadImportable: response.importableCount,
+              registros: response.records.map(toRawPreviewRecord)
+            }
+          },
+          null,
+          2
+        )
+      );
+
+      return response;
     }
 
     const cuits = parseCuitsText(payload.cuitsText);
@@ -172,7 +302,7 @@ export class MockBatchManagementSource implements IBatchManagementSource {
     const invalidCount = records.filter((record) => record.status === 'invalid').length;
     const duplicatedCount = records.filter((record) => record.status === 'duplicated').length;
 
-    return {
+    const response = {
       fileName: payload.file?.name ?? null,
       foundRecords: records.length,
       validCount,
@@ -181,6 +311,40 @@ export class MockBatchManagementSource implements IBatchManagementSource {
       importableCount: validCount,
       records
     };
+
+    console.log(
+      JSON.stringify(
+        {
+          endpoint: '/api/lotes/previsualizaciones',
+          action: 'MockBatchManagementSource.previewBatchLoad',
+          METHOD: 'POST',
+          REQUEST_RAW: {
+            archivo: payload.file
+              ? {
+                  name: payload.file.name,
+                  type: payload.file.type,
+                  size: payload.file.size
+                }
+              : null,
+            regimen: payload.regime ?? null,
+            cuits: payload.cuitsText ?? null
+          },
+          RESPONSE_RAW: {
+            nombreArchivo: response.fileName,
+            registrosEncontrados: response.foundRecords,
+            cantidadValidos: response.validCount,
+            cantidadInvalidos: response.invalidCount,
+            cantidadDuplicados: response.duplicatedCount,
+            cantidadImportable: response.importableCount,
+            registros: response.records.map(toRawPreviewRecord)
+          }
+        },
+        null,
+        2
+      )
+    );
+
+    return response;
   }
 
   async createBatch(payload: IBatchCreatePayload): Promise<IBatchCreatedSummary> {
@@ -190,7 +354,7 @@ export class MockBatchManagementSource implements IBatchManagementSource {
         0
       ) + 1;
 
-    return {
+    const response = {
       id: `mock-${nextNumber}`,
       number: nextNumber,
       formattedNumber: String(nextNumber),
@@ -200,5 +364,42 @@ export class MockBatchManagementSource implements IBatchManagementSource {
       cuitCount: parseCuitsText(payload.cuitsText).length,
       createdAt: new Date().toISOString()
     };
+
+    console.log(
+      JSON.stringify(
+        {
+          endpoint: '/api/lotes',
+          action: 'MockBatchManagementSource.createBatch',
+          METHOD: 'POST',
+          REQUEST_RAW: {
+            nombre: payload.name.trim(),
+            descripcion: payload.description?.trim() || null,
+            regimen: payload.regime,
+            archivo: payload.file
+              ? {
+                  name: payload.file.name,
+                  type: payload.file.type,
+                  size: payload.file.size
+                }
+              : null,
+            cuits: payload.cuitsText?.trim() || null
+          },
+          RESPONSE_RAW: {
+            id: response.id,
+            numero: response.number,
+            numeroFormateado: response.formattedNumber,
+            nombre: response.name,
+            descripcion: response.description,
+            regimen: response.regime,
+            cantidadCuits: response.cuitCount,
+            fechaGeneracion: response.createdAt
+          }
+        },
+        null,
+        2
+      )
+    );
+
+    return response;
   }
 }

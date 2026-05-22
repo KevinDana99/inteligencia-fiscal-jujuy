@@ -113,12 +113,6 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
   const toggleExpandedBatch = (batchId: string) => {
     setExpandedBatchId((current) => (current === batchId ? null : batchId))
 
-    const currentBatch = batches.find((item) => item.id === batchId)
-
-    if (!currentBatch || currentBatch.cuits.length) {
-      return
-    }
-
     void (async () => {
       const result = await getBatchDetailAction(batchId)
 
@@ -226,7 +220,7 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
           description,
           regime,
           cuitsText: parsedCuits.join('\n'),
-          file: null
+          file: createForm.file
         })
 
         if (!result.success || !result.data) {
