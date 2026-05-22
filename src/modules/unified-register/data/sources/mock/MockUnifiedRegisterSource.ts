@@ -2,6 +2,10 @@ import type { IUnifiedRegisterSource } from '../../interfaces/UnifiedRegisterSou
 import type { IUnifiedRegisterItem, IUnifiedRegisterItems } from '../../models/UnifiedRegister'
 import { unifiedRegisterItemsFixture } from './fixtures/unifiedRegisterItems'
 
+function normalizeCuit(value: string) {
+  return value.replace(/\D/g, '')
+}
+
 function cloneItem(item: IUnifiedRegisterItem): IUnifiedRegisterItem {
   return { ...item }
 }
@@ -16,7 +20,10 @@ export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
   }
 
   async getUnifiedRegisterItemByCuit(cuit: string): Promise<IUnifiedRegisterItem | null> {
-    const item = unifiedRegisterItemsFixture.find((entry) => entry.cuit === cuit)
+    const normalizedCuit = normalizeCuit(cuit)
+    const item = unifiedRegisterItemsFixture.find(
+      (entry) => normalizeCuit(entry.cuit) === normalizedCuit
+    )
 
     return item ? cloneItem(item) : null
   }

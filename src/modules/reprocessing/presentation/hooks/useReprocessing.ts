@@ -19,6 +19,10 @@ function getInitialItems(initialData?: IReprocessingListData | null): IReprocess
   return initialData?.items ?? []
 }
 
+function normalizeCuitForRoute(value: string) {
+  return value.replace(/\D/g, '')
+}
+
 export function useReprocessing(initialData?: IReprocessingListData | null) {
   const router = useRouter()
   const [items, setItems] = useState<IReprocessingItems>(getInitialItems(initialData))
@@ -33,7 +37,9 @@ export function useReprocessing(initialData?: IReprocessingListData | null) {
   const filteredItems = useMemo(() => items, [items])
 
   const openInPadron = (cuit: string) => {
-    router.push(`/?cuit=${encodeURIComponent(cuit)}`)
+    router.push(
+      `/vista-previa-padron/${encodeURIComponent(normalizeCuitForRoute(cuit))}`
+    )
   }
 
   const updateSearchValue = (value: string) => {

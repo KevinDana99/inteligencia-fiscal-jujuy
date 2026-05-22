@@ -12,6 +12,10 @@ const RISK_CLASS_BY_LEVEL = {
   C: classes.riskC
 } as const;
 
+function normalizeCuitForRoute(value: string) {
+  return value.replace(/\D/g, '');
+}
+
 export function UnifiedRegisterCard({
   item,
   isMarkPending,
@@ -30,7 +34,11 @@ export function UnifiedRegisterCard({
       padding={0}
       radius={0}
       withBorder={false}
-      onClick={() => router.push(`/vista-previa-padron/${encodeURIComponent(item.cuit)}`)}
+      onClick={() =>
+        router.push(
+          `/vista-previa-padron/${encodeURIComponent(normalizeCuitForRoute(item.cuit))}`
+        )
+      }
     >
       <div className={classes.cardSection}>
         <div className={classes.content}>
