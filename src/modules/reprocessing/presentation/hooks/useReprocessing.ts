@@ -12,7 +12,8 @@ import type {
   IReprocessingListData
 } from '../../data/models/Reprocessing'
 
-const SEARCH_DEBOUNCE_MS = 300
+const SEARCH_DEBOUNCE_MS = 500
+const MIN_SEARCH_LENGTH = 3
 
 function getInitialItems(initialData?: IReprocessingListData | null): IReprocessingItems {
   return initialData?.items ?? []
@@ -42,14 +43,22 @@ export function useReprocessing(initialData?: IReprocessingListData | null) {
       clearTimeout(searchTimeoutRef.current)
     }
 
+    const normalizedValue = value.trim()
+
     const requestId = latestSearchRequestIdRef.current + 1
     latestSearchRequestIdRef.current = requestId
+
+    if (normalizedValue.length > 0 && normalizedValue.length < MIN_SEARCH_LENGTH) {
+      setItems(getInitialItems(initialData))
+      setTotal(initialData?.totalItems ?? 0)
+      return
+    }
 
     searchTimeoutRef.current = setTimeout(() => {
       startSearchTransition(() => {
         void (async () => {
           const result = await getReprocessingAction({
-            search: value.trim() || null
+            search: normalizedValue || null
           })
 
           if (latestSearchRequestIdRef.current !== requestId || !result.data) {
