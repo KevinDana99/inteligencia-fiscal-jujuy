@@ -3,8 +3,11 @@ export interface IReprocessingItem {
   contribuyenteId: string
   cuit: string
   businessName: string
+  createdAt: string
   date: string
+  markedByUserId: string
   markedBy: string
+  lastCrossId: string | null
   lastCross: string
   notes: string
   isReprocessing: boolean

@@ -6,8 +6,11 @@ export const reprocessingItemsMock: IReprocessingItems = [
     contribuyenteId: 'be0f84f1-dcc7-43b5-9ce8-6d0d845f777a',
     cuit: '30712345678',
     businessName: 'La Lechera Anonima',
+    createdAt: '2026-05-18T15:20:30+00:00',
     date: '18/05/2026',
+    markedByUserId: 'a9fd29ff-a9c9-4f2f-bbd6-1f8050e27fa8',
     markedBy: 'Ana Fiscal',
+    lastCrossId: '9f9c316f-f459-43f0-bc10-791e2d1d7f60',
     lastCross: 'Control Desvio Bi Regimen Gral',
     notes: 'Revisar cruce de base imponible',
     isReprocessing: true
@@ -17,8 +20,11 @@ export const reprocessingItemsMock: IReprocessingItems = [
     contribuyenteId: '2f7bb0b8-6e68-4c46-9a8d-62c98fc7d142',
     cuit: '27321786543',
     businessName: 'Minera Altiplano Jujuy S.A.',
+    createdAt: '2026-05-16T12:10:00+00:00',
     date: '16/05/2026',
+    markedByUserId: 'a9fd29ff-a9c9-4f2f-bbd6-1f8050e27fa8',
     markedBy: 'Ana Fiscal',
+    lastCrossId: '31fd4dc8-ef01-4ea8-a1ef-4d314b76fb2d',
     lastCross: 'Control Creditos',
     notes: 'Diferencia detectada en retenciones',
     isReprocessing: true

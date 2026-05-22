@@ -32,8 +32,11 @@ export function mapReprocessingDto(dto: ApiReprocessingItemDto): IReprocessingIt
     contribuyenteId: dto.contribuyente.contribuyenteId,
     cuit: dto.contribuyente.cuit,
     businessName: dto.contribuyente.razonSocial,
+    createdAt: dto.fechaCreacion,
     date: formatDateLabel(dto.fechaCreacion),
+    markedByUserId: dto.autor.creadoPorUsuarioId,
     markedBy: dto.autor.nombre,
+    lastCrossId: dto.ultimoCruce?.id ?? null,
     lastCross: mapLastCrossLabel(dto.ultimoCruce?.nombre),
     notes: dto.descripcion ?? 'Sin observaciones',
     isReprocessing: true
