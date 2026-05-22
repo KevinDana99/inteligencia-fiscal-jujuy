@@ -1,19 +1,40 @@
 'use client'
 
-import { ActionIcon, Badge, Table, Text, TextInput } from '@mantine/core'
-import { IconSearch, IconX } from '@tabler/icons-react'
+import {
+  ActionIcon,
+  Badge,
+  Button,
+  Group,
+  Modal,
+  Stack,
+  Table,
+  Text,
+  TextInput,
+  Title
+} from '@mantine/core'
+import { IconAlertCircle, IconSearch, IconX } from '@tabler/icons-react'
 import { useReprocessing } from '../../hooks'
 import classes from './ReprocessingPage.module.css'
+import type { IReprocessingListData } from '../../../data/models/Reprocessing'
 
-export function ReprocessingPage() {
+export function ReprocessingPage({
+  initialData
+}: {
+  initialData: IReprocessingListData | null
+}) {
   const {
     items,
     total,
     searchValue,
+    pendingRemovalItem,
+    isSearchPending,
+    isRemovePending,
     setSearchValue,
     openInPadron,
-    removeFromReprocessing
-  } = useReprocessing()
+    openRemoveModal,
+    closeRemoveModal,
+    confirmRemoveFromReprocessing
+  } = useReprocessing(initialData)
 
   return (
     <div className={classes.root}>
@@ -39,6 +60,7 @@ export function ReprocessingPage() {
             input: classes.searchInputField,
             section: classes.searchInputSection
           }}
+          rightSection={isSearchPending ? <IconSearch size={14} /> : null}
         />
       </div>
 
@@ -80,7 +102,7 @@ export function ReprocessingPage() {
                     <ActionIcon
                       variant="subtle"
                       className={classes.removeButton}
-                      onClick={() => removeFromReprocessing(item.id)}
+                      onClick={() => openRemoveModal(item.id)}
                     >
                       <IconX size={14} />
                     </ActionIcon>
@@ -99,6 +121,55 @@ export function ReprocessingPage() {
           </Table.Tbody>
         </Table>
       </div>
+
+      <Modal
+        opened={Boolean(pendingRemovalItem)}
+        onClose={closeRemoveModal}
+        centered
+        size={420}
+        title={
+          <Stack gap={4}>
+            <Title order={2} className={classes.modalTitle}>
+              Quitar de reproceso
+            </Title>
+            <Text className={classes.modalSubtitle}>
+              ¿Confirmas que deseas quitar este CUIT del reproceso?
+            </Text>
+          </Stack>
+        }
+        classNames={{
+          content: classes.modalContent,
+          header: classes.modalHeader,
+          body: classes.modalBody,
+          close: classes.modalCloseButton,
+          overlay: classes.modalOverlay
+        }}
+      >
+        <div className={classes.modalAlertBox}>
+          <IconAlertCircle size={18} className={classes.modalAlertIcon} />
+          <Text className={classes.modalAlertText}>
+            {pendingRemovalItem?.businessName ?? ''}
+          </Text>
+        </div>
+
+        <Text className={classes.modalDescription}>
+          El CUIT será removido de la lista de reproceso. Esta acción no afecta
+          el historial de cruces.
+        </Text>
+
+        <Group justify="flex-end" gap="sm" className={classes.modalFooter}>
+          <Button variant="default" className={classes.modalCancelButton} onClick={closeRemoveModal}>
+            Cancelar
+          </Button>
+          <Button
+            className={classes.modalConfirmButton}
+            onClick={confirmRemoveFromReprocessing}
+            loading={isRemovePending}
+          >
+            Sí, quitar
+          </Button>
+        </Group>
+      </Modal>
     </div>
   )
 }

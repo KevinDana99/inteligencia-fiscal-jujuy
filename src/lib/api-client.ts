@@ -12,16 +12,18 @@ interface ApiRequestInit extends RequestInit {
 
 export class ApiClientError extends Error {
   status: number;
+  data?: unknown;
 
-  constructor(status: number, message?: string) {
+  constructor(status: number, message?: string, data?: unknown) {
     super(message ?? `Request failed with status ${status}`);
     this.name = 'ApiClientError';
     this.status = status;
+    this.data = data;
   }
 }
 
 async function requestJson<T>(
-  method: 'GET' | 'POST',
+  method: 'GET' | 'POST' | 'DELETE',
   path: string,
   config?: ApiClientConfig,
   init?: ApiRequestInit
@@ -39,7 +41,25 @@ async function requestJson<T>(
   });
 
   if (!response.ok) {
-    throw new ApiClientError(response.status);
+    let errorData: unknown = null;
+    let errorMessage: string | undefined;
+
+    try {
+      errorData = await response.json();
+
+      if (
+        typeof errorData === 'object' &&
+        errorData !== null &&
+        'mensaje' in errorData &&
+        typeof errorData.mensaje === 'string'
+      ) {
+        errorMessage = errorData.mensaje;
+      }
+    } catch {
+      errorData = null;
+    }
+
+    throw new ApiClientError(response.status, errorMessage, errorData);
   }
 
   if (response.status === 204) {
@@ -67,4 +87,12 @@ export async function postJson<TResponse, TBody>(
     ...init,
     body: JSON.stringify(body)
   });
+}
+
+export async function deleteJson<T>(
+  path: string,
+  config?: ApiClientConfig,
+  init?: ApiRequestInit
+): Promise<T> {
+  return requestJson<T>('DELETE', path, config, init);
 }

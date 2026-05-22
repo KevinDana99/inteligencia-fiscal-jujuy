@@ -89,3 +89,59 @@
             </tbody>
           </table>
         </div>
+
+## Update modulo reproceso
+
+- El modulo de reproceso esta correcto en cuanto a UI pero se agrego que al tocar el boton de la X debe llamar a un modal de confirmacion.
+
+- Modal de confirmacion para quitar de reproceso:
+
+Referencia Visual : `codex/assets/design/dashboard/reprocessing-module/modal.png`
+
+## Estructura
+
+Titulo `Quitar de reproceso`
+Subtitulo `¿Confirmas que deseas quitar este CUIT del reproceso?`
+Alerta `VOLKSWAGEN ARGENTINA S.A.`
+Descripcion `El CUIT será removido de la lista de reproceso. Esta acción no afecta el historial de cruces.`
+Boton cancelar (`Cancelar`)
+Boton confirmar accion (`Si, quitar`)
+
+## Diseño UI
+
+<div class="modal" style="max-width:420px">
+    <div class="modal-header" style="padding:24px 28px 18px">
+      <div>
+        <div class="modal-title" style="font-size:18px;font-weight:800">Quitar de reproceso</div>
+        <div class="modal-subtitle" id="modal-repr-subtitle">¿Confirmas que deseas quitar este CUIT del reproceso?</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-quitar-reproceso')" style="font-size:20px;color:var(--gray-5)">×</button>
+    </div>
+    <div style="padding:0 28px 20px">
+      <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <div style="font-size:13px;color:#991B1B" id="modal-repr-nombre">VOLKSWAGEN ARGENTINA S.A.</div>
+      </div>
+      <div style="font-size:13px;color:var(--gray-5);margin-top:12px">El CUIT será removido de la lista de reproceso. Esta acción no afecta el historial de cruces.</div>
+    </div>
+    <div class="modal-footer" style="padding:16px 28px 24px;gap:10px">
+      <button class="btn btn-outline" onclick="closeModal('modal-quitar-reproceso')" style="border-radius:999px;padding:10px 24px;font-size:14px">Cancelar</button>
+      <button class="btn" id="btn-confirmar-repr" onclick="ejecutarQuitarReproceso()" style="background:#DC2626;color:white;border:none;border-radius:999px;padding:10px 24px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Sí, quitar</button>
+    </div>
+  </div>
+
+## Funcionalidades modal
+
+- El modal debe abrirse al tocar la accion `X` de un item en reproceso.
+- El modal no debe renderizar el detalle completo del item, ya que esa informacion ya esta visible en la tabla.
+- El subtitulo debe mantenerse como copy fijo:
+  - `¿Confirmas que deseas quitar este CUIT del reproceso?`
+- La unica informacion dinamica del item que debe renderizarse dentro del modal es la `razón social`, presentada en el bloque de alerta.
+- Si el usuario oprime `Sí, quitar`, el item correspondiente debe quitarse del estado mock reactivo de reproceso.
+- Al confirmar la accion:
+  - el modal debe cerrarse
+  - el item debe desaparecer de la tabla
+  - el badge del bloque de alerta debe actualizar la cantidad actual
+  - si no quedan items, debe renderizarse el estado vacío
+- Si el usuario selecciona `Cancelar`, el modal se cierra y no se emite ninguna accion.
+- Cuando existan contratos reales, esta accion se reemplazara por una server action conectada al backend.
