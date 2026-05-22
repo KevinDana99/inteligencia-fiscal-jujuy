@@ -12,8 +12,17 @@ const RISK_CLASS_BY_LEVEL = {
   C: classes.riskC
 } as const;
 
-export function UnifiedRegisterCard({ item }: { item: IUnifiedRegisterItem }) {
+export function UnifiedRegisterCard({
+  item,
+  isMarkPending,
+  onMarkReprocessing
+}: {
+  item: IUnifiedRegisterItem
+  isMarkPending: boolean
+  onMarkReprocessing: (contribuyenteId: string) => void
+}) {
   const router = useRouter();
+  const isMarked = item.isInReprocessing ?? false;
 
   return (
     <Card
@@ -79,8 +88,13 @@ export function UnifiedRegisterCard({ item }: { item: IUnifiedRegisterItem }) {
               <Menu.Item
                 className={`${classes.menuItem} ${classes.menuDanger}`}
                 leftSection={<IconReload size={14} />}
+                disabled={isMarked || isMarkPending}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onMarkReprocessing(item.contribuyenteId);
+                }}
               >
-                Marcar reproceso
+                {isMarked ? 'Ya en reproceso' : isMarkPending ? 'Marcando...' : 'Marcar reproceso'}
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
