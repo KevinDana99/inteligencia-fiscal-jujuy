@@ -60,6 +60,20 @@ const ANNUAL_CROSS_OPTIONS = [
   'Contribuyentes con más de dos inmuebles'
 ]
 
+function getContributorTypeLabel(regime: string) {
+  return regime === 'Convenio Multilateral' ? 'CM' : regime
+}
+
+function formatCuit(value: string) {
+  const normalizedValue = value.replace(/\D/g, '')
+
+  if (normalizedValue.length !== 11) {
+    return value
+  }
+
+  return `${normalizedValue.slice(0, 2)}-${normalizedValue.slice(2, 10)}-${normalizedValue.slice(10)}`
+}
+
 function BatchManagementMenu({
   batchId,
   filters,
@@ -342,7 +356,7 @@ function BatchDetailRow({ batch }: { batch: IBatchManagementItem }) {
                 {batch.cuits.map((cuit, index) => (
                   <Table.Tr key={cuit.id}>
                     <Table.Td className={classes.batchDate}>{index + 1}</Table.Td>
-                    <Table.Td className={classes.monoText}>{cuit.cuit}</Table.Td>
+                    <Table.Td className={classes.monoText}>{formatCuit(cuit.cuit)}</Table.Td>
                     <Table.Td>{cuit.businessName}</Table.Td>
                     <Table.Td>
                       <Badge
@@ -350,7 +364,7 @@ function BatchDetailRow({ batch }: { batch: IBatchManagementItem }) {
                         radius="xl"
                         className={classes.regimeBadge}
                       >
-                        {cuit.regime}
+                        {getContributorTypeLabel(cuit.regime)}
                       </Badge>
                     </Table.Td>
                   </Table.Tr>
