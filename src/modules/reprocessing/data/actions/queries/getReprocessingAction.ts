@@ -33,6 +33,32 @@ export async function getReprocessingAction(
   try {
     const source = await createServerReprocessingSource()
     const data = await source.listReprocessing(params)
+    const rawContractResponse = {
+      pagina: data.page,
+      itemsPagina: data.itemsPerPage,
+      totalContribuyentes: data.totalItems,
+      totalPaginas: data.totalPages,
+      reprocesos: data.items.map((item) => ({
+        id: item.id,
+        fechaCreacion: item.createdAt,
+        descripcion: item.notes || null,
+        autor: {
+          creadoPorUsuarioId: item.markedByUserId,
+          nombre: item.markedBy
+        },
+        ultimoCruce: item.lastCrossId
+          ? {
+              id: item.lastCrossId,
+              nombre: item.lastCross
+            }
+          : null,
+        contribuyente: {
+          contribuyenteId: item.contribuyenteId,
+          cuit: item.cuit,
+          razonSocial: item.businessName
+        }
+      }))
+    }
 
     console.log({
       endpoint,
@@ -42,19 +68,7 @@ export async function getReprocessingAction(
         ...REQUEST,
         requestUrl
       },
-      RESPONSE: {
-        totalContribuyentes: data.totalItems,
-        totalPaginas: data.totalPages,
-        pagina: data.page,
-        itemsPagina: data.itemsPerPage,
-        items: data.items.map((item) => ({
-          id: item.id,
-          contribuyenteId: item.contribuyenteId,
-          cuit: item.cuit,
-          razonSocial: item.businessName,
-          ultimoCruce: item.lastCross
-        }))
-      }
+      RESPONSE: rawContractResponse
     })
 
     return {
