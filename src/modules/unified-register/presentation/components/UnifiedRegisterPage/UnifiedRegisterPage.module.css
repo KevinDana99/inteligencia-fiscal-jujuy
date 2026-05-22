@@ -1,0 +1,54 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.searchInput {
+  max-width: 560px;
+  flex: 1;
+}
+
+.searchInput :global(.mantine-Input-input) {
+  height: 40px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 10px;
+  padding-left: 40px;
+  padding-right: 16px;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-9);
+  font-size: 14px;
+}
+
+.searchInput :global(.mantine-Input-input::placeholder) {
+  color: var(--mantine-color-gray-5);
+}
+
+.searchInput :global(.mantine-Input-section) {
+  color: #94a3b8;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.emptyState {
+  border: 1px dashed var(--mantine-color-gray-3);
+  border-radius: 14px;
+  background: var(--mantine-color-white);
+}
+
+.emptyText {
+  color: var(--mantine-color-gray-6);
+  font-size: 14px;
+  text-align: center;
+}
