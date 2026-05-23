@@ -10,6 +10,11 @@ import type {
 } from '../../models/BatchManagement';
 import { batchManagementMock } from './fixtures/batches';
 
+let nextBatchSequence = batchManagementMock.reduce(
+  (maxValue, item) => Math.max(maxValue, Number(item.batchNumber) || 0),
+  0
+);
+
 function normalizeSearchValue(value: string) {
   return value.trim().toLowerCase();
 }
@@ -348,11 +353,8 @@ export class MockBatchManagementSource implements IBatchManagementSource {
   }
 
   async createBatch(payload: IBatchCreatePayload): Promise<IBatchCreatedSummary> {
-    const nextNumber =
-      batchManagementMock.reduce(
-        (maxValue, item) => Math.max(maxValue, Number(item.batchNumber) || 0),
-        0
-      ) + 1;
+    nextBatchSequence += 1;
+    const nextNumber = nextBatchSequence;
 
     const response = {
       id: `mock-${nextNumber}`,

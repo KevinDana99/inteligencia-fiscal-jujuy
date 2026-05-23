@@ -1,4 +1,7 @@
 .content {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 32px);
   border-radius: 18px;
   overflow: hidden;
   background: var(--mantine-color-white);
@@ -52,11 +55,19 @@
 
 .modalBody,
 .body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 0;
   background: var(--mantine-color-white);
 }
 
 .form {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 20px 28px;
   background: var(--mantine-color-white);
 }
@@ -175,6 +186,8 @@
   border: 1px solid var(--mantine-color-blue-5);
   border-radius: 8px;
   padding: 0 14px;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
   font-size: 13px;
   box-shadow: 0 0 0 3px rgba(67, 117, 238, 0.1);
 }
@@ -196,8 +209,9 @@
 }
 
 .cuitTableContainer {
-  overflow: hidden;
-  max-height: 280px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 200px;
   border: 1px solid var(--mantine-color-gray-2);
   border-radius: 10px;
   background: var(--mantine-color-white);

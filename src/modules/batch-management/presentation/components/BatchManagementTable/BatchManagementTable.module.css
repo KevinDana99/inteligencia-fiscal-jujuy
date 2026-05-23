@@ -337,11 +337,13 @@
 .crossMenuDropdown {
   position: absolute;
   width: 420px;
-  max-height: 80vh;
+  max-height: 500px;
   min-width: 230px;
+  display: flex;
+  flex-direction: column;
   padding: 0;
   overflow-y: auto;
-  overflow: hidden;
+  overflow-x: hidden;
   border: 1px solid var(--mantine-color-gray-2);
   border-radius: 10px;
   background: var(--mantine-color-white);
@@ -452,16 +454,40 @@
 }
 
 .monthlyPeriodLabel {
+  font-size: 10px;
   color: #2563eb;
 }
 
 .annualPeriodLabel {
+  font-size: 10px;
   color: #059669;
 }
 
 .menuButton {
   background: var(--mantine-color-blue-5);
   border-color: var(--mantine-color-blue-5);
+}
+
+.menuButton:disabled,
+.menuButton[data-disabled] {
+  background: var(--mantine-color-blue-5);
+  border-color: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.menuButton:disabled:hover,
+.menuButton:disabled:focus,
+.menuButton:disabled[data-hovered],
+.menuButton:disabled[data-active],
+.menuButton[data-disabled]:hover,
+.menuButton[data-disabled]:focus,
+.menuButton[data-disabled][data-hovered],
+.menuButton[data-disabled][data-active] {
+  background: var(--mantine-color-blue-5);
+  border-color: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
 }
 
 .crossValidationMessage {

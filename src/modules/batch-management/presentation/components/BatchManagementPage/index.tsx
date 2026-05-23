@@ -21,7 +21,8 @@ export function BatchManagementPage({
     expandedBatchId,
     isCreateModalOpen,
     createForm,
-    loadedCuits,
+    loadedCuitsSearchValue,
+    filteredLoadedCuits,
     previewData,
     isImportPreviewOpen,
     isPreviewPending,
@@ -39,6 +40,7 @@ export function BatchManagementPage({
     openCreateModal,
     closeCreateModal,
     setCreateFormField,
+    setLoadedCuitsSearchValue,
     createBatch,
     addManualCuits,
     removeLoadedCuit,
@@ -111,7 +113,8 @@ export function BatchManagementPage({
         name={createForm.name}
         regime={createForm.regime}
         description={createForm.description}
-        loadedCuits={loadedCuits}
+        loadedCuitsSearchValue={loadedCuitsSearchValue}
+        filteredLoadedCuits={filteredLoadedCuits}
         previewData={previewData}
         isImportPreviewOpen={isImportPreviewOpen}
         isPreviewPending={isPreviewPending}
@@ -120,6 +123,7 @@ export function BatchManagementPage({
         onFieldChange={setCreateFormField}
         onManualCuitsAdd={addManualCuits}
         onLoadedCuitRemove={removeLoadedCuit}
+        onLoadedCuitsSearchChange={setLoadedCuitsSearchValue}
         onImportFileSelect={openImportPreview}
         onImportPreviewClose={closeImportPreview}
         onImportPreviewConfirm={confirmImportPreview}

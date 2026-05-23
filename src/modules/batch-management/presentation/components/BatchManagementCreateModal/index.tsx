@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   ActionIcon,
   Badge,
@@ -161,7 +161,8 @@ type BatchManagementCreateModalProps = {
   name: string
   regime: string | null
   description: string
-  loadedCuits: IBatchLoadedCuitRow[]
+  loadedCuitsSearchValue: string
+  filteredLoadedCuits: IBatchLoadedCuitRow[]
   previewData: IBatchPreviewData | null
   isImportPreviewOpen: boolean
   isPreviewPending: boolean
@@ -173,6 +174,7 @@ type BatchManagementCreateModalProps = {
   ) => void
   onManualCuitsAdd: (value: string) => number
   onLoadedCuitRemove: (rowId: string) => void
+  onLoadedCuitsSearchChange: (value: string) => void
   onImportFileSelect: (file: File) => void
   onImportPreviewClose: () => void
   onImportPreviewConfirm: () => void
@@ -184,7 +186,6 @@ function BatchManagementCreateModalContent({
   name,
   regime,
   description,
-  loadedCuits,
   previewData,
   isImportPreviewOpen,
   isPreviewPending,
@@ -193,32 +194,18 @@ function BatchManagementCreateModalContent({
   onFieldChange,
   onManualCuitsAdd,
   onLoadedCuitRemove,
+  loadedCuitsSearchValue,
+  filteredLoadedCuits,
+  onLoadedCuitsSearchChange,
   onImportFileSelect,
   onImportPreviewClose,
   onImportPreviewConfirm,
   onSubmit
 }: BatchManagementCreateModalProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const [tableSearch, setTableSearch] = useState('')
   const [isManualInputOpen, setIsManualInputOpen] = useState(false)
   const [manualCuitValue, setManualCuitValue] = useState('')
-
-  const filteredLoadedCuits = useMemo(() => {
-    const normalizedSearch = tableSearch.trim().toLowerCase()
-
-    if (!normalizedSearch) {
-      return loadedCuits
-    }
-
-    return loadedCuits.filter((row) => {
-      const cuitValue = row.cuit.toLowerCase()
-      const businessName = row.businessName?.toLowerCase() ?? ''
-
-      return cuitValue.includes(normalizedSearch) || businessName.includes(normalizedSearch)
-    })
-  }, [loadedCuits, tableSearch])
-
-  const isCreateReady = Boolean(name.trim() && regime && loadedCuits.length)
+  const isCreateReady = Boolean(name.trim() && regime && filteredLoadedCuits.length)
 
   const handleImportButtonClick = () => {
     fileInputRef.current?.click()
@@ -345,8 +332,8 @@ function BatchManagementCreateModalContent({
               <TextInput
                 leftSection={<IconSearch size={14} />}
                 placeholder="Buscar por CUIT o razón social..."
-                value={tableSearch}
-                onChange={(event) => setTableSearch(event.currentTarget.value)}
+                value={loadedCuitsSearchValue}
+                onChange={(event) => onLoadedCuitsSearchChange(event.currentTarget.value)}
                 className={classes.cuitSearchInput}
                 classNames={{
                   input: classes.cuitSearchField,
@@ -441,7 +428,7 @@ function BatchManagementCreateModalContent({
             <Group justify="space-between" align="center" className={classes.cuitMetaRow}>
               <div className={classes.errorSlot} />
               <Text className={classes.cuitCounter}>
-                {loadedCuits.length} CUITs cargados
+                {filteredLoadedCuits.length} CUITs cargados
               </Text>
             </Group>
           </div>

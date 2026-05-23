@@ -61,7 +61,11 @@ const ANNUAL_CROSS_OPTIONS = [
 ]
 
 function getContributorTypeLabel(regime: string) {
-  return regime === 'Convenio Multilateral' ? 'CM' : regime
+  if (regime === 'Convenio Multilateral') {
+    return 'CM'
+  }
+
+  return regime.replace(/^Regimen\s+/i, '')
 }
 
 function formatCuit(value: string) {
