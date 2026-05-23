@@ -1,1 +1,2 @@
-export * from './useAdminPanelShell';
+export * from './useAdminPanelShell'
+export * from './useAdminPanelSettingsSection'
