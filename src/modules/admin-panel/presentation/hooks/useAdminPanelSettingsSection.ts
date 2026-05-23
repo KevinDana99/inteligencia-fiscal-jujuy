@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAdminConfig } from '../contexts'
 
-const useAdminPanelSettingsSection = () => {
+export const useAdminPanelSettingsSection = () => {
   const { adminConfig, addWhitelistDomain, removeWhitelistDomain } =
     useAdminConfig()
   const [domainValue, setDomainValue] = useState('')
@@ -31,7 +31,7 @@ const useAdminPanelSettingsSection = () => {
     setDomainError(null)
   }
 
-  const handleOnChangeDomain = (value: string) => {
+  const handleChangeDomain = (value: string) => {
     setDomainValue(value)
     if (domainError) {
       setDomainError(null)
@@ -44,8 +44,6 @@ const useAdminPanelSettingsSection = () => {
     handleAddDomain,
     domainValue,
     domainError,
-    handleOnChangeDomain
+    handleChangeDomain
   }
 }
-
-export default useAdminPanelSettingsSection

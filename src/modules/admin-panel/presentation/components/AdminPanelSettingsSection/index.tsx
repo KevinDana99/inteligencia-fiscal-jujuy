@@ -19,7 +19,7 @@ import {
   IconTrash
 } from '@tabler/icons-react'
 import classes from '../AdminPanelShell/AdminPanelShell.module.css'
-import useAdminPanelSettingsSection from '../../hooks/useAdminPanelSettingsSection'
+import { useAdminPanelSettingsSection } from '../../hooks'
 export function AdminPanelSettingsSection() {
   const {
     adminConfig,
@@ -27,7 +27,7 @@ export function AdminPanelSettingsSection() {
     domainError,
     handleAddDomain,
     removeWhitelistDomain,
-    handleOnChangeDomain
+    handleChangeDomain
   } = useAdminPanelSettingsSection()
   return (
     <Stack gap='xl'>
@@ -97,7 +97,7 @@ export function AdminPanelSettingsSection() {
                     placeholder='@ejemplo.gob.ar'
                     value={domainValue}
                     onChange={(event) => {
-                      handleOnChangeDomain(event.currentTarget.value)
+                      handleChangeDomain(event.currentTarget.value)
                     }}
                     leftSection={<IconMail size={16} />}
                     className={classes.configDomainInput}
