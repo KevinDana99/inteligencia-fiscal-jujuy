@@ -22,8 +22,8 @@ export function AdminPanelNavbar({
             <Image
               src='/assets/branding/logo.svg'
               alt='Dirección Provincial de Rentas'
-              width={101}
-              height={30}
+              width={170}
+              height={40.7}
               className={classes.brandLogo}
             />
           </div>

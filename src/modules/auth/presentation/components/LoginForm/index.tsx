@@ -11,10 +11,16 @@ import {
   TextInput,
   Title
 } from '@mantine/core'
-import { IconAlertCircle, IconInfoCircle } from '@tabler/icons-react'
+import {
+  IconAlertCircle,
+  IconEye,
+  IconEyeOff,
+  IconInfoCircle
+} from '@tabler/icons-react'
 import { AUTH_MODE } from '@/lib/auth/constants'
 import { useLoginForm } from './useLoginForm'
 import classes from './LoginForm.module.css'
+import Image from 'next/image'
 
 export default function LoginForm({
   mode
@@ -22,44 +28,6 @@ export default function LoginForm({
   mode: (typeof AUTH_MODE)[keyof typeof AUTH_MODE]
 }) {
   return <LoginFormContent key={mode} mode={mode} />
-}
-
-function EyeIcon({ off }: { off: boolean }) {
-  if (off) {
-    return (
-      <svg aria-hidden='true' viewBox='0 0 24 24' className={classes.eyeIcon}>
-        <path
-          d='M3 3L21 21M10.58 10.58A2 2 0 0 0 13.42 13.42M9.88 5.09A10.94 10.94 0 0 1 12 4.91c5.05 0 9.27 3.11 10.5 7.09a10.96 10.96 0 0 1-4.04 5.46M6.1 6.1A10.94 10.94 0 0 0 1.5 12c1.23 3.98 5.45 7.09 10.5 7.09 1.55 0 3.03-.29 4.38-.82'
-          fill='none'
-          stroke='currentColor'
-          strokeWidth='1.7'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        />
-      </svg>
-    )
-  }
-
-  return (
-    <svg aria-hidden='true' viewBox='0 0 24 24' className={classes.eyeIcon}>
-      <path
-        d='M1.5 12S5.5 4.91 12 4.91 22.5 12 22.5 12 18.5 19.09 12 19.09 1.5 12 1.5 12Z'
-        fill='none'
-        stroke='currentColor'
-        strokeWidth='1.7'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-      />
-      <circle
-        cx='12'
-        cy='12'
-        r='3'
-        fill='none'
-        stroke='currentColor'
-        strokeWidth='1.7'
-      />
-    </svg>
-  )
 }
 
 function LoginFormContent({
@@ -73,13 +41,12 @@ function LoginFormContent({
     isPending,
     error,
     recoveryNoticeVisible,
+    hasError,
     setEmail,
     setPassword,
     showRecoveryNotice,
     handleSubmit
   } = useLoginForm(mode)
-
-  const hasError = Boolean(error) && !recoveryNoticeVisible
 
   return (
     <section className={classes.shell}>
@@ -87,9 +54,11 @@ function LoginFormContent({
         className={classes.brand}
         aria-label='Direccion Provincial de Rentas'
       >
-        <img
+        <Image
           src='/assets/branding/logo.svg'
           alt='Dirección Provincial de Rentas'
+          width={170}
+          height={40.7}
           className={classes.brandLogo}
         />
       </div>
@@ -154,7 +123,9 @@ function LoginFormContent({
               value={password}
               onChange={(event) => setPassword(event.currentTarget.value)}
               disabled={isPending}
-              visibilityToggleIcon={({ reveal }) => <EyeIcon off={!reveal} />}
+              visibilityToggleIcon={({ reveal }) =>
+                reveal ? <IconEye /> : <IconEyeOff />
+              }
               className={`${classes.passwordInput} ${hasError ? classes.inputError : ''}`}
             />
           </Stack>
@@ -176,7 +147,9 @@ function LoginFormContent({
             <Alert
               variant='light'
               color='blue'
-              icon={<IconInfoCircle className={classes.infoIcon} stroke={1.8} />}
+              icon={
+                <IconInfoCircle className={classes.infoIcon} stroke={1.8} />
+              }
               className={classes.infoAlert}
             >
               Para recuperar o cambiar la contraseña,
@@ -222,25 +195,13 @@ function LoginFormContent({
           </Text>
         </Stack>
       </Paper>
-
-      <svg
-        className={classes.wave}
+      <Image
+        width={100}
         height={200}
-        viewBox='0 0 1440 200'
-        preserveAspectRatio='none'
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <path
-          d='M0,120 C240,60 480,180 720,120 C960,60 1200,160 1440,100 L1440,200 L0,200 Z'
-          fill='#dbeafe'
-          opacity='0.5'
-        />
-        <path
-          d='M0,140 C180,80 360,170 540,130 C720,90 900,160 1080,120 C1260,80 1380,150 1440,120 L1440,200 L0,200 Z'
-          fill='#bfdbfe'
-          opacity='0.8'
-        />
-      </svg>
+        src='/assets/branding/login-wave.svg'
+        alt='wave-svg'
+        className={classes.wave}
+      />
     </section>
   )
 }
