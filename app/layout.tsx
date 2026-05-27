@@ -34,7 +34,7 @@ const dmSans = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'Catalog Showcase',
+  title: 'Inteligencia Fiscal - Jujuy',
   description:
     'Base project generated with the create-frontend-architecture skill.'
 }
