@@ -1,11 +1,5 @@
 import Link from 'next/link'
 import { Avatar } from '@mantine/core'
-import {
-  IconActivity,
-  IconClockHour4,
-  IconLayoutGrid,
-  IconSearch
-} from '@tabler/icons-react'
 import type { IAuthSession } from '@/modules/auth/data/models/Auth'
 import type {
   DashboardSection,
@@ -14,24 +8,8 @@ import type {
 import { getInitials } from '../../utils/getInitials'
 import classes from '../DashboardLayoutShell/DashboardLayoutShell.module.css'
 import Image from 'next/image'
-
-function getIcon(icon: IDashboardNavItem['icon']) {
-  switch (icon) {
-    case 'grid':
-      return <IconLayoutGrid size={15} />
-    case 'activity':
-      return <IconActivity size={15} />
-    case 'clock':
-      return <IconClockHour4 size={15} />
-    case 'search':
-    default:
-      return <IconSearch size={15} />
-  }
-}
-
-function getRoleLabel(role: IAuthSession['user']['role']) {
-  return role === 'admin' ? 'Administrador' : 'Analista Fiscal'
-}
+import getRoleLabel from '../../utils/getRoleLabel'
+import CustomIcon from '@/global/icons'
 
 export function DashboardSidebar({
   session,
@@ -78,7 +56,7 @@ export function DashboardSidebar({
                   currentSection === item.section ? classes.navItemActive : ''
                 }`}
               >
-                {getIcon(item.icon)}
+                <CustomIcon name={item.icon} size={15} />
                 {item.label}
               </Link>
             ))}
@@ -94,7 +72,7 @@ export function DashboardSidebar({
                   currentSection === item.section ? classes.navItemActive : ''
                 }`}
               >
-                {getIcon(item.icon)}
+                <CustomIcon name={item.icon} size={15} />
                 {item.label}
               </Link>
             ))}
