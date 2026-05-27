@@ -13,11 +13,6 @@ export const AUTH_ROUTES = {
   admin: '/admin'
 } as const;
 
-export const AUTH_MODE = {
-  user: 'user',
-  admin: 'admin'
-} as const;
-
 export const AUTH_HEADERS = {
   sessionExpired: 'x-auth-session-expired'
 } as const;

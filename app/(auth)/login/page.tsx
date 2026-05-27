@@ -1,21 +1,15 @@
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
-import LoginPageGate from './LoginPageGate';
+import { Suspense } from 'react'
+import type { Metadata } from 'next'
+import LoginForm from '@/modules/auth/presentation/components/LoginForm'
 
 export const metadata: Metadata = {
-  title: 'Login'
-};
+  title: 'IF - Login'
+}
 
-export default function LoginPage({
-  searchParams
-}: {
-  searchParams: Promise<{
-    mode?: string;
-  }>;
-}) {
+export default function LoginPage() {
   return (
     <Suspense fallback={null}>
-      <LoginPageGate searchParams={searchParams} />
+      <LoginForm />
     </Suspense>
-  );
+  )
 }

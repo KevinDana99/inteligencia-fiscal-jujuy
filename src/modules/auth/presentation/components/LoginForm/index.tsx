@@ -17,24 +17,15 @@ import {
   IconEyeOff,
   IconInfoCircle
 } from '@tabler/icons-react'
-import { AUTH_MODE } from '@/lib/auth/constants'
 import { useLoginForm } from './useLoginForm'
 import classes from './LoginForm.module.css'
 import Image from 'next/image'
 
-export default function LoginForm({
-  mode
-}: {
-  mode: (typeof AUTH_MODE)[keyof typeof AUTH_MODE]
-}) {
-  return <LoginFormContent key={mode} mode={mode} />
+export default function LoginForm() {
+  return <LoginFormContent />
 }
 
-function LoginFormContent({
-  mode
-}: {
-  mode: (typeof AUTH_MODE)[keyof typeof AUTH_MODE]
-}) {
+function LoginFormContent() {
   const {
     email,
     password,
@@ -46,7 +37,7 @@ function LoginFormContent({
     setPassword,
     showRecoveryNotice,
     handleSubmit
-  } = useLoginForm(mode)
+  } = useLoginForm()
 
   return (
     <section className={classes.shell}>

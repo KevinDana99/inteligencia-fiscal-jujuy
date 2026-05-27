@@ -1,15 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { AUTH_MODE } from '@/lib/auth/constants'
 import { useSignIn } from '../../hooks'
 
-export function useLoginForm(mode: (typeof AUTH_MODE)[keyof typeof AUTH_MODE]) {
+export function useLoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [validationError, setValidationError] = useState<string | null>(null)
   const [recoveryNoticeVisible, setRecoveryNoticeVisible] = useState(false)
-  const { signIn, isPending, error, clearError } = useSignIn(mode)
+  const { signIn, isPending, error, clearError } = useSignIn()
   const hasError = Boolean(error) && !recoveryNoticeVisible
 
   const resetErrors = () => {
