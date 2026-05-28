@@ -1,9 +1,13 @@
 'use server';
 
-import { mapIamSessionResponseToAuthSession } from '@/lib/auth/session-mapper';
+import {
+  composeAuthSession,
+  mapIamCurrentContextResponseToAuthUser,
+  mapIamSessionResponseToSerializedAuthSession
+} from '@/lib/auth/session-mapper';
 import { setServerAuthCookies } from '@/lib/auth/cookies';
 import { createServerAuthSource } from '../../data-access';
-import type { IIamActionError, IIamSessionResponse, IIamSignInRequest } from '../../models/Auth';
+import type { IAuthSession, IIamActionError, IIamSignInRequest } from '../../models/Auth';
 
 function redactToken(token: string): string {
   if (token.length <= 12) {
@@ -15,7 +19,7 @@ function redactToken(token: string): string {
 
 export async function signInAction(
   params: IIamSignInRequest
-): Promise<IIamSessionResponse | IIamActionError> {
+): Promise<IAuthSession | IIamActionError> {
   try {
     console.log('[auth][login][request]', {
       correo: params.correo,
@@ -24,7 +28,13 @@ export async function signInAction(
 
     const source = await createServerAuthSource();
     const response = await source.signIn(params);
-    await setServerAuthCookies(mapIamSessionResponseToAuthSession(response));
+    const serializedSession = mapIamSessionResponseToSerializedAuthSession(response);
+    await setServerAuthCookies(serializedSession);
+    const currentContext = await source.getCurrentContext(serializedSession.accessToken);
+    const session = composeAuthSession(
+      serializedSession,
+      mapIamCurrentContextResponseToAuthUser(currentContext)
+    );
 
     console.log('[auth][login][response]', {
       token: redactToken(response.token),
@@ -34,7 +44,7 @@ export async function signInAction(
       usuario: response.usuario
     });
 
-    return response;
+    return session;
   } catch (error) {
     console.log('[auth][login][error]', {
       correo: params.correo,

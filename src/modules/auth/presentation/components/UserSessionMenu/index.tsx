@@ -11,9 +11,9 @@ export default function UserSessionMenu({ session }: { session: IAuthSession }) 
     <Stack gap="xs">
       <Group justify="space-between" align="center">
         <div>
-          <Text fw={600}>{session.user.userName}</Text>
+          <Text fw={600}>{session.user.nombreUsuario ?? 'Usuario'}</Text>
           <Text size="sm" c="dimmed">
-            {session.user.email}
+            {session.user.correo ?? 'Sin correo'}
           </Text>
         </div>
 

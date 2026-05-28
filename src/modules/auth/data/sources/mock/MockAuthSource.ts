@@ -1,9 +1,8 @@
 import { AUTH_MOCK_USERS } from '@/lib/auth/constants';
-import { readServerAuthSession } from '@/lib/auth/cookies';
 import type { IAuthSource } from '../../interfaces/AuthSource';
 import type {
   ICommandResult,
-  IAuthSession,
+  IIamCurrentContextResponse,
   IIamRefreshSessionRequest,
   IIamSessionResponse,
   IIamSignInRequest
@@ -37,11 +36,20 @@ function findMockUser(correo: string, contrasena: string) {
   );
 }
 
-export class MockAuthSource implements IAuthSource {
-  async getSession(): Promise<IAuthSession | null> {
-    return readServerAuthSession();
-  }
+function buildMockCurrentContextResponse(token: string): IIamCurrentContextResponse {
+  const user = token.includes('admin') ? AUTH_MOCK_USERS.admin : AUTH_MOCK_USERS.user;
 
+  return {
+    autenticado: true,
+    esquema: 'AuthenticationTypes.Mock',
+    nombreUsuario: user.userName,
+    correo: user.email,
+    sujeto: `mock-subject-${user.role}`,
+    tipoUsuario: user.role === 'admin' ? 'SUPER_ADMIN' : 'ANALISTA_FISCAL'
+  };
+}
+
+export class MockAuthSource implements IAuthSource {
   async signIn(params: IIamSignInRequest): Promise<IIamSessionResponse> {
     const user = findMockUser(params.correo, params.contrasena);
 
@@ -70,5 +78,13 @@ export class MockAuthSource implements IAuthSource {
         : AUTH_MOCK_USERS.user;
 
     return createMockIamSessionResponse(Math.random().toString(36).slice(2), user);
+  }
+
+  async getCurrentContext(accessToken: string): Promise<IIamCurrentContextResponse> {
+    if (!accessToken.startsWith('mock-access-token-')) {
+      throw new Error('Unauthorized');
+    }
+
+    return buildMockCurrentContextResponse(accessToken);
   }
 }

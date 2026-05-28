@@ -1,11 +1,13 @@
 export interface IAuthUser {
-  userName: string;
-  email: string;
-  role: 'user' | 'admin';
+  autenticado: boolean;
+  esquema: string | null;
+  nombreUsuario: string | null;
+  correo: string | null;
+  sujeto: string | null;
+  tipoUsuario: 'SUPER_ADMIN' | 'ANALISTA_FISCAL' | null;
 }
 
 export interface IAuthSession {
-  isAuthenticated: boolean;
   accessToken?: string;
   accessTokenExpiresAt?: string;
   refreshToken?: string;
@@ -18,8 +20,6 @@ export interface ISerializedAuthSession {
   accessTokenExpiresAt: string;
   refreshToken: string;
   refreshTokenExpiresAt: string;
-  userName: string;
-  email: string;
 }
 
 export interface ICommandResult {
@@ -57,6 +57,15 @@ export interface IIamSignOutRequest {
 }
 
 export type IIamRefreshSessionResponse = IIamSessionResponse;
+
+export interface IIamCurrentContextResponse {
+  autenticado: boolean;
+  esquema: string | null;
+  nombreUsuario: string | null;
+  correo: string | null;
+  sujeto: string | null;
+  tipoUsuario: 'SUPER_ADMIN' | 'ANALISTA_FISCAL' | null;
+}
 
 export interface IIamActionError {
   error: string;

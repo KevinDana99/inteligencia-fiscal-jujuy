@@ -41,7 +41,7 @@ export function AdminPanelNavbar({
               radius='xl'
               className={classes.profileAvatar}
             >
-              {getInitials(session.user.userName)}
+              {getInitials(session.user.nombreUsuario ?? '')}
             </Avatar>
             <Text className={classes.profileLabel}>Administrador</Text>
           </div>

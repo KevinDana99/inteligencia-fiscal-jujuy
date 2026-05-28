@@ -1,9 +1,9 @@
 import { AUTH_MOCK_USERS } from './constants';
-import { mapIamSessionResponseToAuthSession } from './session-mapper';
+import { mapIamSessionResponseToSerializedAuthSession } from './session-mapper';
 import type {
-  IAuthSession,
   IIamRefreshSessionRequest,
   IIamSessionResponse,
+  ISerializedAuthSession
 } from '@/modules/auth/data/models/Auth';
 
 const isMockEnabled = (): boolean => {
@@ -36,7 +36,7 @@ export async function refreshAuthSession(
     email?: string;
     userName?: string;
   }
-): Promise<IAuthSession | null> {
+): Promise<ISerializedAuthSession | null> {
   if (!params.refrescarToken) {
     return null;
   }
@@ -47,7 +47,7 @@ export async function refreshAuthSession(
         ? AUTH_MOCK_USERS.admin
         : AUTH_MOCK_USERS.user;
 
-    return mapIamSessionResponseToAuthSession(
+    return mapIamSessionResponseToSerializedAuthSession(
       buildMockSessionResponse(
         params.refrescarToken,
         params.email ?? mockUser.email,
@@ -72,5 +72,5 @@ export async function refreshAuthSession(
   }
 
   const sessionResponse = (await response.json()) as IIamSessionResponse;
-  return mapIamSessionResponseToAuthSession(sessionResponse);
+  return mapIamSessionResponseToSerializedAuthSession(sessionResponse);
 }

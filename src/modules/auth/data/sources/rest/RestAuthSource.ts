@@ -1,9 +1,8 @@
-import { readServerAuthSession } from '@/lib/auth/cookies';
-import { ApiClientError, postJson } from '@/lib/api-client';
+import { ApiClientError, getJson, postJson } from '@/lib/api-client';
 import type { ApiClientConfig } from '@/lib/api-client';
 import type { IAuthSource } from '../../interfaces/AuthSource';
 import type {
-  IAuthSession,
+  IIamCurrentContextResponse,
   ICommandResult,
   IIamRefreshSessionRequest,
   IIamRefreshSessionResponse,
@@ -11,6 +10,7 @@ import type {
   IIamSignInRequest
 } from '../../models/Auth';
 import type {
+  ApiIamCurrentContextResponseDto,
   ApiIamRefreshSessionRequestDto,
   ApiIamSessionResponseDto,
   ApiIamSignInRequestDto,
@@ -19,10 +19,6 @@ import type {
 
 export class RestAuthSource implements IAuthSource {
   constructor(private readonly config: ApiClientConfig) {}
-
-  async getSession(): Promise<IAuthSession | null> {
-    return readServerAuthSession();
-  }
 
   async signIn(params: IIamSignInRequest): Promise<IIamSessionResponse> {
     const payload: ApiIamSignInRequestDto = {
@@ -81,6 +77,24 @@ export class RestAuthSource implements IAuthSource {
       >('/api/iam/autenticacion/renovar-sesion', payload, this.config);
     } catch {
       throw new Error('Unable to refresh session');
+    }
+  }
+
+  async getCurrentContext(accessToken: string): Promise<IIamCurrentContextResponse> {
+    try {
+      return await getJson<ApiIamCurrentContextResponseDto>(
+        '/api/iam/autenticacion/contexto-actual',
+        {
+          ...this.config,
+          token: accessToken
+        }
+      );
+    } catch (error) {
+      if (error instanceof ApiClientError && error.status === 401) {
+        throw new Error('Unauthorized');
+      }
+
+      throw new Error('Unable to fetch current context');
     }
   }
 }

@@ -83,13 +83,15 @@ export function DashboardSidebar({
       <div className={classes.sidebarFooter}>
         <div className={classes.userRow}>
           <Avatar size={32} radius='xl' className={classes.sidebarAvatar}>
-            {getInitials(session.user.userName)}
+            {getInitials(session.user.nombreUsuario ?? '')}
           </Avatar>
 
           <div className={classes.userMeta}>
-            <span className={classes.userName}>{session.user.userName}</span>
+            <span className={classes.userName}>
+              {session.user.nombreUsuario ?? 'Usuario'}
+            </span>
             <span className={classes.userRole}>
-              {getRoleLabel(session.user.role)}
+              {getRoleLabel(session.user.tipoUsuario)}
             </span>
           </div>
         </div>

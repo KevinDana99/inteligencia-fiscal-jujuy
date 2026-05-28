@@ -2,7 +2,7 @@
 
 import { startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AUTH_MOCK_USERS, AUTH_ROUTES } from '@/lib/auth/constants';
+import { AUTH_ROUTES } from '@/lib/auth/constants';
 import { signInAction } from '../../../data/actions';
 
 export function useSignIn() {
@@ -30,8 +30,10 @@ export function useSignIn() {
             return;
           }
 
-          const isAdminUser = result.usuario.correo === AUTH_MOCK_USERS.admin.email;
-          const targetPath = isAdminUser ? AUTH_ROUTES.admin : AUTH_ROUTES.home;
+          const targetPath =
+            result.user.tipoUsuario === 'SUPER_ADMIN'
+              ? AUTH_ROUTES.admin
+              : AUTH_ROUTES.home;
 
           router.replace(targetPath as never);
           router.refresh();

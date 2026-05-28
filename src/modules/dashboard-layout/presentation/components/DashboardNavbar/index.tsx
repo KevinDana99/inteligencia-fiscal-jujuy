@@ -27,10 +27,10 @@ export function DashboardNavbar({
       <div className={classes.headerActions}>
         <Group gap="xs" className={classes.profileChip}>
           <Avatar size={30} radius="xl" className={classes.profileAvatar}>
-            {getInitials(session.user.userName)}
+            {getInitials(session.user.nombreUsuario ?? '')}
           </Avatar>
           <Text size="sm" fw={600} className={classes.profileLabel}>
-            {session.user.userName}
+            {session.user.nombreUsuario ?? 'Usuario'}
           </Text>
         </Group>
 

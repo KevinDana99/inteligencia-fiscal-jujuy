@@ -1,15 +1,19 @@
 'use server';
 
-import { mapIamSessionResponseToAuthSession } from '@/lib/auth/session-mapper';
+import {
+  composeAuthSession,
+  mapIamCurrentContextResponseToAuthUser,
+  mapIamSessionResponseToSerializedAuthSession
+} from '@/lib/auth/session-mapper';
 import { readServerAuthSession, setServerAuthCookies } from '@/lib/auth/cookies';
 import { createServerAuthSource } from '../../data-access';
 import type {
-  IIamActionError,
-  IIamRefreshSessionResponse
+  IAuthSession,
+  IIamActionError
 } from '../../models/Auth';
 
 export async function refreshAuthSessionAction(): Promise<
-  IIamRefreshSessionResponse | IIamActionError
+  IAuthSession | IIamActionError
 > {
   try {
     const source = await createServerAuthSource();
@@ -25,9 +29,14 @@ export async function refreshAuthSessionAction(): Promise<
       refrescarToken: session.refreshToken
     });
 
-    await setServerAuthCookies(mapIamSessionResponseToAuthSession(response));
+    const serializedSession = mapIamSessionResponseToSerializedAuthSession(response);
+    await setServerAuthCookies(serializedSession);
+    const currentContext = await source.getCurrentContext(serializedSession.accessToken);
 
-    return response;
+    return composeAuthSession(
+      serializedSession,
+      mapIamCurrentContextResponseToAuthUser(currentContext)
+    );
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : 'Unable to refresh session'

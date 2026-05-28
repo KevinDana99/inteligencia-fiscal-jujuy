@@ -6,7 +6,7 @@ import type { IAuthSession } from '@/modules/auth/data/models/Auth';
 export async function requireAdminSession(): Promise<IAuthSession> {
   const session = await requireServerAuthSession();
 
-  if (session.user.role !== 'admin') {
+  if (session.user.tipoUsuario !== 'SUPER_ADMIN') {
     redirect(AUTH_ROUTES.login as never);
   }
 

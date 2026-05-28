@@ -1,11 +1,7 @@
 import { cookies } from 'next/headers';
 import type { NextRequest, NextResponse } from 'next/server';
 import { AUTH_COOKIE_NAMES } from './constants';
-import {
-  mapSerializedSessionToAuthSession,
-  serializeAuthSession
-} from './session-mapper';
-import type { IAuthSession, ISerializedAuthSession } from '@/modules/auth/data/models/Auth';
+import type { ISerializedAuthSession } from '@/modules/auth/data/models/Auth';
 
 function buildSerializedSession(
   requestCookies: Pick<NextRequest['cookies'], 'get'> | Awaited<ReturnType<typeof cookies>>
@@ -18,16 +14,12 @@ function buildSerializedSession(
   const refreshTokenExpiresAt = requestCookies.get(
     AUTH_COOKIE_NAMES.refreshTokenExpiresAt
   )?.value;
-  const userName = requestCookies.get(AUTH_COOKIE_NAMES.userName)?.value;
-  const email = requestCookies.get(AUTH_COOKIE_NAMES.userEmail)?.value;
 
   if (
     !accessToken ||
     !accessTokenExpiresAt ||
     !refreshToken ||
-    !refreshTokenExpiresAt ||
-    !userName ||
-    !email
+    !refreshTokenExpiresAt
   ) {
     return null;
   }
@@ -36,9 +28,7 @@ function buildSerializedSession(
     accessToken,
     accessTokenExpiresAt,
     refreshToken,
-    refreshTokenExpiresAt,
-    userName,
-    email
+    refreshTokenExpiresAt
   };
 }
 
@@ -52,107 +42,75 @@ function applyCookieOptions(expiresAt: string) {
   };
 }
 
-export async function readServerAuthSession(): Promise<IAuthSession | null> {
-  const cookieStore = await cookies();
-  return mapSerializedSessionToAuthSession(buildSerializedSession(cookieStore));
-}
-
-export function readRequestAuthSession(request: NextRequest): IAuthSession | null {
-  return mapSerializedSessionToAuthSession(buildSerializedSession(request.cookies));
-}
-
-export async function setServerAuthCookies(session: IAuthSession): Promise<void> {
-  const cookieStore = await cookies();
-  const serializedSession = serializeAuthSession(session);
-
-  if (!serializedSession) {
-    return;
-  }
-
+function setAuthCookies(
+  cookieStore: Pick<Awaited<ReturnType<typeof cookies>>, 'set'>,
+  session: ISerializedAuthSession
+) {
   cookieStore.set(
     AUTH_COOKIE_NAMES.accessToken,
-    serializedSession.accessToken,
-    applyCookieOptions(serializedSession.accessTokenExpiresAt)
+    session.accessToken,
+    applyCookieOptions(session.accessTokenExpiresAt)
   );
   cookieStore.set(
     AUTH_COOKIE_NAMES.accessTokenExpiresAt,
-    serializedSession.accessTokenExpiresAt,
-    applyCookieOptions(serializedSession.accessTokenExpiresAt)
+    session.accessTokenExpiresAt,
+    applyCookieOptions(session.accessTokenExpiresAt)
   );
   cookieStore.set(
     AUTH_COOKIE_NAMES.refreshToken,
-    serializedSession.refreshToken,
-    applyCookieOptions(serializedSession.refreshTokenExpiresAt)
+    session.refreshToken,
+    applyCookieOptions(session.refreshTokenExpiresAt)
   );
   cookieStore.set(
     AUTH_COOKIE_NAMES.refreshTokenExpiresAt,
-    serializedSession.refreshTokenExpiresAt,
-    applyCookieOptions(serializedSession.refreshTokenExpiresAt)
+    session.refreshTokenExpiresAt,
+    applyCookieOptions(session.refreshTokenExpiresAt)
   );
-  cookieStore.set(
-    AUTH_COOKIE_NAMES.userName,
-    serializedSession.userName,
-    applyCookieOptions(serializedSession.refreshTokenExpiresAt)
-  );
-  cookieStore.set(
-    AUTH_COOKIE_NAMES.userEmail,
-    serializedSession.email,
-    applyCookieOptions(serializedSession.refreshTokenExpiresAt)
-  );
+}
+
+function clearAuthCookies(
+  cookieStore:
+    | Pick<Awaited<ReturnType<typeof cookies>>, 'delete'>
+    | Pick<NextResponse['cookies'], 'delete'>
+) {
+  for (const cookieName of Object.values(AUTH_COOKIE_NAMES)) {
+    cookieStore.delete({
+      name: cookieName,
+      path: '/'
+    });
+  }
+}
+
+export async function readServerAuthSession(): Promise<ISerializedAuthSession | null> {
+  const cookieStore = await cookies();
+  return buildSerializedSession(cookieStore);
+}
+
+export function readRequestAuthSession(
+  request: NextRequest
+): ISerializedAuthSession | null {
+  return buildSerializedSession(request.cookies);
+}
+
+export async function setServerAuthCookies(
+  session: ISerializedAuthSession
+): Promise<void> {
+  const cookieStore = await cookies();
+  setAuthCookies(cookieStore, session);
 }
 
 export async function clearServerAuthCookies(): Promise<void> {
   const cookieStore = await cookies();
-
-  for (const cookieName of Object.values(AUTH_COOKIE_NAMES)) {
-    cookieStore.delete(cookieName);
-  }
+  clearAuthCookies(cookieStore);
 }
 
 export function setResponseAuthCookies(
   response: NextResponse,
-  session: IAuthSession
+  session: ISerializedAuthSession
 ): void {
-  const serializedSession = serializeAuthSession(session);
-
-  if (!serializedSession) {
-    return;
-  }
-
-  response.cookies.set(
-    AUTH_COOKIE_NAMES.accessToken,
-    serializedSession.accessToken,
-    applyCookieOptions(serializedSession.accessTokenExpiresAt)
-  );
-  response.cookies.set(
-    AUTH_COOKIE_NAMES.accessTokenExpiresAt,
-    serializedSession.accessTokenExpiresAt,
-    applyCookieOptions(serializedSession.accessTokenExpiresAt)
-  );
-  response.cookies.set(
-    AUTH_COOKIE_NAMES.refreshToken,
-    serializedSession.refreshToken,
-    applyCookieOptions(serializedSession.refreshTokenExpiresAt)
-  );
-  response.cookies.set(
-    AUTH_COOKIE_NAMES.refreshTokenExpiresAt,
-    serializedSession.refreshTokenExpiresAt,
-    applyCookieOptions(serializedSession.refreshTokenExpiresAt)
-  );
-  response.cookies.set(
-    AUTH_COOKIE_NAMES.userName,
-    serializedSession.userName,
-    applyCookieOptions(serializedSession.refreshTokenExpiresAt)
-  );
-  response.cookies.set(
-    AUTH_COOKIE_NAMES.userEmail,
-    serializedSession.email,
-    applyCookieOptions(serializedSession.refreshTokenExpiresAt)
-  );
+  setAuthCookies(response.cookies, session);
 }
 
 export function clearResponseAuthCookies(response: NextResponse): void {
-  for (const cookieName of Object.values(AUTH_COOKIE_NAMES)) {
-    response.cookies.delete(cookieName);
-  }
+  clearAuthCookies(response.cookies);
 }

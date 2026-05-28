@@ -14,6 +14,15 @@ export type ApiIamSessionResponseDto = {
   };
 };
 
+export type ApiIamCurrentContextResponseDto = {
+  autenticado: boolean;
+  esquema: string | null;
+  nombreUsuario: string | null;
+  correo: string | null;
+  sujeto: string | null;
+  tipoUsuario: 'SUPER_ADMIN' | 'ANALISTA_FISCAL' | null;
+};
+
 export type ApiIamRefreshSessionRequestDto = {
   refrescarToken: string;
 };

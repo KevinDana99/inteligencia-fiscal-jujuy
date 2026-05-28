@@ -1,75 +1,47 @@
-import { AUTH_MOCK_USERS } from './constants';
 import type {
+  IAuthUser,
   IAuthSession,
+  IIamCurrentContextResponse,
   IIamSessionResponse,
   ISerializedAuthSession
 } from '@/modules/auth/data/models/Auth';
 
-function resolveUserRole(email: string): 'user' | 'admin' {
-  return email === AUTH_MOCK_USERS.admin.email ? 'admin' : 'user';
-}
-
-export function mapIamSessionResponseToAuthSession(
+export function mapIamSessionResponseToSerializedAuthSession(
   response: IIamSessionResponse
-): IAuthSession {
+): ISerializedAuthSession {
   const now = Date.now();
 
   return {
-    isAuthenticated: true,
     accessToken: response.token,
     accessTokenExpiresAt: new Date(now + response.expiraEn * 1000).toISOString(),
     refreshToken: response.refrescarToken,
-    refreshTokenExpiresAt: new Date(
-      now + response.refrescarTokenExpiraEn * 1000
-    ).toISOString(),
-    user: {
-      userName: response.usuario.nombreUsuario,
-      email: response.usuario.correo,
-      role: resolveUserRole(response.usuario.correo)
-    }
+    refreshTokenExpiresAt: new Date(now + response.refrescarTokenExpiraEn * 1000).toISOString()
   };
 }
 
-export function serializeAuthSession(
-  session: IAuthSession
-): ISerializedAuthSession | null {
-  if (
-    !session.accessToken ||
-    !session.accessTokenExpiresAt ||
-    !session.refreshToken ||
-    !session.refreshTokenExpiresAt
-  ) {
-    return null;
-  }
-
+export function mapIamCurrentContextResponseToAuthUser(
+  response: IIamCurrentContextResponse
+): IAuthUser {
   return {
-    accessToken: session.accessToken,
-    accessTokenExpiresAt: session.accessTokenExpiresAt,
-    refreshToken: session.refreshToken,
-    refreshTokenExpiresAt: session.refreshTokenExpiresAt,
-    userName: session.user.userName,
-    email: session.user.email
+    autenticado: response.autenticado,
+    esquema: response.esquema,
+    nombreUsuario: response.nombreUsuario,
+    correo: response.correo,
+    sujeto: response.sujeto,
+    tipoUsuario: response.tipoUsuario
   };
 }
 
-export function mapSerializedSessionToAuthSession(
-  serializedSession: ISerializedAuthSession | null
-): IAuthSession | null {
-  if (!serializedSession) {
-    return null;
-  }
-
+export function composeAuthSession(
+  serializedSession: ISerializedAuthSession,
+  user: IAuthUser
+): IAuthSession {
   return {
-    isAuthenticated: true,
     accessToken: serializedSession.accessToken,
     accessTokenExpiresAt: serializedSession.accessTokenExpiresAt,
     refreshToken: serializedSession.refreshToken,
     refreshTokenExpiresAt: serializedSession.refreshTokenExpiresAt,
-    user: {
-      userName: serializedSession.userName,
-      email: serializedSession.email,
-      role: resolveUserRole(serializedSession.email)
-    }
+    user
   };
 }
 
