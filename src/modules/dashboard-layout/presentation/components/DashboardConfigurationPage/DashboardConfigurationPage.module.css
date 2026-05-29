@@ -100,9 +100,27 @@
 
 .tabButton:hover {
   background: transparent;
+  color: var(--mantine-color-gray-6);
+}
+
+.tabButton:focus,
+.tabButton:focus-visible,
+.tabButton[data-hovered],
+.tabButton[data-active] {
+  background: transparent;
+  color: var(--mantine-color-gray-6);
 }
 
 .tabButtonActive {
+  background: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+}
+
+.tabButtonActive:hover,
+.tabButtonActive:focus,
+.tabButtonActive:focus-visible,
+.tabButtonActive[data-hovered],
+.tabButtonActive[data-active] {
   background: var(--mantine-color-blue-5);
   color: var(--mantine-color-white);
 }
@@ -449,10 +467,13 @@ textarea.formInput:focus-visible {
 }
 
 .secondaryButton {
-  height: 36px;
+  height: 28px;
+  padding: 5px 11px;
   border: 1px solid var(--mantine-color-gray-2);
   background: var(--mantine-color-white);
   color: var(--mantine-color-gray-7);
+  font-size: 12px;
+  line-height: 1;
 }
 
 .secondaryButton:hover,
@@ -466,9 +487,12 @@ textarea.formInput:focus-visible {
 }
 
 .primaryButton {
-  height: 36px;
+  height: 28px;
+  padding: 5px 11px;
   background: var(--mantine-color-blue-5);
   color: var(--mantine-color-white);
+  font-size: 12px;
+  line-height: 1;
 }
 
 .primaryButton:hover {
@@ -699,7 +723,7 @@ textarea.formInput:focus-visible {
   width: 36px;
   height: 36px;
   border: 1.5px solid var(--mantine-color-gray-2);
-  border-radius: 8px;
+  border-radius: 999px;
   background: var(--mantine-color-white);
   color: var(--mantine-color-gray-6);
   box-shadow: none;
