@@ -14,6 +14,7 @@ export function DashboardTemplate({
   currentSectionLabel,
   analisisItems,
   seguimientoItems,
+  personalizacionItems,
   children
 }: {
   session: IAuthSession;
@@ -21,6 +22,7 @@ export function DashboardTemplate({
   currentSectionLabel: string;
   analisisItems: IDashboardNavItem[];
   seguimientoItems: IDashboardNavItem[];
+  personalizacionItems: IDashboardNavItem[];
   children: ReactNode;
 }) {
   return (
@@ -30,6 +32,7 @@ export function DashboardTemplate({
         currentSection={currentSection}
         analisisItems={analisisItems}
         seguimientoItems={seguimientoItems}
+        personalizacionItems={personalizacionItems}
       />
 
       <DashboardNavbar

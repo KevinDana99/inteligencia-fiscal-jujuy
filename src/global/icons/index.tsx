@@ -4,6 +4,7 @@ import {
   IconAdjustmentsHorizontal,
   IconClockHour4,
   IconLayoutGrid,
+  IconSettings,
   IconSearch
 } from '@tabler/icons-react'
 
@@ -13,7 +14,8 @@ const iconMapList: Record<IconSchemaType, typeof IconLayoutGrid> = {
   activity: IconActivity,
   clock: IconClockHour4,
   search: IconSearch,
-  sliders: IconAdjustmentsHorizontal
+  sliders: IconAdjustmentsHorizontal,
+  settings: IconSettings
 }
 
 const CustomIcon = (props: {

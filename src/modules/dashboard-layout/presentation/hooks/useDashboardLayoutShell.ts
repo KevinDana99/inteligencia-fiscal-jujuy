@@ -24,7 +24,8 @@ export function useDashboardLayoutShell() {
   const navGroups = useMemo(
     () => ({
       analisis: DASHBOARD_NAV_ITEMS.filter((item) => item.group === 'analisis'),
-      seguimiento: DASHBOARD_NAV_ITEMS.filter((item) => item.group === 'seguimiento')
+      seguimiento: DASHBOARD_NAV_ITEMS.filter((item) => item.group === 'seguimiento'),
+      personalizacion: DASHBOARD_NAV_ITEMS.filter((item) => item.group === 'personalizacion')
     }),
     []
   );

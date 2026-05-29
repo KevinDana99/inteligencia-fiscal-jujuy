@@ -21,15 +21,19 @@ export function AdminPanelSidebar({
             <IconHome size={18} />
             Inicio
           </Link>
-          <Link
-            href="/admin/configuracion"
-            className={`${classes.navItem} ${
-              currentSection === 'settings' ? classes.navItemActive : ''
-            }`}
-          >
-            <IconSettings size={18} />
-            Configuración
-          </Link>
+
+          <div className={classes.navGroup}>
+            <span className={classes.navGroupLabel}>Personalización</span>
+            <Link
+              href="/admin/configuracion"
+              className={`${classes.navItem} ${
+                currentSection === 'settings' ? classes.navItemActive : ''
+              }`}
+            >
+              <IconSettings size={18} />
+              Configuración
+            </Link>
+          </div>
         </nav>
       </div>
     </aside>

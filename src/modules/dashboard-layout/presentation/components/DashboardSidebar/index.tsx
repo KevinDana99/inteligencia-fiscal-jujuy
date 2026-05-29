@@ -16,12 +16,14 @@ export function DashboardSidebar({
   session,
   currentSection,
   analisisItems,
-  seguimientoItems
+  seguimientoItems,
+  personalizacionItems
 }: {
   session: IAuthSession
   currentSection: DashboardSection
   analisisItems: IDashboardNavItem[]
   seguimientoItems: IDashboardNavItem[]
+  personalizacionItems: IDashboardNavItem[]
 }) {
   return (
     <aside className={classes.sidebar}>
@@ -66,6 +68,22 @@ export function DashboardSidebar({
           <div className={classes.navGroup}>
             <span className={classes.navGroupLabel}>Seguimiento</span>
             {seguimientoItems.map((item) => (
+              <Link
+                key={item.section}
+                href={item.href}
+                className={`${classes.navItem} ${
+                  currentSection === item.section ? classes.navItemActive : ''
+                }`}
+              >
+                <CustomIcon name={item.icon} size={15} />
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className={classes.navGroup}>
+            <span className={classes.navGroupLabel}>Personalización</span>
+            {personalizacionItems.map((item) => (
               <Link
                 key={item.section}
                 href={item.href}

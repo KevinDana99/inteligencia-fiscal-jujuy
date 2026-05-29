@@ -1,20 +1,21 @@
-import type { Route } from 'next';
+import type { Route } from 'next'
 
 export type DashboardSection =
   | 'padron-unificado'
   | 'explorar-padron'
   | 'gestion-de-lotes'
   | 'gestion-de-cruces'
-  | 'reproceso';
+  | 'reproceso'
+  | 'settings'
 
-export type DashboardNavGroup = 'analisis' | 'seguimiento';
+export type DashboardNavGroup = 'analisis' | 'seguimiento' | 'personalizacion'
 
 export interface IDashboardNavItem {
-  section: DashboardSection;
-  label: string;
-  href: Route;
-  group: DashboardNavGroup;
-  icon: 'search' | 'grid' | 'activity' | 'clock' | 'sliders';
+  section: DashboardSection
+  label: string
+  href: Route
+  group: DashboardNavGroup
+  icon: 'search' | 'grid' | 'activity' | 'clock' | 'settings' | 'sliders'
 }
 
 export const DASHBOARD_NAV_ITEMS: IDashboardNavItem[] = [
@@ -28,7 +29,7 @@ export const DASHBOARD_NAV_ITEMS: IDashboardNavItem[] = [
   {
     section: 'explorar-padron',
     label: 'Explorar Padrón',
-    href: '/explorar-padron',
+    href: '/explorar-padron' as Route,
     group: 'analisis',
     icon: 'sliders'
   },
@@ -52,27 +53,39 @@ export const DASHBOARD_NAV_ITEMS: IDashboardNavItem[] = [
     href: '/reproceso',
     group: 'seguimiento',
     icon: 'clock'
+  },
+  {
+    section: 'settings',
+    label: 'Configuración',
+    href: '/configuracion',
+    group: 'personalizacion',
+    icon: 'settings'
   }
-];
+]
 
-export function getDashboardSectionFromPathname(pathname: string): DashboardSection {
+export function getDashboardSectionFromPathname(
+  pathname: string
+): DashboardSection {
   switch (pathname) {
     case '/explorar-padron':
-      return 'explorar-padron';
+      return 'explorar-padron'
     case '/gestion-de-lotes':
-      return 'gestion-de-lotes';
+      return 'gestion-de-lotes'
     case '/gestion-de-cruces':
-      return 'gestion-de-cruces';
+      return 'gestion-de-cruces'
     case '/reproceso':
-      return 'reproceso';
+      return 'reproceso'
+    case '/configuracion':
+      return 'settings'
     case '/':
     default:
-      return 'padron-unificado';
+      return 'padron-unificado'
   }
 }
 
 export function getDashboardSectionLabel(section: DashboardSection): string {
   return (
-    DASHBOARD_NAV_ITEMS.find((item) => item.section === section)?.label ?? 'Padrón Unificado'
-  );
+    DASHBOARD_NAV_ITEMS.find((item) => item.section === section)?.label ??
+    'Padrón Unificado'
+  )
 }
