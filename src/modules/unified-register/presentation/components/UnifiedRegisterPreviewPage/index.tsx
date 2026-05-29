@@ -682,7 +682,12 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
             </div>
 
             <div className={classes.tableWrapper}>
-              <Table withTableBorder={false} withColumnBorders={false} withRowBorders={false}>
+              <Table
+                className={classes.sourceTable}
+                withTableBorder={false}
+                withColumnBorders={false}
+                withRowBorders={false}
+              >
                 <Table.Thead>
                   <Table.Tr>
                     {activeSourceTable.columns.map((column) => (
@@ -695,26 +700,23 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
                     <Table.Tr key={`${activeSourceTable.id}-${rowIndex}`}>
                       {row.map((cell, cellIndex) => {
                         const isLastCell = cellIndex === row.length - 1;
-                        const isAmountCell =
-                          activeSourceTable.id === 'arca'
-                            ? cellIndex === 3
-                            : activeSourceTable.id === 'ret'
-                              ? cellIndex === 4
-                              : activeSourceTable.id === 'perc'
-                                ? cellIndex === 4
-                                : activeSourceTable.id === 'mer'
-                                  ? cellIndex === 2
-                                  : false;
+                        const columnName = activeSourceTable.columns[cellIndex]?.toLowerCase() ?? '';
+                        const isDifferenceColumn = columnName === 'diferencia';
+                        const isCriticalValue = isDifferenceColumn && cell.trim().startsWith('+');
+                        const isPositiveDifference = isDifferenceColumn && !cell.trim().startsWith('+');
 
                         if (isLastCell) {
                           return (
-                            <Table.Td key={`${activeSourceTable.id}-${rowIndex}-${cellIndex}`}>
+                            <Table.Td
+                              key={`${activeSourceTable.id}-${rowIndex}-${cellIndex}`}
+                              className={classes.sourceStatusCell}
+                            >
                               <Badge
                                 radius="xl"
                                 className={`${SOURCE_STATUS_CLASS[cell] ?? classes.badgeNeutral} ${
-                                  classes.statusBadge
+                                  classes.sourceStatusBadge
                                 }`}
-                                classNames={{ label: classes.statusBadgeLabel }}
+                                classNames={{ root: classes.sourceStatusBadgeRoot, label: classes.sourceStatusBadgeLabel }}
                               >
                                 {cell}
                               </Badge>
@@ -725,7 +727,14 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
                         return (
                           <Table.Td
                             key={`${activeSourceTable.id}-${rowIndex}-${cellIndex}`}
-                            className={isAmountCell && cell.startsWith('+') ? classes.amountCritical : ''}
+                            className={isCriticalValue ? classes.amountCritical : ''}
+                            style={
+                              isCriticalValue
+                                ? { color: '#dc2626', fontWeight: 600 }
+                                : isPositiveDifference
+                                  ? { color: '#059669', fontWeight: 600 }
+                                  : undefined
+                            }
                           >
                             {cell}
                           </Table.Td>

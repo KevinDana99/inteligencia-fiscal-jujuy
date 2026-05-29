@@ -670,7 +670,7 @@
 
 .tableWrapper th {
   background: var(--mantine-color-gray-0);
-  color: var(--mantine-color-gray-5);
+  color: #64748b;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
@@ -679,7 +679,7 @@
 }
 
 .tableWrapper td {
-  color: var(--mantine-color-gray-7);
+  color: #0f172a;
   font-size: 12px;
   line-height: 1.4;
   padding-block: 10px;
@@ -690,6 +690,63 @@
 
 .tableWrapper tbody tr td {
   border-bottom: 0;
+}
+
+.tableWrapper .sourceTable th,
+.tableWrapper .sourceTable td {
+  padding: 12px 14px;
+}
+
+.tableWrapper .sourceTable th {
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-align: left;
+  text-rendering: geometricPrecision;
+}
+
+.tableWrapper .sourceTable td {
+  text-align: left;
+  font-size: 13px;
+}
+
+.tableWrapper .sourceTable td.sourceStatusCell {
+  text-align: left !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+  font-weight: 600;
+}
+
+.tableWrapper .sourceTable td.sourceStatusCell .sourceStatusBadge {
+  display: inline-flex;
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.sourceStatusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: auto;
+  min-height: 26px;
+  box-sizing: border-box;
+  padding: 5px 12px;
+  line-height: 1.3;
+  overflow: visible;
+}
+
+.sourceStatusBadgeRoot {
+  box-sizing: border-box;
+  padding: 5px 12px !important;
+}
+
+.sourceStatusBadgeLabel {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  text-transform: none;
+  line-height: 1.3;
+  overflow: visible;
 }
 
 .mutedCodeCell {
@@ -717,6 +774,7 @@
 
 .amountCritical {
   color: #dc2626;
+  font-weight: 600;
 }
 
 .amountPositive {
@@ -809,14 +867,16 @@
 }
 
 .tabButton {
+  margin-bottom: -1px;
   padding: 14px 20px;
   border: 0;
   border-bottom: 2px solid transparent;
   background: transparent;
-  color: var(--mantine-color-gray-5);
+  color: #64748b;
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
+  line-height: 1;
   white-space: nowrap;
   cursor: pointer;
 }
