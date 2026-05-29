@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import type {
   IUnifiedRegisterAddress,
+  IUnifiedRegisterBatchOption,
   IUnifiedRegisterContact,
   IUnifiedRegisterDetail,
   IUnifiedRegisterNote,
@@ -14,6 +15,19 @@ type EditKind = null | 'address' | 'contact' | 'note';
 type DeleteKind = null | 'address' | 'contact' | 'note';
 
 type EditableItem = IUnifiedRegisterAddress | IUnifiedRegisterContact | IUnifiedRegisterNote;
+type ContactForm = {
+  phone: string;
+  mail: string;
+  legal: string;
+  accountant: string;
+};
+
+const EMPTY_CONTACT_FORM: ContactForm = {
+  phone: '',
+  mail: '',
+  legal: '',
+  accountant: ''
+};
 
 function createId(prefix: string) {
   return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
@@ -29,9 +43,11 @@ export function useUnifiedRegisterPreview(item: IUnifiedRegisterDetail) {
   const [editKind, setEditKind] = useState<EditKind>(null);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [formValue, setFormValue] = useState<string | null>(null);
+  const [contactForm, setContactForm] = useState<ContactForm>(EMPTY_CONTACT_FORM);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteKind, setDeleteKind] = useState<DeleteKind>(null);
   const [deletingItemId, setDeletingItemId] = useState<string | null>(null);
+  const [selectedLotOption, setSelectedLotOption] = useState<IUnifiedRegisterBatchOption | null>(null);
   const [activeSourceTableId, setActiveSourceTableId] =
     useState<IUnifiedRegisterSourceTable['id']>('inm');
   const [activeNoteIndex, setActiveNoteIndex] = useState(0);
@@ -62,17 +78,37 @@ export function useUnifiedRegisterPreview(item: IUnifiedRegisterDetail) {
     setBatchSearch('');
   };
 
+  const selectLotOption = (lot: IUnifiedRegisterBatchOption) => {
+    setSelectedLotOption(lot);
+    setActiveHeaderModal(null);
+    setBatchSearch('');
+  };
+
+  const closeLotConfirmModal = () => {
+    setSelectedLotOption(null);
+  };
+
   const openCreateModal = (kind: Exclude<EditKind, null>) => {
     setIsEditModalOpen(true);
     setEditKind(kind);
     setEditingItemId(null);
     setFormValue(null);
+    setContactForm(kind === 'contact' ? EMPTY_CONTACT_FORM : EMPTY_CONTACT_FORM);
   };
 
   const openEditModal = (kind: Exclude<EditKind, null>, itemToEdit: EditableItem) => {
     setIsEditModalOpen(true);
     setEditKind(kind);
     setEditingItemId(itemToEdit.id);
+    if (kind === 'contact') {
+      setContactForm({
+        phone: contacts.find((entry) => entry.id === 'phone')?.value ?? '',
+        mail: contacts.find((entry) => entry.id === 'mail')?.value ?? '',
+        legal: contacts.find((entry) => entry.id === 'legal')?.value ?? '',
+        accountant: contacts.find((entry) => entry.id === 'accountant')?.value ?? ''
+      });
+      return;
+    }
     if ('text' in itemToEdit) {
       setFormValue(itemToEdit.text);
       return;
@@ -89,10 +125,15 @@ export function useUnifiedRegisterPreview(item: IUnifiedRegisterDetail) {
     setEditKind(null);
     setEditingItemId(null);
     setFormValue(null);
+    setContactForm(EMPTY_CONTACT_FORM);
   };
 
   const submitEditModal = () => {
-    if (!editKind || !formValue?.trim()) {
+    if (!editKind) {
+      return;
+    }
+
+    if (editKind !== 'contact' && !formValue?.trim()) {
       return;
     }
 
@@ -114,20 +155,30 @@ export function useUnifiedRegisterPreview(item: IUnifiedRegisterDetail) {
     }
 
     if (editKind === 'contact') {
-      if (editingItemId) {
-        setContacts((current) =>
-          current.map((entry) =>
-            entry.id === editingItemId
-              ? { ...entry, value: formValue }
-              : entry
-          )
-        );
-      } else {
-        setContacts((current) => [
-          ...current,
-          { id: createId('contact'), label: 'Contacto', value: formValue }
-        ]);
+      const nextContacts: IUnifiedRegisterContact[] = [];
+      if (contactForm.phone.trim()) {
+        nextContacts.push({ id: 'phone', label: 'Teléfono', value: contactForm.phone.trim() });
       }
+      if (contactForm.mail.trim()) {
+        nextContacts.push({ id: 'mail', label: 'Mail', value: contactForm.mail.trim() });
+      }
+      if (contactForm.legal.trim()) {
+        nextContacts.push({
+          id: 'legal',
+          label: 'Representante legal',
+          value: contactForm.legal.trim()
+        });
+      }
+      if (contactForm.accountant.trim()) {
+        nextContacts.push({
+          id: 'accountant',
+          label: 'Contador',
+          value: contactForm.accountant.trim()
+        });
+      }
+      setContacts(nextContacts);
+      closeEditModal();
+      return;
     }
 
     if (editKind === 'note') {
@@ -162,6 +213,10 @@ export function useUnifiedRegisterPreview(item: IUnifiedRegisterDetail) {
 
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false);
+  };
+
+  const setContactField = (field: keyof ContactForm, value: string) => {
+    setContactForm((current) => ({ ...current, [field]: value }));
   };
 
   const resetDeleteModal = () => {
@@ -204,7 +259,7 @@ export function useUnifiedRegisterPreview(item: IUnifiedRegisterDetail) {
     }
 
     if (deleteKind === 'contact') {
-      removeContact(deletingItemId);
+      setContacts([]);
     }
 
     if (deleteKind === 'note') {
@@ -223,6 +278,7 @@ export function useUnifiedRegisterPreview(item: IUnifiedRegisterDetail) {
     filteredLotOptions,
     activeSourceTableId,
     activeSourceTable,
+    selectedLotOption,
     activeNote,
     activeNoteIndex,
     isEditModalOpen,
@@ -230,12 +286,16 @@ export function useUnifiedRegisterPreview(item: IUnifiedRegisterDetail) {
     editKind,
     deleteKind,
     formValue,
+    contactForm,
     editingItemId,
     setBatchSearch,
     setActiveSourceTableId,
     setFormValue,
+    setContactField,
     openHeaderModal,
     closeHeaderModal,
+    selectLotOption,
+    closeLotConfirmModal,
     openCreateModal,
     openEditModal,
     closeEditModal,

@@ -12,6 +12,7 @@ import {
   Stack,
   Table,
   Text,
+  Textarea,
   TextInput
 } from '@mantine/core';
 import {
@@ -21,7 +22,6 @@ import {
   IconArrowNarrowRight,
   IconFileText,
   IconListDetails,
-  IconSearch,
 } from '@tabler/icons-react';
 import type {
   IUnifiedRegisterAddress,
@@ -199,6 +199,7 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
     notes,
     batchSearch,
     filteredLotOptions,
+    selectedLotOption,
     activeSourceTableId,
     activeSourceTable,
     activeNote,
@@ -208,12 +209,16 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
     editKind,
     deleteKind,
     formValue,
+    contactForm,
     editingItemId,
     setBatchSearch,
     setActiveSourceTableId,
     setFormValue,
+    setContactField,
     openHeaderModal,
     closeHeaderModal,
+    selectLotOption,
+    closeLotConfirmModal,
     openCreateModal,
     openEditModal,
     closeEditModal,
@@ -231,6 +236,12 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
   } = useUnifiedRegisterPreview(item);
 
   const isEditingNote = editKind === 'note';
+  const isEditingContact = editKind === 'contact';
+  const isContactFormEmpty =
+    !contactForm.phone.trim() &&
+    !contactForm.mail.trim() &&
+    !contactForm.legal.trim() &&
+    !contactForm.accountant.trim();
   const backRoute = '/' as Route;
   const editModalTitle =
     editKind === 'address'
@@ -351,7 +362,7 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
             </button>
           </Group>
 
-          <Group gap="sm">
+          <div className={classes.headerActionMenu}>
             <Button
               variant="default"
               radius="xl"
@@ -364,11 +375,50 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
             <Button
               radius="xl"
               className={`${classes.headerPrimaryButton} ${classes.staticButton}`}
-              onClick={() => openHeaderModal('batch')}
+              onClick={() =>
+                activeHeaderModal === 'batch' ? closeHeaderModal() : openHeaderModal('batch')
+              }
             >
               Agregar a lote
             </Button>
-          </Group>
+
+            {activeHeaderModal === 'batch' ? (
+              <>
+                <button
+                  type="button"
+                  aria-label="Cerrar selector de lote"
+                  className={classes.batchDropdownBackdrop}
+                  onClick={closeHeaderModal}
+                />
+                <div className={classes.batchDropdown}>
+                <TextInput
+                  classNames={{
+                    input: classes.batchDropdownInput
+                  }}
+                  value={batchSearch}
+                  onChange={(event) => setBatchSearch(event.currentTarget.value)}
+                  placeholder="Buscar lote..."
+                />
+
+                <div className={classes.batchDropdownList}>
+                  {filteredLotOptions.map((lot) => (
+                    <button
+                      key={lot.id}
+                      type="button"
+                      className={classes.batchDropdownOption}
+                      onClick={() => selectLotOption(lot)}
+                    >
+                      <Text className={classes.batchDropdownOptionTitle}>{lot.label}</Text>
+                      <Text className={classes.batchDropdownOptionMeta}>
+                        {lot.cuitCount} CUITs
+                      </Text>
+                    </button>
+                  ))}
+                </div>
+                </div>
+              </>
+            ) : null}
+          </div>
         </div>
       </Card>
 
@@ -847,54 +897,46 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
       </Modal>
 
       <Modal
-        opened={activeHeaderModal === 'batch'}
-        onClose={closeHeaderModal}
+        opened={Boolean(selectedLotOption)}
+        onClose={closeLotConfirmModal}
         title="Agregar a lote"
-        size="lg"
         centered
+        size={420}
         zIndex={900}
         classNames={{
           overlay: classes.modalOverlay,
           inner: classes.modalInner,
-          content: classes.modalContent,
-          header: classes.modalHeader,
-          body: classes.modalBody,
+          content: `${classes.modalContent} ${classes.lotConfirmModalContent}`,
+          header: `${classes.modalHeader} ${classes.lotConfirmModalHeader}`,
+          body: `${classes.modalBody} ${classes.lotConfirmModalBody}`,
           title: classes.modalTitle
         }}
       >
-        <Stack gap="md">
-          <TextInput
-            classNames={{
-              label: classes.modalInputLabel,
-              input: classes.modalInputField
-            }}
-            value={batchSearch}
-            onChange={(event) => setBatchSearch(event.currentTarget.value)}
-            placeholder="Buscar lote..."
-            leftSection={<IconSearch size={14} />}
-          />
-
-          <div className={classes.batchList}>
-            {filteredLotOptions.map((lot) => (
-              <div key={lot.id} className={classes.batchOption}>
-                <div>
-                  <Text className={classes.batchOptionTitle}>{lot.label}</Text>
-                  <Text className={classes.batchOptionMeta}>
-                    {lot.regime} · {lot.cuitCount} CUITs
-                  </Text>
-                </div>
-                <Button
-                  variant="light"
-                  color="blue"
-                  radius="xl"
-                  className={classes.staticButton}
-                >
-                  Seleccionar
-                </Button>
-              </div>
-            ))}
-          </div>
-        </Stack>
+        {selectedLotOption ? (
+          <Stack gap={0}>
+            <Text className={`${classes.modalText} ${classes.lotConfirmModalText}`}>
+              ¿Querés agregar este CUIT al lote {selectedLotOption.label} ({selectedLotOption.cuitCount}{' '}
+              CUITs actualmente)
+            </Text>
+            <Group justify="flex-end" gap="sm">
+              <Button
+                variant="default"
+                radius="xl"
+                className={`${classes.modalGhostButton} ${classes.staticButton}`}
+                onClick={closeLotConfirmModal}
+              >
+                Cancelar
+              </Button>
+              <Button
+                radius="xl"
+                className={`${classes.modalPrimaryButton} ${classes.staticButton}`}
+                onClick={closeLotConfirmModal}
+              >
+                Confirmar
+              </Button>
+            </Group>
+          </Stack>
+        ) : null}
       </Modal>
 
       <Modal
@@ -943,17 +985,122 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
         onExitTransitionEnd={resetEditModal}
         title={editModalTitle}
         centered
+        withCloseButton={!isEditingNote}
         zIndex={900}
         classNames={{
           overlay: classes.modalOverlay,
           inner: classes.modalInner,
-          content: classes.modalContent,
-          header: classes.modalHeader,
-          body: classes.modalBody,
+          content: `${classes.modalContent} ${isEditingContact ? classes.contactModalContent : ''} ${
+            isEditingNote ? classes.noteModalContent : ''
+          }`,
+          header: `${classes.modalHeader} ${isEditingContact ? classes.contactModalHeader : ''} ${
+            isEditingNote ? classes.noteModalHeader : ''
+          }`,
+          body: `${classes.modalBody} ${isEditingContact ? classes.contactModalBody : ''} ${
+            isEditingNote ? classes.noteModalBody : ''
+          }`,
           title: classes.modalTitle
         }}
       >
-        {editKind ? (
+        {isEditingContact ? (
+          <Stack gap={0}>
+            <div className={classes.contactModalFields}>
+              <div>
+                <Text className={classes.contactModalLabel}>
+                  Teléfono <span className={classes.contactModalOptional}>(opcional)</span>
+                </Text>
+                <TextInput
+                  classNames={{ input: classes.modalInputField }}
+                  value={contactForm.phone}
+                  onChange={(event) => setContactField('phone', event.currentTarget.value)}
+                  placeholder="+5388 000-0000"
+                />
+              </div>
+              <div>
+                <Text className={classes.contactModalLabel}>
+                  Mail <span className={classes.contactModalOptional}>(opcional)</span>
+                </Text>
+                <TextInput
+                  classNames={{ input: classes.modalInputField }}
+                  value={contactForm.mail}
+                  onChange={(event) => setContactField('mail', event.currentTarget.value)}
+                  placeholder="correo@ejemplo.com"
+                />
+              </div>
+              <div>
+                <Text className={classes.contactModalLabel}>
+                  Representante legal{' '}
+                  <span className={classes.contactModalOptional}>(opcional)</span>
+                </Text>
+                <TextInput
+                  classNames={{ input: classes.modalInputField }}
+                  value={contactForm.legal}
+                  onChange={(event) => setContactField('legal', event.currentTarget.value)}
+                  placeholder="Nombre completo"
+                />
+              </div>
+              <div>
+                <Text className={classes.contactModalLabel}>
+                  Contador <span className={classes.contactModalOptional}>(opcional)</span>
+                </Text>
+                <TextInput
+                  classNames={{ input: classes.modalInputField }}
+                  value={contactForm.accountant}
+                  onChange={(event) => setContactField('accountant', event.currentTarget.value)}
+                  placeholder="Nombre o estudio"
+                />
+              </div>
+            </div>
+            <Group justify="flex-end" gap="sm" className={classes.contactModalFooter}>
+              <Button
+                variant="default"
+                radius="xl"
+                className={`${classes.modalGhostButton} ${classes.staticButton}`}
+                onClick={closeEditModal}
+              >
+                Cancelar
+              </Button>
+              <Button
+                radius="xl"
+                className={`${classes.modalPrimaryButton} ${classes.staticButton}`}
+                onClick={submitEditModal}
+                disabled={isContactFormEmpty}
+              >
+                Guardar
+              </Button>
+            </Group>
+          </Stack>
+        ) : isEditingNote ? (
+          <Stack gap={0}>
+            <Textarea
+              classNames={{
+                input: classes.noteModalTextarea
+              }}
+              value={formValue ?? ''}
+              onChange={(event) => setFormValue(event.currentTarget.value)}
+              placeholder="Escribí la nota..."
+              rows={4}
+            />
+            <Group justify="flex-end" gap="sm">
+              <Button
+                variant="default"
+                radius="xl"
+                className={`${classes.modalGhostButton} ${classes.staticButton}`}
+                onClick={closeEditModal}
+              >
+                Cancelar
+              </Button>
+              <Button
+                radius="xl"
+                className={`${classes.modalPrimaryButton} ${classes.staticButton}`}
+                onClick={submitEditModal}
+                disabled={!formValue?.trim()}
+              >
+                Guardar
+              </Button>
+            </Group>
+          </Stack>
+        ) : editKind ? (
           <Stack gap="md">
             <TextInput
               classNames={{
