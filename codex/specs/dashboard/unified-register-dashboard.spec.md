@@ -20,6 +20,29 @@
 - Generar informe: Todavia no podemos disparar ese modal ya que sera un modal reutilizable que implementaremos al tener lista la configuracion panel del proyecto, por lo que no se debe recrear.
 - Agregar lote: El boton agregar lote dispara un selector custom donde aparecen los lotes cargados previamente en gestion de lotes, como no tenemos todo en la misma branch por ahora implementar con mock. Debe poseer un buscador de los lotes que esto todavia no tenemos contrato por ahora solo mock.
 
+## Definiciones cerradas de esta iteración
+
+1. La navegación al dashboard detalle debe seguir ocurriendo exactamente como hoy:
+   - click en la card del listado de `Padrón Unificado`
+   - ruta `/vista-previa-padron/[CUIT]`
+2. Esta implementación no debe cambiar el trigger de navegación.
+3. Esta implementación debe sobrescribir el contenido actual de `/vista-previa-padron/[CUIT]`.
+4. No debe existir una acción extra `Ver análisis completo` en el menú de 3 puntos del listado.
+5. Los controles del header:
+   - `Marcar reproceso`
+   - `Cruces a realizar`
+   - `Generar informe`
+   - `Agregar lote`
+   deben abrir sus modales/paneles correspondientes, pero todavía no deben ejecutar la acción final de negocio.
+6. En esta iteración, esos modales/paneles deben trabajar con mock local.
+7. `AddressCard`, `ContactCard` y `NotesCard` deben usar mock local y sus acciones de agregar, editar y eliminar deben actualizar estado mock reactivo.
+8. La ruta `/vista-previa-padron/[CUIT]` debe resolverse usando el mismo universo mock que hoy alimenta el listado de cards de `Padrón Unificado`.
+9. El `CUIT` de la URL debe mapear contra ese mock actual del listado.
+10. Si hace falta más información para poblar widgets, tablas o cards del dashboard, se puede enriquecer ese mismo mock base con detalle adicional asociado al mismo `CUIT`.
+11. Si el `CUIT` no existe en el mock actual, la ruta debe resolver con `notFound()`.
+12. `Marcar reproceso` en el header del dashboard detalle solo debe abrir su modal mock y no debe manejar un estado toggle funcional local dentro de la pantalla.
+13. `Agregar lote` debe abrir un selector/modal mock, listar lotes mock e incluir un buscador mock dentro del selector.
+
 2. Cards:
 
 - AddressCard: el usuario debe poder agregar, modificar y elimninar una direccion.

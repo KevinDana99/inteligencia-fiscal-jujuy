@@ -12,7 +12,7 @@ export const theme = createTheme({
   colors: {
     blue: [
       '#EBF0FE',
-      '#D0DCFD',
+      '#EEF2FF',
       '#A8BEF9',
       '#7B9EF5',
       '#6B94F5',

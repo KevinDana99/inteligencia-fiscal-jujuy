@@ -1,7 +1,8 @@
 'use client';
 
+import type { Route } from 'next';
 import { ActionIcon, Badge, Card, Menu, Text } from '@mantine/core';
-import { IconDots, IconEye, IconFolderPlus, IconReload } from '@tabler/icons-react';
+import { IconDots, IconFolderPlus, IconReload } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import type { IUnifiedRegisterItem } from '../../../data/models/UnifiedRegister';
 import classes from './UnifiedRegisterCard.module.css';
@@ -14,6 +15,7 @@ const RISK_CLASS_BY_LEVEL = {
 
 export function UnifiedRegisterCard({ item }: { item: IUnifiedRegisterItem }) {
   const router = useRouter();
+  const detailRoute = `/vista-previa-padron/${encodeURIComponent(item.cuit)}` as Route;
 
   return (
     <Card
@@ -21,7 +23,7 @@ export function UnifiedRegisterCard({ item }: { item: IUnifiedRegisterItem }) {
       padding={0}
       radius={0}
       withBorder={false}
-      onClick={() => router.push(`/vista-previa-padron/${encodeURIComponent(item.cuit)}`)}
+      onClick={() => router.push(detailRoute)}
     >
       <div className={classes.cardSection}>
         <div className={classes.content}>
@@ -64,12 +66,6 @@ export function UnifiedRegisterCard({ item }: { item: IUnifiedRegisterItem }) {
               className={classes.menuDropdown}
               onClick={(event) => event.stopPropagation()}
             >
-              <Menu.Item
-                className={classes.menuItem}
-                leftSection={<IconEye size={14} />}
-              >
-                Ver análisis completo
-              </Menu.Item>
               <Menu.Item
                 className={classes.menuItem}
                 leftSection={<IconFolderPlus size={14} />}
