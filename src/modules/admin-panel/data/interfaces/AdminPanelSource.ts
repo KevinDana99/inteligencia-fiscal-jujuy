@@ -1,4 +1,5 @@
 import type {
+  IAdminAllowedDomains,
   IAdminPanelCommandResult,
   IAdminPanelCreateUserInput,
   IAdminPanelData,
@@ -9,6 +10,7 @@ import type {
 export interface IAdminPanelQueryPort {
   getAdminPanelData(): Promise<IAdminPanelData>;
   getAdminUser(userId: string): Promise<IAdminPanelUser>;
+  getAllowedDomains(): Promise<IAdminAllowedDomains>;
 }
 
 export interface IAdminPanelCommandPort {
@@ -19,6 +21,8 @@ export interface IAdminPanelCommandPort {
     params: IAdminPanelUpdateUserInput
   ): Promise<IAdminPanelCommandResult>;
   deleteAdminUser(userId: string): Promise<IAdminPanelCommandResult>;
+  addAllowedDomain(domain: string): Promise<IAdminPanelCommandResult>;
+  deleteAllowedDomain(domainId: number): Promise<IAdminPanelCommandResult>;
 }
 
 export interface IAdminPanelSource extends IAdminPanelQueryPort, IAdminPanelCommandPort {}

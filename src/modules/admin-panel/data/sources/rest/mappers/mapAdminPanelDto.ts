@@ -1,8 +1,10 @@
 import type {
+  IAdminAllowedDomain,
   IAdminPanelData,
   IAdminPanelUser
 } from '../../../models/AdminPanel';
 import type {
+  ApiAllowedDomainDto,
   ApiAdminUserDto,
   ApiListAdminUsersResponseDto
 } from '../dtos/ApiAdminPanelDtos';
@@ -22,4 +24,11 @@ export function mapAdminPanelDto(dto: ApiListAdminUsersResponseDto): IAdminPanel
   return {
     users: dto.usuarios.map(mapAdminUserDto)
   };
+}
+
+export function mapAllowedDomainDto(dto: ApiAllowedDomainDto): IAdminAllowedDomain {
+  return {
+    id: dto.id,
+    domain: dto.dominio
+  }
 }

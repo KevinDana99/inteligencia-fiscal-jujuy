@@ -20,6 +20,13 @@ export interface IAdminPanelData {
   users: IAdminPanelUsers;
 }
 
+export interface IAdminAllowedDomain {
+  id: number;
+  domain: string;
+}
+
+export type IAdminAllowedDomains = IAdminAllowedDomain[];
+
 export interface IAdminPanelCreateUserInput {
   firstName: string;
   lastName: string;

@@ -1,4 +1,5 @@
 import type {
+  IAdminAllowedDomains,
   IAdminPanelCommandResult,
   IAdminPanelCreateUserInput,
   IAdminPanelData,
@@ -10,6 +11,7 @@ import { ADMIN_PANEL_MOCK_DATA } from './fixtures/adminPanelData';
 
 declare global {
   var __adminPanelMockStore__: MockAdminPanelUserRecord[] | undefined
+  var __adminAllowedDomainsMockStore__: { id: number; domain: string }[] | undefined
 }
 
 type MockAdminPanelUserRecord = {
@@ -95,6 +97,23 @@ function setAdminPanelMockStore(nextStore: MockAdminPanelUserRecord[]) {
   globalThis.__adminPanelMockStore__ = nextStore
 }
 
+function getAdminAllowedDomainsMockStore() {
+  if (!globalThis.__adminAllowedDomainsMockStore__) {
+    globalThis.__adminAllowedDomainsMockStore__ = [
+      { id: 1, domain: 'jujuy.gob.ar' },
+      { id: 2, domain: 'rentasjujuy.gob.ar' }
+    ]
+  }
+
+  return globalThis.__adminAllowedDomainsMockStore__
+}
+
+function setAdminAllowedDomainsMockStore(
+  nextStore: { id: number; domain: string }[]
+) {
+  globalThis.__adminAllowedDomainsMockStore__ = nextStore
+}
+
 function buildMockUserId(params: {
   firstName: string
   lastName: string
@@ -125,6 +144,10 @@ export class MockAdminPanelSource implements IAdminPanelSource {
     }
 
     return mapRecordToUser({ ...user });
+  }
+
+  async getAllowedDomains(): Promise<IAdminAllowedDomains> {
+    return getAdminAllowedDomainsMockStore().map((domain) => ({ ...domain }))
   }
 
   async createAdminUser(
@@ -238,5 +261,55 @@ export class MockAdminPanelSource implements IAdminPanelSource {
     }
 
     return { success: true };
+  }
+
+  async addAllowedDomain(domain: string): Promise<IAdminPanelCommandResult> {
+    const normalizedDomain = domain.trim().toLowerCase().replace(/^@/, '')
+    const domains = getAdminAllowedDomainsMockStore()
+
+    if (!normalizedDomain) {
+      return {
+        success: false,
+        error: 'El dominio es obligatorio.',
+        code: 'super_administrador.dominios_permitidos.agregar.solicitud_invalida',
+        status: 400
+      }
+    }
+
+    if (domains.some((item) => item.domain === normalizedDomain)) {
+      return {
+        success: false,
+        error: 'Ya existe un dominio permitido activo con ese valor.',
+        code: 'super_administrador.dominios_permitidos.agregar.duplicado',
+        status: 409
+      }
+    }
+
+    const nextDomain = {
+      id: Math.max(0, ...domains.map((item) => item.id)) + 1,
+      domain: normalizedDomain
+    }
+
+    setAdminAllowedDomainsMockStore([...domains, nextDomain])
+    return { success: true }
+  }
+
+  async deleteAllowedDomain(domainId: number): Promise<IAdminPanelCommandResult> {
+    const domains = getAdminAllowedDomainsMockStore()
+
+    if (!domains.some((domain) => domain.id === domainId)) {
+      return {
+        success: false,
+        error: 'No se encontro un dominio permitido activo con el identificador indicado.',
+        code: 'super_administrador.dominios_permitidos.eliminar.no_encontrado',
+        status: 404
+      }
+    }
+
+    setAdminAllowedDomainsMockStore(
+      domains.filter((domain) => domain.id !== domainId)
+    )
+
+    return { success: true }
   }
 }

@@ -1,6 +1,7 @@
 import type { ApiClientConfig } from '@/lib/api-client';
 import type { IAdminPanelSource } from '../../interfaces/AdminPanelSource';
 import type {
+  IAdminAllowedDomains,
   IAdminPanelCommandResult,
   IAdminPanelCreateUserInput,
   IAdminPanelData,
@@ -8,6 +9,7 @@ import type {
   IAdminPanelUser
 } from '../../models/AdminPanel';
 import type {
+  ApiAllowedDomainDto,
   ApiCreateAdminUserRequestDto,
   ApiCreateAdminUserResponseDto,
   ApiErrorResponseDto,
@@ -15,7 +17,11 @@ import type {
   ApiListAdminUsersResponseDto,
   ApiUpdateAdminUserRequestDto
 } from './dtos/ApiAdminPanelDtos';
-import { mapAdminPanelDto, mapAdminUserDto } from './mappers/mapAdminPanelDto';
+import {
+  mapAdminPanelDto,
+  mapAdminUserDto,
+  mapAllowedDomainDto
+} from './mappers/mapAdminPanelDto';
 
 async function parseErrorResponse(response: Response): Promise<ApiErrorResponseDto | null> {
   try {
@@ -70,6 +76,24 @@ export class RestAdminPanelSource implements IAdminPanelSource {
 
     const dto = (await response.json()) as ApiGetAdminUserResponseDto;
     return mapAdminUserDto(dto);
+  }
+
+  async getAllowedDomains(): Promise<IAdminAllowedDomains> {
+    const response = await fetch(
+      this.buildUrl('/api/super-administrador/dominios-permitidos'),
+      {
+        method: 'GET',
+        headers: this.buildHeaders()
+      }
+    )
+
+    if (!response.ok) {
+      const error = await parseErrorResponse(response)
+      throw new Error(error?.mensaje ?? 'Unable to list allowed domains')
+    }
+
+    const dto = (await response.json()) as ApiAllowedDomainDto[]
+    return dto.map(mapAllowedDomainDto)
   }
 
   async createAdminUser(
@@ -167,5 +191,52 @@ export class RestAdminPanelSource implements IAdminPanelSource {
     }
 
     return { success: true };
+  }
+
+  async addAllowedDomain(domain: string): Promise<IAdminPanelCommandResult> {
+    const response = await fetch(
+      this.buildUrl('/api/super-administrador/dominios-permitidos'),
+      {
+        method: 'POST',
+        headers: this.buildHeaders(),
+        body: JSON.stringify({
+          dominio: domain
+        })
+      }
+    )
+
+    if (!response.ok) {
+      const error = await parseErrorResponse(response)
+      return {
+        success: false,
+        error: error?.mensaje ?? 'Unable to add allowed domain',
+        code: error?.codigo,
+        status: response.status
+      }
+    }
+
+    return { success: true }
+  }
+
+  async deleteAllowedDomain(domainId: number): Promise<IAdminPanelCommandResult> {
+    const response = await fetch(
+      this.buildUrl(`/api/super-administrador/dominios-permitidos/${domainId}`),
+      {
+        method: 'DELETE',
+        headers: this.buildHeaders()
+      }
+    )
+
+    if (!response.ok) {
+      const error = await parseErrorResponse(response)
+      return {
+        success: false,
+        error: error?.mensaje ?? 'Unable to delete allowed domain',
+        code: error?.codigo,
+        status: response.status
+      }
+    }
+
+    return { success: true }
   }
 }

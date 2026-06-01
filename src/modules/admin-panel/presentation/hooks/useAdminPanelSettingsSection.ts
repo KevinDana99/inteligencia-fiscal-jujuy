@@ -1,34 +1,34 @@
-import { useState } from 'react'
-import { useAdminConfig } from '../contexts'
+import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
+import type { IAdminAllowedDomains } from '../../data/models/AdminPanel'
+import {
+  addAllowedDomainAction,
+  deleteAllowedDomainAction
+} from '../../data/actions'
 
-export const useAdminPanelSettingsSection = () => {
-  const { adminConfig, addWhitelistDomain, removeWhitelistDomain } =
-    useAdminConfig()
+export const useAdminPanelSettingsSection = (
+  allowedDomains: IAdminAllowedDomains
+) => {
+  const router = useRouter()
   const [domainValue, setDomainValue] = useState('')
   const [domainError, setDomainError] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
 
   const handleAddDomain = () => {
-    const normalizedDomain = domainValue.trim().toLowerCase()
+    const normalizedDomain = domainValue.trim().toLowerCase().replace(/^@/, '')
 
-    if (!normalizedDomain) {
-      setDomainError('Ingresá un dominio.')
-      return
-    }
+    startTransition(() => {
+      void addAllowedDomainAction(normalizedDomain).then((result) => {
+        if (!result.success) {
+          setDomainError(result.error ?? 'No fue posible agregar el dominio.')
+          return
+        }
 
-    if (!normalizedDomain.includes('@')) {
-      setDomainError('El dominio debe incluir @.')
-      return
-    }
-
-    const wasAdded = addWhitelistDomain(normalizedDomain)
-
-    if (!wasAdded) {
-      setDomainError('Ese dominio ya está configurado.')
-      return
-    }
-
-    setDomainValue('')
-    setDomainError(null)
+        setDomainValue('')
+        setDomainError(null)
+        router.refresh()
+      })
+    })
   }
 
   const handleChangeDomain = (value: string) => {
@@ -37,13 +37,28 @@ export const useAdminPanelSettingsSection = () => {
       setDomainError(null)
     }
   }
+
+  const handleRemoveDomain = (domainId: number) => {
+    startTransition(() => {
+      void deleteAllowedDomainAction(domainId).then((result) => {
+        if (!result.success) {
+          setDomainError(result.error ?? 'No fue posible eliminar el dominio.')
+          return
+        }
+
+        setDomainError(null)
+        router.refresh()
+      })
+    })
+  }
+
   return {
-    adminConfig,
-    addWhitelistDomain,
-    removeWhitelistDomain,
+    allowedDomains,
     handleAddDomain,
+    handleRemoveDomain,
     domainValue,
     domainError,
-    handleChangeDomain
+    handleChangeDomain,
+    isPending
   }
 }

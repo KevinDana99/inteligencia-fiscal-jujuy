@@ -20,15 +20,22 @@ import {
 } from '@tabler/icons-react'
 import classes from '../AdminPanelShell/AdminPanelShell.module.css'
 import { useAdminPanelSettingsSection } from '../../hooks'
-export function AdminPanelSettingsSection() {
+import type { IAdminAllowedDomains } from '../../../data/models/AdminPanel'
+
+export function AdminPanelSettingsSection({
+  allowedDomains
+}: {
+  allowedDomains: IAdminAllowedDomains
+}) {
   const {
-    adminConfig,
+    allowedDomains: domains,
     domainValue,
     domainError,
     handleAddDomain,
-    removeWhitelistDomain,
-    handleChangeDomain
-  } = useAdminPanelSettingsSection()
+    handleRemoveDomain,
+    handleChangeDomain,
+    isPending
+  } = useAdminPanelSettingsSection(allowedDomains)
   return (
     <Stack gap='xl'>
       <Stack gap='xs'>
@@ -67,18 +74,21 @@ export function AdminPanelSettingsSection() {
           <Divider className={classes.configDivider} />
 
           <Stack gap='sm'>
-            {adminConfig.whitelist.map((domain) => (
-              <div key={domain} className={classes.configDomainItem}>
+            {domains.map((domain) => (
+              <div key={domain.id} className={classes.configDomainItem}>
                 <Group gap='sm'>
                   <span className={classes.configDomainPoint} />
-                  <Text className={classes.configDomainText}>{domain}</Text>
+                  <Text className={classes.configDomainText}>
+                    {domain.domain}
+                  </Text>
                 </Group>
 
                 <ActionIcon
                   variant='subtle'
                   color='red'
-                  onClick={() => removeWhitelistDomain(domain)}
-                  aria-label={`Eliminar dominio ${domain}`}
+                  disabled={isPending}
+                  onClick={() => handleRemoveDomain(domain.id)}
+                  aria-label={`Eliminar dominio ${domain.domain}`}
                   className={classes.configDeleteButton}
                 >
                   <IconTrash size={16} />
@@ -94,8 +104,9 @@ export function AdminPanelSettingsSection() {
               <Group gap='sm' align='flex-start'>
                 <div className={classes.configDomainField}>
                   <TextInput
-                    placeholder='@ejemplo.gob.ar'
+                    placeholder='ejemplo.gob.ar'
                     value={domainValue}
+                    disabled={isPending}
                     onChange={(event) => {
                       handleChangeDomain(event.currentTarget.value)
                     }}
@@ -113,6 +124,8 @@ export function AdminPanelSettingsSection() {
 
                 <Button
                   onClick={handleAddDomain}
+                  disabled={isPending}
+                  loading={isPending}
                   leftSection={<IconPlus size={15} />}
                   className={classes.configAddButton}
                   radius='xl'

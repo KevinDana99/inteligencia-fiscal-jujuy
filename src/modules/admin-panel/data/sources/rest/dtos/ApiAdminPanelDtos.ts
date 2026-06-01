@@ -41,3 +41,8 @@ export type ApiErrorResponseDto = {
   mensaje: string;
   estado: number;
 };
+
+export type ApiAllowedDomainDto = {
+  id: number;
+  dominio: string;
+};
