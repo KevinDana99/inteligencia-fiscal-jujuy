@@ -40,7 +40,7 @@ export function DashboardNavbar({
           size="sm"
           radius="md"
           onClick={signOut}
-          loading={isPending}
+          disabled={isPending}
           leftSection={<IconDoorExit size={16} />}
           className={classes.headerLogoutButton}
         >

@@ -1,5 +1,4 @@
 'use client'
-
 import {
   Alert,
   Button,
@@ -11,6 +10,7 @@ import {
   TextInput,
   Title
 } from '@mantine/core'
+import { useFormStatus } from 'react-dom'
 import {
   IconAlertCircle,
   IconEye,
@@ -27,16 +27,15 @@ export default function LoginForm() {
 
 function LoginFormContent() {
   const {
-    email,
-    password,
     isPending,
+    formAction,
     error,
+    formRef,
     recoveryNoticeVisible,
     hasError,
-    setEmail,
-    setPassword,
-    showRecoveryNotice,
-    handleSubmit
+    handleSubmitAttempt,
+    handleRecoveryNotice,
+    hideRecoveryNotice
   } = useLoginForm()
 
   return (
@@ -72,13 +71,11 @@ function LoginFormContent() {
           </Text>
         </Stack>
 
-        <Stack
-          component='form'
+        <form
+          ref={formRef}
           className={classes.form}
-          onSubmit={(event) => {
-            event.preventDefault()
-            handleSubmit()
-          }}
+          action={formAction}
+          onSubmit={handleSubmitAttempt}
         >
           <Stack gap={6}>
             <Text
@@ -92,8 +89,8 @@ function LoginFormContent() {
               id='login-email'
               aria-label='Email'
               placeholder='admin@rentas.gob.ar'
-              value={email}
-              onChange={(event) => setEmail(event.currentTarget.value)}
+              name='correo'
+              onChange={hideRecoveryNotice}
               disabled={isPending}
               className={`${classes.textInput} ${hasError ? classes.inputError : ''}`}
             />
@@ -111,8 +108,8 @@ function LoginFormContent() {
               id='login-password'
               aria-label='Contraseña'
               placeholder='••••••••'
-              value={password}
-              onChange={(event) => setPassword(event.currentTarget.value)}
+              name='contrasena'
+              onChange={hideRecoveryNotice}
               disabled={isPending}
               visibilityToggleIcon={({ reveal }) =>
                 reveal ? <IconEye /> : <IconEyeOff />
@@ -156,35 +153,20 @@ function LoginFormContent() {
             <Text
               component='button'
               type='button'
-              onClick={showRecoveryNotice}
+              onClick={handleRecoveryNotice}
               className={classes.supportButton}
             >
               Recuperar contraseña
             </Text>
           </Group>
 
-          <Button
-            type='submit'
-            variant='filled'
-            color='blue.5'
-            size='lg'
-            radius='xl'
-            fullWidth
-            disabled={isPending}
-            className={classes.button}
-            loaderProps={{
-              children: <div className={classes.loader} />
-            }}
-            loading={isPending}
-          >
-            Ingresar
-          </Button>
+          <LoginSubmitButton />
 
           <Text className={classes.credentialsHint}>
             Credenciales de prueba:{' '}
             <strong>user@plantilla.local / ChangeMe123!</strong>
           </Text>
-        </Stack>
+        </form>
       </Paper>
       <Image
         width={100}
@@ -194,5 +176,28 @@ function LoginFormContent() {
         className={classes.wave}
       />
     </section>
+  )
+}
+
+function LoginSubmitButton() {
+  const { pending } = useFormStatus()
+
+  return (
+    <Button
+      type='submit'
+      variant='filled'
+      color='blue.5'
+      size='lg'
+      radius='xl'
+      fullWidth
+      disabled={pending}
+      className={classes.button}
+      loaderProps={{
+        children: <div className={classes.loader} />
+      }}
+      loading={pending}
+    >
+      Ingresar
+    </Button>
   )
 }

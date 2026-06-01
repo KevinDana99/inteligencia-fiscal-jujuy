@@ -70,3 +70,23 @@ export interface IIamCurrentContextResponse {
 export interface IIamActionError {
   error: string;
 }
+
+export interface IAuthActionStateError {
+  code: string;
+  message: string;
+  statusCode: number;
+}
+
+export interface IAuthActionState<TData = unknown> {
+  success: boolean | null;
+  message: string | null;
+  errors: IAuthActionStateError | null;
+  data: TData | null;
+}
+
+export interface IAuthSignInActionData {
+  token: string;
+  expiraEn: number;
+  refrescarToken: string;
+  refrescarTokenExpiraEn: number;
+}

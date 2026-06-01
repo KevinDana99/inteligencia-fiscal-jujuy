@@ -2,7 +2,8 @@ export const AUTH_COOKIE_NAMES = {
   accessToken: 'auth-access-token',
   accessTokenExpiresAt: 'auth-access-token-expires-at',
   refreshToken: 'auth-refresh-token',
-  refreshTokenExpiresAt: 'auth-refresh-token-expires-at'
+  refreshTokenExpiresAt: 'auth-refresh-token-expires-at',
+  postLoginRedirect: 'auth-post-login-redirect'
 } as const
 
 export const AUTH_ROUTES = {

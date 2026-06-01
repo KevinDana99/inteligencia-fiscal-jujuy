@@ -1,71 +1,45 @@
 'use client'
 
-import { useState } from 'react'
-import { useSignIn } from '../../hooks'
+import { useActionState, useRef, useState } from 'react'
+import { signInAction } from '../../../data/actions'
+import { INITIAL_SIGN_IN_STATE } from '../../hooks/mutations/signInState'
 
 export function useLoginForm() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [validationError, setValidationError] = useState<string | null>(null)
+  const formRef = useRef<HTMLFormElement>(null)
   const [recoveryNoticeVisible, setRecoveryNoticeVisible] = useState(false)
-  const { signIn, isPending, error, clearError } = useSignIn()
-  const hasError = Boolean(error) && !recoveryNoticeVisible
+  const [submitAttempted, setSubmitAttempted] = useState(false)
+  const [state, formAction, isPending] = useActionState(
+    signInAction,
+    INITIAL_SIGN_IN_STATE
+  )
+  const error = state.message
+  const hasError = submitAttempted && Boolean(error) && !recoveryNoticeVisible
 
-  const resetErrors = () => {
-    setValidationError(null)
-    clearError()
-  }
-
-  const resetForm = () => {
-    setEmail('')
-    setPassword('')
-  }
-
-  const handleEmailChange = (value: string) => {
-    resetErrors()
+  const handleSubmitAttempt = () => {
     setRecoveryNoticeVisible(false)
-    setEmail(value)
+    setSubmitAttempted(true)
   }
 
-  const handlePasswordChange = (value: string) => {
-    resetErrors()
-    setRecoveryNoticeVisible(false)
-    setPassword(value)
-  }
-
-  const showRecoveryNotice = () => {
-    resetErrors()
-    resetForm()
+  const handleRecoveryNotice = () => {
+    formRef.current?.reset()
     setRecoveryNoticeVisible(true)
+    setSubmitAttempted(false)
   }
 
-  const handleSubmit = () => {
+  const hideRecoveryNotice = () => {
     setRecoveryNoticeVisible(false)
-
-    if (!email.trim()) {
-      setValidationError('El campo mail esta vacio.')
-      return
-    }
-
-    if (!password.trim()) {
-      setValidationError('El campo contrasena esta vacio.')
-      return
-    }
-
-    setValidationError(null)
-    signIn(email.trim(), password)
+    setSubmitAttempted(false)
   }
 
   return {
-    email,
-    password,
     isPending,
-    error: validationError ?? error,
+    error,
+    formRef,
+    formAction,
     recoveryNoticeVisible,
     hasError,
-    setEmail: handleEmailChange,
-    setPassword: handlePasswordChange,
-    showRecoveryNotice,
-    handleSubmit
+    handleSubmitAttempt,
+    handleRecoveryNotice,
+    hideRecoveryNotice
   }
 }

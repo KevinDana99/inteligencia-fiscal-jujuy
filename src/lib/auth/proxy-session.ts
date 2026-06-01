@@ -4,7 +4,7 @@ import {
   readRequestAuthSession,
   setResponseAuthCookies
 } from './cookies'
-import { AUTH_HEADERS, AUTH_ROUTES } from './constants'
+import { AUTH_COOKIE_NAMES, AUTH_HEADERS, AUTH_ROUTES } from './constants'
 import { refreshAuthSession } from './refresh-session'
 import {
   isSessionExpired,
@@ -30,9 +30,16 @@ export function clearAuthResponse(response: NextResponse): NextResponse {
 }
 
 export function redirectToLogin(request: NextRequest): NextResponse {
-  const response = NextResponse.redirect(
-    new URL(AUTH_ROUTES.login, request.url)
-  )
+  const loginUrl = new URL(AUTH_ROUTES.login, request.url)
+  const nextPath = `${request.nextUrl.pathname}${request.nextUrl.search}`
+  const response = NextResponse.redirect(loginUrl)
+  response.cookies.set(AUTH_COOKIE_NAMES.postLoginRedirect, nextPath, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 60 * 5
+  })
   response.headers.set(AUTH_HEADERS.sessionExpired, 'true')
   return clearAuthResponse(response)
 }
