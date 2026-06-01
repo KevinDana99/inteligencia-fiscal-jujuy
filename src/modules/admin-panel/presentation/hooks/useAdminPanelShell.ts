@@ -1,18 +1,15 @@
 'use client';
 
-import { startTransition, useMemo, useState } from 'react';
+import { startTransition, useEffect, useMemo, useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import {
-  createAdminUserAction,
   deleteAdminUserAction,
   updateAdminUserAction
 } from '../../data/actions';
 import type {
-  ApiCreateAdminUserRequestDto,
   ApiUpdateAdminUserRequestDto
 } from '../../data/sources/rest/dtos/ApiAdminPanelDtos';
 import type {
-  IAdminPanelCreateUserInput,
   IAdminPanelData,
   IAdminPanelUpdateUserInput,
   IAdminPanelUser
@@ -89,28 +86,6 @@ function buildInitialAvatarPalette(users: IAdminPanelUser[]) {
   };
 }
 
-function slugify(value: string): string {
-  return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-function buildUserFromInput(
-  input: IAdminPanelCreateUserInput,
-  existingUsersLength: number
-): IAdminPanelUser {
-  return {
-    id: `${slugify(`${input.firstName} ${input.lastName}`)}-${existingUsersLength + 1}`,
-    fullName: `${input.firstName.trim()} ${input.lastName.trim()}`.trim(),
-    email: input.email.trim().toLowerCase(),
-    roleLabel: input.roleLabel
-  };
-}
-
 export function useAdminPanelShell(initialData: IAdminPanelData) {
   const [users, setUsers] = useState(initialData.users);
   const [avatarPalette, setAvatarPalette] = useState(() => buildInitialAvatarPalette(initialData.users));
@@ -121,6 +96,11 @@ export function useAdminPanelShell(initialData: IAdminPanelData) {
   const [createOpened, createHandlers] = useDisclosure(false);
   const [editOpened, editHandlers] = useDisclosure(false);
   const [deleteOpened, deleteHandlers] = useDisclosure(false);
+
+  useEffect(() => {
+    setUsers(initialData.users)
+    setAvatarPalette(buildInitialAvatarPalette(initialData.users))
+  }, [initialData.users])
 
   const activeUsers = useMemo(() => users.filter((user) => !user.isDeleted), [users]);
 
@@ -136,71 +116,6 @@ export function useAdminPanelShell(initialData: IAdminPanelData) {
       return haystack.includes(normalizedSearch);
     });
   }, [activeUsers, searchValue]);
-
-  const createUser = async (input: IAdminPanelCreateUserInput) => {
-    setActionError(null);
-    setIsActionPending(true);
-
-    return new Promise<boolean>((resolve) => {
-      startTransition(() => {
-        const payload: ApiCreateAdminUserRequestDto = {
-          nombre: input.firstName.trim(),
-          apellido: input.lastName.trim(),
-          correo: input.email.trim().toLowerCase(),
-          cargo: input.roleLabel,
-          contrasena: input.password
-        };
-
-        void createAdminUserAction(payload)
-          .then((result) => {
-            if (!result.success || !result.data) {
-              setActionError(result.error ?? 'No fue posible crear el usuario.');
-              resolve(false);
-              return;
-            }
-
-            setUsers((currentUsers) => {
-              const nextUser = result.data ?? buildUserFromInput(input, currentUsers.length);
-
-              setAvatarPalette((currentPalette) => {
-                const availablePool =
-                  currentPalette.availableColors.length > 0
-                    ? currentPalette.availableColors
-                    : shuffleAvatarColors(
-                        AVATAR_COLOR_TOKENS.filter((color) => color !== ADMIN_AVATAR_COLOR),
-                        nextUser.id
-                      );
-
-                const { nextColor, nextAvailableColors } = drawAvatarColor(
-                  availablePool,
-                  nextUser.id
-                );
-
-                return {
-                  avatarColorByUserId: {
-                    ...currentPalette.avatarColorByUserId,
-                    [nextUser.id]: nextColor
-                  },
-                  availableColors: nextAvailableColors
-                };
-              });
-
-              return [...currentUsers, nextUser];
-            });
-
-            createHandlers.close();
-            resolve(true);
-          })
-          .catch(() => {
-            setActionError('No fue posible crear el usuario.');
-            resolve(false);
-          })
-          .finally(() => {
-            setIsActionPending(false);
-          });
-      });
-    });
-  };
 
   const updateUser = async (input: IAdminPanelUpdateUserInput) => {
     setActionError(null);
@@ -328,7 +243,6 @@ export function useAdminPanelShell(initialData: IAdminPanelData) {
     deleteOpened,
     roleOptions: [...USER_ROLE_OPTIONS],
     setSearchValue,
-    createUser,
     updateUser,
     deleteUser,
     openCreateModal: () => {

@@ -15,9 +15,9 @@
 7. Si alguno de los formularios incluidos en el alcance ya usa `useMemo` o `useCallback` para manejar su lógica funcional, ese uso debe refactorizarse y eliminarse como parte de esta migración.
 8. Solo se permite conservar o incorporar estas APIs en casos excepcionales, y ese uso debe justificarse explícitamente antes de implementarse.
 9. La implementación debe apoyarse en la optimización automática provista por `React 19` y mantener la lógica simple y directa.
-4. En caso de necesitar manejar la cache se debe hacer uso de los `Cache Components`, ya que estan habilitados en el proyecto para esto.
-5. Se debe poder manejar estados de `error`, `pending`,`success`.
-6. Actualmente se usan server actions para comunicarnos con el backend tanto mock como en contrato produccion. Por ende debemos seguir ese estandar.
+10. En caso de necesitar manejar la cache se debe hacer uso de los `Cache Components`, ya que estan habilitados en el proyecto para esto.
+11. Se debe poder manejar estados de `error`, `pending`,`success`.
+12. Actualmente se usan server actions para comunicarnos con el backend tanto mock como en contrato produccion. Por ende debemos seguir ese estandar.
 
 ## Reglas de migración
 
@@ -117,6 +117,85 @@ data: {
 }
 }
 
+## Estado del formulario de Create User
+
+## Inputs Form Data (Request)
+
+type SolicitudCrearUsuario = {
+nombre: string;
+apellido: string;
+correo: string;
+cargo: string;
+contrasena: string;
+};
+
+## InitialState:
+
+{
+success: null,
+message: null,
+errors: null,
+data: null
+}
+
+## Success
+
+{
+success: true,
+message: string | null,
+errors: null,
+data: {
+usuarioId: string;
+nombre: string;
+apellido: string;
+correo: string;
+cargo: string;
+activo: boolean;
+esSuperAdministrador: boolean;
+}
+}
+
+## Error
+
+{
+success: false,
+message: string,
+errors: {
+code: string,
+message: string,
+statusCode: number
+},
+data: null
+}
+
+### Contrato backend actual de error
+
+**Response 400**
+```json
+{
+  "codigo": "super_administrador.usuarios.crear.solicitud_invalida",
+  "mensaje": "El correo debe tener un formato valido.",
+  "estado": 400
+}
+```
+
+**Response 409**
+```json
+{
+  "codigo": "super_administrador.usuarios.crear.correo_duplicado",
+  "mensaje": "Ya existe un usuario con el correo informado.",
+  "estado": 409
+}
+```
+
+- El backend devuelve un error global tipado.
+- No devuelve errores por campo estructurados.
+- La action debe adaptar esa respuesta al state del formulario usando:
+  - `message`
+  - `errors.code`
+  - `errors.message`
+  - `errors.statusCode`
+
 ## Alcance
 
 1. Se debe implementar estos estandares de manejo de estado en los formularios actuales de la aplicacion. Actualmente son los formularios - login
@@ -205,8 +284,10 @@ La migración se considera correcta cuando:
 #### Objetivo
 
 - migrar el submit a useActionState
-- definir errores por campo y error global desde la action
+- definir el error global tipado desde la action según la respuesta del backend
 - mantener cierre del modal solo en success
+- en success debe cerrarse el modal
+- en success debe actualizarse el listado de usuarios leyendo estado actualizado desde backend
 
 #### Validar
 

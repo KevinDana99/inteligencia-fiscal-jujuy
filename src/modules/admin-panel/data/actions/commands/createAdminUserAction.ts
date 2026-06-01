@@ -1,14 +1,13 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { createServerAdminPanelSource } from '../../data-access';
 import type {
-  IAdminPanelCommandResult,
+  IAdminPanelActionState,
+  IAdminPanelCreateUserActionData,
   IAdminPanelUser
 } from '../../models/AdminPanel';
-import type { ApiCreateAdminUserRequestDto } from '../../sources/rest/dtos/ApiAdminPanelDtos';
 
-function mapUserToContractLog(user: IAdminPanelUser) {
+function mapUserToContract(user: IAdminPanelUser): IAdminPanelCreateUserActionData {
   const [nombre, ...apellidoParts] = user.fullName.split(' ');
 
   return {
@@ -23,8 +22,17 @@ function mapUserToContractLog(user: IAdminPanelUser) {
 }
 
 export async function createAdminUserAction(
-  params: ApiCreateAdminUserRequestDto
-): Promise<IAdminPanelCommandResult<IAdminPanelUser>> {
+  _previousState: IAdminPanelActionState<IAdminPanelCreateUserActionData>,
+  formData: FormData
+): Promise<IAdminPanelActionState<IAdminPanelCreateUserActionData>> {
+  const params = {
+    nombre: String(formData.get('nombre') ?? '').trim(),
+    apellido: String(formData.get('apellido') ?? '').trim(),
+    correo: String(formData.get('correo') ?? '').trim().toLowerCase(),
+    cargo: String(formData.get('cargo') ?? '').trim(),
+    contrasena: String(formData.get('contrasena') ?? '')
+  }
+
   const requestPayload = {
     ...params,
     contrasena: params.contrasena ? '[REDACTED]' : ''
@@ -49,13 +57,28 @@ export async function createAdminUserAction(
       status: result.status,
       code: result.code,
       error: result.error,
-      data: result.data ? mapUserToContractLog(result.data) : null
+      data: result.data ? mapUserToContract(result.data) : null
     }
   });
 
   if (result.success) {
-    revalidatePath('/admin');
+    return {
+      success: true,
+      message: null,
+      errors: null,
+      data: result.data ? mapUserToContract(result.data) : null
+    }
   }
 
-  return result;
+  return {
+    success: false,
+    message: result.error ?? 'No fue posible crear el usuario.',
+    errors: {
+      code:
+        result.code ?? 'super_administrador.usuarios.crear.error_interno',
+      message: result.error ?? 'No fue posible crear el usuario.',
+      statusCode: result.status ?? 500
+    },
+    data: null
+  }
 }

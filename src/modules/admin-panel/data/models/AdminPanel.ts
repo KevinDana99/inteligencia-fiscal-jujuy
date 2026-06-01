@@ -40,6 +40,29 @@ export interface IAdminPanelCommandResult<TData = null> {
   status?: number;
 }
 
+export interface IAdminPanelActionStateError {
+  code: string;
+  message: string;
+  statusCode: number;
+}
+
+export interface IAdminPanelActionState<TData = unknown> {
+  success: boolean | null;
+  message: string | null;
+  errors: IAdminPanelActionStateError | null;
+  data: TData | null;
+}
+
+export interface IAdminPanelCreateUserActionData {
+  usuarioId: string;
+  nombre: string;
+  apellido: string;
+  correo: string;
+  cargo: string;
+  activo: boolean;
+  esSuperAdministrador: boolean;
+}
+
 export interface IModuleQueryResult<TData> {
   data: TData | null;
   error?: string;

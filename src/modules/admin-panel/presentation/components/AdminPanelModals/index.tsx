@@ -1,11 +1,11 @@
 'use client'
 
 import type {
-  IAdminPanelCreateUserInput,
   IAdminPanelUpdateUserInput,
   IAdminPanelUser
 } from '../../../data/models/AdminPanel'
 import { AdminPanelActionModal } from './AdminPanelActionModal'
+import CreateUserFormModal from './CreateUserFormModal'
 import UserFormModal from './UserFormModal'
 
 export function AdminPanelModals({
@@ -19,7 +19,6 @@ export function AdminPanelModals({
   closeCreateModal,
   closeEditModal,
   closeDeleteModal,
-  createUser,
   updateUser,
   deleteUser
 }: {
@@ -33,13 +32,12 @@ export function AdminPanelModals({
   closeCreateModal: () => void
   closeEditModal: () => void
   closeDeleteModal: () => void
-  createUser: (input: IAdminPanelCreateUserInput) => Promise<boolean>
   updateUser: (input: IAdminPanelUpdateUserInput) => Promise<boolean>
   deleteUser: () => Promise<boolean>
 }) {
   return (
     <>
-      <UserFormModal
+      <CreateUserFormModal
         key={`create-${createOpened ? 'open' : 'closed'}`}
         opened={createOpened}
         title='Nuevo usuario'
@@ -47,9 +45,6 @@ export function AdminPanelModals({
         submitLabel='Crear usuario'
         roleOptions={roleOptions}
         onClose={closeCreateModal}
-        onSubmit={createUser}
-        error={createOpened ? actionError : null}
-        isPending={isActionPending}
       />
 
       <UserFormModal

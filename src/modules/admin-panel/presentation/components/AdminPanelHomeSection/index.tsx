@@ -1,6 +1,5 @@
 import { Stack, Text, Title } from '@mantine/core';
 import type {
-  IAdminPanelCreateUserInput,
   IAdminPanelUpdateUserInput,
   IAdminPanelUser
 } from '../../../data/models/AdminPanel';
@@ -29,7 +28,6 @@ export function AdminPanelHomeSection({
   closeCreateModal,
   closeEditModal,
   closeDeleteModal,
-  createUser,
   updateUser,
   deleteUser
 }: {
@@ -52,7 +50,6 @@ export function AdminPanelHomeSection({
   closeCreateModal: () => void;
   closeEditModal: () => void;
   closeDeleteModal: () => void;
-  createUser: (input: IAdminPanelCreateUserInput) => Promise<boolean>;
   updateUser: (input: IAdminPanelUpdateUserInput) => Promise<boolean>;
   deleteUser: () => Promise<boolean>;
 }) {
@@ -89,7 +86,6 @@ export function AdminPanelHomeSection({
         closeCreateModal={closeCreateModal}
         closeEditModal={closeEditModal}
         closeDeleteModal={closeDeleteModal}
-        createUser={createUser}
         updateUser={updateUser}
         deleteUser={deleteUser}
       />

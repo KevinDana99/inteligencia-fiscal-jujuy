@@ -124,6 +124,98 @@ Notas:
 }
 ```
 
+## Create User
+
+### Reglas específicas
+
+1. El formulario de `create user` debe migrarse a `<form action={formAction}>`.
+2. `create user` no debe seguir usando:
+   - validación local de negocio
+   - `pending` manual del submit
+   - `error` manual del submit
+   - submit imperativo llamando la action desde cliente
+3. En success:
+   - debe cerrarse el modal
+   - debe actualizarse el listado de usuarios leyendo estado actualizado desde backend
+4. El backend devuelve un error global tipado.
+5. No se deben implementar `fieldErrors` estructurados para este formulario si el backend no los provee.
+
+### Request esperado
+
+La action debe recibir `FormData` con estos campos:
+
+```ts
+type SolicitudCrearUsuario = {
+  nombre: string
+  apellido: string
+  correo: string
+  cargo: string
+  contrasena: string
+}
+```
+
+### State esperado
+
+```ts
+// initialState
+{
+  success: null,
+  message: null,
+  errors: null,
+  data: null
+}
+```
+
+```ts
+// error
+{
+  success: false,
+  message: string,
+  errors: {
+    code: string,
+    message: string,
+    statusCode: number
+  },
+  data: null
+}
+```
+
+```ts
+// success
+{
+  success: true,
+  message: string | null,
+  errors: null,
+  data: {
+    usuarioId: string,
+    nombre: string,
+    apellido: string,
+    correo: string,
+    cargo: string,
+    activo: boolean,
+    esSuperAdministrador: boolean
+  }
+}
+```
+
+### Contrato backend actual de error
+
+```json
+{
+  "codigo": "super_administrador.usuarios.crear.solicitud_invalida",
+  "mensaje": "El correo debe tener un formato valido.",
+  "estado": 400
+}
+```
+
+```json
+{
+  "codigo": "super_administrador.usuarios.crear.correo_duplicado",
+  "mensaje": "Ya existe un usuario con el correo informado.",
+  "estado": 409
+}
+```
+
 ## Criterio de cierre
 
 La migración de un formulario se considera correcta cuando:
