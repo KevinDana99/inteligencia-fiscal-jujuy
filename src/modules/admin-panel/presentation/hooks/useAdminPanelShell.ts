@@ -2,16 +2,9 @@
 
 import { startTransition, useEffect, useMemo, useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import {
-  deleteAdminUserAction,
-  updateAdminUserAction
-} from '../../data/actions';
-import type {
-  ApiUpdateAdminUserRequestDto
-} from '../../data/sources/rest/dtos/ApiAdminPanelDtos';
+import { deleteAdminUserAction } from '../../data/actions';
 import type {
   IAdminPanelData,
-  IAdminPanelUpdateUserInput,
   IAdminPanelUser
 } from '../../data/models/AdminPanel';
 import {
@@ -117,56 +110,6 @@ export function useAdminPanelShell(initialData: IAdminPanelData) {
     });
   }, [activeUsers, searchValue]);
 
-  const updateUser = async (input: IAdminPanelUpdateUserInput) => {
-    setActionError(null);
-    setIsActionPending(true);
-
-    return new Promise<boolean>((resolve) => {
-      startTransition(() => {
-        const payload: ApiUpdateAdminUserRequestDto = {
-          nombre: input.firstName.trim(),
-          apellido: input.lastName.trim(),
-          correo: input.email.trim().toLowerCase(),
-          cargo: input.roleLabel,
-          nuevaContrasena: input.password.trim() ? input.password : null,
-          confirmarContrasena: input.password.trim() ? input.password : null
-        };
-
-        void updateAdminUserAction(input.id, payload)
-          .then((result) => {
-            if (!result.success) {
-              setActionError(result.error ?? 'No fue posible actualizar el usuario.');
-              resolve(false);
-              return;
-            }
-
-            setUsers((currentUsers) =>
-              currentUsers.map((user) =>
-                user.id === input.id
-                  ? {
-                      ...user,
-                      fullName: `${input.firstName.trim()} ${input.lastName.trim()}`.trim(),
-                      email: input.email.trim().toLowerCase(),
-                      roleLabel: input.roleLabel
-                    }
-                  : user
-              )
-            );
-            setSelectedUser(null);
-            editHandlers.close();
-            resolve(true);
-          })
-          .catch(() => {
-            setActionError('No fue posible actualizar el usuario.');
-            resolve(false);
-          })
-          .finally(() => {
-            setIsActionPending(false);
-          });
-      });
-    });
-  };
-
   const deleteUser = async () => {
     if (!selectedUser || selectedUser.isAdmin) {
       deleteHandlers.close();
@@ -243,7 +186,6 @@ export function useAdminPanelShell(initialData: IAdminPanelData) {
     deleteOpened,
     roleOptions: [...USER_ROLE_OPTIONS],
     setSearchValue,
-    updateUser,
     deleteUser,
     openCreateModal: () => {
       setActionError(null);

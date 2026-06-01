@@ -1,12 +1,9 @@
 'use client'
 
-import type {
-  IAdminPanelUpdateUserInput,
-  IAdminPanelUser
-} from '../../../data/models/AdminPanel'
+import type { IAdminPanelUser } from '../../../data/models/AdminPanel'
 import { AdminPanelActionModal } from './AdminPanelActionModal'
 import CreateUserFormModal from './CreateUserFormModal'
-import UserFormModal from './UserFormModal'
+import EditUserFormModal from './EditUserFormModal'
 
 export function AdminPanelModals({
   selectedUser,
@@ -19,7 +16,6 @@ export function AdminPanelModals({
   closeCreateModal,
   closeEditModal,
   closeDeleteModal,
-  updateUser,
   deleteUser
 }: {
   selectedUser: IAdminPanelUser | null
@@ -32,7 +28,6 @@ export function AdminPanelModals({
   closeCreateModal: () => void
   closeEditModal: () => void
   closeDeleteModal: () => void
-  updateUser: (input: IAdminPanelUpdateUserInput) => Promise<boolean>
   deleteUser: () => Promise<boolean>
 }) {
   return (
@@ -47,7 +42,7 @@ export function AdminPanelModals({
         onClose={closeCreateModal}
       />
 
-      <UserFormModal
+      <EditUserFormModal
         key={`edit-${selectedUser?.id ?? 'empty'}-${editOpened ? 'open' : 'closed'}`}
         opened={editOpened}
         title='Editar usuario'
@@ -56,14 +51,6 @@ export function AdminPanelModals({
         initialUser={selectedUser}
         roleOptions={roleOptions}
         onClose={closeEditModal}
-        onSubmit={async (payload) => {
-          if ('id' in payload) {
-            return updateUser(payload)
-          }
-          return false
-        }}
-        error={editOpened ? actionError : null}
-        isPending={isActionPending}
       />
 
       <AdminPanelActionModal

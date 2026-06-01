@@ -1,8 +1,5 @@
 import { Stack, Text, Title } from '@mantine/core';
-import type {
-  IAdminPanelUpdateUserInput,
-  IAdminPanelUser
-} from '../../../data/models/AdminPanel';
+import type { IAdminPanelUser } from '../../../data/models/AdminPanel';
 import type { AvatarColorTone } from '../../utils/getAvatarColorStyles';
 import { AdminPanelModals } from '../AdminPanelModals';
 import { AdminPanelUserGestionTable } from '../AdminPanelUserGestionTable';
@@ -28,7 +25,6 @@ export function AdminPanelHomeSection({
   closeCreateModal,
   closeEditModal,
   closeDeleteModal,
-  updateUser,
   deleteUser
 }: {
   activeUsersCount: number;
@@ -50,7 +46,6 @@ export function AdminPanelHomeSection({
   closeCreateModal: () => void;
   closeEditModal: () => void;
   closeDeleteModal: () => void;
-  updateUser: (input: IAdminPanelUpdateUserInput) => Promise<boolean>;
   deleteUser: () => Promise<boolean>;
 }) {
   return (
@@ -86,7 +81,6 @@ export function AdminPanelHomeSection({
         closeCreateModal={closeCreateModal}
         closeEditModal={closeEditModal}
         closeDeleteModal={closeDeleteModal}
-        updateUser={updateUser}
         deleteUser={deleteUser}
       />
     </>

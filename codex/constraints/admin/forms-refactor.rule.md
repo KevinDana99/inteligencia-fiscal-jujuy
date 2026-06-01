@@ -216,6 +216,82 @@ type SolicitudCrearUsuario = {
 }
 ```
 
+## Edit User
+
+### Reglas específicas
+
+1. El formulario de `edit user` debe migrarse a `<form action={formAction}>`.
+2. `edit user` no debe seguir usando:
+   - validación local de negocio como fuente de verdad
+   - `pending` manual del submit
+   - `error` manual del submit
+   - `success` manual del submit
+   - submit imperativo llamando la action desde cliente
+3. En success:
+   - debe cerrarse el modal
+   - debe actualizarse el listado de usuarios leyendo estado actualizado desde backend
+4. El backend devuelve un error global tipado.
+5. No se deben implementar `fieldErrors` estructurados para este formulario si el backend no los provee.
+6. Para esta iteración se asume que `cargo` sigue siendo obligatorio en el formulario.
+
+### Request esperado
+
+La action debe recibir `FormData` con estos campos:
+
+```ts
+type SolicitudEditarUsuario = {
+  nombre: string
+  apellido: string
+  correo: string
+  cargo: string
+  nuevaContrasena?: string | null
+  confirmarContrasena?: string | null
+}
+```
+
+### State esperado
+
+```ts
+// initialState
+{
+  success: null,
+  message: null,
+  errors: null,
+  data: null
+}
+```
+
+```ts
+// error
+{
+  success: false,
+  message: string,
+  errors: {
+    code: string,
+    message: string,
+    statusCode: number
+  },
+  data: null
+}
+```
+
+```ts
+// success
+{
+  success: true,
+  message: string | null,
+  errors: null,
+  data: null
+}
+```
+
+### Contrato backend actual de success
+
+```text
+Response 204
+Sin cuerpo.
+```
+
 ## Criterio de cierre
 
 La migración de un formulario se considera correcta cuando:

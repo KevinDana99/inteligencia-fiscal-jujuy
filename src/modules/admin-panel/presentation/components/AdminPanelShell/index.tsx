@@ -28,7 +28,6 @@ export default function AdminPanelShell({
     deleteOpened,
     roleOptions,
     setSearchValue,
-    updateUser,
     deleteUser,
     openCreateModal,
     closeCreateModal,
@@ -60,7 +59,6 @@ export default function AdminPanelShell({
         closeCreateModal={closeCreateModal}
         closeEditModal={closeEditModal}
         closeDeleteModal={closeDeleteModal}
-        updateUser={updateUser}
         deleteUser={deleteUser}
       />
     </AdminPanelTemplate>

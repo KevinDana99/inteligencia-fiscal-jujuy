@@ -28,8 +28,14 @@ export interface IAdminPanelCreateUserInput {
   password: string;
 }
 
-export interface IAdminPanelUpdateUserInput extends IAdminPanelCreateUserInput {
+export interface IAdminPanelUpdateUserInput {
   id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  roleLabel: string;
+  newPassword?: string | null;
+  confirmPassword?: string | null;
 }
 
 export interface IAdminPanelCommandResult<TData = null> {

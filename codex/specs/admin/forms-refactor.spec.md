@@ -196,6 +196,65 @@ data: null
   - `errors.message`
   - `errors.statusCode`
 
+## Estado del formulario de Edit User
+
+## Inputs Form Data (Request)
+
+type SolicitudEditarUsuario = {
+nombre: string;
+apellido: string;
+correo: string;
+cargo: string;
+nuevaContrasena?: string | null;
+confirmarContrasena?: string | null;
+};
+
+## InitialState:
+
+{
+success: null,
+message: null,
+errors: null,
+data: null
+}
+
+## Success
+
+**Response 204**
+
+```text
+Sin cuerpo.
+```
+
+{
+success: true,
+message: string | null,
+errors: null,
+data: null
+}
+
+## Error
+
+{
+success: false,
+message: string,
+errors: {
+code: string,
+message: string,
+statusCode: number
+},
+data: null
+}
+
+- Para esta iteración se asume que `cargo` sigue siendo obligatorio en el formulario.
+- El backend devuelve un error global tipado.
+- No se deben asumir errores por campo estructurados si el contrato no los provee.
+- La action debe adaptar la respuesta de error del backend al state del formulario usando:
+  - `message`
+  - `errors.code`
+  - `errors.message`
+  - `errors.statusCode`
+
 ## Alcance
 
 1. Se debe implementar estos estandares de manejo de estado en los formularios actuales de la aplicacion. Actualmente son los formularios - login

@@ -110,15 +110,19 @@ export class RestAdminPanelSource implements IAdminPanelSource {
   async updateAdminUser(
     params: IAdminPanelUpdateUserInput
   ): Promise<IAdminPanelCommandResult> {
-    const shouldUpdatePassword = params.password.trim().length > 0;
+    const normalizedNewPassword = params.newPassword?.trim() ?? '';
+    const normalizedConfirmPassword = params.confirmPassword?.trim() ?? '';
+    const shouldUpdatePassword = normalizedNewPassword.length > 0;
 
     const payload: ApiUpdateAdminUserRequestDto = {
       nombre: params.firstName.trim(),
       apellido: params.lastName.trim(),
       correo: params.email.trim().toLowerCase(),
       cargo: params.roleLabel,
-      nuevaContrasena: shouldUpdatePassword ? params.password : null,
-      confirmarContrasena: shouldUpdatePassword ? params.password : null
+      nuevaContrasena: shouldUpdatePassword ? normalizedNewPassword : null,
+      confirmarContrasena: shouldUpdatePassword
+        ? normalizedConfirmPassword || normalizedNewPassword
+        : null
     };
 
     const response = await fetch(

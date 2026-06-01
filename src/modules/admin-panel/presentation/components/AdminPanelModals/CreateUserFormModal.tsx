@@ -29,11 +29,6 @@ const modalInputClasses = {
   option: classes.modalOption
 }
 
-const modalErrorInputClasses = {
-  ...modalInputClasses,
-  input: `${classes.modalInput} ${classes.modalInputError}`
-}
-
 function CreateUserFormModal({
   opened,
   title,
@@ -55,10 +50,8 @@ function CreateUserFormModal({
     passwordColor,
     isPending,
     error,
-    fieldErrors,
     formAction,
-    handleSubmitValidation,
-    handleFieldInput
+    handlePasswordChange
   } = useCreateAdminUserFormModal(onClose)
 
   return (
@@ -81,11 +74,7 @@ function CreateUserFormModal({
         overlay: classes.modalOverlay
       }}
     >
-      <form
-        ref={formRef}
-        action={formAction}
-        onSubmit={handleSubmitValidation}
-      >
+      <form ref={formRef} action={formAction}>
         <div className={classes.modalSection}>
           <div className={classes.formRow2}>
             <div className={classes.modalField}>
@@ -97,18 +86,8 @@ function CreateUserFormModal({
                   </span>
                 }
                 disabled={isPending}
-                onChange={(event) =>
-                  handleFieldInput('nombre', event.currentTarget.value)
-                }
-                classNames={
-                  fieldErrors.nombre
-                    ? modalErrorInputClasses
-                    : modalInputClasses
-                }
+                classNames={modalInputClasses}
               />
-              {fieldErrors.nombre ? (
-                <Text className={classes.modalError}>{fieldErrors.nombre}</Text>
-              ) : null}
             </div>
 
             <div className={classes.modalField}>
@@ -120,20 +99,8 @@ function CreateUserFormModal({
                   </span>
                 }
                 disabled={isPending}
-                onChange={(event) =>
-                  handleFieldInput('apellido', event.currentTarget.value)
-                }
-                classNames={
-                  fieldErrors.apellido
-                    ? modalErrorInputClasses
-                    : modalInputClasses
-                }
+                classNames={modalInputClasses}
               />
-              {fieldErrors.apellido ? (
-                <Text className={classes.modalError}>
-                  {fieldErrors.apellido}
-                </Text>
-              ) : null}
             </div>
           </div>
 
@@ -149,16 +116,8 @@ function CreateUserFormModal({
               }
               placeholder='Ejemplo@gmail.com'
               disabled={isPending}
-              onChange={(event) =>
-                handleFieldInput('correo', event.currentTarget.value)
-              }
-              classNames={
-                fieldErrors.correo ? modalErrorInputClasses : modalInputClasses
-              }
+              classNames={modalInputClasses}
             />
-            {fieldErrors.correo ? (
-              <Text className={classes.modalError}>{fieldErrors.correo}</Text>
-            ) : null}
           </div>
 
           <div className={classes.modalField}>
@@ -174,15 +133,9 @@ function CreateUserFormModal({
               defaultValue={roleOptions[0] ?? ''}
               data={roleOptions}
               disabled={isPending}
-              onChange={(value) => handleFieldInput('cargo', value ?? '')}
               rightSection={<IconChevronDown size={18} stroke={1.8} />}
-              classNames={
-                fieldErrors.cargo ? modalErrorInputClasses : modalInputClasses
-              }
+              classNames={modalInputClasses}
             />
-            {fieldErrors.cargo ? (
-              <Text className={classes.modalError}>{fieldErrors.cargo}</Text>
-            ) : null}
           </div>
 
           <div className={classes.modalField}>
@@ -196,7 +149,7 @@ function CreateUserFormModal({
               }
               placeholder='**********'
               onChange={(event) =>
-                handleFieldInput('contrasena', event.currentTarget.value)
+                handlePasswordChange(event.currentTarget.value)
               }
               disabled={isPending}
               visibilityToggleIcon={({ reveal }) =>
@@ -206,17 +159,8 @@ function CreateUserFormModal({
                   <IconEye size={18} stroke={1.8} />
                 )
               }
-              classNames={
-                fieldErrors.contrasena
-                  ? modalErrorInputClasses
-                  : modalInputClasses
-              }
+              classNames={modalInputClasses}
             />
-            {fieldErrors.contrasena ? (
-              <Text className={classes.modalError}>
-                {fieldErrors.contrasena}
-              </Text>
-            ) : null}
           </div>
 
           <div className={classes.passwordStrengthRoot}>
