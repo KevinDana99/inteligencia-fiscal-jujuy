@@ -17,7 +17,7 @@ default:
     - export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
 variables:
-  BUN_IMAGE: docker.io/oven/bun:1.3.9-alpine
+  NODE_IMAGE: docker.io/library/node:22-alpine
   KUBE_NAMESPACE: rentas-if
   IMAGE_NAME: localhost/rentas-if-frontend
   IMAGE_LOCAL: rentas-if-frontend:dev
@@ -31,8 +31,8 @@ validar_frontend:
     - >
       sudo -n podman run --pull=missing --rm
       -v "$CI_PROJECT_DIR:/src:ro,Z"
-      "$BUN_IMAGE"
-      sh -lc 'cp -a /src/. /tmp/app && cd /tmp/app && bun install --frozen-lockfile && bun run build'
+      "$NODE_IMAGE"
+      sh -lc 'cp -a /src/. /tmp/app && cd /tmp/app && npm ci && npm run build'
 
 construir_imagen:
   stage: construir

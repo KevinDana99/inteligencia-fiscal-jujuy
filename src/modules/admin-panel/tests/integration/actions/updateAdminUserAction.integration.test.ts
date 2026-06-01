@@ -1,12 +1,16 @@
-import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
 import { RestAdminPanelSource } from '../../../data/sources/rest/RestAdminPanelSource';
 
 describe('updateAdminUserAction contract', () => {
   const originalFetch = globalThis.fetch;
-  const fetchMock = mock();
+  const fetchMock = jest.fn<Promise<Response>, Parameters<typeof fetch>>();
 
   beforeEach(() => {
     fetchMock.mockReset();
+    fetchMock.mockResolvedValue(
+      new Response(null, {
+        status: 204
+      })
+    );
     globalThis.fetch = fetchMock as typeof fetch;
   });
 
@@ -15,12 +19,6 @@ describe('updateAdminUserAction contract', () => {
   });
 
   test('sends the PATCH request payload exactly as defined by the contract and handles 204 null', async () => {
-    fetchMock.mockResolvedValue(
-      new Response(null, {
-        status: 204
-      })
-    );
-
     const source = new RestAdminPanelSource({
       baseUrl: 'http://localhost:3000',
       token: 'token-de-prueba'

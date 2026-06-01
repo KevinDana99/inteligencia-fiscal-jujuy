@@ -5,8 +5,8 @@ Proyecto base con Next.js 16 y App Router, generado siguiendo la skill `create-f
 ## Ejecutar
 
 ```bash
-bun install
-bun run dev
+npm install
+npm run dev
 ```
 
 ## Variables

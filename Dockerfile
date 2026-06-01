@@ -1,21 +1,21 @@
 # syntax=docker/dockerfile:1
 
-FROM oven/bun:1.3.9-alpine AS deps
+FROM node:22-alpine AS deps
 WORKDIR /app
 
-COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+COPY package.json package-lock.json ./
+RUN npm ci
 
-FROM oven/bun:1.3.9-alpine AS build
+FROM node:22-alpine AS build
 WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN bun run build
+RUN npm run build
 
-FROM oven/bun:1.3.9-alpine AS runtime
+FROM node:22-alpine AS runtime
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -29,6 +29,5 @@ COPY --from=build /app/.next ./.next
 COPY --from=deps /app/node_modules ./node_modules
 
 EXPOSE 3000
-USER bun
 
-CMD ["bun", "run", "start", "--", "-H", "0.0.0.0"]
+CMD ["npm", "run", "start", "--", "--hostname", "0.0.0.0"]

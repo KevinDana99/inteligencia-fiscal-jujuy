@@ -1,4 +1,3 @@
-import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
 import { getAdminPanelAction } from '../../../data/actions/queries/getAdminPanelAction'
 import { ADMIN_PANEL_MOCK_DATA } from '../../../data/sources/mock/fixtures/adminPanelData'
 
@@ -26,7 +25,7 @@ describe('getAdminPanelAction', () => {
     expect(result.data).not.toBeNull()
     expect(result.data?.users).toHaveLength(ADMIN_PANEL_MOCK_DATA.users.length)
     expect(result.data?.users).toEqual(ADMIN_PANEL_MOCK_DATA.users)
-    expect(result.data?.users[0]).toMatchObject({
+    expect(result.data?.users[0]).toEqual({
       id: 'admin',
       fullName: 'Administrador',
       email: 'admin@plantilla.local',
