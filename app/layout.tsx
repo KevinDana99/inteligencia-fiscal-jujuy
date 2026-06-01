@@ -24,7 +24,7 @@ const dmSans = localFont({
       style: 'normal'
     },
     {
-      path: '../src/fonts/dm-sans/DMSans-ExtraBold.woff2',
+      path: '../src/fonts/dm-sans/DMSans-ExtraBold.ttf',
       weight: '800',
       style: 'normal'
     }
