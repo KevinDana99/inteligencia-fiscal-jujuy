@@ -52,7 +52,7 @@ export function AdminPanelNavbar({
             size='sm'
             radius='md'
             onClick={onSignOutClick}
-            loading={isSignOutPending}
+            disabled={isSignOutPending}
             leftSection={<IconDoorExit size={16} />}
             className={classes.secondaryButton}
           >
