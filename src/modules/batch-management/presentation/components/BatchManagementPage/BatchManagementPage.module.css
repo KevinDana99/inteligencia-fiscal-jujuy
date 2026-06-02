@@ -1,0 +1,68 @@
+.root {
+  gap: var(--mantine-spacing-xl);
+}
+
+.headerTitle {
+  color: var(--mantine-color-gray-9);
+  font-size: 1.5rem;
+  line-height: 1.1;
+}
+
+.headerSubtitle {
+  color: var(--mantine-color-gray-5);
+}
+
+.createButton {
+  background: var(--mantine-color-blue-5);
+  border-color: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+}
+
+.createButton:hover,
+.createButton:focus,
+.createButton[data-hovered],
+.createButton[data-active] {
+  background: var(--mantine-color-blue-5);
+  border-color: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+}
+
+.searchGroup {
+  align-items: center;
+  width: 100%;
+}
+
+.searchInput {
+  min-width: 260px;
+  max-width: 320px;
+  width: 100%;
+}
+
+.searchInputField {
+  min-width: 260px;
+  padding: 7px 14px 7px 38px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 999px;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-9);
+}
+
+.searchInputSection {
+  width: 30px;
+  color: var(--mantine-color-gray-5);
+}
+
+.searchInput :global(.mantine-Input-wrapper) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.searchInput :global(.mantine-Input-input),
+.searchInputField {
+  border-radius: 999px;
+}
+
+.searchCounter {
+  color: var(--mantine-color-gray-5);
+}
