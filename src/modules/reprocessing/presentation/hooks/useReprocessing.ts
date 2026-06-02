@@ -1,7 +1,6 @@
 'use client'
 
 import { useMemo, useRef, useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
 import {
   getReprocessingAction,
   unmarkReprocessingAction
@@ -19,12 +18,7 @@ function getInitialItems(initialData?: IReprocessingListData | null): IReprocess
   return initialData?.items ?? []
 }
 
-function normalizeCuitForRoute(value: string) {
-  return value.replace(/\D/g, '')
-}
-
 export function useReprocessing(initialData?: IReprocessingListData | null) {
-  const router = useRouter()
   const [items, setItems] = useState<IReprocessingItems>(getInitialItems(initialData))
   const [total, setTotal] = useState(initialData?.totalItems ?? 0)
   const [searchValue, setSearchValue] = useState('')
@@ -35,12 +29,6 @@ export function useReprocessing(initialData?: IReprocessingListData | null) {
   const latestSearchRequestIdRef = useRef(0)
 
   const filteredItems = useMemo(() => items, [items])
-
-  const openInPadron = (cuit: string) => {
-    router.push(
-      `/vista-previa-padron/${encodeURIComponent(normalizeCuitForRoute(cuit))}`
-    )
-  }
 
   const updateSearchValue = (value: string) => {
     setSearchValue(value)
@@ -122,7 +110,6 @@ export function useReprocessing(initialData?: IReprocessingListData | null) {
     isSearchPending,
     isRemovePending,
     setSearchValue: updateSearchValue,
-    openInPadron,
     openRemoveModal,
     closeRemoveModal,
     confirmRemoveFromReprocessing

@@ -30,7 +30,6 @@ export function ReprocessingPage({
     isSearchPending,
     isRemovePending,
     setSearchValue,
-    openInPadron,
     openRemoveModal,
     closeRemoveModal,
     confirmRemoveFromReprocessing
@@ -42,8 +41,8 @@ export function ReprocessingPage({
         <div className={classes.alertContent}>
           <div className={classes.alertTitle}>CUITs en reproceso</div>
           <div className={classes.alertDescription}>
-            Contribuyentes pendientes de investigación profunda. Podés agregar
-            CUITs desde el Padrón Unificado activando el switch.
+            Contribuyentes pendientes de investigación profunda para seguimiento
+            y remoción manual cuando corresponda.
           </div>
         </div>
         <span className={classes.alertBadge}>{total} en reproceso</span>
@@ -80,11 +79,7 @@ export function ReprocessingPage({
           <Table.Tbody>
             {items.length ? (
               items.map((item) => (
-                <Table.Tr
-                  key={item.id}
-                  className={classes.row}
-                  onClick={() => openInPadron(item.cuit)}
-                >
+                <Table.Tr key={item.id} className={classes.row}>
                   <Table.Td className={classes.cuitCell}>{item.cuit}</Table.Td>
                   <Table.Td className={classes.nameCell}>{item.businessName}</Table.Td>
                   <Table.Td className={classes.mutedCell}>{item.date}</Table.Td>
