@@ -287,6 +287,17 @@ textarea.formInput:focus-visible {
   box-shadow: none;
 }
 
+.infoAlert {
+  width: min(100%, 600px);
+  border: 1px solid #bfdbfe;
+}
+
+.infoAlertText {
+  color: var(--mantine-color-blue-7);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
 .informeCard {
   margin: 0 0 20px;
   padding: 28px;

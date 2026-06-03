@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   Group,
+  Alert,
   Modal,
   Stack,
   Text,
@@ -15,6 +16,7 @@ import {
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
   IconFileText,
+  IconInfoCircle,
   IconPlus,
   IconXFilled
 } from '@tabler/icons-react'
@@ -55,6 +57,7 @@ export function DashboardConfigurationPage() {
     successOpened,
     updateTab,
     updateIntimacion,
+    updateInforme,
     openColumnPicker,
     closeColumnPicker,
     confirmColumnPicker,
@@ -240,11 +243,61 @@ export function DashboardConfigurationPage() {
             </div>
           ) : (
             <div className={classes.contentView}>
-              <Card className={classes.informeCard} radius='lg' padding={0}>
-                <Text component='div' className={classes.informeTitle}>
-                  {state.informe.titulo}
-                </Text>
-              </Card>
+              <div className={classes.viewColumn}>
+                <Alert
+                  variant='light'
+                  color='blue'
+                  radius='md'
+                  className={classes.infoAlert}
+                  icon={<IconInfoCircle size={16} />}
+                >
+                  <Text className={classes.infoAlertText}>
+                    <strong>Configuración global del Informe de Investigación.</strong>{' '}
+                    Solo el título y el texto se editan acá y aplican a todos los
+                    usuarios. Los datos del contribuyente, la acción
+                    fiscalizadora y los cruces se completan al generar el informe
+                    desde el Padrón Unificado.
+                  </Text>
+                </Alert>
+
+                <Card className={classes.sectionCard} radius='lg' padding={0}>
+                  <Text className={classes.sectionLabel}>Título del informe</Text>
+                  <div className={classes.fieldGroup}>
+                    <Text className={classes.fieldTitle}>Texto del título</Text>
+                    <TextInput
+                      value={state.informe.titulo}
+                      onChange={(event) =>
+                        updateInforme('titulo', event.currentTarget.value)
+                      }
+                      classNames={formInputClasses}
+                    />
+                  </div>
+                </Card>
+
+                <Card className={classes.sectionCard} radius='lg' padding={0}>
+                  <Text className={classes.sectionLabel}>Texto introductorio</Text>
+                  <div className={classes.fieldGroup}>
+                    <Text className={classes.fieldTitle}>Cuerpo del informe</Text>
+                    <Textarea
+                      value={state.informe.cuerpo}
+                      onChange={(event) =>
+                        updateInforme('cuerpo', event.currentTarget.value)
+                      }
+                      minRows={5}
+                      classNames={formInputClasses}
+                    />
+                  </div>
+                </Card>
+
+                <Group justify='flex-end' className={classes.footerActions}>
+                  <Button
+                    className={classes.primaryButton}
+                    onClick={confirmChanges}
+                  >
+                    Confirmar cambios
+                  </Button>
+                </Group>
+              </div>
             </div>
           )}
         </div>

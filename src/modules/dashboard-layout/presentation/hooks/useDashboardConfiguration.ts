@@ -26,6 +26,7 @@ type DashboardConfigurationState = {
   }
   informe: {
     titulo: string
+    cuerpo: string
   }
 }
 
@@ -72,7 +73,9 @@ const DEFAULT_STATE: DashboardConfigurationState = {
     ]
   },
   informe: {
-    titulo: 'Informe de análisis'
+    titulo: 'INFORME DE INVESTIGACIÓN',
+    cuerpo:
+      'Se eleva para su conocimiento y consideración, informe sobre la situación fiscal del contribuyente abajo descripto, solicitando el cargo al Dpto. Inspecciones y Verificaciones, conforme a los fundamentos, datos y periodos fiscales que se indican a continuación:'
   }
 }
 
@@ -111,6 +114,19 @@ export function useDashboardConfiguration() {
       activeTab: tab
     }))
   }, [])
+
+  const updateInforme = useCallback(
+    (field: keyof DashboardConfigurationState['informe'], value: string) => {
+      setState((current) => ({
+        ...current,
+        informe: {
+          ...current.informe,
+          [field]: value
+        }
+      }))
+    },
+    []
+  )
 
   const openColumnPicker = useCallback(() => {
     setColumnPickerDraft(state.intimacion.columnas)
@@ -254,6 +270,7 @@ export function useDashboardConfiguration() {
     openColumnPicker,
     closeColumnPicker,
     confirmColumnPicker,
+    updateInforme,
     selectAvailableColumn,
     selectVisibleColumn,
     addSelectedColumn,
