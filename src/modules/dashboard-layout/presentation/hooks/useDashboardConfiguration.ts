@@ -1,34 +1,33 @@
-'use client';
+'use client'
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react'
 
-export type DashboardConfigurationTab = 'intimacion' | 'informe';
+export type DashboardConfigurationTab = 'intimacion' | 'informe'
 
 type DashboardConfigurationColumn = {
-  id: string;
-  value: string;
-};
+  id: string
+  value: string
+}
 
 type DashboardConfigurationColumnOption = {
-  id: string;
-  label: string;
-};
+  id: string
+  label: string
+}
 
 type DashboardConfigurationState = {
-  activeTab: DashboardConfigurationTab;
+  activeTab: DashboardConfigurationTab
   intimacion: {
-    asunto: string;
-    saludo: string;
-    cuerpo: string;
-    cierre: string;
-    fuenteInformacion: string;
-    fechaCorte: string;
-    columnas: DashboardConfigurationColumn[];
-  };
+    asunto: string
+    saludo: string
+    cuerpo: string
+    fuenteInformacion: string
+    fechaCorte: string
+    columnas: DashboardConfigurationColumn[]
+  }
   informe: {
-    titulo: string;
-  };
-};
+    titulo: string
+  }
+}
 
 const COLUMN_OPTIONS: DashboardConfigurationColumnOption[] = [
   { id: 'fact-arca-anio', label: 'Fact. ARCA (año)' },
@@ -51,7 +50,7 @@ const COLUMN_OPTIONS: DashboardConfigurationColumnOption[] = [
   { id: 'alicuota', label: 'Alícuota' },
   { id: 'dif-creditos', label: 'Dif. Créditos' },
   { id: 'saf', label: 'SAF' }
-];
+]
 
 const DEFAULT_STATE: DashboardConfigurationState = {
   activeTab: 'intimacion',
@@ -59,8 +58,7 @@ const DEFAULT_STATE: DashboardConfigurationState = {
     asunto: 'PRESUNTA DIFERENCIA DE BASE IMPONIBLE',
     saludo: 'Señor Contribuyente:',
     cuerpo:
-      'Por medio de la presente, la Dirección Provincial de Rentas de Jujuy pone en su conocimiento que sobre la base de información cierta, derivada del cruce de bases de datos con el organismo recaudador nacional (ARCA) y los agentes de recaudación designados por este organismo, se han detectado inconsistencias en sus declaraciones juradas y en el cumplimiento de sus obligaciones fiscales en los periodos que se detallan en planilla adjunta.\n\nPor ello, y en uso de las facultades conferidas a este organismo por el art. 10º inc. 3 del Código Fiscal, Ley Nro. 5791/2013, se lo intima para que en el término de diez (10) días proceda a presentar las declaraciones juradas originales o rectificativas, e ingrese el impuesto omitido más los intereses a la fecha del efectivo pago.\n\nEn caso de no regularizar su situación fiscal, la Dirección podrá dar inicio a una verificación integral, perdiendo Ud. el beneficio del cumplimiento voluntario debiendo abonar además del tributo las sanciones previstas en los artículos 48° y 49º del Código Fiscal (Ley 5791/2013), sin perjuicio de dar inicio al procedimiento de determinación de oficio en los términos del artículo 37° del mencionado plexo normativo.\n\nPara dar cumplimiento a esta intimación podrá comunicarse con el Departamento Inteligencia Fiscal al siguiente correo electrónico: inteligenciafiscal@rentasjujuy.gob.ar o al Centro de Atención 0800-555-5599 en el horario de 07:30 a 12:30 o personalmente en Lavalle 55 - San Salvador de Jujuy - de Lunes a Viernes en el horario de 07:30 a 12:30.',
-    cierre: 'Queda/n Ud/s. debidamente notificado/s.',
+      'Por medio de la presente, la Dirección Provincial de Rentas de Jujuy pone en su conocimiento que sobre la base de información cierta, derivada del cruce de bases de datos con el organismo recaudador nacional (ARCA) y los agentes de recaudación designados por este organismo, se han detectado inconsistencias en sus declaraciones juradas y en el cumplimiento de sus obligaciones fiscales en los periodos que se detallan en planilla adjunta.\n\nPor ello, y en uso de las facultades conferidas a este organismo por el art. 10º inc. 3 del Código Fiscal, Ley Nro. 5791/2013, se lo intima para que en el término de diez (10) días proceda a presentar las declaraciones juradas originales o rectificativas, e ingrese el impuesto omitido más los intereses a la fecha del efectivo pago.\n\nEn caso de no regularizar su situación fiscal, la Dirección podrá dar inicio a una verificación integral, perdiendo Ud. el beneficio del cumplimiento voluntario debiendo abonar además del tributo las sanciones previstas en los artículos 48° y 49º del Código Fiscal (Ley 5791/2013), sin perjuicio de dar inicio al procedimiento de determinación de oficio en los términos del artículo 37° del mencionado plexo normativo.\n\nPara dar cumplimiento a esta intimación podrá comunicarse con el Departamento Inteligencia Fiscal al siguiente correo electrónico: inteligenciafiscal@rentasjujuy.gob.ar o al Centro de Atención 0800-555-5599 en el horario de 07:30 a 12:30 o personalmente en Lavalle 55 - San Salvador de Jujuy - de Lunes a Viernes en el horario de 07:30 a 12:30. <br> Queda/n Ud/s. debidamente notificado/s.',
     fuenteInformacion: '',
     fechaCorte: 'Fecha de corte 11/2025.',
     columnas: [
@@ -76,19 +74,23 @@ const DEFAULT_STATE: DashboardConfigurationState = {
   informe: {
     titulo: 'Informe de análisis'
   }
-};
+}
 
 export function useDashboardConfiguration() {
-  const [state, setState] = useState(DEFAULT_STATE);
-  const [successOpened, setSuccessOpened] = useState(false);
-  const [columnPickerOpened, setColumnPickerOpened] = useState(false);
-  const [selectedAvailableColumnId, setSelectedAvailableColumnId] = useState<string | null>(null);
-  const [selectedVisibleColumnId, setSelectedVisibleColumnId] = useState<string | null>(null);
+  const [state, setState] = useState(DEFAULT_STATE)
+  const [successOpened, setSuccessOpened] = useState(false)
+  const [columnPickerOpened, setColumnPickerOpened] = useState(false)
+  const [selectedAvailableColumnId, setSelectedAvailableColumnId] = useState<
+    string | null
+  >(null)
+  const [selectedVisibleColumnId, setSelectedVisibleColumnId] = useState<
+    string | null
+  >(null)
   const [columnPickerDraft, setColumnPickerDraft] = useState(
     DEFAULT_STATE.intimacion.columnas
-  );
+  )
 
-  const activeTab = state.activeTab;
+  const activeTab = state.activeTab
 
   const updateIntimacion = useCallback(
     (field: keyof DashboardConfigurationState['intimacion'], value: string) => {
@@ -98,31 +100,31 @@ export function useDashboardConfiguration() {
           ...current.intimacion,
           [field]: value
         }
-      }));
+      }))
     },
     []
-  );
+  )
 
   const updateTab = useCallback((tab: DashboardConfigurationTab) => {
     setState((current) => ({
       ...current,
       activeTab: tab
-    }));
-  }, []);
+    }))
+  }, [])
 
   const openColumnPicker = useCallback(() => {
-    setColumnPickerDraft(state.intimacion.columnas);
-    setSelectedAvailableColumnId(null);
-    setSelectedVisibleColumnId(null);
-    setColumnPickerOpened(true);
-  }, [state.intimacion.columnas]);
+    setColumnPickerDraft(state.intimacion.columnas)
+    setSelectedAvailableColumnId(null)
+    setSelectedVisibleColumnId(null)
+    setColumnPickerOpened(true)
+  }, [state.intimacion.columnas])
 
   const closeColumnPicker = useCallback(() => {
-    setColumnPickerOpened(false);
-    setColumnPickerDraft(state.intimacion.columnas);
-    setSelectedAvailableColumnId(null);
-    setSelectedVisibleColumnId(null);
-  }, [state.intimacion.columnas]);
+    setColumnPickerOpened(false)
+    setColumnPickerDraft(state.intimacion.columnas)
+    setSelectedAvailableColumnId(null)
+    setSelectedVisibleColumnId(null)
+  }, [state.intimacion.columnas])
 
   const confirmColumnPicker = useCallback(() => {
     setState((current) => ({
@@ -131,36 +133,38 @@ export function useDashboardConfiguration() {
         ...current.intimacion,
         columnas: columnPickerDraft
       }
-    }));
-    setColumnPickerOpened(false);
-    setSelectedAvailableColumnId(null);
-    setSelectedVisibleColumnId(null);
-  }, [columnPickerDraft]);
+    }))
+    setColumnPickerOpened(false)
+    setSelectedAvailableColumnId(null)
+    setSelectedVisibleColumnId(null)
+  }, [columnPickerDraft])
 
   const selectAvailableColumn = useCallback((optionId: string) => {
-    setSelectedAvailableColumnId(optionId);
-    setSelectedVisibleColumnId(null);
-  }, []);
+    setSelectedAvailableColumnId(optionId)
+    setSelectedVisibleColumnId(null)
+  }, [])
 
   const selectVisibleColumn = useCallback((columnId: string) => {
-    setSelectedVisibleColumnId(columnId);
-    setSelectedAvailableColumnId(null);
-  }, []);
+    setSelectedVisibleColumnId(columnId)
+    setSelectedAvailableColumnId(null)
+  }, [])
 
   const addSelectedColumn = useCallback(() => {
     if (!selectedAvailableColumnId) {
-      return;
+      return
     }
 
-    const option = COLUMN_OPTIONS.find((item) => item.id === selectedAvailableColumnId);
+    const option = COLUMN_OPTIONS.find(
+      (item) => item.id === selectedAvailableColumnId
+    )
 
     if (!option) {
-      return;
+      return
     }
 
     setColumnPickerDraft((current) => {
       if (current.some((column) => column.id === option.id)) {
-        return current;
+        return current
       }
 
       return [
@@ -169,27 +173,27 @@ export function useDashboardConfiguration() {
           id: option.id,
           value: option.label
         }
-      ];
-    });
-    setSelectedAvailableColumnId(null);
-  }, [selectedAvailableColumnId]);
+      ]
+    })
+    setSelectedAvailableColumnId(null)
+  }, [selectedAvailableColumnId])
 
   const removeSelectedColumn = useCallback(() => {
     if (!selectedVisibleColumnId) {
-      return;
+      return
     }
 
     setColumnPickerDraft((current) =>
       current.filter((column) => column.id !== selectedVisibleColumnId)
-    );
-    setSelectedVisibleColumnId(null);
-  }, [selectedVisibleColumnId]);
+    )
+    setSelectedVisibleColumnId(null)
+  }, [selectedVisibleColumnId])
 
   const removeDraftColumn = useCallback((optionId: string) => {
     setColumnPickerDraft((current) =>
       current.filter((column) => column.id !== optionId)
-    );
-  }, []);
+    )
+  }, [])
 
   const updateColumn = useCallback((columnId: string, value: string) => {
     setState((current) => ({
@@ -200,32 +204,40 @@ export function useDashboardConfiguration() {
           column.id === columnId ? { ...column, value } : column
         )
       }
-    }));
-  }, []);
+    }))
+  }, [])
 
   const removeColumn = useCallback((columnId: string) => {
     setState((current) => ({
       ...current,
       intimacion: {
         ...current.intimacion,
-        columnas: current.intimacion.columnas.filter((column) => column.id !== columnId)
+        columnas: current.intimacion.columnas.filter(
+          (column) => column.id !== columnId
+        )
       }
-    }));
-  }, []);
+    }))
+  }, [])
 
   const confirmChanges = useCallback(() => {
-    setSuccessOpened(true);
-  }, []);
+    setSuccessOpened(true)
+  }, [])
 
   const closeSuccess = useCallback(() => {
-    setSuccessOpened(false);
-  }, []);
+    setSuccessOpened(false)
+  }, [])
 
-  const visibleColumns = useMemo(() => state.intimacion.columnas, [state.intimacion.columnas]);
+  const visibleColumns = useMemo(
+    () => state.intimacion.columnas,
+    [state.intimacion.columnas]
+  )
   const availableColumns = useMemo(
-    () => COLUMN_OPTIONS.filter((option) => !columnPickerDraft.some((column) => column.id === option.id)),
+    () =>
+      COLUMN_OPTIONS.filter(
+        (option) => !columnPickerDraft.some((column) => column.id === option.id)
+      ),
     [columnPickerDraft]
-  );
+  )
 
   return {
     state,
@@ -251,5 +263,5 @@ export function useDashboardConfiguration() {
     removeColumn,
     confirmChanges,
     closeSuccess
-  };
+  }
 }

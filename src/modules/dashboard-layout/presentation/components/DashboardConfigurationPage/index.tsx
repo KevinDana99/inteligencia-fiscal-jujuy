@@ -1,35 +1,45 @@
-'use client';
+'use client'
 
-import { ActionIcon, Button, Card, Group, Modal, Stack, Text, Textarea, TextInput } from '@mantine/core';
+import {
+  ActionIcon,
+  Button,
+  Card,
+  Group,
+  Modal,
+  Stack,
+  Text,
+  Textarea,
+  TextInput
+} from '@mantine/core'
 import {
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
   IconFileText,
   IconPlus,
   IconXFilled
-} from '@tabler/icons-react';
-import { useDashboardConfiguration } from '../../hooks/useDashboardConfiguration';
-import classes from './DashboardConfigurationPage.module.css';
+} from '@tabler/icons-react'
+import { useDashboardConfiguration } from '../../hooks/useDashboardConfiguration'
+import classes from './DashboardConfigurationPage.module.css'
 
 const formInputClasses = {
   input: classes.formInput
-};
+}
 
 function SectionTitle({
   title,
   description
 }: {
-  title: string;
-  description: string;
+  title: string
+  description: string
 }) {
   return (
     <div className={classes.sectionIntro}>
-      <Text component="div" className={classes.pageTitle}>
+      <Text component='div' className={classes.pageTitle}>
         {title}
       </Text>
       <Text className={classes.pageSubtitle}>{description}</Text>
     </div>
-  );
+  )
 }
 
 export function DashboardConfigurationPage() {
@@ -56,15 +66,15 @@ export function DashboardConfigurationPage() {
     removeColumn,
     confirmChanges,
     closeSuccess
-  } = useDashboardConfiguration();
+  } = useDashboardConfiguration()
 
-  const isIntimacion = activeTab === 'intimacion';
+  const isIntimacion = activeTab === 'intimacion'
 
   return (
     <div className={classes.page}>
       <div className={classes.shell}>
         <div className={classes.shellRail}>
-          <button type="button" className={classes.shellRailItem}>
+          <button type='button' className={classes.shellRailItem}>
             <IconFileText size={14} />
             <span>Documentos de salida</span>
           </button>
@@ -73,20 +83,20 @@ export function DashboardConfigurationPage() {
         <div className={classes.shellBody}>
           <section className={classes.headerSection}>
             <SectionTitle
-              title="Personalizar documentos de salida"
-              description="Editá la estructura de los documentos generados. Los cambios se aplican globalmente al confirmar."
+              title='Personalizar documentos de salida'
+              description='Editá la estructura de los documentos generados. Los cambios se aplican globalmente al confirmar.'
             />
 
             <div className={classes.tabsRow}>
               <button
-                type="button"
+                type='button'
                 className={`${classes.tabButton} ${isIntimacion ? classes.tabButtonActive : ''}`}
                 onClick={() => updateTab('intimacion')}
               >
                 Intimación
               </button>
               <button
-                type="button"
+                type='button'
                 className={`${classes.tabButton} ${!isIntimacion ? classes.tabButtonActive : ''}`}
                 onClick={() => updateTab('informe')}
               >
@@ -98,21 +108,25 @@ export function DashboardConfigurationPage() {
           {isIntimacion ? (
             <div className={classes.contentView}>
               <div className={classes.viewColumn}>
-                <Card className={classes.sectionCard} radius="lg" padding={0}>
+                <Card className={classes.sectionCard} radius='lg' padding={0}>
                   <Text className={classes.sectionLabel}>Asunto</Text>
                   <div className={classes.fieldGroup}>
                     <Text className={classes.fieldTitle}>Texto del asunto</Text>
                     <TextInput
                       value={state.intimacion.asunto}
-                      onChange={(event) => updateIntimacion('asunto', event.currentTarget.value)}
+                      onChange={(event) =>
+                        updateIntimacion('asunto', event.currentTarget.value)
+                      }
                       classNames={formInputClasses}
                     />
                   </div>
                 </Card>
 
-                <Card className={classes.sectionCard} radius="lg" padding={0}>
-                  <Text className={classes.sectionLabel}>Cuerpo del documento</Text>
-                  <Stack gap="md">
+                <Card className={classes.sectionCard} radius='lg' padding={0}>
+                  <Text className={classes.sectionLabel}>
+                    Cuerpo del documento
+                  </Text>
+                  <Stack gap='md'>
                     <div className={classes.fieldGroup}>
                       <Text className={classes.fieldTitle}>Saludo</Text>
                       <TextInput
@@ -125,47 +139,43 @@ export function DashboardConfigurationPage() {
                     </div>
 
                     <div className={classes.fieldGroup}>
-                      <Text className={classes.fieldTitle}>Texto del cuerpo</Text>
+                      <Text className={classes.fieldTitle}>
+                        Texto del cuerpo
+                      </Text>
                       <Textarea
                         value={state.intimacion.cuerpo}
-                        onChange={(event) => updateIntimacion('cuerpo', event.currentTarget.value)}
+                        onChange={(event) =>
+                          updateIntimacion('cuerpo', event.currentTarget.value)
+                        }
                         classNames={formInputClasses}
                       />
                     </div>
                   </Stack>
                 </Card>
 
-                <Card className={classes.sectionCard} radius="lg" padding={0}>
-                  <Text className={classes.sectionLabel}>Cierre</Text>
-                  <div className={classes.fieldGroup}>
-                    <Text className={classes.fieldTitle}>Texto de cierre</Text>
-                    <TextInput
-                      value={state.intimacion.cierre}
-                      onChange={(event) => updateIntimacion('cierre', event.currentTarget.value)}
-                      classNames={formInputClasses}
-                    />
-                  </div>
-                </Card>
-
-                <Card className={classes.sectionCard} radius="lg" padding={0}>
-                  <Text className={classes.sectionLabel}>Planilla adjunta — Columnas</Text>
+                <Card className={classes.sectionCard} radius='lg' padding={0}>
+                  <Text className={classes.sectionLabel}>
+                    Planilla adjunta — Columnas
+                  </Text>
                   <Text className={classes.sectionHint}>
                     Columnas que aparecen en la tabla de comparación de bases
                   </Text>
 
-                  <Stack gap="sm" className={classes.columnList}>
+                  <Stack gap='sm' className={classes.columnList}>
                     {visibleColumns.map((column) => (
                       <div key={column.id} className={classes.columnRow}>
                         <span className={classes.columnToken}>✓</span>
                         <TextInput
                           value={column.value}
-                          onChange={(event) => updateColumn(column.id, event.currentTarget.value)}
+                          onChange={(event) =>
+                            updateColumn(column.id, event.currentTarget.value)
+                          }
                           className={classes.columnInput}
                           classNames={formInputClasses}
                         />
                         <ActionIcon
-                          variant="subtle"
-                          color="red"
+                          variant='subtle'
+                          color='red'
                           aria-label={`Eliminar columna ${column.value}`}
                           onClick={() => removeColumn(column.id)}
                           className={classes.columnRemove}
@@ -177,7 +187,7 @@ export function DashboardConfigurationPage() {
                   </Stack>
 
                   <Button
-                    variant="default"
+                    variant='default'
                     className={classes.addColumnButton}
                     leftSection={<IconPlus size={14} />}
                     onClick={openColumnPicker}
@@ -187,32 +197,42 @@ export function DashboardConfigurationPage() {
 
                   <div className={classes.fieldGroup}>
                     <Text className={classes.fieldTitle}>
-                      Fuente de información <span className={classes.optionalLabel}>(opcional)</span>
+                      Fuente de información{' '}
+                      <span className={classes.optionalLabel}>(opcional)</span>
                     </Text>
                     <TextInput
                       value={state.intimacion.fuenteInformacion}
                       onChange={(event) =>
-                        updateIntimacion('fuenteInformacion', event.currentTarget.value)
+                        updateIntimacion(
+                          'fuenteInformacion',
+                          event.currentTarget.value
+                        )
                       }
-                      placeholder="Ej: Facturación de compras, ARCA, etc."
+                      placeholder='Ej: Facturación de compras, ARCA, etc.'
                       classNames={formInputClasses}
                     />
                   </div>
 
-                  <div className={classes.fieldGroup}>
+                  <div className={classes.fieldGroupFooter}>
                     <Text className={classes.fieldTitle}>Fecha de corte</Text>
                     <TextInput
                       value={state.intimacion.fechaCorte}
                       onChange={(event) =>
-                        updateIntimacion('fechaCorte', event.currentTarget.value)
+                        updateIntimacion(
+                          'fechaCorte',
+                          event.currentTarget.value
+                        )
                       }
                       classNames={formInputClasses}
                     />
                   </div>
                 </Card>
 
-                <Group justify="flex-end" className={classes.footerActions}>
-                  <Button className={classes.primaryButton} onClick={confirmChanges}>
+                <Group justify='flex-end' className={classes.footerActions}>
+                  <Button
+                    className={classes.primaryButton}
+                    onClick={confirmChanges}
+                  >
                     Confirmar cambios
                   </Button>
                 </Group>
@@ -220,8 +240,8 @@ export function DashboardConfigurationPage() {
             </div>
           ) : (
             <div className={classes.contentView}>
-              <Card className={classes.informeCard} radius="lg" padding={0}>
-                <Text component="div" className={classes.informeTitle}>
+              <Card className={classes.informeCard} radius='lg' padding={0}>
+                <Text component='div' className={classes.informeTitle}>
                   {state.informe.titulo}
                 </Text>
               </Card>
@@ -238,9 +258,12 @@ export function DashboardConfigurationPage() {
         size={620}
         title={
           <div className={classes.modalTitleWrap}>
-            <Text className={classes.modalTitle}>Elegir columnas de la planilla</Text>
+            <Text className={classes.modalTitle}>
+              Elegir columnas de la planilla
+            </Text>
             <Text className={classes.modalSubtitle}>
-              Seleccioná las columnas que aparecerán en la planilla adjunta de la intimación.
+              Seleccioná las columnas que aparecerán en la planilla adjunta de
+              la intimación.
             </Text>
           </div>
         }
@@ -253,18 +276,22 @@ export function DashboardConfigurationPage() {
         }}
       >
         <div className={classes.columnPickerGrid}>
-          <Card className={classes.columnPickerCard} radius="lg" padding={0}>
-            <div className={classes.columnPickerHeader}>Columnas disponibles</div>
-            <Stack gap="xs" className={classes.columnPickerList}>
+          <Card className={classes.columnPickerCard} radius='lg' padding={0}>
+            <div className={classes.columnPickerHeader}>
+              Columnas disponibles
+            </div>
+            <Stack gap='xs' className={classes.columnPickerList}>
               {availableColumns.map((column) => (
                 <div
                   key={column.id}
                   className={`${classes.columnPickerRow} ${selectedAvailableColumnId === column.id ? classes.columnPickerRowSelected : ''}`}
                   onClick={() => selectAvailableColumn(column.id)}
-                  role="button"
+                  role='button'
                   tabIndex={0}
                 >
-                  <Text className={classes.columnPickerLabel}>{column.label}</Text>
+                  <Text className={classes.columnPickerLabel}>
+                    {column.label}
+                  </Text>
                 </div>
               ))}
             </Stack>
@@ -272,8 +299,8 @@ export function DashboardConfigurationPage() {
 
           <div className={classes.columnPickerArrows}>
             <ActionIcon
-              variant="default"
-              size="lg"
+              variant='default'
+              size='lg'
               className={classes.columnPickerArrowButton}
               onClick={addSelectedColumn}
               disabled={!selectedAvailableColumnId}
@@ -281,8 +308,8 @@ export function DashboardConfigurationPage() {
               <IconArrowNarrowRight size={18} />
             </ActionIcon>
             <ActionIcon
-              variant="default"
-              size="lg"
+              variant='default'
+              size='lg'
               className={classes.columnPickerArrowButton}
               onClick={removeSelectedColumn}
               disabled={!selectedVisibleColumnId}
@@ -291,29 +318,38 @@ export function DashboardConfigurationPage() {
             </ActionIcon>
           </div>
 
-          <Card className={classes.columnPickerCard} radius="lg" padding={0}>
+          <Card className={classes.columnPickerCard} radius='lg' padding={0}>
             <div className={classes.columnPickerHeader}>Columnas visibles</div>
-              <Stack gap="xs" className={classes.columnPickerList}>
-                {columnPickerDraft.map((column) => (
-                  <div
+            <Stack gap='xs' className={classes.columnPickerList}>
+              {columnPickerDraft.map((column) => (
+                <div
                   key={column.id}
                   className={`${classes.columnPickerRow} ${selectedVisibleColumnId === column.id ? classes.columnPickerRowSelected : ''}`}
                   onClick={() => selectVisibleColumn(column.id)}
-                  role="button"
+                  role='button'
                   tabIndex={0}
                 >
-                  <Text className={classes.columnPickerLabel}>{column.value}</Text>
+                  <Text className={classes.columnPickerLabel}>
+                    {column.value}
+                  </Text>
                 </div>
               ))}
             </Stack>
           </Card>
         </div>
 
-        <Group justify="flex-end" className={classes.columnPickerFooter}>
-          <Button variant="default" className={classes.modalCancelButton} onClick={closeColumnPicker}>
+        <Group justify='flex-end' className={classes.columnPickerFooter}>
+          <Button
+            variant='default'
+            className={classes.modalCancelButton}
+            onClick={closeColumnPicker}
+          >
             Cancelar
           </Button>
-          <Button className={classes.primaryButton} onClick={confirmColumnPicker}>
+          <Button
+            className={classes.primaryButton}
+            onClick={confirmColumnPicker}
+          >
             Aceptar
           </Button>
         </Group>
@@ -324,7 +360,7 @@ export function DashboardConfigurationPage() {
         onClose={closeSuccess}
         centered
         zIndex={800}
-        title="Configuración actualizada"
+        title='Configuración actualizada'
         classNames={{
           overlay: classes.modalOverlay,
           content: classes.modalContent,
@@ -334,8 +370,10 @@ export function DashboardConfigurationPage() {
           close: classes.modalClose
         }}
       >
-        <Text className={classes.modalText}>Se guardaron los cambios correctamente.</Text>
+        <Text className={classes.modalText}>
+          Se guardaron los cambios correctamente.
+        </Text>
       </Modal>
     </div>
-  );
+  )
 }
