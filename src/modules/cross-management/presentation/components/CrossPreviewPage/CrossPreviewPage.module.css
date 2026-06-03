@@ -56,11 +56,30 @@
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
+  box-shadow: none;
 }
 
 .viewToggleButtonActive {
   background: #fff;
-  box-shadow: 0 1px 4px rgb(15 23 42 / 0.1);
+  color: #4375ee;
+  box-shadow: none;
+}
+
+.viewToggleButton:hover,
+.viewToggleButton:focus,
+.viewToggleButton:focus-visible,
+.viewToggleButton[data-hovered],
+.viewToggleButton[data-active] {
+  background: transparent;
+  color: #64748b;
+}
+
+.viewToggleButtonActive:hover,
+.viewToggleButtonActive:focus,
+.viewToggleButtonActive:focus-visible,
+.viewToggleButtonActive[data-hovered],
+.viewToggleButtonActive[data-active] {
+  background: #fff;
   color: #4375ee;
 }
 
