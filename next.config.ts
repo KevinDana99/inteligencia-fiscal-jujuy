@@ -16,7 +16,8 @@ const nextConfig: NextConfig = {
     '172.*.*.*',
     '*.ngrok-free.app',
     'app.rentas-if.dev.local',
-    '192.168.119.106'
+    '192.168.119.106',
+    'if-dev.kamakia.cloudjujuy.net.ar'
   ]
 }
 
