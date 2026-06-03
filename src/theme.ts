@@ -1,6 +1,101 @@
 import { createTheme } from '@mantine/core'
+import {
+  createElement,
+  forwardRef,
+  type ButtonHTMLAttributes,
+  type CSSProperties,
+  type ReactNode
+} from 'react'
+
+type PaginationPageControlProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  'data-active'?: boolean
+}
+
+type PaginationTextIconProps = {
+  children?: ReactNode
+  className?: string
+  style?: CSSProperties
+}
+
+const PaginationPageControl = forwardRef<
+  HTMLButtonElement,
+  PaginationPageControlProps
+>(function PaginationPageControl(
+  { disabled, onMouseEnter, onMouseLeave, style, ...props },
+  ref
+) {
+  const isActive = Boolean(props['data-active'])
+
+  return createElement('button', {
+    ...props,
+    disabled,
+    ref,
+    onMouseEnter: (event) => {
+      onMouseEnter?.(event)
+
+      if (!isActive && !disabled) {
+        event.currentTarget.style.color = 'var(--mantine-color-gray-9)'
+      }
+    },
+    onMouseLeave: (event) => {
+      onMouseLeave?.(event)
+
+      if (!isActive && !disabled) {
+        event.currentTarget.style.color = 'var(--mantine-color-gray-5)'
+      }
+    },
+    style: {
+      ...style,
+      ...(isActive
+        ? {
+            fontWeight: 700,
+            background: 'var(--pagination-active-bg)',
+            color: 'var(--pagination-active-color)',
+            boxShadow: '0 1px 4px rgba(0,0,0,.12)'
+          }
+        : null)
+    }
+  })
+})
+
+function PaginationTextIcon({
+  children,
+  className,
+  style
+}: PaginationTextIconProps) {
+  return createElement(
+    'span',
+    {
+      className,
+      style: {
+        ...style,
+        display: 'inline',
+        width: 'auto',
+        height: 'auto',
+        color: 'inherit',
+        fontSize: 'var(--pagination-control-fz)',
+        fontWeight: 500,
+        lineHeight: 'normal'
+      }
+    },
+    children
+  )
+}
+
+function PaginationPreviousIcon(props: PaginationTextIconProps) {
+  return createElement(PaginationTextIcon, props, '‹')
+}
+
+function PaginationNextIcon(props: PaginationTextIconProps) {
+  return createElement(PaginationTextIcon, props, '›')
+}
+
+function PaginationDotsIcon(props: PaginationTextIconProps) {
+  return createElement(PaginationTextIcon, props, '…')
+}
 
 export const theme = createTheme({
+  white: '#FFFFFF',
   primaryColor: 'blue',
   fontFamily: "var(--font-dm-sans), var(--font-body), 'Segoe UI', sans-serif",
   fontFamilyMonospace:
@@ -11,10 +106,10 @@ export const theme = createTheme({
   },
   colors: {
     blue: [
-      '#EBF0FE',
+      '#F8FAFF',
       '#EEF2FF',
-      '#A8BEF9',
-      '#7B9EF5',
+      '#E0E7FF',
+      '#C7D2FE',
       '#6B94F5',
       '#4375EE',
       '#2F5FD4',
@@ -35,40 +130,40 @@ export const theme = createTheme({
       '#0F172A'
     ],
     red: [
-      '#FFF5F5',
-      '#FFE3E3',
-      '#FFC9C9',
-      '#FFA8A8',
-      '#FF8787',
-      '#FA5252',
-      '#F03E3E',
-      '#E03131',
-      '#C92A2A',
-      '#A61E1E'
+      '#FFF7F7',
+      '#FEF2F2',
+      '#FEE2E2',
+      '#FECACA',
+      '#FCA5A5',
+      '#EF4444',
+      '#DC2626',
+      '#B91C1C',
+      '#991B1B',
+      '#7F1D1D'
     ],
     green: [
-      '#EBFBEE',
-      '#D7F5DD',
-      '#B0EBBB',
-      '#84D996',
-      '#5FC47A',
-      '#3FAE5C',
-      '#2F9E44',
-      '#2B8A3E',
-      '#237032',
-      '#1B5727'
+      '#F6FEFA',
+      '#ECFDF5',
+      '#D1FAE5',
+      '#A7F3D0',
+      '#34D399',
+      '#10B981',
+      '#059669',
+      '#047857',
+      '#065F46',
+      '#064E3B'
     ],
     yellow: [
-      '#FFF9DB',
-      '#FFF3BF',
-      '#FFEC99',
-      '#FFE066',
-      '#FFD43B',
-      '#FAB005',
-      '#E67700',
-      '#D9480F',
+      '#FFFCF5',
+      '#FFFBEB',
+      '#FEF3C7',
+      '#FDE68A',
+      '#FCD34D',
+      '#F59E0B',
+      '#D97706',
       '#B45309',
-      '#8F3F07'
+      '#92400E',
+      '#78350F'
     ],
     cyan: [
       '#ECFEFF',
@@ -111,5 +206,94 @@ export const theme = createTheme({
     xl: '1.5rem',
     xxl: '2rem'
   },
-  defaultRadius: 'xl'
+  defaultRadius: 'xl',
+  components: {
+    Pagination: {
+      defaultProps: {
+        boundaries: 1,
+        dotsIcon: PaginationDotsIcon,
+        gap: 4,
+        getControlProps: () => ({
+          component: PaginationPageControl
+        }),
+        getItemProps: () => ({
+          component: PaginationPageControl
+        }),
+        nextIcon: PaginationNextIcon,
+        previousIcon: PaginationPreviousIcon,
+        radius: 8,
+        siblings: 1
+      },
+      vars: () => ({
+        root: {
+          '--pagination-control-size': '31px',
+          '--pagination-control-radius': '8px',
+          '--pagination-control-fz': '13px',
+          '--pagination-active-bg': '#FFFFFF',
+          '--pagination-active-color': 'var(--mantine-color-gray-9)'
+        }
+      }),
+      styles: {
+        root: {
+          '--mantine-color-white': 'transparent',
+          '--mantine-color-gray-0': 'transparent',
+          '--mantine-color-text': 'var(--mantine-color-gray-5)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 4,
+          width: 'max-content',
+          margin: 0,
+          padding: '4px 6px',
+          borderRadius: 12,
+          background: 'var(--mantine-color-gray-1)',
+          boxSizing: 'border-box'
+        },
+        control: {
+          minHeight: 0,
+          padding: '7px 13px',
+          border: 'none',
+          fontWeight: 500,
+          lineHeight: 'normal',
+          opacity: 1,
+          cursor: 'pointer',
+          boxShadow: 'none'
+        },
+        dots: {
+          minWidth: 'auto',
+          padding: '7px 8px',
+          color: 'var(--mantine-color-gray-5)',
+          fontSize: 'var(--pagination-control-fz)',
+          lineHeight: 'normal'
+        }
+      }
+    }
+  },
+  other: {
+    cssVariables: {
+      '--blue-5': '#4375EE',
+      '--blue-8': '#1D4ED8',
+      '--blue-1': '#EEF2FF',
+      '--blue-2': '#E0E7FF',
+      '--blue-3': '#C7D2FE',
+      '--gray-0': '#F8FAFC',
+      '--gray-1': '#F1F5F9',
+      '--gray-2': '#E2E8F0',
+      '--gray-3': '#CBD5E1',
+      '--gray-5': '#64748B',
+      '--gray-7': '#334155',
+      '--gray-9': '#0F172A',
+      '--red-5': '#EF4444',
+      '--red-1': '#FEF2F2',
+      '--green-5': '#10B981',
+      '--green-1': '#ECFDF5',
+      '--yellow-1': '#FFFBEB',
+      '--white': '#FFFFFF',
+      '--sidebar-w': '230px',
+      '--header-h': '56px'
+    },
+    layout: {
+      sidebarWidth: '230px',
+      headerHeight: '56px'
+    }
+  }
 })

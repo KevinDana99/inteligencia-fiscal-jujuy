@@ -4,3 +4,5 @@ dist
 coverage
 .DS_Store
 codex/assets
+bun.lock
+tsconfig.tsbuildinfo

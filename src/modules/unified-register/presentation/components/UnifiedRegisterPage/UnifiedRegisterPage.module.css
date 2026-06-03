@@ -41,6 +41,12 @@
   gap: 12px;
 }
 
+.paginationRow {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
 .emptyState {
   border: 1px dashed var(--mantine-color-gray-3);
   border-radius: 14px;
