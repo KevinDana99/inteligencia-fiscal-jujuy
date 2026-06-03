@@ -26,6 +26,7 @@ export function useCrossPreview(cross: ICrossPreviewData) {
   const [activeTab, setActiveTab] = useState<CrossPreviewTab>('planilla')
   const [planillaSearch, setPlanillaSearch] = useState('')
   const [resumenSearch, setResumenSearch] = useState('')
+  const [intimationModalOpened, setIntimationModalOpened] = useState(false)
 
   const filteredPlanRows = useMemo(
     () =>
@@ -58,9 +59,12 @@ export function useCrossPreview(cross: ICrossPreviewData) {
     activeTab,
     planillaSearch,
     resumenSearch,
+    intimationModalOpened,
     filteredPlanRows,
     filteredAnalysisRows,
     updateTab,
+    openIntimationModal: () => setIntimationModalOpened(true),
+    closeIntimationModal: () => setIntimationModalOpened(false),
     setPlanillaSearch,
     setResumenSearch
   }

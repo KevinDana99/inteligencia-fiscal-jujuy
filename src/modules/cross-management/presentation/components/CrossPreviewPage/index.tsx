@@ -6,6 +6,7 @@ import {
   Button,
   Card,
   Group,
+  Modal,
   Stack,
   Table,
   Text,
@@ -17,8 +18,11 @@ import {
   IconList,
   IconLayoutList,
   IconSearch,
-  IconTable
 } from '@tabler/icons-react'
+import {
+  IntimationTemplate
+} from '@/modules/dashboard-layout/presentation/components/IntimationTemplate'
+import { useIntimationTemplate } from '@/modules/dashboard-layout/presentation/components/IntimationTemplate/useIntimationTemplate'
 import { crossPreviewMockById } from '../../../data/sources/mock/fixtures/crossItems'
 import { useCrossPreview } from '../../hooks'
 import classes from './CrossPreviewPage.module.css'
@@ -34,6 +38,7 @@ const INDICATOR_CLASS_BY_TONE = {
 
 export function CrossPreviewPage({ crossId }: { crossId: string }) {
   const cross = crossPreviewMockById[crossId]
+  const intimationTemplate = useIntimationTemplate()
 
   if (!cross) {
     return (
@@ -52,9 +57,12 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
     activeTab,
     planillaSearch,
     resumenSearch,
+    intimationModalOpened,
     filteredPlanRows,
     filteredAnalysisRows,
     updateTab,
+    openIntimationModal,
+    closeIntimationModal,
     setPlanillaSearch,
     setResumenSearch
   } = useCrossPreview(cross)
@@ -95,6 +103,7 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
             size='xs'
             className={classes.primaryButton}
             leftSection={<IconFileText size={14} />}
+            onClick={openIntimationModal}
           >
             Generar intimación
           </Button>
@@ -289,6 +298,28 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
           </Card>
         </div>
       )}
+
+      <Modal
+        opened={intimationModalOpened}
+        onClose={closeIntimationModal}
+        centered
+        size={640}
+        title='Generar intimación'
+        classNames={{
+          overlay: classes.intimationModalOverlay,
+          content: classes.intimationModalContent,
+          header: classes.intimationModalHeader,
+          body: classes.intimationModalBody,
+          title: classes.intimationModalTitle,
+          close: classes.intimationModalClose
+        }}
+      >
+        <IntimationTemplate
+          controller={intimationTemplate}
+          confirmLabel='Generar intimación'
+          onConfirm={closeIntimationModal}
+        />
+      </Modal>
     </div>
   )
 }
