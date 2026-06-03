@@ -1,20 +1,46 @@
+'use client'
+
 import Link from 'next/link'
-import { Card, Stack, Text, Title } from '@mantine/core'
-import { IconChevronLeft } from '@tabler/icons-react'
-import { crossItemsMock } from '../../../data/sources/mock/fixtures/crossItems'
+import {
+  Badge,
+  Button,
+  Card,
+  Group,
+  Stack,
+  Table,
+  Text,
+  TextInput
+} from '@mantine/core'
+import {
+  IconChevronLeft,
+  IconFileText,
+  IconList,
+  IconLayoutList,
+  IconSearch,
+  IconTable
+} from '@tabler/icons-react'
+import { crossPreviewMockById } from '../../../data/sources/mock/fixtures/crossItems'
+import { useCrossPreview } from '../../hooks'
 import classes from './CrossPreviewPage.module.css'
 
+const INDICATOR_CLASS_BY_TONE = {
+  blue: classes.indicatorBlue,
+  violet: classes.indicatorViolet,
+  green: classes.indicatorGreen,
+  orange: classes.indicatorOrange,
+  red: classes.indicatorRed,
+  darkBlue: classes.indicatorDarkBlue
+} as const
+
 export function CrossPreviewPage({ crossId }: { crossId: string }) {
-  const cross = crossItemsMock.find((item) => item.id === crossId)
+  const cross = crossPreviewMockById[crossId]
 
   if (!cross) {
     return (
-      <Card className={classes.card} radius="lg" padding="xl">
-        <Stack gap="xs">
-          <Title order={1} className={classes.title}>
-            Cruce no encontrado
-          </Title>
-          <Text className={classes.description}>
+      <Card className={classes.emptyCard} radius='lg' padding='xl'>
+        <Stack gap='xs'>
+          <Text className={classes.emptyTitle}>Cruce no encontrado</Text>
+          <Text className={classes.emptyText}>
             No se encontró información asociada al cruce solicitado.
           </Text>
         </Stack>
@@ -22,52 +48,247 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
     )
   }
 
-  return (
-    <Stack gap="xl" className={classes.root}>
-      <Link href="/gestion-de-cruces" className={classes.backLink}>
-        <IconChevronLeft size={16} />
-        Gestión de Cruces
-      </Link>
+  const {
+    activeTab,
+    planillaSearch,
+    resumenSearch,
+    filteredPlanRows,
+    filteredAnalysisRows,
+    updateTab,
+    setPlanillaSearch,
+    setResumenSearch
+  } = useCrossPreview(cross)
 
-      <Card className={classes.card} radius="lg" padding="xl">
-        <Stack gap="xs">
-          <Text className={classes.eyebrow}>Cruce en curso</Text>
-          <Title order={1} className={classes.title}>
-            {cross.name}
-          </Title>
-          <Text className={classes.description}>
-            Vista previa inicial del cruce. La request real del detalle se conectará
-            en una próxima iteración.
-          </Text>
-        </Stack>
+  const isPlanilla = activeTab === 'planilla'
+
+  return (
+    <div className={classes.root}>
+      <div className={classes.topBar}>
+        <div className={classes.topBarLeft}>
+          <Link href='/gestion-de-cruces' className={classes.backButton}>
+            <IconChevronLeft size={14} />
+            Gestión de Cruces
+          </Link>
+
+          <div className={classes.viewToggle}>
+            <button
+              type='button'
+              className={`${classes.viewToggleButton} ${isPlanilla ? classes.viewToggleButtonActive : ''}`}
+              onClick={() => updateTab('planilla')}
+            >
+              <IconList size={13} />
+              Planilla
+            </button>
+            <button
+              type='button'
+              className={`${classes.viewToggleButton} ${!isPlanilla ? classes.viewToggleButtonActive : ''}`}
+              onClick={() => updateTab('resumen')}
+            >
+              <IconLayoutList size={13} />
+              Resumen
+            </button>
+          </div>
+        </div>
+
+        {!isPlanilla ? (
+          <Button
+            size='xs'
+            className={classes.primaryButton}
+            leftSection={<IconFileText size={14} />}
+          >
+            Generar intimación
+          </Button>
+        ) : null}
+      </div>
+
+      <Card className={classes.headerCard} radius='lg' padding='lg'>
+        <div className={classes.headerCardInner}>
+          <div className={classes.headerTitleBlock}>
+            <Text className={classes.headerEyebrow}>Cruce en curso</Text>
+            <Text className={classes.headerTitle}>{cross.name}</Text>
+          </div>
+
+          <div className={classes.headerMeta}>
+            <div className={classes.metaItem}>
+              <Text className={classes.metaLabel}>Lote / CUIT</Text>
+              <Text className={classes.metaValue}>{cross.sourceRef}</Text>
+            </div>
+            <div className={classes.metaItem}>
+              <Text className={classes.metaLabel}>Período</Text>
+              <Text className={classes.metaValue}>{cross.period}</Text>
+            </div>
+            <div className={classes.metaItem}>
+              <Text className={classes.metaLabel}>Total CUITs</Text>
+              <Text className={classes.metaValue}>{cross.cuitCount}</Text>
+            </div>
+            <div className={classes.metaItem}>
+              <Text className={classes.metaLabel}>Relevantes</Text>
+              <Text className={classes.metaValueSuccess}>
+                {cross.relevantCountLabel}
+              </Text>
+            </div>
+          </div>
+        </div>
       </Card>
 
-      <div className={classes.metaGrid}>
-        <Card className={classes.metaCard} radius="lg" padding="lg">
-          <Stack gap={4}>
-            <Text className={classes.metaLabel}>Origen</Text>
-            <Text className={classes.metaValue}>{cross.source}</Text>
-          </Stack>
-        </Card>
-        <Card className={classes.metaCard} radius="lg" padding="lg">
-          <Stack gap={4}>
-            <Text className={classes.metaLabel}>Lote / CUIT</Text>
-            <Text className={classes.metaValue}>{cross.sourceRef}</Text>
-          </Stack>
-        </Card>
-        <Card className={classes.metaCard} radius="lg" padding="lg">
-          <Stack gap={4}>
-            <Text className={classes.metaLabel}>Período</Text>
-            <Text className={classes.metaValue}>{cross.period}</Text>
-          </Stack>
-        </Card>
-        <Card className={classes.metaCard} radius="lg" padding="lg">
-          <Stack gap={4}>
-            <Text className={classes.metaLabel}>CUITs</Text>
-            <Text className={classes.metaValue}>{cross.cuitCount}</Text>
-          </Stack>
-        </Card>
-      </div>
-    </Stack>
+      {isPlanilla ? (
+        <div className={classes.contentStack}>
+          <Group gap='md' className={classes.indicatorsRow}>
+            {cross.indicators.map((indicator) => (
+              <div key={indicator.id} className={classes.indicatorItem}>
+                <span
+                  className={`${classes.indicatorSwatch} ${INDICATOR_CLASS_BY_TONE[indicator.tone]}`}
+                />
+                <Text className={classes.indicatorLabel}>{indicator.label}</Text>
+              </div>
+            ))}
+          </Group>
+
+          <Card className={classes.tableCard} radius='lg' padding={0}>
+            <div className={classes.tableToolbar}>
+              <Text className={classes.tableToolbarTitle}>Planilla de datos</Text>
+              <TextInput
+                value={planillaSearch}
+                onChange={(event) => setPlanillaSearch(event.currentTarget.value)}
+                placeholder='Buscar CUIT o razón social...'
+                leftSection={<IconSearch size={14} />}
+                className={classes.toolbarSearch}
+                classNames={{
+                  input: classes.toolbarSearchInput,
+                  section: classes.toolbarSearchSection
+                }}
+              />
+            </div>
+
+            <div className={classes.tableWrap}>
+              <Table className={classes.planTable} withTableBorder={false} withColumnBorders={false}>
+                <Table.Thead>
+                  <Table.Tr>
+                    {cross.planColumns.map((column) => (
+                      <Table.Th key={column}>{column}</Table.Th>
+                    ))}
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {filteredPlanRows.length ? (
+                    filteredPlanRows.map((row) => (
+                      <Table.Tr key={row.id}>
+                        {row.cells.map((cell, index) => (
+                          <Table.Td key={`${row.id}-${index}`}>{cell}</Table.Td>
+                        ))}
+                      </Table.Tr>
+                    ))
+                  ) : (
+                    <Table.Tr>
+                      <Table.Td colSpan={cross.planColumns.length}>
+                        <Text className={classes.emptyStateText}>
+                          No se encontraron resultados para la búsqueda actual.
+                        </Text>
+                      </Table.Td>
+                    </Table.Tr>
+                  )}
+                </Table.Tbody>
+              </Table>
+            </div>
+          </Card>
+        </div>
+      ) : (
+        <div className={classes.contentStack}>
+          <Card className={classes.tableCard} radius='lg' padding={0}>
+            <div className={classes.tableToolbar}>
+              <Text className={classes.tableToolbarTitle}>Resumen</Text>
+              <Badge className={classes.toolbarBadge} radius='xl'>
+                {cross.cuitCount} CUITs · {cross.source === 'Lote' ? 'RÉGIMEN CM' : 'PADRÓN'}
+              </Badge>
+            </div>
+
+            <div className={classes.simpleTableWrap}>
+              <Table className={classes.summaryTable} withTableBorder={false} withColumnBorders={false}>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>RÉGIMEN</Table.Th>
+                    <Table.Th>B.I. 910</Table.Th>
+                    <Table.Th>B.I. PRETENDIDA</Table.Th>
+                    <Table.Th>DIFERENCIA</Table.Th>
+                    <Table.Th>IMPUESTO</Table.Th>
+                    <Table.Th>DEUDA NETA</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {cross.summaryRows.map((row) => (
+                    <Table.Tr key={row.regime}>
+                      <Table.Td>{row.regime}</Table.Td>
+                      <Table.Td>{row.declaredBase}</Table.Td>
+                      <Table.Td>{row.pretendedBase}</Table.Td>
+                      <Table.Td>{row.difference}</Table.Td>
+                      <Table.Td>{row.tax}</Table.Td>
+                      <Table.Td>{row.netDebt}</Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </div>
+          </Card>
+
+          <Card className={classes.tableCard} radius='lg' padding={0}>
+            <div className={classes.tableToolbar}>
+              <Text className={classes.tableToolbarTitle}>
+                Análisis sistémico por CUIT
+              </Text>
+              <TextInput
+                value={resumenSearch}
+                onChange={(event) => setResumenSearch(event.currentTarget.value)}
+                placeholder='Buscar CUIT o razón social...'
+                leftSection={<IconSearch size={14} />}
+                className={classes.toolbarSearch}
+                classNames={{
+                  input: classes.toolbarSearchInput,
+                  section: classes.toolbarSearchSection
+                }}
+              />
+            </div>
+
+            <div className={classes.simpleTableWrap}>
+              <Table className={classes.analysisTable} withTableBorder={false} withColumnBorders={false}>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>CUIT</Table.Th>
+                    <Table.Th>RAZÓN SOCIAL</Table.Th>
+                    <Table.Th>B.I. 910</Table.Th>
+                    <Table.Th>B.I. PRETENDIDA</Table.Th>
+                    <Table.Th>DIFERENCIA</Table.Th>
+                    <Table.Th>IMPUESTO</Table.Th>
+                    <Table.Th>DEUDA NETA</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {filteredAnalysisRows.length ? (
+                    filteredAnalysisRows.map((row) => (
+                      <Table.Tr key={row.cuit}>
+                        <Table.Td>{row.cuit}</Table.Td>
+                        <Table.Td>{row.businessName}</Table.Td>
+                        <Table.Td>{row.declaredBase}</Table.Td>
+                        <Table.Td>{row.pretendedBase}</Table.Td>
+                        <Table.Td>{row.difference}</Table.Td>
+                        <Table.Td>{row.tax}</Table.Td>
+                        <Table.Td>{row.netDebt}</Table.Td>
+                      </Table.Tr>
+                    ))
+                  ) : (
+                    <Table.Tr>
+                      <Table.Td colSpan={7}>
+                        <Text className={classes.emptyStateText}>
+                          No se encontraron resultados para la búsqueda actual.
+                        </Text>
+                      </Table.Td>
+                    </Table.Tr>
+                  )}
+                </Table.Tbody>
+              </Table>
+            </div>
+          </Card>
+        </div>
+      )}
+    </div>
   )
 }

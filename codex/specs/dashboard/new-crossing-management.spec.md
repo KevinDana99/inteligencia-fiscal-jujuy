@@ -4,7 +4,13 @@
 - Referencia Visual Tab 2: `codex/assets/design/dashboard/cross-management/new-cross-management-resume.png`
 - Referencia Visual Modal configurar intimacion: `codex/assets/design/dashboard/cross-management/new-cross-management-modal.png`
 
-## Reglas
+## Requisitos
+
+1. El dashboard debe mostrar toda la informacion de los widgets del padron unificado.
+2. Todos los componentes deben usar Mantine UI, en caso de no tener compoenente para este se puede proceder a usar JSX.
+3. Todos los componentes deben usar Mantine UI, en caso de no tener estilos predefinidos en la libreria para la implementacion debe usar CSS Modules.
+4. No debe salirse de la arquitectura ni de los patrones de diseño que ya tenemos.
+5. Para los Icons se debe usar Tabler Icons, en caso de necesitar icons mapeados se pueden agregar a `src/globals/Icons` y reutilizar desde alli.
 
 ## Alcance
 
