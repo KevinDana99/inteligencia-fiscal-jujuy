@@ -1,15 +1,28 @@
 export type UnifiedRegisterRiskLevel = 'A' | 'B' | 'C';
+export type UnifiedRegisterContributorType =
+  | 'Convenio Multilateral'
+  | 'Régimen General'
+  | 'Regimen Local'
+  | 'No inscripto';
 
 export interface IUnifiedRegisterItem {
+  contribuyenteId: string;
   cuit: string;
   businessName: string;
   activity: string;
-  regime: string;
+  regime: UnifiedRegisterContributorType;
   status: 'Activo' | 'Inactivo';
   riskLevel: UnifiedRegisterRiskLevel;
 }
 
 export type IUnifiedRegisterItems = IUnifiedRegisterItem[];
+
+export interface IUnifiedRegisterListData {
+  pagina: number;
+  itemsPagina: number;
+  totalPaginas: number;
+  contribuyentes: IUnifiedRegisterItems;
+}
 
 export interface IUnifiedRegisterWidget {
   id: string;
@@ -40,16 +53,85 @@ export interface IUnifiedRegisterAddress {
   address: string;
 }
 
+export interface IUnifiedRegisterAlternateAddressInput {
+  direccion?: string | null;
+}
+
+export interface IUnifiedRegisterAlternateAddressRecord {
+  id: string;
+  direccion: string;
+  contribuyenteId: string;
+  activo: boolean;
+}
+
+export interface IUnifiedRegisterAlternateAddressListData {
+  domiciliosAlternativos: IUnifiedRegisterAlternateAddressRecord[];
+}
+
 export interface IUnifiedRegisterContact {
   id: string;
   label: string;
   value: string;
 }
 
+export interface IUnifiedRegisterContactInput {
+  telefono?: string | null;
+  correo?: string | null;
+  nombreRepresentanteLegal?: string | null;
+  nombreContador?: string | null;
+}
+
+export interface IUnifiedRegisterContactRecord {
+  id: string;
+  telefono: string | null;
+  correo: string | null;
+  nombreRepresentanteLegal: string | null;
+  nombreContador: string | null;
+  contribuyenteId: string;
+  activo: boolean;
+}
+
+export interface IUnifiedRegisterContactsListParams {
+  pagina?: number;
+  itemsPagina?: number;
+}
+
+export interface IUnifiedRegisterContactsListData {
+  pagina: number;
+  itemsPagina: number;
+  totalPaginas: number;
+  contactos: IUnifiedRegisterContactRecord[];
+}
+
 export interface IUnifiedRegisterNote {
   id: string;
   text: string;
   createdAt: string;
+}
+
+export interface IUnifiedRegisterNoteInput {
+  descripcion: string;
+}
+
+export interface IUnifiedRegisterNoteRecord {
+  id: string;
+  descripcion: string;
+  creadoPorUsuarioId: string;
+  fechaCreacion: string;
+  contribuyenteId: string;
+  activo: boolean;
+}
+
+export interface IUnifiedRegisterNotesListParams {
+  pagina?: number;
+  itemsPagina?: number;
+}
+
+export interface IUnifiedRegisterNotesListData {
+  pagina: number;
+  itemsPagina: number;
+  totalPaginas: number;
+  notas: IUnifiedRegisterNoteRecord[];
 }
 
 export interface IUnifiedRegisterFine {
@@ -115,4 +197,95 @@ export interface IUnifiedRegisterDetail extends IUnifiedRegisterItem {
   contacts: IUnifiedRegisterContact[];
   notes: IUnifiedRegisterNote[];
   lotOptions: IUnifiedRegisterBatchOption[];
+}
+
+export interface IUnifiedRegisterHeaderActivity {
+  nombre: string;
+  numero: string;
+}
+
+export interface IUnifiedRegisterHeaderAlternateAddress {
+  id: string;
+  nombre: string;
+}
+
+export interface IUnifiedRegisterHeaderRecord {
+  cuit: string;
+  razonSocial: string;
+  activo: boolean;
+  tipoContribuyente: UnifiedRegisterContributorType;
+  cantidadLotes: number;
+  actividadPrimaria: IUnifiedRegisterHeaderActivity;
+  actividadSecundaria: IUnifiedRegisterHeaderActivity;
+  inicioActividad: string;
+  domicilios: {
+    fiscal: string;
+    comercial: string;
+    alternativo: IUnifiedRegisterHeaderAlternateAddress[];
+  };
+  biDeclarada: string;
+  impuestosDeclarados: string;
+  deuda: string;
+  declaraionesJuradas: {
+    presentadas: number;
+    noPresentadas: number;
+  };
+  riesgo: UnifiedRegisterRiskLevel;
+}
+
+export interface IUnifiedRegisterFinesListParams {
+  pagina?: number;
+  itemsPagina?: number;
+}
+
+export interface IUnifiedRegisterFineRecord {
+  numero: string;
+  fecha: string;
+  descripcion: string | null;
+  monto: string;
+  estado: IUnifiedRegisterFine['status'];
+}
+
+export interface IUnifiedRegisterFinesListData {
+  pagina: number;
+  itemsPagina: number;
+  totalItems: number;
+  totalPaginas: number;
+  multas: IUnifiedRegisterFineRecord[];
+}
+
+export interface IUnifiedRegisterInterventionOrdersListParams {
+  pagina?: number;
+  itemsPagina?: number;
+}
+
+export interface IUnifiedRegisterInterventionOrderRecord {
+  numero: string;
+  periodo: string;
+  motivo: string;
+  monto: string;
+  estado: IUnifiedRegisterInterventionOrder['status'];
+}
+
+export interface IUnifiedRegisterInterventionOrdersListData {
+  pagina: number;
+  itemsPagina: number;
+  totalItems: number;
+  totalPaginas: number;
+  ordenes: IUnifiedRegisterInterventionOrderRecord[];
+}
+
+export interface IUnifiedRegisterCommandResult<TData = null> {
+  success: boolean;
+  data: TData | null;
+  error?: string;
+  code?: string;
+  status?: number;
+}
+
+export interface IUnifiedRegisterQueryResult<TData> {
+  data: TData | null;
+  error?: string;
+  code?: string;
+  status?: number;
 }

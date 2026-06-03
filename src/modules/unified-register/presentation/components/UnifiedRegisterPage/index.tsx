@@ -2,11 +2,16 @@
 
 import { Card, Pagination, Stack, Text, TextInput } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
+import type { IUnifiedRegisterListData } from '../../../data/models/UnifiedRegister';
 import { UnifiedRegisterCard } from '../UnifiedRegisterCard';
 import { useUnifiedRegisterPage } from '../../hooks/useUnifiedRegisterPage';
 import classes from './UnifiedRegisterPage.module.css';
 
-export function UnifiedRegisterPage() {
+export function UnifiedRegisterPage({
+  initialData
+}: {
+  initialData: IUnifiedRegisterListData | null;
+}) {
   const {
     search,
     handleSearchChange,
@@ -14,8 +19,10 @@ export function UnifiedRegisterPage() {
     hasResults,
     activePage,
     setActivePage,
-    totalPages
-  } = useUnifiedRegisterPage();
+    totalPages,
+    isPagePending,
+    pageError
+  } = useUnifiedRegisterPage(initialData);
 
   return (
     <div className={classes.page}>
@@ -33,7 +40,7 @@ export function UnifiedRegisterPage() {
         <>
           <div className={classes.cards}>
             {filteredItems.map((item) => (
-              <UnifiedRegisterCard key={item.cuit} item={item} />
+              <UnifiedRegisterCard key={item.contribuyenteId} item={item} />
             ))}
           </div>
 
@@ -42,6 +49,7 @@ export function UnifiedRegisterPage() {
               total={totalPages}
               value={activePage}
               onChange={setActivePage}
+              disabled={isPagePending}
               aria-label="Paginación del padrón unificado"
             />
           </div>
@@ -55,6 +63,12 @@ export function UnifiedRegisterPage() {
           </Stack>
         </Card>
       )}
+
+      {pageError ? (
+        <Text c="red" size="sm">
+          {pageError}
+        </Text>
+      ) : null}
     </div>
   );
 }

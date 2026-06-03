@@ -5,6 +5,7 @@ import type {
 
 export const unifiedRegisterItemsFixture: IUnifiedRegisterItems = [
   {
+    contribuyenteId: '62495ad7-e17d-4edc-9400-5fef2d2a1012',
     cuit: '30-50401884-5',
     businessName: 'VOLKSWAGEN ARGENTINA S.A.',
     activity: 'Fabricación de vehículos automotores',
@@ -13,6 +14,7 @@ export const unifiedRegisterItemsFixture: IUnifiedRegisterItems = [
     riskLevel: 'A'
   },
   {
+    contribuyenteId: '94f4d83f-c0f0-4478-afd2-511ff0a6051b',
     cuit: '30-70712345-6',
     businessName: 'DISTRIBUIDORA NORTE ANDINO S.A.',
     activity: 'Comercio mayorista de alimentos',
@@ -21,6 +23,7 @@ export const unifiedRegisterItemsFixture: IUnifiedRegisterItems = [
     riskLevel: 'B'
   },
   {
+    contribuyenteId: '96ea57a4-4ab0-4ce2-b14c-29dd75d89c8f',
     cuit: '20-28456789-4',
     businessName: 'COMERCIAL PUNA NORTE S.R.L.',
     activity: 'Venta minorista de artículos regionales',
@@ -29,6 +32,7 @@ export const unifiedRegisterItemsFixture: IUnifiedRegisterItems = [
     riskLevel: 'B'
   },
   {
+    contribuyenteId: 'ed3cb5ff-7398-4ff8-b8c7-af5111c1ca78',
     cuit: '30-61234567-2',
     businessName: 'TRANSPORTES QUEBRADA ALTA S.A.',
     activity: 'Transporte de cargas generales',
@@ -37,6 +41,7 @@ export const unifiedRegisterItemsFixture: IUnifiedRegisterItems = [
     riskLevel: 'A'
   },
   {
+    contribuyenteId: '24eaef63-c447-4f17-ab6e-f554dad883ad',
     cuit: '27-32178654-3',
     businessName: 'MINERA ALTIPLANO JUJUY S.A.',
     activity: 'Servicios vinculados a minería',
@@ -47,6 +52,14 @@ export const unifiedRegisterItemsFixture: IUnifiedRegisterItems = [
 ];
 
 function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]): IUnifiedRegisterDetail {
+  const alternateAddressIdByContribuyenteId: Record<string, string> = {
+    '62495ad7-e17d-4edc-9400-5fef2d2a1012': 'd9d4eb81-52bf-4ea8-8d22-25a3be161d40',
+    '94f4d83f-c0f0-4478-afd2-511ff0a6051b': '71fb3981-3e16-4225-a96a-77ab6208443a',
+    '96ea57a4-4ab0-4ce2-b14c-29dd75d89c8f': 'bfd7bb93-c8e1-4fcb-8bab-c207f1dfc70f',
+    'ed3cb5ff-7398-4ff8-b8c7-af5111c1ca78': '697cd36d-dc4d-48f4-ae5f-eac993bd3191',
+    '24eaef63-c447-4f17-ab6e-f554dad883ad': '8ebef6ea-4919-4135-b7ba-03e4576b20e9'
+  };
+
   return {
     ...item,
     startedAt: '01/06/2005',
@@ -170,7 +183,11 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
       }
     ],
     addresses: [
-      { id: 'alternate-1', label: 'Alternativo', address: 'Belgrano 890, S.S. de Jujuy' }
+      {
+        id: alternateAddressIdByContribuyenteId[item.contribuyenteId],
+        label: 'Alternativo',
+        address: 'Belgrano 890, S.S. de Jujuy'
+      }
     ],
     contacts: [
       { id: 'phone', label: 'Teléfono', value: '+54 388 422-0000' },

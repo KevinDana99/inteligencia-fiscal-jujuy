@@ -15,7 +15,8 @@ const RISK_CLASS_BY_LEVEL = {
 
 export function UnifiedRegisterCard({ item }: { item: IUnifiedRegisterItem }) {
   const router = useRouter();
-  const detailRoute = `/vista-previa-padron/${encodeURIComponent(item.cuit)}` as Route;
+  const detailRoute =
+    `/vista-previa-padron/${encodeURIComponent(item.cuit)}?id=${encodeURIComponent(item.contribuyenteId)}` as Route;
 
   return (
     <Card

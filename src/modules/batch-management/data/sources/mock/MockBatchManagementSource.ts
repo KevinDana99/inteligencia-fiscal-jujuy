@@ -168,7 +168,7 @@ export class MockBatchManagementSource implements IBatchManagementSource {
 
   async previewBatchLoad(payload: IBatchPreviewPayload): Promise<IBatchPreviewData> {
     if (payload.file) {
-      const response = {
+      const response: IBatchPreviewData = {
         fileName: payload.file.name,
         foundRecords: 6,
         validCount: 5,
@@ -308,7 +308,7 @@ export class MockBatchManagementSource implements IBatchManagementSource {
     const duplicatedCount = records.filter((record) => record.status === 'duplicated').length;
 
     const response = {
-      fileName: payload.file?.name ?? null,
+      fileName: null,
       foundRecords: records.length,
       validCount,
       invalidCount,
@@ -324,13 +324,7 @@ export class MockBatchManagementSource implements IBatchManagementSource {
           action: 'MockBatchManagementSource.previewBatchLoad',
           METHOD: 'POST',
           REQUEST_RAW: {
-            archivo: payload.file
-              ? {
-                  name: payload.file.name,
-                  type: payload.file.type,
-                  size: payload.file.size
-                }
-              : null,
+            archivo: null,
             regimen: payload.regime ?? null,
             cuits: payload.cuitsText ?? null
           },

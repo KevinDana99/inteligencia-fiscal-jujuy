@@ -1,7 +1,7 @@
 import type {
   IExplorerRegisterItems,
   IExplorerRegisterPill
-} from '../../../data/models/ExplorerRegister';
+} from '../../../models/ExplorerRegister';
 
 export const explorerRegisterPills: IExplorerRegisterPill[] = [
   { key: 'rubro', label: 'Rubro' },

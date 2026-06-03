@@ -4,6 +4,7 @@ import { Avatar, Button, Group, Text } from '@mantine/core';
 import { IconChevronRight, IconDoorExit, IconPlus } from '@tabler/icons-react';
 import type { IAuthSession } from '@/modules/auth/data/models/Auth';
 import { useSignOut } from '@/modules/auth/presentation/hooks';
+import type { DashboardSection } from '../../../data/models/DashboardLayout';
 import { useDashboardNavbarActionContext } from '../../contexts/DashboardNavbarActionContext';
 import { getInitials } from '../../utils/getInitials';
 import classes from '../DashboardLayoutShell/DashboardLayoutShell.module.css';
@@ -14,7 +15,7 @@ export function DashboardNavbar({
   currentSectionLabel
 }: {
   session: IAuthSession;
-  currentSection: 'padron-unificado' | 'explorar-padron' | 'gestion-de-lotes' | 'gestion-de-cruces' | 'reproceso';
+  currentSection: DashboardSection;
   currentSectionLabel: string;
 }) {
   const { signOut, isPending } = useSignOut();

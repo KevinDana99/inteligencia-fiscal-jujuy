@@ -26,10 +26,14 @@ import {
 import type {
   IUnifiedRegisterAddress,
   IUnifiedRegisterContact,
+  IUnifiedRegisterContactsListData,
   IUnifiedRegisterDetail,
+  IUnifiedRegisterFinesListData,
   IUnifiedRegisterFine,
+  IUnifiedRegisterInterventionOrdersListData,
   IUnifiedRegisterInterventionOrder,
-  IUnifiedRegisterNote
+  IUnifiedRegisterNote,
+  IUnifiedRegisterNotesListData
 } from '../../../data/models/UnifiedRegister';
 import { useUnifiedRegisterPreview } from '../../hooks/useUnifiedRegisterPreview';
 import classes from './UnifiedRegisterPreviewPage.module.css';
@@ -190,13 +194,42 @@ function RecordsTable({
   );
 }
 
-export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDetail }) {
+export function UnifiedRegisterPreviewPage({
+  item,
+  initialContactsData,
+  initialMercurioData,
+  initialInterventionOrdersData,
+  initialNotesData
+}: {
+  item: IUnifiedRegisterDetail;
+  initialContactsData: IUnifiedRegisterContactsListData | null;
+  initialMercurioData: IUnifiedRegisterFinesListData | null;
+  initialInterventionOrdersData: IUnifiedRegisterInterventionOrdersListData | null;
+  initialNotesData: IUnifiedRegisterNotesListData | null;
+}) {
   const router = useRouter();
   const {
     activeHeaderModal,
     addresses,
+    addressActionError,
     contacts,
+    contactActionError,
+    contactsCurrentPage,
+    contactsTotalPages,
     notes,
+    noteActionError,
+    notesCurrentPage,
+    notesTotalPages,
+    fines,
+    finesCurrentPage,
+    finesTotalPages,
+    finesTotalItems,
+    fineActionError,
+    interventionOrders,
+    interventionOrdersCurrentPage,
+    interventionOrdersTotalPages,
+    interventionOrdersTotalItems,
+    interventionOrdersError,
     batchSearch,
     filteredLotOptions,
     selectedLotOption,
@@ -208,6 +241,16 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
     isDeleteModalOpen,
     editKind,
     deleteKind,
+    isAddressSavePending,
+    isAddressDeletePending,
+    isContactsPagePending,
+    isContactSavePending,
+    isContactDeletePending,
+    isNotesPagePending,
+    isFinesPagePending,
+    isInterventionOrdersPagePending,
+    isNoteSavePending,
+    isNoteDeletePending,
     formValue,
     contactForm,
     editingItemId,
@@ -228,12 +271,19 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
     closeDeleteModal,
     resetDeleteModal,
     confirmDeleteModal,
-    removeAddress,
-    removeContact,
-    removeNote,
     goToPreviousNote,
-    goToNextNote
-  } = useUnifiedRegisterPreview(item);
+    goToNextNote,
+    goToPreviousFinePage,
+    goToNextFinePage,
+    goToPreviousInterventionOrderPage,
+    goToNextInterventionOrderPage
+  } = useUnifiedRegisterPreview(
+    item,
+    initialContactsData,
+    initialNotesData,
+    initialMercurioData,
+    initialInterventionOrdersData
+  );
 
   const isEditingNote = editKind === 'note';
   const isEditingContact = editKind === 'contact';
@@ -556,6 +606,11 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
                   <Text className={classes.inlinePanelValue}>{address.address}</Text>
                 </div>
               ))}
+              {!addresses.length ? (
+                <Text className={classes.emptyStateText}>
+                  No hay domicilios alternativos cargados.
+                </Text>
+              ) : null}
             </div>
           </SectionCard>
 
@@ -573,7 +628,13 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
                 + Agregar
               </Button>
             }
-            footer={<Pager current={1} total={1} disabled />}
+            footer={
+              <Pager
+                current={contactsTotalPages ? contactsCurrentPage : 0}
+                total={Math.max(contactsTotalPages, 1)}
+                disabled={isContactsPagePending || contactsTotalPages <= 1}
+              />
+            }
           >
             <div className={classes.highlightPanel}>
               <div className={classes.inlineActionRow}>
@@ -602,6 +663,14 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
                   </div>
                 ))}
               </div>
+              {!contacts.length ? (
+                <Text className={classes.emptyStateText}>No hay contactos cargados.</Text>
+              ) : null}
+              {contactActionError ? (
+                <Text className={classes.modalText} c="red">
+                  {contactActionError}
+                </Text>
+              ) : null}
             </div>
           </SectionCard>
 
@@ -621,11 +690,11 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
             }
             footer={
               <Pager
-                current={notes.length ? activeNoteIndex + 1 : 0}
-                total={Math.max(notes.length, 1)}
+                current={notesTotalPages ? notesCurrentPage : 0}
+                total={Math.max(notesTotalPages, 1)}
                 onPrevious={goToPreviousNote}
                 onNext={goToNextNote}
-                disabled={notes.length <= 1}
+                disabled={isNotesPagePending || notesTotalPages <= 1}
               />
             }
           >
@@ -651,6 +720,11 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
               ) : (
                 <Text className={classes.emptyStateText}>No hay notas cargadas.</Text>
               )}
+              {noteActionError ? (
+                <Text className={classes.modalText} c="red">
+                  {noteActionError}
+                </Text>
+              ) : null}
             </div>
           </SectionCard>
         </div>
@@ -658,9 +732,9 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
         <div className={classes.rightColumn}>
           <RecordsTable
             title="Multas Mercurio"
-            badgeLabel={`${item.fines.length} registros`}
+            badgeLabel={`${finesTotalItems} registros`}
             columns={['N°', 'Fecha', 'Descripción', 'Monto', 'Estado']}
-            rows={item.fines.map((fine: IUnifiedRegisterFine) => (
+            rows={fines.map((fine: IUnifiedRegisterFine) => (
               <Table.Tr key={fine.id}>
                 <Table.Td className={classes.mutedCodeCell}>{fine.id}</Table.Td>
                 <Table.Td className={classes.mutedCell}>{fine.issuedAt}</Table.Td>
@@ -682,14 +756,27 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
                 </Table.Td>
               </Table.Tr>
             ))}
-            footer={<Pager current={1} total={1} disabled />}
+            footer={
+              <Pager
+                current={finesCurrentPage}
+                total={finesTotalPages || 1}
+                onPrevious={goToPreviousFinePage}
+                onNext={goToNextFinePage}
+                disabled={isFinesPagePending || finesTotalPages <= 1}
+              />
+            }
           />
+          {fineActionError ? (
+            <Text className={classes.modalText} c="red">
+              {fineActionError}
+            </Text>
+          ) : null}
 
           <RecordsTable
             title="Órdenes de Intervención"
-            badgeLabel={`${item.interventionOrders.length} registros`}
+            badgeLabel={`${interventionOrdersTotalItems} registros`}
             columns={['N° OI', 'Período', 'Motivo', 'Monto', 'Estado']}
-            rows={item.interventionOrders.map((order: IUnifiedRegisterInterventionOrder) => (
+            rows={interventionOrders.map((order: IUnifiedRegisterInterventionOrder) => (
               <Table.Tr key={order.id}>
                 <Table.Td className={classes.orderCodeCellCell}>
                   <span className={classes.orderCodeCell}>{order.id}</span>
@@ -713,8 +800,23 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
                 </Table.Td>
               </Table.Tr>
             ))}
-            footer={<Pager current={1} total={1} disabled />}
+            footer={
+              <Pager
+                current={interventionOrdersCurrentPage}
+                total={interventionOrdersTotalPages || 1}
+                onPrevious={goToPreviousInterventionOrderPage}
+                onNext={goToNextInterventionOrderPage}
+                disabled={
+                  isInterventionOrdersPagePending || interventionOrdersTotalPages <= 1
+                }
+              />
+            }
           />
+          {interventionOrdersError ? (
+            <Text className={classes.modalText} c="red">
+              {interventionOrdersError}
+            </Text>
+          ) : null}
 
           <Card className={classes.tableCard} padding={0} radius="lg">
             <div className={classes.tabsRow}>
@@ -958,12 +1060,32 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
         {deleteKind ? (
           <Stack gap="lg">
             <Text className={classes.modalText}>{deleteModalDescription}</Text>
+            {deleteKind === 'address' && addressActionError ? (
+              <Text className={classes.modalText} c="red">
+                {addressActionError}
+              </Text>
+            ) : null}
+            {deleteKind === 'contact' && contactActionError ? (
+              <Text className={classes.modalText} c="red">
+                {contactActionError}
+              </Text>
+            ) : null}
+            {deleteKind === 'note' && noteActionError ? (
+              <Text className={classes.modalText} c="red">
+                {noteActionError}
+              </Text>
+            ) : null}
             <Group justify="flex-end">
               <Button
                 variant="default"
                 radius="xl"
                 className={`${classes.modalGhostButton} ${classes.staticButton}`}
                 onClick={closeDeleteModal}
+                disabled={
+                  (deleteKind === 'address' && isAddressDeletePending) ||
+                  (deleteKind === 'contact' && isContactDeletePending) ||
+                  (deleteKind === 'note' && isNoteDeletePending)
+                }
               >
                 Cancelar
               </Button>
@@ -971,6 +1093,11 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
                 radius="xl"
                 className={`${classes.deletePrimaryButton} ${classes.staticButton}`}
                 onClick={confirmDeleteModal}
+                loading={
+                  (deleteKind === 'address' && isAddressDeletePending) ||
+                  (deleteKind === 'contact' && isContactDeletePending) ||
+                  (deleteKind === 'note' && isNoteDeletePending)
+                }
               >
                 Eliminar
               </Button>
@@ -1051,12 +1178,18 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
                 />
               </div>
             </div>
+            {contactActionError ? (
+              <Text className={classes.modalText} c="red">
+                {contactActionError}
+              </Text>
+            ) : null}
             <Group justify="flex-end" gap="sm" className={classes.contactModalFooter}>
               <Button
                 variant="default"
                 radius="xl"
                 className={`${classes.modalGhostButton} ${classes.staticButton}`}
                 onClick={closeEditModal}
+                disabled={isContactSavePending}
               >
                 Cancelar
               </Button>
@@ -1065,6 +1198,7 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
                 className={`${classes.modalPrimaryButton} ${classes.staticButton}`}
                 onClick={submitEditModal}
                 disabled={isContactFormEmpty}
+                loading={isContactSavePending}
               >
                 Guardar
               </Button>
@@ -1081,12 +1215,18 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
               placeholder="Escribí la nota..."
               rows={4}
             />
+            {noteActionError ? (
+              <Text className={classes.modalText} c="red">
+                {noteActionError}
+              </Text>
+            ) : null}
             <Group justify="flex-end" gap="sm">
               <Button
                 variant="default"
                 radius="xl"
                 className={`${classes.modalGhostButton} ${classes.staticButton}`}
                 onClick={closeEditModal}
+                disabled={isNoteSavePending}
               >
                 Cancelar
               </Button>
@@ -1095,6 +1235,7 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
                 className={`${classes.modalPrimaryButton} ${classes.staticButton}`}
                 onClick={submitEditModal}
                 disabled={!formValue?.trim()}
+                loading={isNoteSavePending}
               >
                 Guardar
               </Button>
@@ -1112,12 +1253,18 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
               onChange={(event) => setFormValue(event.currentTarget.value)}
               placeholder={editModalPlaceholder}
             />
+            {editKind === 'address' && addressActionError ? (
+              <Text className={classes.modalText} c="red">
+                {addressActionError}
+              </Text>
+            ) : null}
             <Group justify="flex-end">
               <Button
                 variant="default"
                 radius="xl"
                 className={`${classes.modalGhostButton} ${classes.staticButton}`}
                 onClick={closeEditModal}
+                disabled={editKind === 'address' && isAddressSavePending}
               >
                 Cancelar
               </Button>
@@ -1126,6 +1273,7 @@ export function UnifiedRegisterPreviewPage({ item }: { item: IUnifiedRegisterDet
                 className={`${classes.modalPrimaryButton} ${classes.staticButton}`}
                 onClick={submitEditModal}
                 disabled={!formValue?.trim()}
+                loading={editKind === 'address' && isAddressSavePending}
               >
                 Guardar
               </Button>

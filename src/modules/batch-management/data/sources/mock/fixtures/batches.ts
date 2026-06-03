@@ -1,4 +1,4 @@
-import type { IBatchManagementItems } from '../../../data/models/BatchManagement';
+import type { IBatchManagementItems } from '../../../models/BatchManagement';
 
 const MOCK_AUTHOR = {
   id: '0795e889-9d73-4126-a3d4-5d5441c4c6af',
