@@ -23,7 +23,7 @@ export class ApiClientError extends Error {
 }
 
 async function request<T>(
-  method: 'GET' | 'POST',
+  method: 'GET' | 'POST' | 'DELETE',
   path: string,
   config?: ApiClientConfig,
   init?: ApiRequestInit
@@ -48,21 +48,22 @@ async function request<T>(
   });
 
   if (!response.ok) {
-    let errorData: unknown = undefined;
-    let errorMessage: string | undefined = undefined;
+    let errorData: unknown = null;
+    let errorMessage: string | undefined;
 
     try {
       errorData = await response.json();
+
       if (
-        errorData &&
         typeof errorData === 'object' &&
+        errorData !== null &&
         'mensaje' in errorData &&
         typeof (errorData as { mensaje?: unknown }).mensaje === 'string'
       ) {
         errorMessage = (errorData as { mensaje: string }).mensaje;
       }
     } catch {
-      errorData = undefined;
+      errorData = null;
     }
 
     throw new ApiClientError(response.status, errorMessage, errorData);
@@ -105,4 +106,12 @@ export async function postFormData<TResponse>(
     ...init,
     body
   });
+}
+
+export async function deleteJson<T>(
+  path: string,
+  config?: ApiClientConfig,
+  init?: ApiRequestInit
+): Promise<T> {
+  return request<T>('DELETE', path, config, init);
 }
