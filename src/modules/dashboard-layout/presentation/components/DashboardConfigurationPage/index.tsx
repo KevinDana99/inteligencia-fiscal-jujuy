@@ -5,7 +5,6 @@ import {
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
   IconFileText,
-  IconLockFilled,
   IconPlus,
   IconXFilled
 } from '@tabler/icons-react';
@@ -55,7 +54,6 @@ export function DashboardConfigurationPage() {
     removeSelectedColumn,
     updateColumn,
     removeColumn,
-    openPdfPreview,
     confirmChanges,
     closeSuccess
   } = useDashboardConfiguration();
@@ -98,8 +96,8 @@ export function DashboardConfigurationPage() {
           </section>
 
           {isIntimacion ? (
-            <div className={classes.contentGrid}>
-              <div className={classes.editorColumn}>
+            <div className={classes.contentView}>
+              <div className={classes.viewColumn}>
                 <Card className={classes.sectionCard} radius="lg" padding={0}>
                   <Text className={classes.sectionLabel}>Asunto</Text>
                   <div className={classes.fieldGroup}>
@@ -188,11 +186,25 @@ export function DashboardConfigurationPage() {
                   </Button>
 
                   <div className={classes.fieldGroup}>
-                    <Text className={classes.fieldTitle}>Texto pie de planilla</Text>
+                    <Text className={classes.fieldTitle}>
+                      Fuente de información <span className={classes.optionalLabel}>(opcional)</span>
+                    </Text>
                     <TextInput
-                      value={state.intimacion.piePlanilla}
+                      value={state.intimacion.fuenteInformacion}
                       onChange={(event) =>
-                        updateIntimacion('piePlanilla', event.currentTarget.value)
+                        updateIntimacion('fuenteInformacion', event.currentTarget.value)
+                      }
+                      placeholder="Ej: Facturación de compras, ARCA, etc."
+                      classNames={formInputClasses}
+                    />
+                  </div>
+
+                  <div className={classes.fieldGroup}>
+                    <Text className={classes.fieldTitle}>Fecha de corte</Text>
+                    <TextInput
+                      value={state.intimacion.fechaCorte}
+                      onChange={(event) =>
+                        updateIntimacion('fechaCorte', event.currentTarget.value)
                       }
                       classNames={formInputClasses}
                     />
@@ -200,83 +212,20 @@ export function DashboardConfigurationPage() {
                 </Card>
 
                 <Group justify="flex-end" className={classes.footerActions}>
-                  <Button
-                    variant="default"
-                    leftSection={<IconFileText size={15} />}
-                    className={classes.secondaryButton}
-                    onClick={openPdfPreview}
-                  >
-                    Previsualizar PDF
-                  </Button>
                   <Button className={classes.primaryButton} onClick={confirmChanges}>
                     Confirmar cambios
                   </Button>
                 </Group>
               </div>
-
-              <div className={classes.previewColumn}>
-                <Card className={classes.previewCard} radius="lg" padding={0}>
-                  <div className={classes.previewHeader}>
-                    <Text className={classes.previewHeaderTitle}>Preview - Intimación</Text>
-                    <span className={classes.previewPageBadge}>
-                      Página 1
-                    </span>
-                  </div>
-
-                  <div className={classes.previewDocument}>
-                    <div className={classes.previewBrand}>
-                      <div className={classes.previewBrandMark}>R</div>
-                      <div className={classes.previewBrandCopy}>
-                        DIRECCIÓN PROVINCIAL DE
-                        <br />
-                        RENTAS
-                      </div>
-                    </div>
-
-                    <Text className={classes.previewDate}>
-                      SAN SALVADOR DE JUJUY, 21 DE ENERO DE 2026
-                    </Text>
-
-                    <Text className={classes.previewContributor}>
-                      CONTRIBUYENTE: [NOMBRE DEL CONTRIBUYENTE]
-                    </Text>
-
-                    <Text className={classes.previewCuit}>CUIT: [CUIT]</Text>
-
-                    <Text component="div" className={classes.previewSubject}>
-                      ASUNTO: {state.intimacion.asunto}
-                    </Text>
-
-                    <Text className={classes.previewGreeting}>{state.intimacion.saludo}</Text>
-
-                    {state.intimacion.cuerpo.split('\n\n').map((paragraph) => (
-                      <Text key={paragraph} className={classes.previewParagraph}>
-                        {paragraph}
-                      </Text>
-                    ))}
-
-                    <Text className={classes.previewClosing}>{state.intimacion.cierre}</Text>
-
-                    <div className={classes.previewSignatureWrap}>
-                      <div className={classes.previewSignature}>
-                        DIRECCIÓN
-                        <br />
-                        PCIAL. DE
-                        <br />
-                        RENTAS
-                      </div>
-                    </div>
-
-                  </div>
-                </Card>
-              </div>
             </div>
           ) : (
-            <Card className={classes.informeCard} radius="lg" padding={0}>
-              <Text component="div" className={classes.informeTitle}>
-                {state.informe.titulo}
-              </Text>
-            </Card>
+            <div className={classes.contentView}>
+              <Card className={classes.informeCard} radius="lg" padding={0}>
+                <Text component="div" className={classes.informeTitle}>
+                  {state.informe.titulo}
+                </Text>
+              </Card>
+            </div>
           )}
         </div>
       </div>
@@ -344,9 +293,9 @@ export function DashboardConfigurationPage() {
 
           <Card className={classes.columnPickerCard} radius="lg" padding={0}>
             <div className={classes.columnPickerHeader}>Columnas visibles</div>
-            <Stack gap="xs" className={classes.columnPickerList}>
-              {columnPickerDraft.map((column) => (
-                <div
+              <Stack gap="xs" className={classes.columnPickerList}>
+                {columnPickerDraft.map((column) => (
+                  <div
                   key={column.id}
                   className={`${classes.columnPickerRow} ${selectedVisibleColumnId === column.id ? classes.columnPickerRowSelected : ''}`}
                   onClick={() => selectVisibleColumn(column.id)}
@@ -354,20 +303,11 @@ export function DashboardConfigurationPage() {
                   tabIndex={0}
                 >
                   <Text className={classes.columnPickerLabel}>{column.value}</Text>
-                  {column.locked ? (
-                    <span className={classes.columnPickerLockedIcon} aria-hidden="true">
-                      <IconLockFilled size={14} />
-                    </span>
-                  ) : null}
                 </div>
               ))}
             </Stack>
           </Card>
         </div>
-
-        <Text className={classes.columnPickerHint}>
-          Las columnas con candado son obligatorias y no se pueden quitar.
-        </Text>
 
         <Group justify="flex-end" className={classes.columnPickerFooter}>
           <Button variant="default" className={classes.modalCancelButton} onClick={closeColumnPicker}>

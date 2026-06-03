@@ -7,13 +7,11 @@ export type DashboardConfigurationTab = 'intimacion' | 'informe';
 type DashboardConfigurationColumn = {
   id: string;
   value: string;
-  locked?: boolean;
 };
 
 type DashboardConfigurationColumnOption = {
   id: string;
   label: string;
-  locked?: boolean;
 };
 
 type DashboardConfigurationState = {
@@ -23,7 +21,8 @@ type DashboardConfigurationState = {
     saludo: string;
     cuerpo: string;
     cierre: string;
-    piePlanilla: string;
+    fuenteInformacion: string;
+    fechaCorte: string;
     columnas: DashboardConfigurationColumn[];
   };
   informe: {
@@ -62,17 +61,16 @@ const DEFAULT_STATE: DashboardConfigurationState = {
     cuerpo:
       'Por medio de la presente, la Dirección Provincial de Rentas de Jujuy pone en su conocimiento que sobre la base de información cierta, derivada del cruce de bases de datos con el organismo recaudador nacional (ARCA) y los agentes de recaudación designados por este organismo, se han detectado inconsistencias en sus declaraciones juradas y en el cumplimiento de sus obligaciones fiscales en los periodos que se detallan en planilla adjunta.\n\nPor ello, y en uso de las facultades conferidas a este organismo por el art. 10º inc. 3 del Código Fiscal, Ley Nro. 5791/2013, se lo intima para que en el término de diez (10) días proceda a presentar las declaraciones juradas originales o rectificativas, e ingrese el impuesto omitido más los intereses a la fecha del efectivo pago.\n\nEn caso de no regularizar su situación fiscal, la Dirección podrá dar inicio a una verificación integral, perdiendo Ud. el beneficio del cumplimiento voluntario debiendo abonar además del tributo las sanciones previstas en los artículos 48° y 49º del Código Fiscal (Ley 5791/2013), sin perjuicio de dar inicio al procedimiento de determinación de oficio en los términos del artículo 37° del mencionado plexo normativo.\n\nPara dar cumplimiento a esta intimación podrá comunicarse con el Departamento Inteligencia Fiscal al siguiente correo electrónico: inteligenciafiscal@rentasjujuy.gob.ar o al Centro de Atención 0800-555-5599 en el horario de 07:30 a 12:30 o personalmente en Lavalle 55 - San Salvador de Jujuy - de Lunes a Viernes en el horario de 07:30 a 12:30.',
     cierre: 'Queda/n Ud/s. debidamente notificado/s.',
-    piePlanilla: 'Queda/n Ud/s. debidamente notificado/s.',
+    fuenteInformacion: '',
+    fechaCorte: 'Fecha de corte 11/2025.',
     columnas: [
-      { id: 'anio', value: 'AÑO', locked: true },
-      { id: 'base-interna', value: 'Base Imponible Ingresos Brutos', locked: true },
+      { id: 'anio', value: 'AÑO' },
+      { id: 'base-interna', value: 'Base Imponible Ingresos Brutos' },
       {
         id: 'base-terceros',
-        value: 'Base Imponible Informada por Terceros (_)',
-        locked: true
+        value: 'Base Imponible Informada por Terceros (_)'
       },
-      { id: 'diferencia-base', value: 'Diferencia de Base Imponible', locked: true },
-      { id: 'fuente-info', value: 'Fuente de Información (_)', locked: true }
+      { id: 'diferencia-base', value: 'Diferencia de Base Imponible' }
     ]
   },
   informe: {
@@ -169,8 +167,7 @@ export function useDashboardConfiguration() {
         ...current,
         {
           id: option.id,
-          value: option.label,
-          locked: option.locked
+          value: option.label
         }
       ];
     });
@@ -183,14 +180,14 @@ export function useDashboardConfiguration() {
     }
 
     setColumnPickerDraft((current) =>
-      current.filter((column) => column.id !== selectedVisibleColumnId || column.locked)
+      current.filter((column) => column.id !== selectedVisibleColumnId)
     );
     setSelectedVisibleColumnId(null);
   }, [selectedVisibleColumnId]);
 
   const removeDraftColumn = useCallback((optionId: string) => {
     setColumnPickerDraft((current) =>
-      current.filter((column) => column.id !== optionId || column.locked)
+      current.filter((column) => column.id !== optionId)
     );
   }, []);
 
@@ -214,14 +211,6 @@ export function useDashboardConfiguration() {
         columnas: current.intimacion.columnas.filter((column) => column.id !== columnId)
       }
     }));
-  }, []);
-
-  const openPdfPreview = useCallback(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    window.open('', '_blank', 'noopener,noreferrer');
   }, []);
 
   const confirmChanges = useCallback(() => {
@@ -260,7 +249,6 @@ export function useDashboardConfiguration() {
     removeDraftColumn,
     updateColumn,
     removeColumn,
-    openPdfPreview,
     confirmChanges,
     closeSuccess
   };
