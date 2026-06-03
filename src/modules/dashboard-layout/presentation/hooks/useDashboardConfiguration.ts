@@ -66,7 +66,7 @@ const DEFAULT_STATE: DashboardConfigurationState = {
       { id: 'base-interna', value: 'Base Imponible Ingresos Brutos' },
       {
         id: 'base-terceros',
-        value: 'Base Imponible Informada por Terceros (_)'
+        value: 'Base Imponible Informada por Terceros (*)'
       },
       { id: 'diferencia-base', value: 'Diferencia de Base Imponible' }
     ]
