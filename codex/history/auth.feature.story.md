@@ -92,3 +92,11 @@ Verified successfully with:
 - El login mantiene visibles las credenciales de prueba sólo cuando auth mock está habilitado explícitamente.
 - La config de `k3s/frontend-config.yaml` quedó alineada para usar el backend real en despliegue.
 - Se agregó normalización del DTO de `contexto-actual` para soportar `tipo_usuario` del backend y poblar correctamente `session.user.tipoUsuario`.
+
+## 2026-06-04 Separación estricta entre admin y dashboard privado
+
+- `proxy.ts` ahora resuelve la separación completa entre `/admin` y el dashboard privado común, no solo la entrada a `/login`.
+- Un `SuperAdministrador` que intente abrir `/` o cualquier ruta del dashboard privado es redirigido de vuelta a `/admin`.
+- Un `ANALISTA_FISCAL` que intente abrir `/admin` o subrutas como `/admin/configuracion` es redirigido a `/login` sin invalidar su sesión.
+- `app/(private)/PrivateLayoutGate.tsx` dejó de aceptar cualquier sesión autenticada y ahora exige una sesión apta para el dashboard privado común.
+- Se agregó `src/lib/auth/route-access.ts` con pruebas unitarias para blindar la matriz de redirecciones y evitar regresiones en navegación.

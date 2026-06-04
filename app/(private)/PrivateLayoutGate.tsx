@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { connection } from 'next/server';
 import DashboardLayoutModule from '@/modules/dashboard-layout';
-import { requireServerAuthSession } from '@/lib/auth/require-session';
+import { requirePrivateDashboardSession } from '@/lib/auth/require-private-dashboard-session';
 
 export default async function PrivateLayoutGate({
   children
@@ -9,7 +9,7 @@ export default async function PrivateLayoutGate({
   children: ReactNode;
 }) {
   await connection();
-  const session = await requireServerAuthSession();
+  const session = await requirePrivateDashboardSession();
 
   return <DashboardLayoutModule session={session}>{children}</DashboardLayoutModule>;
 }
