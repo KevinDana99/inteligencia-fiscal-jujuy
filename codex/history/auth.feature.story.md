@@ -100,3 +100,4 @@ Verified successfully with:
 - Un `ANALISTA_FISCAL` que intente abrir `/admin` o subrutas como `/admin/configuracion` es redirigido a `/login` sin invalidar su sesión.
 - `app/(private)/PrivateLayoutGate.tsx` dejó de aceptar cualquier sesión autenticada y ahora exige una sesión apta para el dashboard privado común.
 - Se agregó `src/lib/auth/route-access.ts` con pruebas unitarias para blindar la matriz de redirecciones y evitar regresiones en navegación.
+- Se relajó el guard server-side del dashboard privado para que replique la misma regla del `proxy`: solo expulsa a admins, evitando bucles cuando el backend devuelve variantes no-admin de `tipoUsuario`.

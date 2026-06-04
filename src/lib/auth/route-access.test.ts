@@ -40,4 +40,13 @@ describe('route-access', () => {
   it('keeps the proxy neutral when the user type is unknown', () => {
     expect(getProtectedRouteRedirect('/', null)).toBeNull();
   });
+
+  it('keeps authenticated non-admin variants inside the shared dashboard', () => {
+    expect(
+      getProtectedRouteRedirect(
+        '/',
+        'FISCAL' as unknown as (typeof USER_ROLES)[keyof typeof USER_ROLES]
+      )
+    ).toBeNull();
+  });
 });

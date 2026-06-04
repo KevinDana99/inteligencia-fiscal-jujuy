@@ -10,9 +10,5 @@ export async function requirePrivateDashboardSession(): Promise<IAuthSession> {
     redirect(AUTH_ROUTES.admin as never);
   }
 
-  if (session.user.tipoUsuario !== USER_ROLES.FISCAL_ANALYST) {
-    redirect(AUTH_ROUTES.login as never);
-  }
-
   return session;
 }
