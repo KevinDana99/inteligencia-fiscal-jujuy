@@ -565,8 +565,14 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
       >
         <IntimationTemplate
           controller={intimationTemplate}
-          confirmLabel='Generar intimación'
-          onConfirm={closeIntimationModal}
+          footerActions={
+            <Button
+              className={classes.intimationModalNextButton}
+              onClick={closeIntimationModal}
+            >
+              Siguiente
+            </Button>
+          }
         />
       </Modal>
 

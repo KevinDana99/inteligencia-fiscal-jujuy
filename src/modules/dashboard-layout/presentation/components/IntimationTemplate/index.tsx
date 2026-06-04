@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import {
   ActionIcon,
   Button,
@@ -27,13 +28,17 @@ const formInputClasses = {
 type IntimationTemplateProps = {
   controller: IntimationTemplateController
   confirmLabel?: string
+  confirmButtonClassName?: string
   onConfirm?: () => void
+  footerActions?: ReactNode
 }
 
 export function IntimationTemplate({
   controller,
   confirmLabel = 'Confirmar cambios',
-  onConfirm
+  confirmButtonClassName,
+  onConfirm,
+  footerActions
 }: IntimationTemplateProps) {
   const {
     state,
@@ -164,9 +169,14 @@ export function IntimationTemplate({
       </Card>
 
       <Group justify='flex-end' className={classes.footerActions}>
-        <Button className={classes.primaryButton} onClick={onConfirm}>
-          {confirmLabel}
-        </Button>
+        {footerActions ?? (
+          <Button
+            className={`${classes.primaryButton} ${confirmButtonClassName ?? ''}`.trim()}
+            onClick={onConfirm}
+          >
+            {confirmLabel}
+          </Button>
+        )}
       </Group>
 
       <Modal

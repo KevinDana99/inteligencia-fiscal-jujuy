@@ -855,6 +855,24 @@
   color: var(--mantine-color-gray-5);
 }
 
+.intimationModalNextButton {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 999px;
+  background: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.intimationModalNextButton:hover,
+.intimationModalNextButton[data-hovered],
+.intimationModalNextButton[data-active] {
+  background: var(--mantine-color-blue-5);
+}
+
 @media (max-width: 960px) {
   .tableToolbar {
     align-items: stretch;
