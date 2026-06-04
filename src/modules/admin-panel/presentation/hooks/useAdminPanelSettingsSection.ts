@@ -1,64 +1,85 @@
-import { useState, useTransition } from 'react'
+'use client'
+
+import {
+  useCallback,
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  useTransition
+} from 'react'
 import { useRouter } from 'next/navigation'
-import type { IAdminAllowedDomains } from '../../data/models/AdminPanel'
 import {
   addAllowedDomainAction,
   deleteAllowedDomainAction
 } from '../../data/actions'
+import { useAdminPanelConfigContext } from '../contexts'
+import { INITIAL_ADD_ALLOWED_DOMAIN_STATE } from './mutations/addAllowedDomainState'
 
-export const useAdminPanelSettingsSection = (
-  allowedDomains: IAdminAllowedDomains
-) => {
+export const useAdminPanelSettingsSection = () => {
   const router = useRouter()
-  const [domainValue, setDomainValue] = useState('')
-  const [domainError, setDomainError] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
+  const formRef = useRef<HTMLFormElement>(null)
+  const { allowedDomains } = useAdminPanelConfigContext()
+  const [hideAddError, setHideAddError] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [addDomainState, formAction, isSubmitting] = useActionState(
+    addAllowedDomainAction,
+    INITIAL_ADD_ALLOWED_DOMAIN_STATE
+  )
+  const [isRemoving, startTransition] = useTransition()
 
-  const handleAddDomain = () => {
-    const normalizedDomain = domainValue.trim().toLowerCase().replace(/^@/, '')
-
-    startTransition(() => {
-      void addAllowedDomainAction(normalizedDomain).then((result) => {
-        if (!result.success) {
-          setDomainError(result.error ?? 'No fue posible agregar el dominio.')
-          return
-        }
-
-        setDomainValue('')
-        setDomainError(null)
-        router.refresh()
-      })
-    })
-  }
-
-  const handleChangeDomain = (value: string) => {
-    setDomainValue(value)
-    if (domainError) {
-      setDomainError(null)
+  useEffect(() => {
+    if (addDomainState.success) {
+      formRef.current?.reset()
+      router.refresh()
     }
-  }
+  }, [addDomainState.success, router])
 
-  const handleRemoveDomain = (domainId: number) => {
+  const handleChangeDomain = useCallback(() => {
+    setHideAddError(true)
+    if (deleteError) {
+      setDeleteError(null)
+    }
+  }, [deleteError])
+
+  const handleAddDomainSubmit = useCallback(() => {
+    setHideAddError(false)
+    if (deleteError) {
+      setDeleteError(null)
+    }
+  }, [deleteError])
+
+  const handleRemoveDomain = useCallback((domainId: number) => {
     startTransition(() => {
-      void deleteAllowedDomainAction(domainId).then((result) => {
-        if (!result.success) {
-          setDomainError(result.error ?? 'No fue posible eliminar el dominio.')
-          return
-        }
+      void deleteAllowedDomainAction(domainId)
+        .then((result) => {
+          if (!result.success) {
+            setDeleteError(
+              result.error ?? 'No fue posible eliminar el dominio.'
+            )
+            return
+          }
 
-        setDomainError(null)
-        router.refresh()
-      })
+          setDeleteError(null)
+          router.refresh()
+        })
+        .catch(() => {
+          setDeleteError('No fue posible eliminar el dominio.')
+        })
     })
-  }
+  }, [router])
+
+  const domainError =
+    deleteError ?? (!hideAddError && !isSubmitting ? addDomainState.message : null)
 
   return {
     allowedDomains,
-    handleAddDomain,
+    formRef,
     handleRemoveDomain,
-    domainValue,
     domainError,
     handleChangeDomain,
-    isPending
+    handleAddDomainSubmit,
+    formAction,
+    isPending: isSubmitting || isRemoving
   }
 }

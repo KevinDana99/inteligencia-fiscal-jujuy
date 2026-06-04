@@ -83,3 +83,12 @@ Verified successfully with:
 
 - The implementation uses `proxy.ts`, which matches the Next.js 16 file convention for request interception.
 - Mock auth is enabled by default unless `NEXT_PUBLIC_USE_MOCK_AUTH` is explicitly set to `false`.
+
+## 2026-06-03 Login real conectado
+
+- Auth dejó de entrar en mock por default.
+- El flujo real queda activo salvo que `NEXT_PUBLIC_USE_MOCK_AUTH=true`.
+- Se unificó el criterio mock/real en `src/lib/auth/is-mock-auth-enabled.ts` para alinear `data-access.ts` y `refresh-session.ts`.
+- El login mantiene visibles las credenciales de prueba sólo cuando auth mock está habilitado explícitamente.
+- La config de `k3s/frontend-config.yaml` quedó alineada para usar el backend real en despliegue.
+- Se agregó normalización del DTO de `contexto-actual` para soportar `tipo_usuario` del backend y poblar correctamente `session.user.tipoUsuario`.

@@ -36,7 +36,9 @@ export async function getAdminPanelAction(): Promise<
       REQUEST,
       RESPONSE: {
         resumen: {
-          cantidadUsuariosActivos: data.users.filter((user) => !user.isDeleted).length
+          cantidadUsuariosActivos:
+            data.activeUsersCount ??
+            data.users.filter((user) => !user.isDeleted).length
         },
         usuarios: data.users.map(mapUserToContractLog)
       }

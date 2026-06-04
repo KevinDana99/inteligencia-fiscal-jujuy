@@ -16,6 +16,7 @@ import type {
   ApiIamSignInRequestDto,
   ApiIamSignOutRequestDto
 } from './dtos/IamDtos';
+import { mapIamCurrentContextDto } from './mappers/mapIamCurrentContext';
 
 export class RestAuthSource implements IAuthSource {
   constructor(private readonly config: ApiClientConfig) {}
@@ -82,13 +83,15 @@ export class RestAuthSource implements IAuthSource {
 
   async getCurrentContext(accessToken: string): Promise<IIamCurrentContextResponse> {
     try {
-      return await getJson<ApiIamCurrentContextResponseDto>(
+      const response = await getJson<ApiIamCurrentContextResponseDto>(
         '/api/iam/autenticacion/contexto-actual',
         {
           ...this.config,
           token: accessToken
         }
       );
+
+      return mapIamCurrentContextDto(response);
     } catch (error) {
       if (error instanceof ApiClientError && error.status === 401) {
         throw new Error('Unauthorized');

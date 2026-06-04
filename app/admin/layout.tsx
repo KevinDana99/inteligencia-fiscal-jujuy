@@ -1,6 +1,15 @@
-import type { ReactNode } from 'react';
-import { AdminPanelProviders } from '@/modules/admin-panel/presentation/components/AdminPanelProviders';
+import { Suspense, type ReactNode } from 'react';
+import AdminLayoutFallback from './AdminLayoutFallback';
+import AdminLayoutGate from './AdminLayoutGate';
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
-  return <AdminPanelProviders>{children}</AdminPanelProviders>;
+export default function AdminLayout({ children }: AdminLayoutProps) {
+  return (
+    <Suspense fallback={<AdminLayoutFallback />}>
+      <AdminLayoutGate>{children}</AdminLayoutGate>
+    </Suspense>
+  );
+}
+
+interface AdminLayoutProps {
+  children: ReactNode;
 }

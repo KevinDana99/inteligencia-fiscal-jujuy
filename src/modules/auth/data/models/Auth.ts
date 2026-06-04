@@ -1,10 +1,12 @@
+import type { UserRole } from '@/lib/auth/constants'
+
 export interface IAuthUser {
   autenticado: boolean;
   esquema: string | null;
   nombreUsuario: string | null;
   correo: string | null;
   sujeto: string | null;
-  tipoUsuario: 'SUPER_ADMIN' | 'ANALISTA_FISCAL' | null;
+  tipoUsuario: UserRole | null;
 }
 
 export interface IAuthSession {
@@ -64,7 +66,7 @@ export interface IIamCurrentContextResponse {
   nombreUsuario: string | null;
   correo: string | null;
   sujeto: string | null;
-  tipoUsuario: 'SUPER_ADMIN' | 'ANALISTA_FISCAL' | null;
+  tipoUsuario: UserRole | null;
 }
 
 export interface IIamActionError {

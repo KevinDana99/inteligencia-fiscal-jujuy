@@ -16,6 +16,13 @@ export const AUTH_HEADERS = {
   sessionExpired: 'x-auth-session-expired'
 } as const
 
+export const USER_ROLES = {
+  ADMIN: 'SuperAdministrador',
+  FISCAL_ANALYST: 'ANALISTA_FISCAL'
+} as const
+
+export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES]
+
 export const AUTH_MOCK_USERS = {
   admin: {
     userName: 'admin',

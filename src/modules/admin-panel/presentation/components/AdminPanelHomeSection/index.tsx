@@ -1,88 +1,37 @@
-import { Stack, Text, Title } from '@mantine/core';
-import type { IAdminPanelUser } from '../../../data/models/AdminPanel';
-import type { AvatarColorTone } from '../../utils/getAvatarColorStyles';
-import { AdminPanelModals } from '../AdminPanelModals';
-import { AdminPanelUserGestionTable } from '../AdminPanelUserGestionTable';
-import classes from '../AdminPanelShell/AdminPanelShell.module.css';
+'use client'
+
+import { Stack } from '@mantine/core'
+import type { IAdminPanelData } from '../../../data/models/AdminPanel'
+import { useAdminPanelShell } from '../../hooks'
+import { AdminPanelModals } from '../AdminPanelModals'
+import { AdminPanelUserGestionTable } from '../AdminPanelUserGestionTable'
+import { AdminPanelHomeHeader } from './AdminPanelHomeHeader'
+import { AdminPanelHomeSectionLoader } from './AdminPanelHomeSectionLoader'
+
+export { AdminPanelHomeSectionLoader }
 
 export function AdminPanelHomeSection({
-  activeUsersCount,
-  filteredUsers,
-  avatarColorByUserId,
-  actionError,
-  isActionPending,
-  formattedDate,
-  selectedUser,
-  createOpened,
-  editOpened,
-  deleteOpened,
-  roleOptions,
-  searchValue,
-  setSearchValue,
-  openCreateModal,
-  openEditModal,
-  openDeleteModal,
-  closeCreateModal,
-  closeEditModal,
-  closeDeleteModal,
-  deleteUser
-}: {
-  activeUsersCount: number;
-  filteredUsers: IAdminPanelUser[];
-  avatarColorByUserId: Record<string, AvatarColorTone>;
-  actionError: string | null;
-  isActionPending: boolean;
-  formattedDate: string;
-  selectedUser: IAdminPanelUser | null;
-  createOpened: boolean;
-  editOpened: boolean;
-  deleteOpened: boolean;
-  roleOptions: string[];
-  searchValue: string;
-  setSearchValue: (value: string) => void;
-  openCreateModal: () => void;
-  openEditModal: (user: IAdminPanelUser) => void;
-  openDeleteModal: (user: IAdminPanelUser) => void;
-  closeCreateModal: () => void;
-  closeEditModal: () => void;
-  closeDeleteModal: () => void;
-  deleteUser: () => Promise<boolean>;
-}) {
+  data,
+  formattedDate
+}: AdminPanelHomeSectionProps) {
+  const adminPanelShell = useAdminPanelShell(data)
+
   return (
     <>
-      <Stack gap="xl">
-        <Stack gap={8} className={classes.widgetTitleBlock}>
-          <Title order={1} className={classes.heroTitle}>
-            Bienvenido, Administrador 👋
-          </Title>
-          <Text className={classes.heroDate}>{formattedDate}</Text>
-        </Stack>
-
+      <Stack gap='xl'>
+        <AdminPanelHomeHeader formattedDate={formattedDate} />
         <AdminPanelUserGestionTable
-          activeUsersCount={activeUsersCount}
-          filteredUsers={filteredUsers}
-          avatarColorByUserId={avatarColorByUserId}
-          searchValue={searchValue}
-          setSearchValue={setSearchValue}
-          openCreateModal={openCreateModal}
-          openEditModal={openEditModal}
-          openDeleteModal={openDeleteModal}
+          {...adminPanelShell}
         />
       </Stack>
-
       <AdminPanelModals
-        selectedUser={selectedUser}
-        createOpened={createOpened}
-        editOpened={editOpened}
-        deleteOpened={deleteOpened}
-        actionError={actionError}
-        isActionPending={isActionPending}
-        roleOptions={roleOptions}
-        closeCreateModal={closeCreateModal}
-        closeEditModal={closeEditModal}
-        closeDeleteModal={closeDeleteModal}
-        deleteUser={deleteUser}
+        {...adminPanelShell}
       />
     </>
-  );
+  )
+}
+
+interface AdminPanelHomeSectionProps {
+  data: IAdminPanelData
+  formattedDate: string
 }

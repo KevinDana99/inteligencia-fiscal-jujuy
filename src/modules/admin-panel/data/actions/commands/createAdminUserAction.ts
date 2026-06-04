@@ -30,12 +30,14 @@ export async function createAdminUserAction(
     apellido: String(formData.get('apellido') ?? '').trim(),
     correo: String(formData.get('correo') ?? '').trim().toLowerCase(),
     cargo: String(formData.get('cargo') ?? '').trim(),
-    contrasena: String(formData.get('contrasena') ?? '')
+    contrasena: String(formData.get('contrasena') ?? ''),
+    confirmarContrasena: String(formData.get('confirmarContrasena') ?? '')
   }
 
   const requestPayload = {
     ...params,
-    contrasena: params.contrasena ? '[REDACTED]' : ''
+    contrasena: params.contrasena ? '[REDACTED]' : '',
+    confirmarContrasena: params.confirmarContrasena ? '[REDACTED]' : ''
   };
 
   const source = await createServerAdminPanelSource();
@@ -44,7 +46,8 @@ export async function createAdminUserAction(
     lastName: params.apellido,
     email: params.correo,
     roleLabel: params.cargo,
-    password: params.contrasena
+    password: params.contrasena,
+    confirmPassword: params.confirmarContrasena
   });
 
   console.log({

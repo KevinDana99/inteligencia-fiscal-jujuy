@@ -1,37 +1,32 @@
-import type { IAuthSession } from '@/modules/auth/data/models/Auth';
+import { Suspense } from 'react';
 import { getAdminPanelAction } from './data/actions';
-import { createServerAdminPanelSource } from './data/data-access';
-import AdminPanelShell from './presentation/components/AdminPanelShell';
-import { AdminPanelSettingsPage } from './presentation/components/AdminPanelSettingsPage';
-import type { AdminPanelSection } from './data/models/AdminPanel';
+import {
+  AdminPanelHomeSection,
+  AdminPanelHomeSectionLoader
+} from './presentation/components/AdminPanelHomeSection';
+import { buildAdminPanelUsersKey } from './presentation/utils/buildAdminPanelUsersKey';
+import { formatAdminPanelDate } from './presentation/utils/formatAdminPanelDate';
 
-export default async function AdminPanelModule({
-  session,
-  section = 'dashboard'
-}: {
-  session: IAuthSession;
-  section?: AdminPanelSection;
-}) {
-  const formattedDate = new Intl.DateTimeFormat('es-AR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'America/Argentina/Catamarca'
-  }).format(new Date());
+export default function AdminPanelModule() {
+  return (
+    <Suspense fallback={<AdminPanelHomeSectionLoader />}>
+      <AdminPanelHomeSectionContent />
+    </Suspense>
+  );
+}
 
-  if (section === 'settings') {
-    const source = await createServerAdminPanelSource()
-    const data = await source.getAllowedDomains()
-
-    return <AdminPanelSettingsPage session={session} allowedDomains={data} />;
-  }
-
+async function AdminPanelHomeSectionContent() {
   const { data, error } = await getAdminPanelAction();
 
   if (error || !data) {
     throw new Error(error ?? 'No admin panel data received');
   }
 
-  return <AdminPanelShell data={data} session={session} formattedDate={formattedDate} />;
+  return (
+    <AdminPanelHomeSection
+      key={buildAdminPanelUsersKey(data.users)}
+      data={data}
+      formattedDate={formatAdminPanelDate(new Date())}
+    />
+  );
 }

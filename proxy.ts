@@ -8,7 +8,7 @@ import {
   refreshExpiredRequestSession,
   resolveCurrentUserType
 } from '@/lib/auth/proxy-session'
-import { AUTH_ROUTES } from '@/lib/auth/constants'
+import { AUTH_ROUTES, USER_ROLES } from '@/lib/auth/constants'
 import type { AuthUserType } from '@/lib/auth/proxy-session'
 
 function redirectTo(request: NextRequest, path: string) {
@@ -47,7 +47,7 @@ export async function proxy(request: NextRequest) {
     return redirectToLogin(request)
   }
 
-  if (pathname === AUTH_ROUTES.admin && currentUserType !== 'SUPER_ADMIN') {
+  if (pathname === AUTH_ROUTES.admin && currentUserType !== USER_ROLES.ADMIN) {
     return redirectTo(request, AUTH_ROUTES.home)
   }
 

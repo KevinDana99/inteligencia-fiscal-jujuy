@@ -1,3 +1,5 @@
+import type { UserRole } from '@/lib/auth/constants';
+
 export type ApiIamSignInRequestDto = {
   correo: string;
   contrasena: string;
@@ -20,7 +22,8 @@ export type ApiIamCurrentContextResponseDto = {
   nombreUsuario: string | null;
   correo: string | null;
   sujeto: string | null;
-  tipoUsuario: 'SUPER_ADMIN' | 'ANALISTA_FISCAL' | null;
+  tipoUsuario?: UserRole | null;
+  tipo_usuario?: UserRole | null;
 };
 
 export type ApiIamRefreshSessionRequestDto = {

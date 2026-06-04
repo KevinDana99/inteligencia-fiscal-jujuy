@@ -40,7 +40,7 @@ La implementación debe cubrir:
 4. `session.user` debe construirse desde el contrato de `contexto-actual`.
 5. El frontend no debe inferir permisos desde `correo` o `nombreUsuario`.
 6. El frontend debe usar `session.user.tipoUsuario`.
-7. `SUPER_ADMIN` y `ANALISTA_FISCAL` son los únicos tipos válidos del contrato actual.
+7. `SUPER_ADMINISTRADOR` y `ANALISTA_FISCAL` son los únicos tipos válidos del contrato actual.
 8. `proxy.ts` debe resolver:
    - usuario no autenticado -> `/login`
    - usuario autenticado entrando a `/login` -> redirect según `tipoUsuario`
@@ -71,7 +71,7 @@ La implementación debe cubrir:
 ## Modelo esperado
 
 ```ts
-type TipoUsuario = 'SUPER_ADMIN' | 'ANALISTA_FISCAL'
+type TipoUsuario = 'SUPER_ADMINISTRADOR' | 'ANALISTA_FISCAL'
 
 type IAuthUser = {
   autenticado: boolean
@@ -120,7 +120,7 @@ No mover lógica contractual a componentes visuales.
 
 1. Usuario no autenticado entrando a ruta privada -> `/login`
 2. Usuario autenticado entrando a `/login` -> redirect según `tipoUsuario`
-3. `SUPER_ADMIN` puede entrar a `/admin`
+3. `SUPER_ADMINISTRADOR` puede entrar a `/admin`
 4. `ANALISTA_FISCAL` no puede entrar a `/admin`
 5. Luego del login se construye `session.user` desde `contexto-actual`
 6. Luego de refresh exitoso se reconstruye `session.user`

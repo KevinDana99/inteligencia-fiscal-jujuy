@@ -57,7 +57,8 @@ function cloneAdminPanelUsers(users: MockAdminPanelUserRecord[]) {
 
 function buildAdminPanelData(users: MockAdminPanelUserRecord[]): IAdminPanelData {
   return {
-    users: users.map(mapRecordToUser)
+    users: users.map(mapRecordToUser),
+    activeUsersCount: users.filter((user) => !user.isDeleted).length
   }
 }
 
@@ -162,6 +163,15 @@ export class MockAdminPanelSource implements IAdminPanelSource {
         error: 'Ya existe un usuario con el correo informado.',
         code: 'super_administrador.usuarios.crear.correo_duplicado',
         status: 409
+      }
+    }
+
+    if (params.confirmPassword !== params.password) {
+      return {
+        success: false,
+        error: 'Las contraseñas no coinciden.',
+        code: 'super_administrador.usuarios.crear.contrasenas_no_coinciden',
+        status: 400
       }
     }
 

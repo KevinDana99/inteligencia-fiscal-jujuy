@@ -42,7 +42,7 @@ No se debe guardar en cookies:
 La sesión en runtime debe seguir exponiendo `session.user`, pero ese objeto se construye desde el contrato de contexto y no se persiste en cookies.
 
 ```ts
-type TipoUsuario = 'SUPER_ADMIN' | 'ANALISTA_FISCAL'
+type TipoUsuario = 'SUPER_ADMINISTRADOR' | 'ANALISTA_FISCAL'
 
 type IAuthUser = {
   autenticado: boolean
@@ -66,7 +66,7 @@ type IAuthSession = {
 
 - La aplicación no debe inferir permisos desde `correo` o `nombreUsuario`.
 - La aplicación debe usar `session.user.tipoUsuario`.
-- `SUPER_ADMIN` habilita acceso a `/admin`.
+- `SUPER_ADMINISTRADOR` habilita acceso a `/admin`.
 - `ANALISTA_FISCAL` habilita acceso al dashboard privado común.
 - `proxy.ts` es el dueño de la lógica principal de redirección.
 - Los consumers del frontend deben migrar de `session.user.role` a `session.user.tipoUsuario`.
@@ -100,7 +100,7 @@ type IAuthSession = {
 
 - si no hay sesión válida, redirigir a `/login`
 - si un usuario autenticado entra a `/login`, redirigir según `tipoUsuario`
-- si un usuario `SUPER_ADMIN` entra a `/login`, redirigir a `/admin`
+- si un usuario `SUPER_ADMINISTRADOR` entra a `/login`, redirigir a `/admin`
 - si un usuario `ANALISTA_FISCAL` entra a `/login`, redirigir a `/`
 - si una ruta privada requiere autenticación, resolverlo desde proxy
 
@@ -174,7 +174,7 @@ Este documento contiene unicamente el contrato vigente para frontend:
 - `autenticado` debe volver `true` cuando el token es valido.
 - `sujeto` representa el identificador del usuario autenticado.
 - `tipoUsuario` informa el tipo de usuario que viaja en el token.
-- `tipoUsuario` puede ser `"SUPER_ADMIN"` o `"ANALISTA_FISCAL"`.
+- `tipoUsuario` puede ser `"SUPER_ADMINISTRADOR"` o `"ANALISTA_FISCAL"`.
 - Si el token falta, expiro o no es valido, el backend responde `401`.
 
 ## Cambios internos del modelo
@@ -196,7 +196,7 @@ type RespuestaError = {
   estado: number
 }
 
-type TipoUsuario = 'SUPER_ADMIN' | 'ANALISTA_FISCAL'
+type TipoUsuario = 'SUPER_ADMINISTRADOR' | 'ANALISTA_FISCAL'
 
 type RespuestaContextoActual = {
   autenticado: boolean
@@ -231,7 +231,7 @@ Reglas:
 - Debe enviarse un token valido en el header `Authorization`.
 - El token debe pertenecer a un usuario vigente del sistema.
 - El endpoint no exige una policy especifica de rol; solo requiere autenticacion.
-- Si el usuario es super administrador, `tipoUsuario` debe volver `"SUPER_ADMIN"`.
+- Si el usuario es super administrador, `tipoUsuario` debe volver `"SUPER_ADMINISTRADOR"`.
 - Si el usuario es analista fiscal, `tipoUsuario` debe volver `"ANALISTA_FISCAL"`.
 - `esquema` refleja el esquema/tipo de autenticacion informado por el runtime.
 - El frontend no debe inferir permisos desde `nombreUsuario` o `correo`; debe usar `tipoUsuario`.
@@ -261,7 +261,7 @@ Ejemplo:
   "nombreUsuario": "superadmin",
   "correo": "superadmin@inteligenciafiscal.local",
   "sujeto": "b9188b53-90df-427d-9b96-77d2cc54197a",
-  "tipoUsuario": "SUPER_ADMIN"
+  "tipoUsuario": "SUPER_ADMINISTRADOR"
 }
 ```
 
