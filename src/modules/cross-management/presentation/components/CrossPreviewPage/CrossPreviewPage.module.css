@@ -389,6 +389,75 @@
   line-height: 1.4;
 }
 
+.planTable thead th.planGroupHeaderCell {
+  box-sizing: border-box;
+  padding: 8px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.05em;
+  text-align: left;
+  text-transform: uppercase;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.planGroupNeutralHeaderCell {
+  background: var(--mantine-color-gray-0);
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  color: var(--mantine-color-gray-5);
+}
+
+.planGroupBiHeaderCell {
+  background: var(--mantine-color-blue-0);
+  border-bottom: 1px solid var(--mantine-color-blue-2);
+  border-left: 2px solid var(--mantine-color-blue-4);
+  color: var(--mantine-color-blue-5);
+}
+
+.planGroupCmHeaderCell {
+  background: var(--mantine-color-violet-0);
+  border-bottom: 1px solid var(--mantine-color-violet-2);
+  border-left: 2px solid var(--mantine-color-violet-3);
+  color: var(--mantine-color-violet-5);
+}
+
+.planGroupDiffHeaderCell {
+  background: var(--mantine-color-yellow-2);
+  border-bottom: 1px solid var(--mantine-color-yellow-4);
+  border-left: 2px solid var(--mantine-color-yellow-4);
+  color: var(--mantine-color-yellow-8);
+}
+
+.planGroupCoefHeaderCell {
+  background: var(--mantine-color-green-0);
+  border-bottom: 1px solid var(--mantine-color-green-2);
+  border-left: 2px solid var(--mantine-color-green-4);
+  color: var(--mantine-color-green-7);
+}
+
+.planGroupEstimatedHeaderCell {
+  background: var(--mantine-color-orange-0);
+  border-bottom: 1px solid var(--mantine-color-orange-2);
+  border-left: 2px solid var(--mantine-color-orange-4);
+  color: var(--mantine-color-orange-6);
+}
+
+.planGroupTaxHeaderCell {
+  background: var(--mantine-color-red-1);
+  border-bottom: 1px solid var(--mantine-color-red-2);
+  border-left: 2px solid var(--mantine-color-red-4);
+  color: var(--mantine-color-red-6);
+}
+
+.planGroupFinalHeaderCell {
+  background: var(--mantine-color-blue-6);
+  border-bottom: 0;
+  border-left: 0;
+  box-shadow: inset 0 -1px 0 0 var(--mantine-color-blue-6);
+  color: var(--mantine-color-white);
+}
+
 .summaryTable th.summaryHeaderCell {
   box-sizing: border-box;
   border-bottom: 1px solid var(--mantine-color-gray-2);
@@ -637,6 +706,8 @@
 
 .planTable th.planFinalHeaderCell {
   background: var(--mantine-color-blue-6);
+  border-bottom: 0;
+  border-top: 0;
   color: #fff;
 }
 

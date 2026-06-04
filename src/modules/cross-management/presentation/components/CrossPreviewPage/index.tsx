@@ -43,6 +43,20 @@ const STATUS_OPTIONS: Record<string, string> = {
   reproceso: '🔴 Reproceso'
 }
 
+const PLAN_COLUMN_GROUPS = [
+  { label: 'Identificación', span: 4, className: 'neutral' },
+  { label: 'Fuentes de base imponible', span: 6, className: 'bi' },
+  { label: 'Mayor base', span: 1, className: 'bi' },
+  { label: 'CM05 Jujuy', span: 1, className: 'cm' },
+  { label: 'Diferencia / período', span: 3, className: 'diff' },
+  { label: 'CM05 — Coeficientes declarados', span: 5, className: 'cm' },
+  { label: 'Nuevos coeficientes', span: 3, className: 'coef' },
+  { label: 'BI estimada vs declarada', span: 3, className: 'estimated' },
+  { label: 'Impuesto', span: 2, className: 'tax' },
+  { label: 'Créditos', span: 2, className: 'coef' },
+  { label: 'Final', span: 1, className: 'final' }
+] as const
+
 export function CrossPreviewPage({ crossId }: { crossId: string }) {
   const cross = crossPreviewMockById[crossId]
   const intimationTemplate = useIntimationTemplate()
@@ -214,6 +228,33 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
             <div className={classes.tableWrap}>
               <Table className={classes.planTable} withTableBorder={false} withColumnBorders={false}>
                 <Table.Thead>
+                  <Table.Tr>
+                    {PLAN_COLUMN_GROUPS.map((group) => (
+                      <Table.Th
+                        key={group.label}
+                        colSpan={group.span}
+                        className={`${classes.planGroupHeaderCell} ${
+                          group.className === 'neutral'
+                            ? classes.planGroupNeutralHeaderCell
+                            : group.className === 'bi'
+                              ? classes.planGroupBiHeaderCell
+                              : group.className === 'cm'
+                                ? classes.planGroupCmHeaderCell
+                                : group.className === 'diff'
+                                  ? classes.planGroupDiffHeaderCell
+                                  : group.className === 'coef'
+                                    ? classes.planGroupCoefHeaderCell
+                                    : group.className === 'estimated'
+                                      ? classes.planGroupEstimatedHeaderCell
+                                      : group.className === 'tax'
+                                        ? classes.planGroupTaxHeaderCell
+                                        : classes.planGroupFinalHeaderCell
+                        }`}
+                      >
+                        {group.label}
+                      </Table.Th>
+                    ))}
+                  </Table.Tr>
                   <Table.Tr>
                     {cross.planColumns.map((column) => (
                       <Table.Th
