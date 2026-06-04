@@ -113,6 +113,7 @@ function Pager({
 export function CrossPreviewPage({ crossId }: { crossId: string }) {
   const cross = crossPreviewMockById[crossId]
   const intimationTemplate = useIntimationTemplate()
+  const handleIntimationNext = () => {}
 
   if (!cross) {
     return (
@@ -568,7 +569,7 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
           footerActions={
             <Button
               className={classes.intimationModalNextButton}
-              onClick={closeIntimationModal}
+              onClick={handleIntimationNext}
             >
               Siguiente
             </Button>

@@ -15,22 +15,71 @@
 3. El modal debe permitir la exportacion de documentos en 2 formatos:
 
 - PDF
-- DOCX (Esto lo haremos con la libreria `docx`)
+- DOCX
 
-4. El PDF debe formarce a partir de la configuracion del modal generar intimacion.
-5. El PDF debe previsualizarse a partir de la configuracion del modal generar intimacion.
-6. El PDF debe exportarse a partir de la configuracion del modal generar intimacion.
-7. No se debe generar previsualizacion del docx
-8. La previsualizacion del documento viene desde el backend mediante una url final donde ver el archivo.
-9. No se deben implementar los contratos todavia
+4. Todos los documentos los genera el backend. Frontend no debe generar ni PDF ni DOCX.
+5. El PDF debe formarse en backend a partir de la configuracion enviada desde el modal generar intimacion.
+6. El PDF debe previsualizarse en frontend a partir de una url final del documento generada por backend.
+7. El PDF debe descargarse desde el archivo generado por backend.
+8. El DOCX debe descargarse desde el archivo generado por backend.
+9. No se debe generar previsualizacion del DOCX.
+10. La previsualizacion del documento viene desde el backend mediante una url final donde ver el archivo.
+11. No se deben implementar los contratos todavia.
+12. Para esta feature, la previsualizacion se navega por contribuyente dentro de un lote. La UI muestra un contribuyente activo a la vez.
+13. La descarga de `PDF` y la descarga de `DOCX` corresponden al lote completo de intimaciones, no solo al contribuyente actualmente visible en la preview.
+14. La preview PDF del contribuyente actual debe regenerarse o refrescarse en backend a partir de la configuracion vigente del modal.
+15. El frontend debe conservar la configuracion actual del modal mientras navega entre contribuyentes del lote.
+16. El frontend debe contemplar estados de carga y error tanto para la preview como para las descargas.
 
 ## Requisitos para integracion
 
 - Instalar `npm install @embedpdf/core @embedpdf/engines @embedpdf/plugin-document-manager @embedpdf/plugin-viewport @embedpdf/plugin-scroll @embedpdf/plugin-render`
+- No instalar ni integrar librerias de generacion DOCX en frontend para esta feature.
 
 ## Estructura integracion libreria
 
 - Debemos crear un componente reutilizable que reciba una children con el documento en cuestion o un objeto de configuracion depende lo que acepte la libreria:
+- `embedpdf` se usa unicamente para visualizar el PDF final devuelto por backend.
+- El frontend solo solicita preview/descarga y consume la respuesta del backend.
+- Para esta iteracion se asume una preview PDF por contribuyente, navegable desde la paginacion superior del modal.
+- Cada cambio relevante de configuracion debe poder disparar una nueva solicitud de preview al backend.
+- La capa de integracion debe quedar preparada para manejar:
+  - loading de preview
+  - error de preview
+  - loading de descarga PDF
+  - loading de descarga DOCX
+  - errores de descarga
+
+## Modelo funcional esperado
+
+- El modal recibe el contexto de un lote de intimaciones.
+- La barra de paginacion superior navega entre contribuyentes del lote.
+- El nombre y CUIT mostrados en la franja superior corresponden al contribuyente actualmente previsualizado.
+- El viewer de `embedpdf` muestra el PDF final del contribuyente activo, usando la URL final entregada por backend.
+- `Descargar PDF` descarga el lote completo generado por backend.
+- `Descargar Word` descarga el lote completo generado por backend.
+- El frontend no debe intentar componer archivos finales, solo solicitar preview y descargas al backend.
+
+## Datos minimos que frontend debe enviar al backend
+
+- Identificador del lote o contexto equivalente del conjunto a exportar.
+- Contribuyente activo para la preview actual.
+- Configuracion vigente de la intimacion:
+  - asunto
+  - saludo
+  - cuerpo
+  - columnas visibles de planilla
+  - fuente de informacion
+  - fecha de corte
+
+## Estados esperados
+
+- Loading inicial de preview al abrir el modal.
+- Loading de preview al cambiar de contribuyente.
+- Loading de preview al refrescar la configuracion.
+- Estado de error si backend no devuelve una URL valida de preview.
+- Estado de descarga pendiente para `PDF`.
+- Estado de descarga pendiente para `DOCX`.
 
 - View Example PDF
 
@@ -112,7 +161,7 @@ export const PDFViewer = () => {
 <PDFViewer />;
   `
 
-## Diseño UI
+## Diseño UI Modal Generacion de exportables
 
 <div id="modal-preview-intimacion" style="display: flex; position: fixed; inset: 0px; background: rgba(0, 0, 0, 0.75); z-index: 9999; align-items: flex-start; justify-content: center; overflow-y: auto; padding: 32px 0px;">
   <div style="display:flex;flex-direction:column;align-items:center;gap:0;width:660px">
