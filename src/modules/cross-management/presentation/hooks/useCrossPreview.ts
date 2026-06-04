@@ -31,6 +31,8 @@ export function useCrossPreview(cross: ICrossPreviewData) {
   const [planillaSearch, setPlanillaSearch] = useState('')
   const [resumenSearch, setResumenSearch] = useState('')
   const [intimationModalOpened, setIntimationModalOpened] = useState(false)
+  const [pendingReprocessingRow, setPendingReprocessingRow] =
+    useState<ICrossPreviewAnalysisRow | null>(null)
   const [statusByCuit, setStatusByCuit] = useState<Record<string, CrossPreviewStatus>>(
     () =>
       Object.fromEntries(
@@ -61,6 +63,31 @@ export function useCrossPreview(cross: ICrossPreviewData) {
     }))
   }
 
+  const requestAnalysisStatusChange = (
+    row: ICrossPreviewAnalysisRow,
+    status: CrossPreviewStatus
+  ) => {
+    if (status === 'reproceso') {
+      setPendingReprocessingRow(row)
+      return
+    }
+
+    updateAnalysisStatus(row.cuit, status)
+  }
+
+  const closeReprocessingModal = () => {
+    setPendingReprocessingRow(null)
+  }
+
+  const confirmReprocessingModal = () => {
+    if (!pendingReprocessingRow) {
+      return
+    }
+
+    updateAnalysisStatus(pendingReprocessingRow.cuit, 'reproceso')
+    setPendingReprocessingRow(null)
+  }
+
   const updateTab = (tab: CrossPreviewTab) => {
     setActiveTab(tab)
 
@@ -77,11 +104,15 @@ export function useCrossPreview(cross: ICrossPreviewData) {
     planillaSearch,
     resumenSearch,
     intimationModalOpened,
+    pendingReprocessingRow,
     statusByCuit,
     filteredPlanRows,
     filteredAnalysisRows,
     updateTab,
     updateAnalysisStatus,
+    requestAnalysisStatusChange,
+    closeReprocessingModal,
+    confirmReprocessingModal,
     openIntimationModal: () => setIntimationModalOpened(true),
     closeIntimationModal: () => setIntimationModalOpened(false),
     setPlanillaSearch,

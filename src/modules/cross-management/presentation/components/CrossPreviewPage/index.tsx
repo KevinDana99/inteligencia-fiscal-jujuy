@@ -24,6 +24,7 @@ import {
   IntimationTemplate
 } from '@/modules/dashboard-layout/presentation/components/IntimationTemplate'
 import { useIntimationTemplate } from '@/modules/dashboard-layout/presentation/components/IntimationTemplate/useIntimationTemplate'
+import { SendToReprocessingModal } from '@/modules/reprocessing/presentation/components'
 import { crossPreviewMockById } from '../../../data/sources/mock/fixtures/crossItems'
 import { useCrossPreview } from '../../hooks'
 import classes from './CrossPreviewPage.module.css'
@@ -79,11 +80,14 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
     planillaSearch,
     resumenSearch,
     intimationModalOpened,
+    pendingReprocessingRow,
     filteredPlanRows,
     filteredAnalysisRows,
     statusByCuit,
     updateTab,
-    updateAnalysisStatus,
+    requestAnalysisStatusChange,
+    closeReprocessingModal,
+    confirmReprocessingModal,
     openIntimationModal,
     closeIntimationModal,
     setPlanillaSearch,
@@ -92,15 +96,15 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
 
   const isPlanilla = activeTab === 'planilla'
 
-  const renderStatusSelect = (cuit: string) => {
-    const status = statusByCuit[cuit]
+  const renderStatusSelect = (row: (typeof cross.analysisRows)[number]) => {
+    const status = statusByCuit[row.cuit]
 
     return (
       <select
         value={status}
         onChange={(event) =>
-          updateAnalysisStatus(
-            cuit,
+          requestAnalysisStatusChange(
+            row,
             event.currentTarget.value as
               | 'estado'
               | 'relevante'
@@ -446,7 +450,7 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
                         <Table.Td className={`${classes.analysisBodyCell} ${classes.analysisDangerCell}`}>{row.netDebt}</Table.Td>
                         <Table.Td className={classes.analysisBodyCell}>
                           <div className={classes.statusCell}>
-                            {renderStatusSelect(row.cuit)}
+                            {renderStatusSelect(row)}
                           </div>
                         </Table.Td>
                       </Table.Tr>
@@ -488,6 +492,17 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
           onConfirm={closeIntimationModal}
         />
       </Modal>
+
+      <SendToReprocessingModal
+        opened={Boolean(pendingReprocessingRow)}
+        onClose={closeReprocessingModal}
+        contribuyenteId={pendingReprocessingRow?.cuit ?? ''}
+        cuit={pendingReprocessingRow?.cuit ?? ''}
+        razonSocial={pendingReprocessingRow?.businessName ?? ''}
+        onConfirm={async () => {
+          confirmReprocessingModal()
+        }}
+      />
     </div>
   )
 }
