@@ -29,8 +29,7 @@ describe('updateAdminUserAction contract', () => {
       firstName: 'Carlos',
       lastName: 'Actualizado',
       email: 'carlos.lopez@inteligenciafiscal.local',
-      roleLabel: 'Analista',
-      password: ''
+      roleLabel: 'Analista'
     });
 
     expect(fetchMock).toHaveBeenCalledTimes(1);

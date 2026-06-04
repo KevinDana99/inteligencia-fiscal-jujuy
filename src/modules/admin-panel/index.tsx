@@ -1,39 +1,21 @@
-import type { IAuthSession } from '@/modules/auth/data/models/Auth';
-import { getAdminPanelAction, getAllowedDomainsAction } from './data/actions';
-import AdminPanelShell from './presentation/components/AdminPanelShell';
-import { AdminPanelSettingsPage } from './presentation/components/AdminPanelSettingsPage';
-import type { AdminPanelSection } from './data/models/AdminPanel';
+import { Suspense } from 'react';
+import { getAdminPanelAction } from './data/actions';
+import {
+  AdminPanelHomeSection,
+  AdminPanelHomeSectionLoader
+} from './presentation/components/AdminPanelHomeSection';
+import { buildAdminPanelUsersKey } from './presentation/utils/buildAdminPanelUsersKey';
+import { formatAdminPanelDate } from './presentation/utils/formatAdminPanelDate';
 
-export default async function AdminPanelModule({
-  session,
-  section = 'dashboard'
-}: {
-  session: IAuthSession;
-  section?: AdminPanelSection;
-}) {
-  const allowedDomainsResult = await getAllowedDomainsAction()
-  const allowedDomains = allowedDomainsResult.data ?? []
-  const formattedDate = new Intl.DateTimeFormat('es-AR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'America/Argentina/Catamarca'
-  }).format(new Date());
+export default function AdminPanelModule() {
+  return (
+    <Suspense fallback={<AdminPanelHomeSectionLoader />}>
+      <AdminPanelHomeSectionContent />
+    </Suspense>
+  );
+}
 
-  if (section === 'settings') {
-    if (allowedDomainsResult.error || !allowedDomainsResult.data) {
-      throw new Error(allowedDomainsResult.error ?? 'No allowed domains received')
-    }
-
-    return (
-      <AdminPanelSettingsPage
-        session={session}
-        allowedDomains={allowedDomainsResult.data}
-      />
-    );
-  }
-
+async function AdminPanelHomeSectionContent() {
   const { data, error } = await getAdminPanelAction();
 
   if (error || !data) {
@@ -41,23 +23,10 @@ export default async function AdminPanelModule({
   }
 
   return (
-    <AdminPanelShell
-      key={data.users
-        .map((user) =>
-          [
-            user.id,
-            user.fullName,
-            user.email,
-            user.roleLabel,
-            user.isDeleted ? '1' : '0',
-            user.isAdmin ? '1' : '0'
-          ].join(':')
-        )
-        .join('|')}
+    <AdminPanelHomeSection
+      key={buildAdminPanelUsersKey(data.users)}
       data={data}
-      session={session}
-      formattedDate={formattedDate}
-      allowedDomains={allowedDomains}
+      formattedDate={formatAdminPanelDate(new Date())}
     />
   );
 }

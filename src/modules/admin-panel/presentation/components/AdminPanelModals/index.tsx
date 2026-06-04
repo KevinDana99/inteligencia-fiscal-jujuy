@@ -5,6 +5,20 @@ import { AdminPanelActionModal } from './AdminPanelActionModal'
 import CreateUserFormModal from './CreateUserFormModal'
 import EditUserFormModal from './EditUserFormModal'
 
+interface AdminPanelModalsProps {
+  selectedUser: IAdminPanelUser | null
+  createOpened: boolean
+  editOpened: boolean
+  deleteOpened: boolean
+  actionError: string | null
+  isActionPending: boolean
+  roleOptions: string[]
+  closeCreateModal: () => void
+  closeEditModal: () => void
+  closeDeleteModal: () => void
+  deleteUser: () => Promise<boolean>
+}
+
 export function AdminPanelModals({
   selectedUser,
   createOpened,
@@ -17,19 +31,7 @@ export function AdminPanelModals({
   closeEditModal,
   closeDeleteModal,
   deleteUser
-}: {
-  selectedUser: IAdminPanelUser | null
-  createOpened: boolean
-  editOpened: boolean
-  deleteOpened: boolean
-  actionError: string | null
-  isActionPending: boolean
-  roleOptions: string[]
-  closeCreateModal: () => void
-  closeEditModal: () => void
-  closeDeleteModal: () => void
-  deleteUser: () => Promise<boolean>
-}) {
+}: AdminPanelModalsProps) {
   return (
     <>
       <CreateUserFormModal

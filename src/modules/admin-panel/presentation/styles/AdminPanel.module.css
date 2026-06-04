@@ -213,6 +213,15 @@
   margin-left: 0;
 }
 
+.layoutFallbackPanel {
+  max-width: 760px;
+  padding: 22px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: var(--mantine-radius-md);
+  background: var(--mantine-color-white);
+  box-shadow: var(--mantine-shadow-sm);
+}
+
 .heroTitle {
   color: #2b3241;
   font-family: var(--font-body);

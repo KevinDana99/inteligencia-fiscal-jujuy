@@ -1,199 +1,83 @@
-'use client';
+'use client'
 
-import { startTransition, useMemo, useState } from 'react';
-import { useDisclosure } from '@mantine/hooks';
-import { deleteAdminUserAction } from '../../data/actions';
+import { useCallback } from 'react'
 import type {
   IAdminPanelData,
   IAdminPanelUser
-} from '../../data/models/AdminPanel';
-import {
-  AVATAR_COLOR_TOKENS,
-  type AvatarColorTone
-} from '../utils/getAvatarColorStyles';
-
-const USER_ROLE_OPTIONS = ['Fiscal', 'Inspectora', 'Analista', 'Coordinadora'] as const;
-const ADMIN_AVATAR_COLOR: AvatarColorTone = 'blue';
-
-function getSeededNumber(seed: string): number {
-  return [...seed].reduce(
-    (accumulator, char) => (accumulator * 31 + char.charCodeAt(0)) % 2147483647,
-    7
-  );
-}
-
-function shuffleAvatarColors(
-  colors: readonly AvatarColorTone[],
-  seed = `${colors.join('-')}-${colors.length}`
-): AvatarColorTone[] {
-  const shuffledColors = [...colors];
-  let currentSeed = getSeededNumber(seed);
-
-  for (let currentIndex = shuffledColors.length - 1; currentIndex > 0; currentIndex -= 1) {
-    currentSeed = (currentSeed * 48271) % 2147483647;
-    const randomIndex = currentSeed % (currentIndex + 1);
-    [shuffledColors[currentIndex], shuffledColors[randomIndex]] = [
-      shuffledColors[randomIndex],
-      shuffledColors[currentIndex]
-    ];
-  }
-
-  return shuffledColors;
-}
-
-function drawAvatarColor(availableColors: AvatarColorTone[], seed?: string) {
-  const nextAvailableColors =
-    availableColors.length > 0
-      ? [...availableColors]
-      : shuffleAvatarColors(AVATAR_COLOR_TOKENS, seed);
-
-  const nextColor = nextAvailableColors.shift() ?? 'blue';
-
-  return {
-    nextColor,
-    nextAvailableColors
-  };
-}
-
-function buildInitialAvatarPalette(users: IAdminPanelUser[]) {
-  let availableColors = shuffleAvatarColors(
-    AVATAR_COLOR_TOKENS.filter((color) => color !== ADMIN_AVATAR_COLOR),
-    users.map((user) => user.id).join('|')
-  );
-
-  const avatarColorByUserId = users.reduce<Record<string, AvatarColorTone>>((accumulator, user) => {
-    if (user.isAdmin) {
-      accumulator[user.id] = ADMIN_AVATAR_COLOR;
-      return accumulator;
-    }
-
-    const { nextColor, nextAvailableColors } = drawAvatarColor(availableColors, user.id);
-    availableColors = nextAvailableColors;
-    accumulator[user.id] = nextColor;
-    return accumulator;
-  }, {});
-
-  return {
-    avatarColorByUserId,
-    availableColors
-  };
-}
+} from '../../data/models/AdminPanel'
+import { ADMIN_PANEL_ROLE_OPTIONS } from '../constants/adminPanelRoles'
+import { useAdminPanelAvatarPalette } from './admin-panel-shell/useAdminPanelAvatarPalette'
+import { useAdminPanelModalState } from './admin-panel-shell/useAdminPanelModalState'
+import { useAdminPanelUsers } from './admin-panel-shell/useAdminPanelUsers'
+import { useDeleteAdminPanelUser } from './admin-panel-shell/useDeleteAdminPanelUser'
 
 export function useAdminPanelShell(initialData: IAdminPanelData) {
-  const [users, setUsers] = useState(initialData.users);
-  const [avatarPalette] = useState(() => buildInitialAvatarPalette(initialData.users));
-  const [searchValue, setSearchValue] = useState('');
-  const [selectedUser, setSelectedUser] = useState<IAdminPanelUser | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
-  const [isActionPending, setIsActionPending] = useState(false);
-  const [createOpened, createHandlers] = useDisclosure(false);
-  const [editOpened, editHandlers] = useDisclosure(false);
-  const [deleteOpened, deleteHandlers] = useDisclosure(false);
+  const usersState = useAdminPanelUsers(initialData.users)
+  const avatarColorByUserId = useAdminPanelAvatarPalette(initialData.users)
+  const modalState = useAdminPanelModalState()
+  const deleteState = useDeleteAdminPanelUser({
+    selectedUser: modalState.selectedUser,
+    markUserAsDeleted: usersState.markUserAsDeleted,
+    closeDeleteModal: modalState.closeDeleteModal,
+    clearSelectedUser: modalState.clearSelectedUser
+  })
 
-  const activeUsers = useMemo(() => users.filter((user) => !user.isDeleted), [users]);
+  const openCreateModal = useCallback(() => {
+    deleteState.clearActionError()
+    modalState.openCreateModal()
+  }, [deleteState, modalState])
 
-  const filteredUsers = useMemo(() => {
-    const normalizedSearch = searchValue.trim().toLowerCase();
+  const openEditModal = useCallback(
+    (user: IAdminPanelUser) => {
+      deleteState.clearActionError()
+      modalState.openEditModal(user)
+    },
+    [deleteState, modalState]
+  )
 
-    if (!normalizedSearch) {
-      return activeUsers;
-    }
+  const openDeleteModal = useCallback(
+    (user: IAdminPanelUser) => {
+      deleteState.clearActionError()
+      modalState.openDeleteModal(user)
+    },
+    [deleteState, modalState]
+  )
 
-    return activeUsers.filter((user) => {
-      const haystack = `${user.fullName} ${user.email} ${user.roleLabel}`.toLowerCase();
-      return haystack.includes(normalizedSearch);
-    });
-  }, [activeUsers, searchValue]);
+  const closeCreateModal = useCallback(() => {
+    deleteState.clearActionError()
+    modalState.closeCreateModal()
+  }, [deleteState, modalState])
 
-  const deleteUser = async () => {
-    if (!selectedUser || selectedUser.isAdmin) {
-      deleteHandlers.close();
-      return false;
-    }
+  const closeEditModal = useCallback(() => {
+    deleteState.clearActionError()
+    modalState.closeEditModal()
+  }, [deleteState, modalState])
 
-    setActionError(null);
-    setIsActionPending(true);
-
-    return new Promise<boolean>((resolve) => {
-      startTransition(() => {
-        void deleteAdminUserAction(selectedUser.id)
-          .then((result) => {
-            if (!result.success) {
-              setActionError(result.error ?? 'No fue posible eliminar el usuario.');
-              resolve(false);
-              return;
-            }
-
-            setUsers((currentUsers) =>
-              currentUsers.map((user) =>
-                user.id === selectedUser.id ? { ...user, isDeleted: true } : user
-              )
-            );
-            setSelectedUser(null);
-            deleteHandlers.close();
-            resolve(true);
-          })
-          .catch(() => {
-            setActionError('No fue posible eliminar el usuario.');
-            resolve(false);
-          })
-          .finally(() => {
-            setIsActionPending(false);
-          });
-      });
-    });
-  };
-
-  const openEditModal = (user: IAdminPanelUser) => {
-    setActionError(null);
-    setSelectedUser(user);
-    editHandlers.open();
-  };
-
-  const openDeleteModal = (user: IAdminPanelUser) => {
-    setActionError(null);
-    setSelectedUser(user);
-    deleteHandlers.open();
-  };
-
-  const closeEditModal = () => {
-    setActionError(null);
-    setSelectedUser(null);
-    editHandlers.close();
-  };
-
-  const closeDeleteModal = () => {
-    setActionError(null);
-    setSelectedUser(null);
-    deleteHandlers.close();
-  };
+  const closeDeleteModal = useCallback(() => {
+    deleteState.clearActionError()
+    modalState.closeDeleteModal()
+  }, [deleteState, modalState])
 
   return {
-    searchValue,
-    activeUsersCount: activeUsers.length,
-    filteredUsers,
-    avatarColorByUserId: avatarPalette.avatarColorByUserId,
-    actionError,
-    isActionPending,
-    selectedUser,
-    createOpened,
-    editOpened,
-    deleteOpened,
-    roleOptions: [...USER_ROLE_OPTIONS],
-    setSearchValue,
-    deleteUser,
-    openCreateModal: () => {
-      setActionError(null);
-      createHandlers.open();
-    },
-    closeCreateModal: () => {
-      setActionError(null);
-      createHandlers.close();
-    },
+    searchValue: usersState.searchValue,
+    activeUsersCount: usersState.activeUsersCount,
+    filteredUsers: usersState.filteredUsers,
+    avatarColorByUserId,
+    actionError: deleteState.actionError,
+    isActionPending: deleteState.isActionPending,
+    selectedUser: modalState.selectedUser,
+    createOpened: modalState.createOpened,
+    editOpened: modalState.editOpened,
+    deleteOpened: modalState.deleteOpened,
+    roleOptions: [...ADMIN_PANEL_ROLE_OPTIONS],
+    setSearchValue: usersState.setSearchValue,
+    deleteUser: deleteState.deleteUser,
+    openCreateModal,
+    closeCreateModal,
     openEditModal,
     closeEditModal,
     openDeleteModal,
     closeDeleteModal,
-    clearActionError: () => setActionError(null)
-  };
+    clearActionError: deleteState.clearActionError
+  }
 }

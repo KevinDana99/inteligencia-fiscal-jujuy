@@ -2,7 +2,7 @@
 
 import { Button, Group, Modal, Text, ThemeIcon, Title } from '@mantine/core'
 import { IconDoorExit, IconTrash } from '@tabler/icons-react'
-import classes from '../AdminPanelShell/AdminPanelShell.module.css'
+import classes from '../../styles/AdminPanel.module.css'
 
 export function AdminPanelActionModal({
   opened,

@@ -24,13 +24,20 @@ describe('getAdminPanelAction', () => {
     expect(result.error).toBeUndefined()
     expect(result.data).not.toBeNull()
     expect(result.data?.users).toHaveLength(ADMIN_PANEL_MOCK_DATA.users.length)
-    expect(result.data?.users).toEqual(ADMIN_PANEL_MOCK_DATA.users)
+    expect(result.data?.users).toEqual(
+      ADMIN_PANEL_MOCK_DATA.users.map((user) => ({
+        ...user,
+        isAdmin: Boolean(user.isAdmin),
+        isDeleted: Boolean(user.isDeleted)
+      }))
+    )
     expect(result.data?.users[0]).toEqual({
       id: 'admin',
       fullName: 'Administrador',
       email: 'admin@plantilla.local',
       roleLabel: 'Administrador',
-      isAdmin: true
+      isAdmin: true,
+      isDeleted: false
     })
   })
 })

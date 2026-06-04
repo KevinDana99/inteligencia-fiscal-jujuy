@@ -1,19 +1,14 @@
 import Image from 'next/image'
 import { Avatar, Button, Text } from '@mantine/core'
 import { IconDoorExit } from '@tabler/icons-react'
-import type { IAuthSession } from '@/modules/auth/data/models/Auth'
-import { getInitials } from '../../utils/getInitials'
-import classes from '../AdminPanelShell/AdminPanelShell.module.css'
+import classes from '../../styles/AdminPanel.module.css'
 
 export function AdminPanelNavbar({
-  session,
+  profileInitials,
+  profileLabel,
   isSignOutPending,
   onSignOutClick
-}: {
-  session: IAuthSession
-  isSignOutPending: boolean
-  onSignOutClick: () => void
-}) {
+}: AdminPanelNavbarProps) {
   return (
     <header className={classes.header}>
       <div className={classes.headerInner}>
@@ -41,9 +36,9 @@ export function AdminPanelNavbar({
               radius='xl'
               className={classes.profileAvatar}
             >
-              {getInitials(session.user.nombreUsuario ?? '')}
+              {profileInitials}
             </Avatar>
-            <Text className={classes.profileLabel}>Administrador</Text>
+            <Text className={classes.profileLabel}>{profileLabel}</Text>
           </div>
 
           <Button
@@ -62,4 +57,11 @@ export function AdminPanelNavbar({
       </div>
     </header>
   )
+}
+
+interface AdminPanelNavbarProps {
+  profileInitials: string
+  profileLabel: string
+  isSignOutPending: boolean
+  onSignOutClick: () => void
 }
