@@ -737,6 +737,41 @@
   text-align: center;
 }
 
+.tableFooter {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+  margin-top: 10px;
+  border-top: 1px solid var(--mantine-color-gray-2);
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagerButton {
+  width: 26px;
+  height: 26px;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+  border-color: var(--mantine-color-gray-2);
+}
+
+.pagerButton:hover,
+.pagerButton[data-hovered],
+.pagerButton[data-active] {
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+  border-color: var(--mantine-color-gray-2);
+}
+
+.pagerLabel {
+  color: var(--mantine-color-gray-5);
+  font-size: 12px;
+}
+
 .emptyCard {
   border: 1px solid var(--mantine-color-gray-2);
   background: var(--mantine-color-white);

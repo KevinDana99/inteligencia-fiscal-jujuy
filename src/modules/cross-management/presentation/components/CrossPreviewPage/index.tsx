@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import {
+  ActionIcon,
   Badge,
   Button,
   Card,
@@ -13,6 +14,8 @@ import {
   TextInput
 } from '@mantine/core'
 import {
+  IconArrowNarrowLeft,
+  IconArrowNarrowRight,
   IconActivity,
   IconChevronLeft,
   IconFileText,
@@ -57,6 +60,40 @@ const PLAN_COLUMN_GROUPS = [
   { label: 'Créditos', span: 2, className: 'coef' },
   { label: 'Final', span: 1, className: 'final' }
 ] as const
+
+function Pager({
+  current,
+  total,
+  disabled
+}: {
+  current: number
+  total: number
+  disabled?: boolean
+}) {
+  return (
+    <div className={classes.pager}>
+      <ActionIcon
+        variant='default'
+        radius='md'
+        className={classes.pagerButton}
+        disabled={disabled || current <= 1}
+      >
+        <IconArrowNarrowLeft size={14} />
+      </ActionIcon>
+      <Text className={classes.pagerLabel}>
+        {current} / {total}
+      </Text>
+      <ActionIcon
+        variant='default'
+        radius='md'
+        className={classes.pagerButton}
+        disabled={disabled || current >= total}
+      >
+        <IconArrowNarrowRight size={14} />
+      </ActionIcon>
+    </div>
+  )
+}
 
 export function CrossPreviewPage({ crossId }: { crossId: string }) {
   const cross = crossPreviewMockById[crossId]
@@ -466,6 +503,10 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
                   )}
                 </Table.Tbody>
               </Table>
+            </div>
+
+            <div className={classes.tableFooter}>
+              <Pager current={1} total={1} disabled />
             </div>
           </Card>
         </div>
