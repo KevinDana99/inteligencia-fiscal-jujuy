@@ -10,8 +10,22 @@ import {
 import { mapAlternateAddressRecordToViewModel } from '@/modules/unified-register/data/mappers/mapAlternateAddress';
 import { mapContactRecordToViewModel } from '@/modules/unified-register/data/mappers/mapContact';
 import { mapNoteRecordToViewModel } from '@/modules/unified-register/data/mappers/mapNote';
+import type { IUnifiedRegisterDetail } from '@/modules/unified-register/data/models/UnifiedRegister';
 import { UnifiedRegisterPreviewPage } from '@/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage';
 import { unifiedRegisterDetailsFixture } from '@/modules/unified-register/data/sources/mock/fixtures/unifiedRegisterItems';
+
+const unifiedRegisterDetailTemplate = unifiedRegisterDetailsFixture[0];
+
+function buildUnifiedRegisterDetailFallback(
+  contribuyenteId: string,
+  cuit: string
+): IUnifiedRegisterDetail {
+  return {
+    ...unifiedRegisterDetailTemplate,
+    contribuyenteId,
+    cuit
+  };
+}
 
 export default async function UnifiedRegisterPreviewRoute({
   params,
@@ -23,30 +37,38 @@ export default async function UnifiedRegisterPreviewRoute({
   const { cuit } = await params;
   const { id } = await searchParams;
   const decodedCuit = decodeURIComponent(cuit);
-  const item = unifiedRegisterDetailsFixture.find((entry) =>
+  const fixtureItem = unifiedRegisterDetailsFixture.find((entry) =>
     id ? entry.contribuyenteId === id : entry.cuit === decodedCuit
   );
+  const contribuyenteId = id ?? fixtureItem?.contribuyenteId;
 
-  if (!item) {
+  if (!contribuyenteId) {
     notFound();
   }
 
-  const headerResult = await getUnifiedRegisterHeaderAction(item.contribuyenteId);
-  const alternateAddressesResult = await getAlternateAddressesAction(item.contribuyenteId);
-  const notesResult = await getNotesAction(item.contribuyenteId, {
+  const headerResult = await getUnifiedRegisterHeaderAction(contribuyenteId);
+
+  if (!fixtureItem && !headerResult.data) {
+    notFound();
+  }
+
+  const item =
+    fixtureItem ?? buildUnifiedRegisterDetailFallback(contribuyenteId, decodedCuit);
+  const alternateAddressesResult = await getAlternateAddressesAction(contribuyenteId);
+  const notesResult = await getNotesAction(contribuyenteId, {
     pagina: 1,
     itemsPagina: 1
   });
-  const contactsResult = await getContactsAction(item.contribuyenteId, {
+  const contactsResult = await getContactsAction(contribuyenteId, {
     pagina: 1,
     itemsPagina: 1
   });
-  const mercurioResult = await getUnifiedRegisterMercurioAction(item.contribuyenteId, {
+  const mercurioResult = await getUnifiedRegisterMercurioAction(contribuyenteId, {
     pagina: 1,
     itemsPagina: 3
   });
   const interventionOrdersResult = await getUnifiedRegisterInterventionOrdersAction(
-    item.contribuyenteId,
+    contribuyenteId,
     {
       pagina: 1,
       itemsPagina: 3

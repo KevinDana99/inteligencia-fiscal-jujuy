@@ -216,7 +216,6 @@ export function UnifiedRegisterPreviewPage({
     contactActionError,
     contactsCurrentPage,
     contactsTotalPages,
-    notes,
     noteActionError,
     notesCurrentPage,
     notesTotalPages,
@@ -236,7 +235,6 @@ export function UnifiedRegisterPreviewPage({
     activeSourceTableId,
     activeSourceTable,
     activeNote,
-    activeNoteIndex,
     isEditModalOpen,
     isDeleteModalOpen,
     editKind,
@@ -271,6 +269,8 @@ export function UnifiedRegisterPreviewPage({
     closeDeleteModal,
     resetDeleteModal,
     confirmDeleteModal,
+    goToPreviousContactPage,
+    goToNextContactPage,
     goToPreviousNote,
     goToNextNote,
     goToPreviousFinePage,
@@ -632,6 +632,8 @@ export function UnifiedRegisterPreviewPage({
               <Pager
                 current={contactsTotalPages ? contactsCurrentPage : 0}
                 total={Math.max(contactsTotalPages, 1)}
+                onPrevious={goToPreviousContactPage}
+                onNext={goToNextContactPage}
                 disabled={isContactsPagePending || contactsTotalPages <= 1}
               />
             }
@@ -648,7 +650,9 @@ export function UnifiedRegisterPreviewPage({
                     </button>
                     <button
                       className={classes.deleteLink}
-                      onClick={() => openDeleteModal('contact', contacts[0].id)}
+                      onClick={() =>
+                        openDeleteModal('contact', contacts[0].recordId ?? contacts[0].id)
+                      }
                     >
                       Eliminar
                     </button>
@@ -657,7 +661,10 @@ export function UnifiedRegisterPreviewPage({
               </div>
               <div className={classes.contactsList}>
                 {contacts.map((contact) => (
-                  <div key={contact.id} className={classes.contactItem}>
+                  <div
+                    key={`${contact.recordId ?? 'contact'}-${contact.id}`}
+                    className={classes.contactItem}
+                  >
                     <Text className={classes.contactLabel}>{contact.label}</Text>
                     <Text className={classes.contactValue}>{contact.value}</Text>
                   </div>

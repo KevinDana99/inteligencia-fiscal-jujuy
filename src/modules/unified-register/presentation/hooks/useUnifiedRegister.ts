@@ -1,15 +1,12 @@
 'use client';
 
 import { useCallback, useMemo, useState, type ChangeEvent } from 'react';
-import type {
-  IUnifiedRegisterItem,
-  IUnifiedRegisterItems
-} from '../../data/models/UnifiedRegister';
-
-type UnifiedRegisterSearchField = keyof Pick<
-  IUnifiedRegisterItem,
-  'cuit' | 'businessName'
->;
+import type { IUnifiedRegisterItems } from '../../data/models/UnifiedRegister';
+import type { UnifiedRegisterSearchField } from '../constants/unifiedRegisterPage';
+import {
+  matchesUnifiedRegisterSearch,
+  normalizeUnifiedRegisterSearchValue
+} from '../utils/unifiedRegisterSearch';
 
 interface UseUnifiedRegisterSearchParams {
   items: IUnifiedRegisterItems;
@@ -21,27 +18,13 @@ const DEFAULT_SEARCH_FIELDS: readonly UnifiedRegisterSearchField[] = [
   'businessName'
 ];
 
-function normalizeSearchValue(value: string) {
-  return value.trim().toLowerCase();
-}
-
-function matchesUnifiedRegisterSearch(
-  item: IUnifiedRegisterItem,
-  normalizedSearch: string,
-  searchFields: readonly UnifiedRegisterSearchField[]
-) {
-  return searchFields.some((field) =>
-    normalizeSearchValue(item[field]).includes(normalizedSearch)
-  );
-}
-
 export function useUnifiedRegisterSearch({
   items,
   searchFields = DEFAULT_SEARCH_FIELDS
 }: UseUnifiedRegisterSearchParams) {
   const [search, setSearch] = useState('');
   const normalizedSearch = useMemo(
-    () => normalizeSearchValue(search),
+    () => normalizeUnifiedRegisterSearchValue(search),
     [search]
   );
 

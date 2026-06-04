@@ -70,6 +70,7 @@ export interface IUnifiedRegisterAlternateAddressListData {
 
 export interface IUnifiedRegisterContact {
   id: string;
+  recordId?: string;
   label: string;
   value: string;
 }

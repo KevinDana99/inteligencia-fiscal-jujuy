@@ -48,6 +48,15 @@ export const unifiedRegisterItemsFixture: IUnifiedRegisterItems = [
     regime: 'Régimen General',
     status: 'Inactivo',
     riskLevel: 'C'
+  },
+  {
+    contribuyenteId: '06b815b5-b68b-41b9-be4c-10a7cb566c01',
+    cuit: '30-12345678-1',
+    businessName: 'Test Business',
+    activity: 'Test Activity',
+    regime: 'Régimen General',
+    status: 'Activo',
+    riskLevel: 'B'
   }
 ];
 

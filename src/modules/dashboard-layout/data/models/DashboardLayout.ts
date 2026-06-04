@@ -66,6 +66,10 @@ export const DASHBOARD_NAV_ITEMS: IDashboardNavItem[] = [
 export function getDashboardSectionFromPathname(
   pathname: string
 ): DashboardSection {
+  if (pathname.startsWith('/vista-previa-padron')) {
+    return 'padron-unificado'
+  }
+
   switch (pathname) {
     case '/explorar-padron':
       return 'explorar-padron'

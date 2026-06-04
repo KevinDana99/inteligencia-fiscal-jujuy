@@ -1,9 +1,11 @@
 'use client';
 
-import { Card, Pagination, Stack, Text, TextInput } from '@mantine/core';
-import { IconSearch } from '@tabler/icons-react';
+import { Text } from '@mantine/core';
 import type { IUnifiedRegisterListData } from '../../../data/models/UnifiedRegister';
-import { UnifiedRegisterCard } from '../UnifiedRegisterCard';
+import { UnifiedRegisterEmptyState } from '../UnifiedRegisterEmptyState';
+import { UnifiedRegisterList } from '../UnifiedRegisterList';
+import { UnifiedRegisterPagination } from '../UnifiedRegisterPagination';
+import { UnifiedRegisterSearch } from '../UnifiedRegisterSearch';
 import { useUnifiedRegisterPage } from '../../hooks/useUnifiedRegisterPage';
 import classes from './UnifiedRegisterPage.module.css';
 
@@ -26,42 +28,21 @@ export function UnifiedRegisterPage({
 
   return (
     <div className={classes.page}>
-      <div className={classes.searchRow}>
-        <TextInput
-          value={search}
-          onChange={handleSearchChange}
-          placeholder="Buscar por CUIT o razón social..."
-          leftSection={<IconSearch size={16} stroke={2} />}
-          className={classes.searchInput}
-        />
-      </div>
+      <UnifiedRegisterSearch value={search} onChange={handleSearchChange} />
 
       {hasResults ? (
         <>
-          <div className={classes.cards}>
-            {filteredItems.map((item) => (
-              <UnifiedRegisterCard key={item.contribuyenteId} item={item} />
-            ))}
-          </div>
+          <UnifiedRegisterList items={filteredItems} />
 
-          <div className={classes.paginationRow}>
-            <Pagination
-              total={totalPages}
-              value={activePage}
-              onChange={setActivePage}
-              disabled={isPagePending}
-              aria-label="Paginación del padrón unificado"
-            />
-          </div>
+          <UnifiedRegisterPagination
+            totalPages={totalPages}
+            activePage={activePage}
+            onChange={setActivePage}
+            disabled={isPagePending}
+          />
         </>
       ) : (
-        <Card className={classes.emptyState} padding="xl" radius="lg">
-          <Stack gap="xs">
-            <Text className={classes.emptyText}>
-              No se encontraron resultados para ese CUIT o razón social
-            </Text>
-          </Stack>
-        </Card>
+        <UnifiedRegisterEmptyState />
       )}
 
       {pageError ? (

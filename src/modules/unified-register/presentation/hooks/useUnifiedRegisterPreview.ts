@@ -51,10 +51,6 @@ const EMPTY_CONTACT_FORM: ContactForm = {
   accountant: ''
 };
 
-function createId(prefix: string) {
-  return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
-}
-
 export function useUnifiedRegisterPreview(
   item: IUnifiedRegisterDetail,
   initialContactsData: IUnifiedRegisterContactsListData | null,
@@ -283,7 +279,11 @@ export function useUnifiedRegisterPreview(
   const openEditModal = (kind: Exclude<EditKind, null>, itemToEdit: EditableItem) => {
     setIsEditModalOpen(true);
     setEditKind(kind);
-    setEditingItemId(itemToEdit.id);
+    setEditingItemId(
+      kind === 'contact'
+        ? (itemToEdit as IUnifiedRegisterContact).recordId ?? itemToEdit.id
+        : itemToEdit.id
+    );
     setAddressActionError(null);
     setContactActionError(null);
     setNoteActionError(null);
@@ -478,6 +478,26 @@ export function useUnifiedRegisterPreview(
     });
   };
 
+  const goToPreviousContactPage = () => {
+    if (contactsCurrentPage <= 1) {
+      return;
+    }
+
+    startContactsPageTransition(async () => {
+      await refreshContacts(contactsCurrentPage - 1);
+    });
+  };
+
+  const goToNextContactPage = () => {
+    if (contactsCurrentPage >= contactsTotalPages) {
+      return;
+    }
+
+    startContactsPageTransition(async () => {
+      await refreshContacts(contactsCurrentPage + 1);
+    });
+  };
+
   const goToPreviousFinePage = () => {
     if (finesCurrentPage <= 1) {
       return;
@@ -667,6 +687,8 @@ export function useUnifiedRegisterPreview(
     resetDeleteModal,
     confirmDeleteModal,
     removeNote,
+    goToPreviousContactPage,
+    goToNextContactPage,
     goToPreviousNote,
     goToNextNote,
     goToPreviousFinePage,
