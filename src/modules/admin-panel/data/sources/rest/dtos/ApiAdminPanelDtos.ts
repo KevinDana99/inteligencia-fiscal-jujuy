@@ -8,11 +8,22 @@ export type ApiAdminUserDto = {
   esSuperAdministrador: boolean;
 };
 
+export type ApiAdminListUserDto =
+  | ApiAdminUserDto
+  | {
+      usuario: string;
+      correo: string;
+      cargo: string;
+      usuarioId?: string;
+      activo?: boolean;
+      esSuperAdministrador?: boolean;
+    };
+
 export type ApiListAdminUsersResponseDto = {
   resumen: {
     cantidadUsuariosActivos: number;
   };
-  usuarios: ApiAdminUserDto[];
+  usuarios: ApiAdminListUserDto[];
 };
 
 export type ApiGetAdminUserResponseDto = ApiAdminUserDto;
@@ -23,6 +34,7 @@ export type ApiCreateAdminUserRequestDto = {
   correo: string;
   cargo: string;
   contrasena: string;
+  confirmarContrasena: string;
 };
 
 export type ApiCreateAdminUserResponseDto = ApiAdminUserDto;
@@ -37,9 +49,12 @@ export type ApiUpdateAdminUserRequestDto = {
 };
 
 export type ApiErrorResponseDto = {
-  codigo: string;
-  mensaje: string;
-  estado: number;
+  codigo?: string;
+  mensaje?: string;
+  estado?: number;
+  status?: number;
+  title?: string;
+  errors?: Record<string, string[]>;
 };
 
 export type ApiAllowedDomainDto = {

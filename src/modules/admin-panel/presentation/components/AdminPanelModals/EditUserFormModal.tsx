@@ -54,6 +54,8 @@ function EditUserFormModal({
     isPending,
     error,
     formAction,
+    handleEmailChange,
+    handleSubmitCapture,
     handlePasswordChange
   } = useEditAdminUserFormModal(onClose)
 
@@ -80,7 +82,11 @@ function EditUserFormModal({
         overlay: classes.modalOverlay
       }}
     >
-      <form ref={formRef} action={formAction}>
+      <form
+        ref={formRef}
+        action={formAction}
+        onSubmitCapture={handleSubmitCapture}
+      >
         <input type='hidden' name='usuarioId' value={initialUser?.id ?? ''} />
 
         <div className={classes.modalSection}>
@@ -127,6 +133,7 @@ function EditUserFormModal({
               placeholder='Ejemplo@gmail.com'
               defaultValue={initialUser?.email ?? ''}
               disabled={isPending}
+              onChange={handleEmailChange}
               classNames={modalInputClasses}
             />
           </div>

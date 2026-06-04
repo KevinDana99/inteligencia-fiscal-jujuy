@@ -11,7 +11,11 @@ export function AdminPanelSettingsPage({
   allowedDomains: IAdminAllowedDomains
 }) {
   return (
-    <AdminPanelTemplate session={session} currentSection="settings">
+    <AdminPanelTemplate
+      session={session}
+      currentSection="settings"
+      initialAllowedDomains={allowedDomains}
+    >
       <AdminPanelSettingsSection allowedDomains={allowedDomains} />
     </AdminPanelTemplate>
   );

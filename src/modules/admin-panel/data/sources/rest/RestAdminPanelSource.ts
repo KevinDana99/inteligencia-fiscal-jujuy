@@ -25,10 +25,50 @@ import {
 
 async function parseErrorResponse(response: Response): Promise<ApiErrorResponseDto | null> {
   try {
-    return (await response.json()) as ApiErrorResponseDto;
+    const body = await response.text();
+
+    if (!body.trim()) {
+      return null;
+    }
+
+    return JSON.parse(body) as ApiErrorResponseDto;
   } catch {
     return null;
   }
+}
+
+async function parseJsonResponse<T>(response: Response): Promise<T | null> {
+  try {
+    const body = await response.text();
+
+    if (!body.trim()) {
+      return null;
+    }
+
+    return JSON.parse(body) as T;
+  } catch {
+    return null;
+  }
+}
+
+function getErrorMessage(error: ApiErrorResponseDto | null, fallback: string) {
+  if (error?.mensaje?.trim()) {
+    return error.mensaje;
+  }
+
+  const validationMessage = Object.values(error?.errors ?? {}).find(
+    (messages) => Array.isArray(messages) && messages.length > 0
+  )?.[0];
+
+  if (validationMessage?.trim()) {
+    return validationMessage;
+  }
+
+  if (error?.title?.trim()) {
+    return error.title;
+  }
+
+  return fallback;
 }
 
 export class RestAdminPanelSource implements IAdminPanelSource {
@@ -53,7 +93,7 @@ export class RestAdminPanelSource implements IAdminPanelSource {
 
     if (!response.ok) {
       const error = await parseErrorResponse(response);
-      throw new Error(error?.mensaje ?? 'Unable to list admin users');
+      throw new Error(getErrorMessage(error, 'Unable to list admin users'));
     }
 
     const dto = (await response.json()) as ApiListAdminUsersResponseDto;
@@ -71,7 +111,7 @@ export class RestAdminPanelSource implements IAdminPanelSource {
 
     if (!response.ok) {
       const error = await parseErrorResponse(response);
-      throw new Error(error?.mensaje ?? 'Unable to get admin user');
+      throw new Error(getErrorMessage(error, 'Unable to get admin user'));
     }
 
     const dto = (await response.json()) as ApiGetAdminUserResponseDto;
@@ -89,7 +129,7 @@ export class RestAdminPanelSource implements IAdminPanelSource {
 
     if (!response.ok) {
       const error = await parseErrorResponse(response)
-      throw new Error(error?.mensaje ?? 'Unable to list allowed domains')
+      throw new Error(getErrorMessage(error, 'Unable to list allowed domains'))
     }
 
     const dto = (await response.json()) as ApiAllowedDomainDto[]
@@ -104,7 +144,8 @@ export class RestAdminPanelSource implements IAdminPanelSource {
       apellido: params.lastName.trim(),
       correo: params.email.trim().toLowerCase(),
       cargo: params.roleLabel,
-      contrasena: params.password
+      contrasena: params.password,
+      confirmarContrasena: params.confirmPassword
     };
 
     const response = await fetch(this.buildUrl('/api/super-administrador/usuarios'), {
@@ -117,13 +158,19 @@ export class RestAdminPanelSource implements IAdminPanelSource {
       const error = await parseErrorResponse(response);
       return {
         success: false,
-        error: error?.mensaje ?? 'Unable to create admin user',
+        error: getErrorMessage(error, 'Unable to create admin user'),
         code: error?.codigo,
         status: response.status
       };
     }
 
-    const dto = (await response.json()) as ApiCreateAdminUserResponseDto;
+    const dto = await parseJsonResponse<ApiCreateAdminUserResponseDto>(response);
+
+    if (!dto) {
+      return {
+        success: true
+      };
+    }
 
     return {
       success: true,
@@ -162,7 +209,7 @@ export class RestAdminPanelSource implements IAdminPanelSource {
       const error = await parseErrorResponse(response);
       return {
         success: false,
-        error: error?.mensaje ?? 'Unable to update admin user',
+        error: getErrorMessage(error, 'Unable to update admin user'),
         code: error?.codigo,
         status: response.status
       };
@@ -184,7 +231,7 @@ export class RestAdminPanelSource implements IAdminPanelSource {
       const error = await parseErrorResponse(response);
       return {
         success: false,
-        error: error?.mensaje ?? 'Unable to delete admin user',
+        error: getErrorMessage(error, 'Unable to delete admin user'),
         code: error?.codigo,
         status: response.status
       };
@@ -209,7 +256,7 @@ export class RestAdminPanelSource implements IAdminPanelSource {
       const error = await parseErrorResponse(response)
       return {
         success: false,
-        error: error?.mensaje ?? 'Unable to add allowed domain',
+        error: getErrorMessage(error, 'Unable to add allowed domain'),
         code: error?.codigo,
         status: response.status
       }
@@ -231,7 +278,7 @@ export class RestAdminPanelSource implements IAdminPanelSource {
       const error = await parseErrorResponse(response)
       return {
         success: false,
-        error: error?.mensaje ?? 'Unable to delete allowed domain',
+        error: getErrorMessage(error, 'Unable to delete allowed domain'),
         code: error?.codigo,
         status: response.status
       }

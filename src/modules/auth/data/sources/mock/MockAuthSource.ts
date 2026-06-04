@@ -1,4 +1,4 @@
-import { AUTH_MOCK_USERS } from '@/lib/auth/constants';
+import { AUTH_MOCK_USERS, USER_ROLES } from '@/lib/auth/constants';
 import type { IAuthSource } from '../../interfaces/AuthSource';
 import type {
   ICommandResult,
@@ -45,7 +45,8 @@ function buildMockCurrentContextResponse(token: string): IIamCurrentContextRespo
     nombreUsuario: user.userName,
     correo: user.email,
     sujeto: `mock-subject-${user.role}`,
-    tipoUsuario: user.role === 'admin' ? 'SUPER_ADMIN' : 'ANALISTA_FISCAL'
+    tipoUsuario:
+      user.role === 'admin' ? USER_ROLES.ADMIN : USER_ROLES.FISCAL_ANALYST
   };
 }
 

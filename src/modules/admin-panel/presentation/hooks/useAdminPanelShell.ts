@@ -1,6 +1,6 @@
 'use client';
 
-import { startTransition, useEffect, useMemo, useState } from 'react';
+import { startTransition, useMemo, useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { deleteAdminUserAction } from '../../data/actions';
 import type {
@@ -81,7 +81,7 @@ function buildInitialAvatarPalette(users: IAdminPanelUser[]) {
 
 export function useAdminPanelShell(initialData: IAdminPanelData) {
   const [users, setUsers] = useState(initialData.users);
-  const [avatarPalette, setAvatarPalette] = useState(() => buildInitialAvatarPalette(initialData.users));
+  const [avatarPalette] = useState(() => buildInitialAvatarPalette(initialData.users));
   const [searchValue, setSearchValue] = useState('');
   const [selectedUser, setSelectedUser] = useState<IAdminPanelUser | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -89,11 +89,6 @@ export function useAdminPanelShell(initialData: IAdminPanelData) {
   const [createOpened, createHandlers] = useDisclosure(false);
   const [editOpened, editHandlers] = useDisclosure(false);
   const [deleteOpened, deleteHandlers] = useDisclosure(false);
-
-  useEffect(() => {
-    setUsers(initialData.users)
-    setAvatarPalette(buildInitialAvatarPalette(initialData.users))
-  }, [initialData.users])
 
   const activeUsers = useMemo(() => users.filter((user) => !user.isDeleted), [users]);
 

@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  type FormEvent,
   useActionState,
   useEffect,
   useRef,
@@ -8,12 +9,15 @@ import {
 } from 'react'
 import { useRouter } from 'next/navigation'
 import { createAdminUserAction } from '../../data/actions'
+import { useAdminPanelConfigContext } from '../contexts'
 import { INITIAL_CREATE_ADMIN_USER_STATE } from './mutations/createAdminUserState'
 
 export function useCreateAdminUserFormModal(onClose: () => void) {
   const router = useRouter()
   const formRef = useRef<HTMLFormElement>(null)
   const [passwordStrength, setPasswordStrength] = useState(0)
+  const [validationError, setValidationError] = useState<string | null>(null)
+  const { getEmailDomainError } = useAdminPanelConfigContext()
   const [state, formAction, isPending] = useActionState(
     createAdminUserAction,
     INITIAL_CREATE_ADMIN_USER_STATE
@@ -47,13 +51,49 @@ export function useCreateAdminUserFormModal(onClose: () => void) {
       return
     }
     formRef.current?.reset()
-    setPasswordStrength(0)
     onClose()
     router.refresh()
   }, [onClose, router, state.success])
 
+  const handleEmailChange = () => {
+    if (validationError) {
+      setValidationError(null)
+    }
+  }
+
+  const handleSubmitCapture = (event: FormEvent<HTMLFormElement>) => {
+    const formData = new FormData(event.currentTarget)
+    const email = String(formData.get('correo') ?? '')
+    const password = String(formData.get('contrasena') ?? '')
+    const confirmPassword = String(formData.get('confirmarContrasena') ?? '')
+    const domainError = getEmailDomainError(email)
+
+    if (domainError) {
+      event.preventDefault()
+      setValidationError(domainError)
+      return
+    }
+
+    if (confirmPassword !== password) {
+      event.preventDefault()
+      setValidationError('Las contraseñas no coinciden.')
+      return
+    }
+
+    setValidationError(null)
+  }
+
   const handlePasswordChange = (value: string) => {
+    if (validationError) {
+      setValidationError(null)
+    }
     setPasswordStrength(getPasswordStrength(value))
+  }
+
+  const handleConfirmPasswordChange = () => {
+    if (validationError) {
+      setValidationError(null)
+    }
   }
 
   return {
@@ -61,8 +101,11 @@ export function useCreateAdminUserFormModal(onClose: () => void) {
     passwordStrength,
     passwordColor,
     isPending,
-    error: state.message,
+    error: validationError ?? state.message,
     formAction,
+    handleEmailChange,
+    handleConfirmPasswordChange,
+    handleSubmitCapture,
     handlePasswordChange
   }
 }

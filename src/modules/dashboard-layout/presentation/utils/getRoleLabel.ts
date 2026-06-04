@@ -1,11 +1,12 @@
+import { USER_ROLES } from '@/lib/auth/constants'
 import { IAuthSession } from '@/modules/auth/types'
 
 function getRoleLabel(userType: IAuthSession['user']['tipoUsuario']) {
-  if (userType === 'SUPER_ADMIN') {
+  if (userType === USER_ROLES.ADMIN) {
     return 'Super Administrador'
   }
 
-  if (userType === 'ANALISTA_FISCAL') {
+  if (userType === USER_ROLES.FISCAL_ANALYST) {
     return 'Analista Fiscal'
   }
 

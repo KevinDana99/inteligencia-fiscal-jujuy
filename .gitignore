@@ -6,3 +6,4 @@ coverage
 codex/assets
 bun.lock
 tsconfig.tsbuildinfo
+.env

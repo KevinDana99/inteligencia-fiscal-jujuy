@@ -29,11 +29,12 @@ export function AdminPanelSettingsSection({
 }) {
   const {
     allowedDomains: domains,
-    domainValue,
     domainError,
-    handleAddDomain,
     handleRemoveDomain,
     handleChangeDomain,
+    handleAddDomainSubmit,
+    formRef,
+    formAction,
     isPending
   } = useAdminPanelSettingsSection(allowedDomains)
   return (
@@ -101,38 +102,42 @@ export function AdminPanelSettingsSection({
                 Agregar nuevo dominio
               </Text>
 
-              <Group gap='sm' align='flex-start'>
-                <div className={classes.configDomainField}>
-                  <TextInput
-                    placeholder='ejemplo.gob.ar'
-                    value={domainValue}
-                    disabled={isPending}
-                    onChange={(event) => {
-                      handleChangeDomain(event.currentTarget.value)
-                    }}
-                    leftSection={<IconMail size={16} />}
-                    className={classes.configDomainInput}
-                    classNames={{
-                      input: `${classes.modalInput} ${domainError ? classes.modalInputError : ''}`,
-                      section: classes.modalInputSection
-                    }}
-                  />
-                  <Text className={classes.configDomainError}>
-                    {domainError ?? ''}
-                  </Text>
-                </div>
+              <form
+                ref={formRef}
+                action={formAction}
+                onSubmitCapture={handleAddDomainSubmit}
+              >
+                <Group gap='sm' align='flex-start'>
+                  <div className={classes.configDomainField}>
+                    <TextInput
+                      name='dominio'
+                      placeholder='ejemplo.gob.ar'
+                      disabled={isPending}
+                      onChange={handleChangeDomain}
+                      leftSection={<IconMail size={16} />}
+                      className={classes.configDomainInput}
+                      classNames={{
+                        input: `${classes.modalInput} ${domainError ? classes.modalInputError : ''}`,
+                        section: classes.modalInputSection
+                      }}
+                    />
+                    <Text className={classes.configDomainError}>
+                      {domainError ?? ''}
+                    </Text>
+                  </div>
 
-                <Button
-                  onClick={handleAddDomain}
-                  disabled={isPending}
-                  loading={isPending}
-                  leftSection={<IconPlus size={15} />}
-                  className={classes.configAddButton}
-                  radius='xl'
-                >
-                  Agregar
-                </Button>
-              </Group>
+                  <Button
+                    type='submit'
+                    disabled={isPending}
+                    loading={isPending}
+                    leftSection={<IconPlus size={15} />}
+                    className={classes.configAddButton}
+                    radius='xl'
+                  >
+                    Agregar
+                  </Button>
+                </Group>
+              </form>
             </Stack>
           </Stack>
         </Stack>

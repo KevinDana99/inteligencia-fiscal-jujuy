@@ -4,7 +4,7 @@ import {
   readRequestAuthSession,
   setResponseAuthCookies
 } from './cookies'
-import { AUTH_COOKIE_NAMES, AUTH_HEADERS, AUTH_ROUTES } from './constants'
+import { AUTH_COOKIE_NAMES, AUTH_HEADERS, AUTH_ROUTES, USER_ROLES } from './constants'
 import { refreshAuthSession } from './refresh-session'
 import {
   isSessionExpired,
@@ -45,7 +45,7 @@ export function redirectToLogin(request: NextRequest): NextResponse {
 }
 
 export function getRedirectPathByUserType(userType: AuthUserType): string {
-  return userType === 'SUPER_ADMIN' ? AUTH_ROUTES.admin : AUTH_ROUTES.home
+  return userType === USER_ROLES.ADMIN ? AUTH_ROUTES.admin : AUTH_ROUTES.home
 }
 
 export async function refreshExpiredRequestSession(

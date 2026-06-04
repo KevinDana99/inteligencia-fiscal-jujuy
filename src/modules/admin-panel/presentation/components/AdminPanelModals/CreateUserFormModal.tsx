@@ -51,6 +51,9 @@ function CreateUserFormModal({
     isPending,
     error,
     formAction,
+    handleEmailChange,
+    handleConfirmPasswordChange,
+    handleSubmitCapture,
     handlePasswordChange
   } = useCreateAdminUserFormModal(onClose)
 
@@ -74,7 +77,11 @@ function CreateUserFormModal({
         overlay: classes.modalOverlay
       }}
     >
-      <form ref={formRef} action={formAction}>
+      <form
+        ref={formRef}
+        action={formAction}
+        onSubmitCapture={handleSubmitCapture}
+      >
         <div className={classes.modalSection}>
           <div className={classes.formRow2}>
             <div className={classes.modalField}>
@@ -116,6 +123,7 @@ function CreateUserFormModal({
               }
               placeholder='Ejemplo@gmail.com'
               disabled={isPending}
+              onChange={handleEmailChange}
               classNames={modalInputClasses}
             />
           </div>
@@ -151,6 +159,29 @@ function CreateUserFormModal({
               onChange={(event) =>
                 handlePasswordChange(event.currentTarget.value)
               }
+              disabled={isPending}
+              visibilityToggleIcon={({ reveal }) =>
+                reveal ? (
+                  <IconEyeOff size={18} stroke={1.8} />
+                ) : (
+                  <IconEye size={18} stroke={1.8} />
+                )
+              }
+              classNames={modalInputClasses}
+            />
+          </div>
+
+          <div className={classes.modalField}>
+            <PasswordInput
+              mt='md'
+              name='confirmarContrasena'
+              label={
+                <span className={classes.modalLabel}>
+                  Confirmar contraseña
+                  <span className={classes.modalRequired}>*</span>
+                </span>
+              }
+              onChange={handleConfirmPasswordChange}
               disabled={isPending}
               visibilityToggleIcon={({ reveal }) =>
                 reveal ? (

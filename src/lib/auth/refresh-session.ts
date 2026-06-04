@@ -1,14 +1,11 @@
 import { AUTH_MOCK_USERS } from './constants';
+import { isMockAuthEnabled } from './is-mock-auth-enabled';
 import { mapIamSessionResponseToSerializedAuthSession } from './session-mapper';
 import type {
   IIamRefreshSessionRequest,
   IIamSessionResponse,
   ISerializedAuthSession
 } from '@/modules/auth/data/models/Auth';
-
-const isMockEnabled = (): boolean => {
-  return process.env.NEXT_PUBLIC_USE_MOCK_AUTH !== 'false';
-};
 
 function buildMockSessionResponse(
   refreshToken: string,
@@ -41,7 +38,7 @@ export async function refreshAuthSession(
     return null;
   }
 
-  if (isMockEnabled()) {
+  if (isMockAuthEnabled()) {
     const mockUser =
       params.email === AUTH_MOCK_USERS.admin.email
         ? AUTH_MOCK_USERS.admin

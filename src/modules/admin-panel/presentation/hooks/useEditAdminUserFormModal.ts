@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  type FormEvent,
   useActionState,
   useEffect,
   useRef,
@@ -8,12 +9,15 @@ import {
 } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateAdminUserAction } from '../../data/actions'
+import { useAdminPanelConfigContext } from '../contexts'
 import { INITIAL_UPDATE_ADMIN_USER_STATE } from './mutations/updateAdminUserState'
 
 export function useEditAdminUserFormModal(onClose: () => void) {
   const router = useRouter()
   const formRef = useRef<HTMLFormElement>(null)
   const [passwordStrength, setPasswordStrength] = useState(0)
+  const [emailError, setEmailError] = useState<string | null>(null)
+  const { getEmailDomainError } = useAdminPanelConfigContext()
   const [state, formAction, isPending] = useActionState(
     updateAdminUserAction,
     INITIAL_UPDATE_ADMIN_USER_STATE
@@ -48,10 +52,29 @@ export function useEditAdminUserFormModal(onClose: () => void) {
     }
 
     formRef.current?.reset()
-    setPasswordStrength(0)
     onClose()
     router.refresh()
   }, [onClose, router, state.success])
+
+  const handleEmailChange = () => {
+    if (emailError) {
+      setEmailError(null)
+    }
+  }
+
+  const handleSubmitCapture = (event: FormEvent<HTMLFormElement>) => {
+    const formData = new FormData(event.currentTarget)
+    const email = String(formData.get('correo') ?? '')
+    const domainError = getEmailDomainError(email)
+
+    if (domainError) {
+      event.preventDefault()
+      setEmailError(domainError)
+      return
+    }
+
+    setEmailError(null)
+  }
 
   const handlePasswordChange = (value: string) => {
     setPasswordStrength(getPasswordStrength(value))
@@ -62,8 +85,10 @@ export function useEditAdminUserFormModal(onClose: () => void) {
     passwordStrength,
     passwordColor,
     isPending,
-    error: state.message,
+    error: emailError ?? state.message,
     formAction,
+    handleEmailChange,
+    handleSubmitCapture,
     handlePasswordChange
   }
 }

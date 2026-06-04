@@ -21,6 +21,8 @@ import { useLoginForm } from './useLoginForm'
 import classes from './LoginForm.module.css'
 import Image from 'next/image'
 
+const isMockAuthEnabled = process.env.NEXT_PUBLIC_USE_MOCK_AUTH === 'true'
+
 export default function LoginForm() {
   return <LoginFormContent />
 }
@@ -163,8 +165,14 @@ function LoginFormContent() {
           <LoginSubmitButton />
 
           <Text className={classes.credentialsHint}>
-            Credenciales de prueba:{' '}
-            <strong>user@plantilla.local / ChangeMe123!</strong>
+            {isMockAuthEnabled ? (
+              <>
+                Credenciales de prueba:{' '}
+                <strong>user@plantilla.local / ChangeMe123!</strong>
+              </>
+            ) : (
+              'Usa tus credenciales institucionales para ingresar.'
+            )}
           </Text>
         </form>
       </Paper>

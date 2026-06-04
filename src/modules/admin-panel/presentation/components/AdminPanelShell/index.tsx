@@ -1,6 +1,9 @@
 'use client';
 
-import type { IAdminPanelData } from '../../../data/models/AdminPanel';
+import type {
+  IAdminAllowedDomains,
+  IAdminPanelData
+} from '../../../data/models/AdminPanel';
 import { AdminPanelHomeSection } from '../AdminPanelHomeSection';
 import { AdminPanelTemplate } from '../AdminPanelTemplate';
 import { useAdminPanelShell } from '../../hooks';
@@ -9,11 +12,13 @@ import type { IAuthSession } from '@/modules/auth/data/models/Auth';
 export default function AdminPanelShell({
   data,
   session,
-  formattedDate
+  formattedDate,
+  allowedDomains
 }: {
   data: IAdminPanelData;
   session: IAuthSession;
   formattedDate: string;
+  allowedDomains: IAdminAllowedDomains;
 }) {
   const {
     searchValue,
@@ -38,7 +43,11 @@ export default function AdminPanelShell({
   } = useAdminPanelShell(data);
 
   return (
-    <AdminPanelTemplate session={session} currentSection="dashboard">
+    <AdminPanelTemplate
+      session={session}
+      currentSection="dashboard"
+      initialAllowedDomains={allowedDomains}
+    >
       <AdminPanelHomeSection
         activeUsersCount={activeUsersCount}
         filteredUsers={filteredUsers}

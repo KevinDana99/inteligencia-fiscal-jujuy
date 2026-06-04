@@ -18,6 +18,7 @@ export interface IAdminPanelMetrics {
 
 export interface IAdminPanelData {
   users: IAdminPanelUsers;
+  activeUsersCount?: number;
 }
 
 export interface IAdminAllowedDomain {
@@ -33,6 +34,7 @@ export interface IAdminPanelCreateUserInput {
   email: string;
   roleLabel: string;
   password: string;
+  confirmPassword: string;
 }
 
 export interface IAdminPanelUpdateUserInput {
