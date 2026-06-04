@@ -13,6 +13,7 @@ import {
   TextInput
 } from '@mantine/core'
 import {
+  IconActivity,
   IconChevronLeft,
   IconFileText,
   IconList,
@@ -35,6 +36,12 @@ const INDICATOR_CLASS_BY_TONE = {
   red: classes.indicatorRed,
   darkBlue: classes.indicatorDarkBlue
 } as const
+
+const STATUS_OPTIONS: Record<string, string> = {
+  estado: '— Estado',
+  relevante: '✓ Relevante',
+  reproceso: '🔴 Reproceso'
+}
 
 export function CrossPreviewPage({ crossId }: { crossId: string }) {
   const cross = crossPreviewMockById[crossId]
@@ -60,7 +67,9 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
     intimationModalOpened,
     filteredPlanRows,
     filteredAnalysisRows,
+    statusByCuit,
     updateTab,
+    updateAnalysisStatus,
     openIntimationModal,
     closeIntimationModal,
     setPlanillaSearch,
@@ -68,6 +77,36 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
   } = useCrossPreview(cross)
 
   const isPlanilla = activeTab === 'planilla'
+
+  const renderStatusSelect = (cuit: string) => {
+    const status = statusByCuit[cuit]
+
+    return (
+      <select
+        value={status}
+        onChange={(event) =>
+          updateAnalysisStatus(
+            cuit,
+            event.currentTarget.value as
+              | 'estado'
+              | 'relevante'
+              | 'reproceso'
+          )
+        }
+        className={`${classes.statusSelect} ${
+          status === 'relevante'
+            ? classes.statusSelectRelevant
+            : status === 'reproceso'
+              ? classes.statusSelectReprocessing
+              : classes.statusSelectNeutral
+        }`}
+      >
+        <option value='estado'>{STATUS_OPTIONS.estado}</option>
+        <option value='relevante'>{STATUS_OPTIONS.relevante}</option>
+        <option value='reproceso'>{STATUS_OPTIONS.reproceso}</option>
+      </select>
+    )
+  }
 
   return (
     <div className={classes.root}>
@@ -110,8 +149,11 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
         ) : null}
       </div>
 
-      <Card className={classes.headerCard} radius='lg' padding='lg'>
+      <Card className={classes.headerCard} radius='lg' padding={0}>
         <div className={classes.headerCardInner}>
+          <div className={classes.headerIcon}>
+            <IconActivity size={18} color='#4375EE' stroke={2} />
+          </div>
           <div className={classes.headerTitleBlock}>
             <Text className={classes.headerEyebrow}>Cruce en curso</Text>
             <Text className={classes.headerTitle}>{cross.name}</Text>
@@ -141,7 +183,7 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
       </Card>
 
       {isPlanilla ? (
-        <div className={classes.contentStack}>
+        <div className={`${classes.contentStack} ${classes.planillaStack}`}>
           <Group gap='md' className={classes.indicatorsRow}>
             {cross.indicators.map((indicator) => (
               <div key={indicator.id} className={classes.indicatorItem}>
@@ -154,7 +196,7 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
           </Group>
 
           <Card className={classes.tableCard} radius='lg' padding={0}>
-            <div className={classes.tableToolbar}>
+            <div className={`${classes.tableToolbar} ${classes.tableToolbarTall}`}>
               <Text className={classes.tableToolbarTitle}>Planilla de datos</Text>
               <TextInput
                 value={planillaSearch}
@@ -174,7 +216,55 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
                 <Table.Thead>
                   <Table.Tr>
                     {cross.planColumns.map((column) => (
-                      <Table.Th key={column}>{column}</Table.Th>
+                      <Table.Th
+                        key={column}
+                        className={`${classes.tableHeaderCell} ${
+                          [
+                            'Fact. ARCA (año)',
+                            'Fact. ARCA (fecha)',
+                            'Ag. Percepción',
+                            'Ag. Retención',
+                            'Pago a Cta.',
+                            'Retenciones',
+                            'MAYOR'
+                          ].includes(column)
+                            ? classes.planBiHeaderCell
+                              : [
+                                    'CM05 Jujuy',
+                                    'Cierre Ej.',
+                                    'Tot. Ing. País',
+                                    'CI Decl.',
+                                    'Tot. Egr.',
+                                    'Coef. Egr.'
+                                  ].includes(column)
+                                ? classes.planCmHeaderCell
+                                : ['Dif. Base', 'Mes', 'Año'].includes(column)
+                                  ? classes.planDiffHeaderCell
+                              : [
+                                    'Nuevo CI',
+                                    'CU Decl.',
+                                    'NCU',
+                                    'Dif. Créditos',
+                                    'SAF'
+                                  ].includes(column)
+                                ? classes.planCoefHeaderCell
+                                : [
+                                      'BI Total País',
+                                      'BI Estimada',
+                                      'BI Decl. CM03'
+                                    ].includes(column)
+                                  ? classes.planEstimatedHeaderCell
+                                  : ['Alícuota', 'Imp. Presuntivo'].includes(
+                                        column
+                                      )
+                                    ? classes.planTaxHeaderCell
+                                  : column === 'EST. FINAL'
+                                    ? classes.planFinalHeaderCell
+                            : ''
+                        }`}
+                      >
+                        {column}
+                      </Table.Th>
                     ))}
                   </Table.Tr>
                 </Table.Thead>
@@ -183,7 +273,38 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
                     filteredPlanRows.map((row) => (
                       <Table.Tr key={row.id}>
                         {row.cells.map((cell, index) => (
-                          <Table.Td key={`${row.id}-${index}`}>{cell}</Table.Td>
+                          <Table.Td
+                            key={`${row.id}-${index}`}
+                            className={`${classes.tableBodyCell} ${
+                              index === 0 || index === 1 ? classes.planIdCell : ''
+                            } ${index === 2 ? classes.planCuitCell : ''} ${
+                              index === 3 ? classes.planBusinessNameCell : ''
+                            } ${index >= 4 && index <= 10 ? classes.planBiBodyCell : ''} ${
+                              index === 11 || (index >= 15 && index <= 19)
+                                ? classes.planCmBodyCell
+                                : ''
+                            } ${
+                              index >= 12 && index <= 14
+                                ? classes.planDiffBodyCell
+                                : ''
+                            } ${index === 12 ? classes.planDiffValueCell : ''} ${
+                              index === 13 || index === 14 ? classes.planDiffMetaCell : ''
+                            } ${
+                              (index >= 20 && index <= 22) || index === 28 || index === 29
+                                ? classes.planCoefBodyCell
+                                : ''
+                            } ${
+                              index >= 23 && index <= 25
+                                ? classes.planEstimatedBodyCell
+                                : ''
+                            } ${index === 24 ? classes.planEstimatedBlueCell : ''} ${
+                              index === 26 || index === 27
+                                ? classes.planTaxBodyCell
+                                : ''
+                            } ${index === 30 ? classes.planFinalBodyCell : ''}`}
+                          >
+                            {cell}
+                          </Table.Td>
                         ))}
                       </Table.Tr>
                     ))
@@ -204,7 +325,7 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
       ) : (
         <div className={classes.contentStack}>
           <Card className={classes.tableCard} radius='lg' padding={0}>
-            <div className={classes.tableToolbar}>
+            <div className={`${classes.tableToolbar} ${classes.tableToolbarCompact}`}>
               <Text className={classes.tableToolbarTitle}>Resumen</Text>
               <Badge className={classes.toolbarBadge} radius='xl'>
                 {cross.cuitCount} CUITs · {cross.source === 'Lote' ? 'RÉGIMEN CM' : 'PADRÓN'}
@@ -215,23 +336,23 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
               <Table className={classes.summaryTable} withTableBorder={false} withColumnBorders={false}>
                 <Table.Thead>
                   <Table.Tr>
-                    <Table.Th>RÉGIMEN</Table.Th>
-                    <Table.Th>B.I. 910</Table.Th>
-                    <Table.Th>B.I. PRETENDIDA</Table.Th>
-                    <Table.Th>DIFERENCIA</Table.Th>
-                    <Table.Th>IMPUESTO</Table.Th>
-                    <Table.Th>DEUDA NETA</Table.Th>
+                    <Table.Th className={`${classes.summaryHeaderCell} ${classes.summaryHeaderCellLeft}`}>RÉGIMEN</Table.Th>
+                    <Table.Th className={classes.summaryHeaderCell}>B.I. 910</Table.Th>
+                    <Table.Th className={classes.summaryHeaderCell}>B.I. PRETENDIDA</Table.Th>
+                    <Table.Th className={classes.summaryHeaderCell}>DIF A FAVOR DPR</Table.Th>
+                    <Table.Th className={classes.summaryHeaderCell}>IMPUESTO</Table.Th>
+                    <Table.Th className={classes.summaryHeaderCell}>DEUDA NETA</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
                   {cross.summaryRows.map((row) => (
                     <Table.Tr key={row.regime}>
-                      <Table.Td>{row.regime}</Table.Td>
-                      <Table.Td>{row.declaredBase}</Table.Td>
-                      <Table.Td>{row.pretendedBase}</Table.Td>
-                      <Table.Td>{row.difference}</Table.Td>
-                      <Table.Td>{row.tax}</Table.Td>
-                      <Table.Td>{row.netDebt}</Table.Td>
+                      <Table.Td className={`${classes.summaryBodyCell} ${classes.summaryBodyCellLeft}`}>{row.regime}</Table.Td>
+                      <Table.Td className={classes.summaryBodyCell}>{row.declaredBase}</Table.Td>
+                      <Table.Td className={classes.summaryBodyCell}>{row.pretendedBase}</Table.Td>
+                      <Table.Td className={`${classes.summaryBodyCell} ${classes.summaryDangerCell}`}>{row.difference}</Table.Td>
+                      <Table.Td className={`${classes.summaryBodyCell} ${classes.summaryDangerCell}`}>{row.tax}</Table.Td>
+                      <Table.Td className={`${classes.summaryBodyCell} ${classes.summaryDangerCell}`}>{row.netDebt}</Table.Td>
                     </Table.Tr>
                   ))}
                 </Table.Tbody>
@@ -240,7 +361,7 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
           </Card>
 
           <Card className={classes.tableCard} radius='lg' padding={0}>
-            <div className={classes.tableToolbar}>
+            <div className={`${classes.tableToolbar} ${classes.tableToolbarTall}`}>
               <Text className={classes.tableToolbarTitle}>
                 Análisis sistémico por CUIT
               </Text>
@@ -261,31 +382,37 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
               <Table className={classes.analysisTable} withTableBorder={false} withColumnBorders={false}>
                 <Table.Thead>
                   <Table.Tr>
-                    <Table.Th>CUIT</Table.Th>
-                    <Table.Th>RAZÓN SOCIAL</Table.Th>
-                    <Table.Th>B.I. 910</Table.Th>
-                    <Table.Th>B.I. PRETENDIDA</Table.Th>
-                    <Table.Th>DIFERENCIA</Table.Th>
-                    <Table.Th>IMPUESTO</Table.Th>
-                    <Table.Th>DEUDA NETA</Table.Th>
+                    <Table.Th className={`${classes.analysisHeaderCell} ${classes.analysisHeaderCellLeft}`}>CUIT</Table.Th>
+                    <Table.Th className={`${classes.analysisHeaderCell} ${classes.analysisHeaderCellLeft}`}>RAZÓN SOCIAL</Table.Th>
+                    <Table.Th className={classes.analysisHeaderCell}>B.I. 910 ▾</Table.Th>
+                    <Table.Th className={classes.analysisHeaderCell}>B.I. PRETENDIDA ▾</Table.Th>
+                    <Table.Th className={classes.analysisHeaderCell}>DIFERENCIA ▾</Table.Th>
+                    <Table.Th className={classes.analysisHeaderCell}>IMPUESTO ESTIMADO ▾</Table.Th>
+                    <Table.Th className={classes.analysisHeaderCell}>NETO A PAGAR ▾</Table.Th>
+                    <Table.Th className={classes.analysisHeaderCell}>ESTADO</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
                   {filteredAnalysisRows.length ? (
                     filteredAnalysisRows.map((row) => (
                       <Table.Tr key={row.cuit}>
-                        <Table.Td>{row.cuit}</Table.Td>
-                        <Table.Td>{row.businessName}</Table.Td>
-                        <Table.Td>{row.declaredBase}</Table.Td>
-                        <Table.Td>{row.pretendedBase}</Table.Td>
-                        <Table.Td>{row.difference}</Table.Td>
-                        <Table.Td>{row.tax}</Table.Td>
-                        <Table.Td>{row.netDebt}</Table.Td>
+                        <Table.Td className={`${classes.analysisBodyCell} ${classes.analysisBodyCellMonospace}`}>{row.cuit}</Table.Td>
+                        <Table.Td className={`${classes.analysisBodyCell} ${classes.analysisBodyCellLeft}`}>{row.businessName}</Table.Td>
+                        <Table.Td className={classes.analysisBodyCell}>{row.declaredBase}</Table.Td>
+                        <Table.Td className={classes.analysisBodyCell}>{row.pretendedBase}</Table.Td>
+                        <Table.Td className={`${classes.analysisBodyCell} ${classes.analysisDangerCell}`}>{row.difference}</Table.Td>
+                        <Table.Td className={`${classes.analysisBodyCell} ${classes.analysisDangerCell}`}>{row.tax}</Table.Td>
+                        <Table.Td className={`${classes.analysisBodyCell} ${classes.analysisDangerCell}`}>{row.netDebt}</Table.Td>
+                        <Table.Td className={classes.analysisBodyCell}>
+                          <div className={classes.statusCell}>
+                            {renderStatusSelect(row.cuit)}
+                          </div>
+                        </Table.Td>
                       </Table.Tr>
                     ))
                   ) : (
                     <Table.Tr>
-                      <Table.Td colSpan={7}>
+                      <Table.Td colSpan={8}>
                         <Text className={classes.emptyStateText}>
                           No se encontraron resultados para la búsqueda actual.
                         </Text>

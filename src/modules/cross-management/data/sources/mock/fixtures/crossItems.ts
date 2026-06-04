@@ -185,7 +185,8 @@ export const crossPreviewMockById: Record<string, ICrossPreviewData> = {
         pretendedBase: '$ 29.266.065.257',
         difference: '$ 12.386.408.934',
         tax: '$ 185.796.134',
-        netDebt: '$ 185.814.166'
+        netDebt: '$ 185.814.166',
+        status: 'relevante'
       },
       {
         cuit: '30-50168521-2',
@@ -194,7 +195,8 @@ export const crossPreviewMockById: Record<string, ICrossPreviewData> = {
         pretendedBase: '$ 855.647.711',
         difference: '$ 822.880.554',
         tax: '$ 12.343.208',
-        netDebt: '$ 12.343.208'
+        netDebt: '$ 12.343.208',
+        status: 'estado'
       }
     ]
   },
@@ -268,7 +270,8 @@ export const crossPreviewMockById: Record<string, ICrossPreviewData> = {
         pretendedBase: '$ 29.266.065.257',
         difference: '$ 12.386.408.934',
         tax: '$ 185.796.134',
-        netDebt: '$ 185.814.166'
+        netDebt: '$ 185.814.166',
+        status: 'relevante'
       }
     ]
   },
@@ -342,7 +345,8 @@ export const crossPreviewMockById: Record<string, ICrossPreviewData> = {
         pretendedBase: '$ 5.818.560.000',
         difference: '$ 510.000.000',
         tax: '$ 7.650.000',
-        netDebt: '$ 7.150.000'
+        netDebt: '$ 7.150.000',
+        status: 'reproceso'
       }
     ]
   },
@@ -416,7 +420,8 @@ export const crossPreviewMockById: Record<string, ICrossPreviewData> = {
         pretendedBase: '$ 1.906.024.000',
         difference: '$ 1.200.000.000',
         tax: '$ 33.000.000',
-        netDebt: '$ 32.780.000'
+        netDebt: '$ 32.780.000',
+        status: 'estado'
       }
     ]
   }

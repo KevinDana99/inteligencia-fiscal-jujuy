@@ -40,6 +40,7 @@ export interface ICrossPreviewAnalysisRow {
   difference: string
   tax: string
   netDebt: string
+  status: 'estado' | 'relevante' | 'reproceso'
 }
 
 export interface ICrossPreviewData extends ICrossManagementItem {
