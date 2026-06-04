@@ -32,6 +32,7 @@ import { SendToReprocessingModal } from '@/modules/reprocessing/presentation/com
 import type { ICrossFilterColumnKey } from '../../../data/models/CrossManagement'
 import { crossPreviewMockById } from '../../../data/sources/mock/fixtures/crossItems'
 import { CrossFilterModal } from '../CrossFilterModal'
+import { IntimationExportModal } from '../IntimationExportModal'
 import { useCrossPreview } from '../../hooks'
 import classes from './CrossPreviewPage.module.css'
 
@@ -113,7 +114,6 @@ function Pager({
 export function CrossPreviewPage({ crossId }: { crossId: string }) {
   const cross = crossPreviewMockById[crossId]
   const intimationTemplate = useIntimationTemplate()
-  const handleIntimationNext = () => {}
 
   if (!cross) {
     return (
@@ -137,6 +137,8 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
     filterError,
     isFilterPending,
     intimationModalOpened,
+    exportModalOpened,
+    activePreviewIndex,
     pendingReprocessingRow,
     filteredPlanRows,
     filteredAnalysisRows,
@@ -151,11 +153,21 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
     confirmReprocessingModal,
     openIntimationModal,
     closeIntimationModal,
+    openExportModal,
+    closeExportModal,
+    goToPreviousPreview,
+    goToNextPreview,
     setPlanillaSearch,
     setResumenSearch
   } = useCrossPreview(cross)
 
   const isPlanilla = activeTab === 'planilla'
+  const isIntimationConfigModalVisible =
+    intimationModalOpened && !exportModalOpened
+
+  const handleIntimationNext = () => {
+    openExportModal()
+  }
 
   const renderStatusSelect = (row: (typeof cross.analysisRows)[number]) => {
     const status = statusByCuit[row.cuit]
@@ -550,7 +562,7 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
       )}
 
       <Modal
-        opened={intimationModalOpened}
+        opened={isIntimationConfigModalVisible}
         onClose={closeIntimationModal}
         centered
         size={640}
@@ -576,6 +588,19 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
           }
         />
       </Modal>
+
+      <IntimationExportModal
+        opened={exportModalOpened}
+        onClose={closeExportModal}
+        onBack={closeExportModal}
+        onDownloadPdf={() => {}}
+        onDownloadDocx={() => {}}
+        contributors={cross.planRows}
+        activeIndex={activePreviewIndex}
+        onPrevious={goToPreviousPreview}
+        onNext={goToNextPreview}
+        templateState={intimationTemplate.state}
+      />
 
       <SendToReprocessingModal
         opened={Boolean(pendingReprocessingRow)}

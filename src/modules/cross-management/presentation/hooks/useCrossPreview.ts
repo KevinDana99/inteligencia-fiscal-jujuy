@@ -45,6 +45,8 @@ export function useCrossPreview(cross: ICrossPreviewData) {
     useState<CrossFilterColumnConfig | null>(null)
   const [filterError, setFilterError] = useState<string | null>(null)
   const [intimationModalOpened, setIntimationModalOpened] = useState(false)
+  const [exportModalOpened, setExportModalOpened] = useState(false)
+  const [activePreviewIndex, setActivePreviewIndex] = useState(0)
   const [pendingReprocessingRow, setPendingReprocessingRow] =
     useState<ICrossPreviewAnalysisRow | null>(null)
   const [isFilterPending, startFilterTransition] = useTransition()
@@ -188,6 +190,14 @@ export function useCrossPreview(cross: ICrossPreviewData) {
     confirmReprocessingModal,
     openIntimationModal: () => setIntimationModalOpened(true),
     closeIntimationModal: () => setIntimationModalOpened(false),
+    openExportModal: () => setExportModalOpened(true),
+    closeExportModal: () => setExportModalOpened(false),
+    exportModalOpened,
+    activePreviewIndex,
+    goToPreviousPreview: () =>
+      setActivePreviewIndex((current) => Math.max(current - 1, 0)),
+    goToNextPreview: () =>
+      setActivePreviewIndex((current) => Math.min(current + 1, cross.cuitCount - 1)),
     setPlanillaSearch,
     setResumenSearch
   }
