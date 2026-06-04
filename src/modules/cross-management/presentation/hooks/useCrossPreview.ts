@@ -1,13 +1,22 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useTransition } from 'react'
+import { filterCrossAnalysisAction } from '../../data/actions'
 import type {
+  ICrossColumnFilters,
+  ICrossColumnFilterState,
+  ICrossFilterColumnKey,
   ICrossPreviewAnalysisRow,
   ICrossPreviewData
 } from '../../data/models/CrossManagement'
 
 export type CrossPreviewTab = 'planilla' | 'resumen'
 export type CrossPreviewStatus = ICrossPreviewAnalysisRow['status']
+
+type CrossFilterColumnConfig = {
+  key: ICrossFilterColumnKey
+  label: string
+}
 
 function normalizeSearch(value: string) {
   return value.trim().toLowerCase()
@@ -30,9 +39,15 @@ export function useCrossPreview(cross: ICrossPreviewData) {
   const [activeTab, setActiveTab] = useState<CrossPreviewTab>('planilla')
   const [planillaSearch, setPlanillaSearch] = useState('')
   const [resumenSearch, setResumenSearch] = useState('')
+  const [analysisRows, setAnalysisRows] = useState(cross.analysisRows)
+  const [columnFilters, setColumnFilters] = useState<ICrossColumnFilters>({})
+  const [activeFilterColumn, setActiveFilterColumn] =
+    useState<CrossFilterColumnConfig | null>(null)
+  const [filterError, setFilterError] = useState<string | null>(null)
   const [intimationModalOpened, setIntimationModalOpened] = useState(false)
   const [pendingReprocessingRow, setPendingReprocessingRow] =
     useState<ICrossPreviewAnalysisRow | null>(null)
+  const [isFilterPending, startFilterTransition] = useTransition()
   const [statusByCuit, setStatusByCuit] = useState<Record<string, CrossPreviewStatus>>(
     () =>
       Object.fromEntries(
@@ -50,10 +65,10 @@ export function useCrossPreview(cross: ICrossPreviewData) {
 
   const filteredAnalysisRows = useMemo(
     () =>
-      cross.analysisRows.filter((row) =>
+      analysisRows.filter((row) =>
         matchesSearch(row.cuit, row.businessName, resumenSearch)
       ),
-    [cross.analysisRows, resumenSearch]
+    [analysisRows, resumenSearch]
   )
 
   const updateAnalysisStatus = (cuit: string, status: CrossPreviewStatus) => {
@@ -99,16 +114,74 @@ export function useCrossPreview(cross: ICrossPreviewData) {
     setResumenSearch('')
   }
 
+  const openFilterModal = (column: CrossFilterColumnConfig) => {
+    setFilterError(null)
+    setActiveFilterColumn(column)
+  }
+
+  const closeFilterModal = () => {
+    setFilterError(null)
+    setActiveFilterColumn(null)
+  }
+
+  const runFilterRequest = (nextFilters: ICrossColumnFilters, onSuccess?: () => void) => {
+    startFilterTransition(async () => {
+      const result = await filterCrossAnalysisAction({
+        crossId: cross.id,
+        filters: nextFilters
+      })
+
+      if (!result.data) {
+        setFilterError(result.error ?? 'No fue posible aplicar los filtros.')
+        return
+      }
+
+      setAnalysisRows(result.data.rows)
+      setFilterError(null)
+      onSuccess?.()
+    })
+  }
+
+  const applyFilter = (
+    columnKey: ICrossFilterColumnKey,
+    value: ICrossColumnFilterState
+  ) => {
+    const nextFilters: ICrossColumnFilters = {
+      ...columnFilters,
+      [columnKey]: value
+    }
+
+    setColumnFilters(nextFilters)
+    runFilterRequest(nextFilters, closeFilterModal)
+  }
+
+  const clearFilter = (columnKey: ICrossFilterColumnKey) => {
+    const nextFilters = { ...columnFilters }
+    delete nextFilters[columnKey]
+
+    setColumnFilters(nextFilters)
+    runFilterRequest(nextFilters)
+  }
+
   return {
     activeTab,
     planillaSearch,
     resumenSearch,
+    analysisRows,
+    columnFilters,
+    activeFilterColumn,
+    filterError,
+    isFilterPending,
     intimationModalOpened,
     pendingReprocessingRow,
     statusByCuit,
     filteredPlanRows,
     filteredAnalysisRows,
     updateTab,
+    openFilterModal,
+    closeFilterModal,
+    applyFilter,
+    clearFilter,
     updateAnalysisStatus,
     requestAnalysisStatusChange,
     closeReprocessingModal,

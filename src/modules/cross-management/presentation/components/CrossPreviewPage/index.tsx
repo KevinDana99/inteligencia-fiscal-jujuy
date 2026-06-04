@@ -17,6 +17,7 @@ import {
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
   IconActivity,
+  IconChevronDown,
   IconChevronLeft,
   IconFileText,
   IconList,
@@ -28,7 +29,9 @@ import {
 } from '@/modules/dashboard-layout/presentation/components/IntimationTemplate'
 import { useIntimationTemplate } from '@/modules/dashboard-layout/presentation/components/IntimationTemplate/useIntimationTemplate'
 import { SendToReprocessingModal } from '@/modules/reprocessing/presentation/components'
+import type { ICrossFilterColumnKey } from '../../../data/models/CrossManagement'
 import { crossPreviewMockById } from '../../../data/sources/mock/fixtures/crossItems'
+import { CrossFilterModal } from '../CrossFilterModal'
 import { useCrossPreview } from '../../hooks'
 import classes from './CrossPreviewPage.module.css'
 
@@ -46,6 +49,18 @@ const STATUS_OPTIONS: Record<string, string> = {
   relevante: '✓ Relevante',
   reproceso: '🔴 Reproceso'
 }
+
+const ANALYSIS_FILTERABLE_COLUMNS: Array<{
+  key: ICrossFilterColumnKey
+  label: string
+  title: string
+}> = [
+  { key: 'declaredBase', label: 'B.I. 910', title: 'B.I. 910' },
+  { key: 'pretendedBase', label: 'B.I. PRETENDIDA', title: 'B.I. Pretendida' },
+  { key: 'difference', label: 'DIFERENCIA', title: 'Diferencia' },
+  { key: 'tax', label: 'IMPUESTO ESTIMADO', title: 'Impuesto Estimado' },
+  { key: 'netDebt', label: 'NETO A PAGAR', title: 'Neto a Pagar' }
+]
 
 const PLAN_COLUMN_GROUPS = [
   { label: 'Identificación', span: 4, className: 'neutral' },
@@ -116,12 +131,20 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
     activeTab,
     planillaSearch,
     resumenSearch,
+    columnFilters,
+    activeFilterColumn,
+    filterError,
+    isFilterPending,
     intimationModalOpened,
     pendingReprocessingRow,
     filteredPlanRows,
     filteredAnalysisRows,
     statusByCuit,
     updateTab,
+    openFilterModal,
+    closeFilterModal,
+    applyFilter,
+    clearFilter,
     requestAnalysisStatusChange,
     closeReprocessingModal,
     confirmReprocessingModal,
@@ -162,6 +185,23 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
       </select>
     )
   }
+
+  const renderAnalysisHeaderCell = (
+    column: (typeof ANALYSIS_FILTERABLE_COLUMNS)[number]
+  ) => (
+    <Table.Th key={column.key} className={classes.analysisHeaderCell}>
+      <button
+        type='button'
+        className={`${classes.columnFilterButton} ${
+          columnFilters[column.key] ? classes.columnFilterButtonActive : ''
+        }`}
+        onClick={() => openFilterModal({ key: column.key, label: column.title })}
+      >
+        <span>{column.label}</span>
+        <IconChevronDown size={12} stroke={2.2} />
+      </button>
+    </Table.Th>
+  )
 
   return (
     <div className={classes.root}>
@@ -466,11 +506,7 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
                   <Table.Tr>
                     <Table.Th className={`${classes.analysisHeaderCell} ${classes.analysisHeaderCellLeft}`}>CUIT</Table.Th>
                     <Table.Th className={`${classes.analysisHeaderCell} ${classes.analysisHeaderCellLeft}`}>RAZÓN SOCIAL</Table.Th>
-                    <Table.Th className={classes.analysisHeaderCell}>B.I. 910 ▾</Table.Th>
-                    <Table.Th className={classes.analysisHeaderCell}>B.I. PRETENDIDA ▾</Table.Th>
-                    <Table.Th className={classes.analysisHeaderCell}>DIFERENCIA ▾</Table.Th>
-                    <Table.Th className={classes.analysisHeaderCell}>IMPUESTO ESTIMADO ▾</Table.Th>
-                    <Table.Th className={classes.analysisHeaderCell}>NETO A PAGAR ▾</Table.Th>
+                    {ANALYSIS_FILTERABLE_COLUMNS.map(renderAnalysisHeaderCell)}
                     <Table.Th className={classes.analysisHeaderCell}>ESTADO</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
@@ -543,6 +579,20 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
         onConfirm={async () => {
           confirmReprocessingModal()
         }}
+      />
+
+      <CrossFilterModal
+        opened={Boolean(activeFilterColumn)}
+        columnKey={activeFilterColumn?.key ?? null}
+        columnLabel={activeFilterColumn?.label ?? ''}
+        initialValue={
+          activeFilterColumn ? columnFilters[activeFilterColumn.key] ?? null : null
+        }
+        isPending={isFilterPending}
+        error={filterError}
+        onClose={closeFilterModal}
+        onClear={clearFilter}
+        onApply={applyFilter}
       />
     </div>
   )

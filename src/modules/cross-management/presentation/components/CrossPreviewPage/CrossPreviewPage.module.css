@@ -506,6 +506,25 @@
   text-align: left;
 }
 
+.columnFilterButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.columnFilterButtonActive {
+  color: var(--mantine-color-blue-6);
+}
+
 .summaryBodyCell {
   box-sizing: border-box;
   padding: 10px 14px;
