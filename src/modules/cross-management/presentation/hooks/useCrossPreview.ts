@@ -1,10 +1,10 @@
 'use client'
 
 import { useMemo, useState, useTransition } from 'react'
-import { filterCrossAnalysisAction } from '../../data/actions'
 import type {
   ICrossColumnFilters,
   ICrossColumnFilterState,
+  ICrossFilterCondition,
   ICrossFilterColumnKey,
   ICrossPreviewAnalysisRow,
   ICrossPreviewData
@@ -32,6 +32,86 @@ function matchesSearch(cuit: string, businessName: string, search: string) {
   return (
     cuit.toLowerCase().includes(normalizedSearch) ||
     businessName.toLowerCase().includes(normalizedSearch)
+  )
+}
+
+function parseFilterNumber(value: string) {
+  const sanitized = value.trim().replace(/[^\d,.-]/g, '')
+
+  if (!sanitized) {
+    return null
+  }
+
+  const normalized = sanitized.includes(',')
+    ? sanitized.replace(/\./g, '').replace(',', '.')
+    : sanitized.replace(/\.(?=\d{3}(\D|$))/g, '')
+  const parsed = Number(normalized)
+
+  return Number.isFinite(parsed) ? parsed : null
+}
+
+function matchesCondition(value: string, condition: ICrossFilterCondition) {
+  if (!condition.operator || !condition.value.trim()) {
+    return true
+  }
+
+  const rowValue = parseFilterNumber(value)
+  const filterValue = parseFilterNumber(condition.value)
+
+  if (rowValue === null || filterValue === null) {
+    return false
+  }
+
+  switch (condition.operator) {
+    case 'mayor':
+      return rowValue > filterValue
+    case 'mayor_igual':
+      return rowValue >= filterValue
+    case 'menor':
+      return rowValue < filterValue
+    case 'menor_igual':
+      return rowValue <= filterValue
+    case 'igual':
+      return rowValue === filterValue
+    case 'distinto':
+      return rowValue !== filterValue
+    default:
+      return true
+  }
+}
+
+function matchesColumnFilter(
+  row: ICrossPreviewAnalysisRow,
+  columnKey: ICrossFilterColumnKey,
+  filter: ICrossColumnFilterState
+) {
+  const primaryMatches = matchesCondition(row[columnKey], filter.primary)
+  const hasSecondaryFilter =
+    Boolean(filter.secondary.operator) && Boolean(filter.secondary.value.trim())
+
+  if (!hasSecondaryFilter) {
+    return primaryMatches
+  }
+
+  const secondaryMatches = matchesCondition(row[columnKey], filter.secondary)
+
+  return filter.connector === 'Y'
+    ? primaryMatches && secondaryMatches
+    : primaryMatches || secondaryMatches
+}
+
+function applyAnalysisFilters(
+  rows: ICrossPreviewAnalysisRow[],
+  filters: ICrossColumnFilters
+) {
+  const activeFilters = Object.entries(filters) as Array<
+    [ICrossFilterColumnKey, ICrossColumnFilterState | undefined]
+  >
+
+  return rows.filter((row) =>
+    activeFilters.every(([columnKey, filter]) =>
+      filter ? matchesColumnFilter(row, columnKey, filter) : true
+    )
   )
 }
 
@@ -127,18 +207,8 @@ export function useCrossPreview(cross: ICrossPreviewData) {
   }
 
   const runFilterRequest = (nextFilters: ICrossColumnFilters, onSuccess?: () => void) => {
-    startFilterTransition(async () => {
-      const result = await filterCrossAnalysisAction({
-        crossId: cross.id,
-        filters: nextFilters
-      })
-
-      if (!result.data) {
-        setFilterError(result.error ?? 'No fue posible aplicar los filtros.')
-        return
-      }
-
-      setAnalysisRows(result.data.rows)
+    startFilterTransition(() => {
+      setAnalysisRows(applyAnalysisFilters(cross.analysisRows, nextFilters))
       setFilterError(null)
       onSuccess?.()
     })
@@ -197,7 +267,9 @@ export function useCrossPreview(cross: ICrossPreviewData) {
     goToPreviousPreview: () =>
       setActivePreviewIndex((current) => Math.max(current - 1, 0)),
     goToNextPreview: () =>
-      setActivePreviewIndex((current) => Math.min(current + 1, cross.cuitCount - 1)),
+      setActivePreviewIndex((current) =>
+        Math.min(current + 1, Math.max(cross.planRows.length - 1, 0))
+      ),
     setPlanillaSearch,
     setResumenSearch
   }

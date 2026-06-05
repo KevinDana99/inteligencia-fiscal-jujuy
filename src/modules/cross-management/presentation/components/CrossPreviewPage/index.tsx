@@ -29,8 +29,10 @@ import {
 } from '@/modules/dashboard-layout/presentation/components/IntimationTemplate'
 import { useIntimationTemplate } from '@/modules/dashboard-layout/presentation/components/IntimationTemplate/useIntimationTemplate'
 import { SendToReprocessingModal } from '@/modules/reprocessing/presentation/components'
-import type { ICrossFilterColumnKey } from '../../../data/models/CrossManagement'
-import { crossPreviewMockById } from '../../../data/sources/mock/fixtures/crossItems'
+import type {
+  ICrossFilterColumnKey,
+  ICrossPreviewData
+} from '../../../data/models/CrossManagement'
 import { CrossFilterModal } from '../CrossFilterModal'
 import { IntimationExportModal } from '../IntimationExportModal'
 import { useCrossPreview } from '../../hooks'
@@ -111,22 +113,34 @@ function Pager({
   )
 }
 
-export function CrossPreviewPage({ crossId }: { crossId: string }) {
-  const cross = crossPreviewMockById[crossId]
-  const intimationTemplate = useIntimationTemplate()
+interface CrossPreviewPageProps {
+  cross: ICrossPreviewData | null
+  error?: string
+}
 
+export function CrossPreviewPage({ cross, error }: CrossPreviewPageProps) {
   if (!cross) {
     return (
       <Card className={classes.emptyCard} radius='lg' padding='xl'>
         <Stack gap='xs'>
           <Text className={classes.emptyTitle}>Cruce no encontrado</Text>
           <Text className={classes.emptyText}>
-            No se encontró información asociada al cruce solicitado.
+            {error ?? 'No se encontró información asociada al cruce solicitado.'}
           </Text>
         </Stack>
       </Card>
     )
   }
+
+  return <CrossPreviewPageContent cross={cross} />
+}
+
+interface CrossPreviewPageContentProps {
+  cross: ICrossPreviewData
+}
+
+function CrossPreviewPageContent({ cross }: CrossPreviewPageContentProps) {
+  const intimationTemplate = useIntimationTemplate()
 
   const {
     activeTab,
@@ -614,6 +628,7 @@ export function CrossPreviewPage({ crossId }: { crossId: string }) {
       />
 
       <CrossFilterModal
+        key={activeFilterColumn?.key ?? 'closed'}
         opened={Boolean(activeFilterColumn)}
         columnKey={activeFilterColumn?.key ?? null}
         columnLabel={activeFilterColumn?.label ?? ''}

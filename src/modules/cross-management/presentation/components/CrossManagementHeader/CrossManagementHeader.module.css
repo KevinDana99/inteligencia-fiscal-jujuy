@@ -1,0 +1,18 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.headerTitle {
+  color: var(--mantine-color-gray-9);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.headerSubtitle {
+  margin-top: 2px;
+  color: var(--mantine-color-gray-5);
+  font-size: 13px;
+}

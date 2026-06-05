@@ -1,0 +1,93 @@
+.filtersRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.filtersControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.countContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.searchInput {
+  min-width: 280px;
+}
+
+.searchInputField {
+  height: 38px;
+  padding: 7px 14px 7px 36px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 999px;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+  font-size: 12.5px;
+}
+
+.searchInputSection {
+  color: #94a3b8;
+}
+
+.filterSelect {
+  min-width: 168px;
+}
+
+.filterSelectInput {
+  height: 38px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 999px;
+  padding: 7px 14px;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+  font-size: 12.5px;
+}
+
+.filterSelectInput:hover,
+.filterSelectInput:focus,
+.filterSelectInput:focus-visible,
+.filterSelectInput[data-expanded],
+.filterSelectInput[data-variant='default'] {
+  border-color: var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+}
+
+.filterSelectDropdown {
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 12px;
+  background: var(--mantine-color-white);
+}
+
+.filterSelectOption {
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+  font-size: 12.5px;
+}
+
+.filterSelectOption:hover,
+.filterSelectOption[data-hovered],
+.filterSelectOption[data-checked],
+.filterSelectOption[data-selected] {
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-9);
+}
+
+.filterSeparator {
+  width: 1px;
+  height: 24px;
+  background: var(--mantine-color-gray-2);
+}
+
+.countText {
+  color: var(--mantine-color-gray-5);
+  font-size: 12px;
+}

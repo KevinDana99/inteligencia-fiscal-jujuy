@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type {
   ICrossColumnFilterState,
   ICrossFilterColumnKey,
@@ -33,7 +33,6 @@ export const EMPTY_FILTER_STATE: ICrossColumnFilterState = {
 }
 
 export function useCrossFilterModal({
-  opened,
   columnKey,
   columnLabel,
   initialValue,
@@ -44,12 +43,6 @@ export function useCrossFilterModal({
   const [value, setValue] = useState<ICrossColumnFilterState>(
     initialValue ?? EMPTY_FILTER_STATE
   )
-
-  useEffect(() => {
-    if (opened) {
-      setValue(initialValue ?? EMPTY_FILTER_STATE)
-    }
-  }, [initialValue, opened, columnKey])
 
   const title = useMemo(() => `Filtrar ${columnKey ? columnLabel : ''}`, [columnKey, columnLabel])
 
