@@ -39,10 +39,8 @@ export class RestConfigurationSource implements IConfigurationSource {
     })
 
     return {
-      configuracion: {
-        intimacion,
-        informe
-      }
+      intimacion,
+      informe
     }
   }
 }

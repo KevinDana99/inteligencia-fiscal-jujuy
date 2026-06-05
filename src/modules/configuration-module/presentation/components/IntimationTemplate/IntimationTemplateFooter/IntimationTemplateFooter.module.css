@@ -1,0 +1,18 @@
+.footerActions {
+  margin: 0 0 4px;
+}
+
+.primaryButton {
+  height: 28px;
+  padding: 5px 11px;
+  background: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.primaryButton:hover,
+.primaryButton[data-hovered],
+.primaryButton[data-active] {
+  background: var(--mantine-color-blue-6);
+}

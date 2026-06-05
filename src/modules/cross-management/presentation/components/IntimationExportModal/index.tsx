@@ -14,7 +14,7 @@ import {
   IconFileText,
   IconX
 } from '@tabler/icons-react'
-import type { IntimationTemplateState } from '@/modules/dashboard-layout/presentation/components/IntimationTemplate/useIntimationTemplate'
+import type { IntimationTemplateState } from '@/modules/configuration-module/presentation/components/IntimationTemplate/useIntimationTemplate'
 import type { ICrossPreviewPlanRow } from '../../../data/models/CrossManagement'
 import classes from './IntimationExportModal.module.css'
 

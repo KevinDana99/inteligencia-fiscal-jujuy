@@ -1,0 +1,43 @@
+.sectionCard {
+  padding: 18px 20px;
+  border: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+
+.sectionLabel {
+  margin-bottom: 12px;
+  color: var(--mantine-color-gray-7);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fieldTitle {
+  color: var(--mantine-color-gray-7);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.formInput {
+  border: 1px solid var(--mantine-color-gray-3);
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-9);
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
+.formInput:hover,
+.formInput:focus,
+.formInput:focus-visible {
+  border-color: var(--mantine-color-blue-5);
+  background: var(--mantine-color-white);
+}

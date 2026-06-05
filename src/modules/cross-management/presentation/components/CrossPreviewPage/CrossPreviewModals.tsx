@@ -1,5 +1,5 @@
 import { Button, Modal } from '@mantine/core'
-import { IntimationTemplate } from '@/modules/dashboard-layout/presentation/components/IntimationTemplate'
+import { IntimationTemplate } from '@/modules/configuration-module/presentation/components/IntimationTemplate'
 import { SendToReprocessingModal } from '@/modules/reprocessing/presentation/components'
 import type {
   ICrossPreviewAnalysisRow,

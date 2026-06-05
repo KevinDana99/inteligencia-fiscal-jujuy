@@ -13,10 +13,8 @@ export type ReportType = {
 }
 
 export type ConfigurationType = {
-  configuracion: {
-    intimacion: IntimationType
-    informe: ReportType
-  }
+  intimacion: IntimationType
+  informe: ReportType
 }
 
 export type DeepPartial<T> = {

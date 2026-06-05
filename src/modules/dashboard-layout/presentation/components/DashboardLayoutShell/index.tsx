@@ -2,9 +2,9 @@
 
 import type { ReactNode } from 'react'
 import type { IAuthSession } from '@/modules/auth/data/models/Auth'
-import type { ConfigurationType } from '../../../data/models/Configuration'
+import type { ConfigurationType } from '@/modules/configuration-module/types'
+import { ConfigProvider } from '@/modules/configuration-module/presentation/contexts'
 import {
-  ConfigProvider,
   DashboardNavbarActionProvider
 } from '../../contexts'
 import { DashboardTemplate } from '../DashboardTemplate'
@@ -16,7 +16,7 @@ export function DashboardLayoutShell({
   children
 }: {
   session: IAuthSession
-  initialConfig: ConfigurationType | null
+  initialConfig: ConfigurationType
   children: ReactNode
 }) {
   const { currentSection, currentSectionLabel, navGroups } =

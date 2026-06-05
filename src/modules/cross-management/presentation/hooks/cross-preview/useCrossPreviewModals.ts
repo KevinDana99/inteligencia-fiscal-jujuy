@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback } from 'react'
-import { useIntimationTemplate } from '@/modules/dashboard-layout/presentation/components/IntimationTemplate/useIntimationTemplate'
+import { useIntimationTemplate } from '@/modules/configuration-module/presentation/components/IntimationTemplate/useIntimationTemplate'
 
 interface UseCrossPreviewModalsParams {
   onConfirmReprocessingModal: () => void

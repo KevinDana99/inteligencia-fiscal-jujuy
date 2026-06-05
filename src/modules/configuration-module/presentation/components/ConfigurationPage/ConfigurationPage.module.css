@@ -1,0 +1,29 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.shell {
+  overflow: visible;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 12px;
+  background: var(--mantine-color-white);
+}
+
+.shellBody {
+  padding: 20px 20px 0;
+}
+
+.contentView {
+  margin: 0 0 20px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.viewColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(100%, 600px);
+}

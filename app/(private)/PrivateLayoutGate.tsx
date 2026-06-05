@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react'
 import { connection } from 'next/server'
 import DashboardLayoutModule from '@/modules/dashboard-layout'
+import { getConfigurationAction } from '@/modules/configuration-module/data/actions/queries/getConfigurationAction'
+import { DEFAULT_CONFIGURATION } from '@/modules/configuration-module/presentation/constants'
 import { requirePrivateDashboardSession } from '@/lib/auth/require-private-dashboard-session'
-import { getConfigurationAction } from '@/modules/dashboard-layout/data/actions/queries/getConfigurationAction'
 
 export default async function PrivateLayoutGate({
   children
@@ -16,7 +17,7 @@ export default async function PrivateLayoutGate({
   return (
     <DashboardLayoutModule
       session={session}
-      initialConfig={configurationResult.data}
+      initialConfig={configurationResult.data ?? DEFAULT_CONFIGURATION}
     >
       {children}
     </DashboardLayoutModule>

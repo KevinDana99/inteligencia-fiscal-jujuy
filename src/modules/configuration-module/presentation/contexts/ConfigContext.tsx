@@ -3,7 +3,6 @@
 import {
   createContext,
   useCallback,
-  useContext,
   useMemo,
   useState,
   type ReactNode
@@ -14,77 +13,70 @@ import type {
 } from '../../data/models/Configuration'
 
 type ConfigContextValue = {
-  configuration: ConfigurationType | null
+  configuration: ConfigurationType
   updateConfig: (newConfig: DeepPartial<ConfigurationType>) => void
-  setConfig: (newConfig: ConfigurationType | null) => void
+  setConfig: (newConfig: ConfigurationType) => void
 }
 
 const ConfigContext = createContext<ConfigContextValue | null>(null)
 
 type ConfigProviderProps = {
   children: ReactNode
-  initialConfig: ConfigurationType | null
+  initialConfig: ConfigurationType
 }
 
 export function ConfigProvider({
   children,
   initialConfig
 }: ConfigProviderProps) {
+  const serializedInitialConfig = JSON.stringify(initialConfig, null, 2)
+
   console.log({
     action: 'ConfigProvider.initialConfig',
-    configuration: initialConfig
+    configuration: initialConfig,
+    serializedConfiguration: serializedInitialConfig
   })
 
-  const [configuration, setConfiguration] = useState<ConfigurationType | null>(
-    initialConfig
-  )
+  const [configuration, setConfiguration] = useState<ConfigurationType>(initialConfig)
 
   const updateConfig = useCallback((newConfig: DeepPartial<ConfigurationType>) => {
     console.log({
       action: 'ConfigProvider.updateConfig.request',
-      payload: newConfig
+      payload: newConfig,
+      serializedPayload: JSON.stringify(newConfig, null, 2)
     })
 
     setConfiguration((current) => {
-      if (!current) {
-        console.log({
-          action: 'ConfigProvider.updateConfig.skipped',
-          reason: 'configuration-is-null'
-        })
-        return current
-      }
-
       const nextConfiguration = {
         ...current,
         ...newConfig,
-        configuracion: {
-          ...current.configuracion,
-          ...newConfig.configuracion,
-          intimacion: {
-            ...current.configuracion.intimacion,
-            ...newConfig.configuracion?.intimacion
-          },
-          informe: {
-            ...current.configuracion.informe,
-            ...newConfig.configuracion?.informe
-          }
+        intimacion: {
+          ...current.intimacion,
+          ...newConfig.intimacion
+        },
+        informe: {
+          ...current.informe,
+          ...newConfig.informe
         }
       }
 
       console.log({
         action: 'ConfigProvider.updateConfig.response',
         previous: current,
-        next: nextConfiguration
+        next: nextConfiguration,
+        serializedPrevious: JSON.stringify(current, null, 2),
+        serializedNext: JSON.stringify(nextConfiguration, null, 2)
       })
 
       return nextConfiguration
     })
   }, [])
 
-  const setConfig = useCallback((newConfig: ConfigurationType | null) => {
+  const setConfig = useCallback((newConfig: ConfigurationType) => {
     console.log({
       action: 'ConfigProvider.setConfig',
-      configuration: newConfig
+      configuration: newConfig,
+      serializedConfiguration: JSON.stringify(newConfig, null, 2)
     })
 
     setConfiguration(newConfig)
@@ -104,12 +96,4 @@ export function ConfigProvider({
   )
 }
 
-export function useConfig() {
-  const context = useContext(ConfigContext)
-
-  if (!context) {
-    throw new Error('useConfig must be used within ConfigProvider')
-  }
-
-  return context
-}
+export { ConfigContext }

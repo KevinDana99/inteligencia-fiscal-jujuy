@@ -1,0 +1,48 @@
+.headerSection {
+  margin: 0 0 20px;
+}
+
+.shellRail {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  margin: 0 -20px 20px;
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+}
+
+.shellRailItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 12px 12px;
+  border: 0;
+  border-bottom: 2px solid var(--mantine-color-blue-5);
+  background: transparent;
+  color: var(--mantine-color-blue-5);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sectionIntro {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pageTitle {
+  margin: 0;
+  color: var(--mantine-color-gray-9);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 21px;
+  max-height: 21px;
+  overflow: hidden;
+}
+
+.pageSubtitle {
+  color: var(--mantine-color-gray-6);
+  font-size: 13px;
+  line-height: 1.5;
+}
