@@ -1,7 +1,9 @@
-import { getJson, postFormData } from '@/lib/api-client';
+import { getJson, postFormData, postJson } from '@/lib/api-client';
 import type { ApiClientConfig } from '@/lib/api-client';
 import type { IBatchManagementSource } from '../../interfaces/BatchManagementSource';
 import type {
+  IBatchCrossExecutionPayload,
+  IBatchCrossExecutionSummary,
   BatchRequestRegime,
   IBatchCreatePayload,
   IBatchCreatedSummary,
@@ -15,13 +17,17 @@ import type {
   ApiBatchCreateResponseDto,
   ApiBatchDetailResponseDto,
   ApiBatchListResponseDto,
-  ApiBatchPreviewResponseDto
+  ApiBatchPreviewResponseDto,
+  ApiExecuteBatchCrossRequestDto,
+  ApiExecuteBatchCrossResponseDto
 } from './dtos/BatchManagementDtos';
 import {
   mapBatchCreateResponseDto,
   mapBatchDetailResponseDto,
   mapBatchListResponseDto,
-  mapBatchPreviewResponseDto
+  mapBatchPreviewResponseDto,
+  mapExecuteBatchCrossRequestDto,
+  mapExecuteBatchCrossResponseDto
 } from './mappers/mapBatchDto';
 
 function normalizeRequestRegime(regime: string): BatchRequestRegime {
@@ -32,12 +38,17 @@ function normalizeRequestRegime(regime: string): BatchRequestRegime {
   return regime as BatchRequestRegime;
 }
 
-function appendCuits(formData: FormData, cuitsText?: string | null) {
-  if (!cuitsText?.trim()) {
-    return;
-  }
+function parseCuitsText(cuitsText?: string | null) {
+  return (cuitsText ?? '')
+    .split(/[,;\s\n\t]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
 
-  formData.append('Cuits', cuitsText);
+function appendCuits(formData: FormData, cuitsText?: string | null) {
+  parseCuitsText(cuitsText).forEach((cuit) => {
+    formData.append('Cuits', cuit);
+  });
 }
 
 function getFormDataEntries(formData: FormData) {
@@ -54,6 +65,10 @@ function getFormDataEntries(formData: FormData) {
   }));
 }
 
+function logRestBatchManagementEvent(event: unknown) {
+  console.log(JSON.stringify(event, null, 2));
+}
+
 export class RestBatchManagementSource implements IBatchManagementSource {
   constructor(private readonly config: ApiClientConfig) {}
 
@@ -68,7 +83,7 @@ export class RestBatchManagementSource implements IBatchManagementSource {
     searchParams.set('ItemsPagina', String(params.itemsPerPage ?? 20));
 
     const path = searchParams.size ? `/api/lotes?${searchParams.toString()}` : '/api/lotes';
-    console.log({
+    logRestBatchManagementEvent({
       endpoint: '/api/lotes',
       action: 'RestBatchManagementSource.listBatches',
       METHOD: 'GET',
@@ -80,7 +95,7 @@ export class RestBatchManagementSource implements IBatchManagementSource {
       }
     });
     const response = await getJson<ApiBatchListResponseDto>(path, this.config);
-    console.log({
+    logRestBatchManagementEvent({
       endpoint: '/api/lotes',
       action: 'RestBatchManagementSource.listBatches',
       METHOD: 'GET',
@@ -92,7 +107,7 @@ export class RestBatchManagementSource implements IBatchManagementSource {
 
   async getBatch(batchId: string): Promise<IBatchManagementItem> {
     const path = `/api/lotes/${batchId}`;
-    console.log({
+    logRestBatchManagementEvent({
       endpoint: path,
       action: 'RestBatchManagementSource.getBatch',
       METHOD: 'GET',
@@ -105,7 +120,7 @@ export class RestBatchManagementSource implements IBatchManagementSource {
       path,
       this.config
     );
-    console.log({
+    logRestBatchManagementEvent({
       endpoint: path,
       action: 'RestBatchManagementSource.getBatch',
       METHOD: 'GET',
@@ -127,7 +142,7 @@ export class RestBatchManagementSource implements IBatchManagementSource {
     }
 
     appendCuits(formData, payload.cuitsText);
-    console.log({
+    logRestBatchManagementEvent({
       endpoint: '/api/lotes/previsualizaciones',
       action: 'RestBatchManagementSource.previewBatchLoad',
       METHOD: 'POST',
@@ -141,7 +156,7 @@ export class RestBatchManagementSource implements IBatchManagementSource {
       formData,
       this.config
     );
-    console.log({
+    logRestBatchManagementEvent({
       endpoint: '/api/lotes/previsualizaciones',
       action: 'RestBatchManagementSource.previewBatchLoad',
       METHOD: 'POST',
@@ -167,7 +182,7 @@ export class RestBatchManagementSource implements IBatchManagementSource {
     }
 
     appendCuits(formData, payload.cuitsText);
-    console.log({
+    logRestBatchManagementEvent({
       endpoint: '/api/lotes',
       action: 'RestBatchManagementSource.createBatch',
       METHOD: 'POST',
@@ -181,7 +196,7 @@ export class RestBatchManagementSource implements IBatchManagementSource {
       formData,
       this.config
     );
-    console.log({
+    logRestBatchManagementEvent({
       endpoint: '/api/lotes',
       action: 'RestBatchManagementSource.createBatch',
       METHOD: 'POST',
@@ -189,5 +204,37 @@ export class RestBatchManagementSource implements IBatchManagementSource {
     });
 
     return mapBatchCreateResponseDto(response);
+  }
+
+  async executeBatchCross(
+    payload: IBatchCrossExecutionPayload
+  ): Promise<IBatchCrossExecutionSummary> {
+    const path = `/api/procesos-informacion/cruces/${encodeURIComponent(payload.crossCode)}/ejecuciones`;
+    const requestBody = mapExecuteBatchCrossRequestDto(payload);
+
+    logRestBatchManagementEvent({
+      endpoint: '/api/procesos-informacion/cruces/{codigoCruce}/ejecuciones',
+      action: 'RestBatchManagementSource.executeBatchCross',
+      METHOD: 'POST',
+      REQUEST_RAW: {
+        codigoCruce: payload.crossCode,
+        requestUrl: path,
+        body: requestBody
+      }
+    });
+
+    const response = await postJson<
+      ApiExecuteBatchCrossResponseDto,
+      ApiExecuteBatchCrossRequestDto
+    >(path, requestBody, this.config);
+
+    logRestBatchManagementEvent({
+      endpoint: '/api/procesos-informacion/cruces/{codigoCruce}/ejecuciones',
+      action: 'RestBatchManagementSource.executeBatchCross',
+      METHOD: 'POST',
+      RESPONSE_RAW: response
+    });
+
+    return mapExecuteBatchCrossResponseDto(response);
   }
 }

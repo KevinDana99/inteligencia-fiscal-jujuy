@@ -21,14 +21,19 @@ export function BatchManagementPage({
     expandedBatchId,
     isCreateModalOpen,
     createForm,
+    loadedCuits,
     loadedCuitsSearchValue,
     filteredLoadedCuits,
     previewData,
+    previewError,
+    createError,
     isImportPreviewOpen,
     isPreviewPending,
     isCreatePending,
     getBatchCrossFilters,
     getBatchCrossValidationMessage,
+    getBatchCrossExecutionError,
+    isBatchCrossExecutionPending,
     canConfirmBatchCrossFilters,
     setSearchValue,
     toggleExpandedBatch,
@@ -99,6 +104,8 @@ export function BatchManagementPage({
         onToggleBatch={toggleExpandedBatch}
         getBatchCrossFilters={getBatchCrossFilters}
         getBatchCrossValidationMessage={getBatchCrossValidationMessage}
+        getBatchCrossExecutionError={getBatchCrossExecutionError}
+        isBatchCrossExecutionPending={isBatchCrossExecutionPending}
         canConfirmBatchCrossFilters={canConfirmBatchCrossFilters}
         onBatchCrossSectionToggle={toggleBatchCrossSection}
         onBatchCrossYearChange={setBatchCrossYear}
@@ -114,8 +121,11 @@ export function BatchManagementPage({
         regime={createForm.regime}
         description={createForm.description}
         loadedCuitsSearchValue={loadedCuitsSearchValue}
+        loadedCuitsCount={loadedCuits.length}
         filteredLoadedCuits={filteredLoadedCuits}
         previewData={previewData}
+        previewError={previewError}
+        createError={createError}
         isImportPreviewOpen={isImportPreviewOpen}
         isPreviewPending={isPreviewPending}
         isCreatePending={isCreatePending}
