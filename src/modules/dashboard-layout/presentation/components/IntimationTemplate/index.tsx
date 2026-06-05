@@ -42,6 +42,7 @@ export function IntimationTemplate({
 }: IntimationTemplateProps) {
   const {
     state,
+    isProviderBacked,
     columnPickerOpened,
     columnPickerDraft,
     selectedAvailableColumnId,
@@ -116,6 +117,7 @@ export function IntimationTemplate({
                 onChange={(event) =>
                   updateColumn(column.id, event.currentTarget.value)
                 }
+                readOnly={isProviderBacked}
                 className={classes.columnInput}
                 classNames={formInputClasses}
               />

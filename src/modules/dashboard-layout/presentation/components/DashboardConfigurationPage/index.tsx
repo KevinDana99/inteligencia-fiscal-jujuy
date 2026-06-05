@@ -42,6 +42,7 @@ export function DashboardConfigurationPage() {
   const intimacionTemplate = useIntimationTemplate()
   const {
     state,
+    informe,
     activeTab,
     successOpened,
     updateTab,
@@ -120,7 +121,7 @@ export function DashboardConfigurationPage() {
                   <div className={classes.fieldGroup}>
                     <Text className={classes.fieldTitle}>Texto del título</Text>
                     <TextInput
-                      value={state.informe.titulo}
+                      value={informe.titulo}
                       onChange={(event) =>
                         updateInforme('titulo', event.currentTarget.value)
                       }
@@ -134,7 +135,7 @@ export function DashboardConfigurationPage() {
                   <div className={classes.fieldGroup}>
                     <Text className={classes.fieldTitle}>Cuerpo del informe</Text>
                     <Textarea
-                      value={state.informe.cuerpo}
+                      value={informe.cuerpo}
                       onChange={(event) =>
                         updateInforme('cuerpo', event.currentTarget.value)
                       }
