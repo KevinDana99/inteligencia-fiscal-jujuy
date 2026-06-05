@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import type { IReprocessingMarkPayload } from '../../../data/models/Reprocessing'
+import { useState } from 'react'
+import type { IReprocessingMarkPayload } from '../../data/models/Reprocessing'
+import { buildReprocessingSubtitle } from '../utils'
 
 export interface ISendToReprocessingModalProps {
   opened: boolean
@@ -23,25 +24,25 @@ export function useSendToReprocessingModal({
   const [description, setDescription] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  useEffect(() => {
-    if (!opened) {
-      setDescription('')
-      setIsSubmitting(false)
-    }
-  }, [opened])
+  const subtitle = buildReprocessingSubtitle(cuit, razonSocial)
 
-  const subtitle = useMemo(() => `${cuit} — ${razonSocial}`, [cuit, razonSocial])
+  const resetState = () => {
+    setDescription('')
+    setIsSubmitting(false)
+  }
 
   const handleClose = () => {
     if (isSubmitting) {
       return
     }
 
+    resetState()
     onClose()
   }
 
   const handleConfirm = async () => {
     if (!onConfirm) {
+      resetState()
       onClose()
       return
     }
@@ -53,6 +54,7 @@ export function useSendToReprocessingModal({
         contribuyenteId,
         description: description || null
       })
+      resetState()
       onClose()
     } finally {
       setIsSubmitting(false)
