@@ -2,14 +2,20 @@
 
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import type { ICrossManagementItem } from '../../data/models/CrossManagement'
-import { crossItemsMock } from '../../data/sources/mock/fixtures/crossItems'
+import type {
+  ICrossManagementItem,
+  ICrossManagementListData
+} from '../../data/models/CrossManagement'
 
 const DAY_FILTER_OPTIONS = [
   { value: '', label: 'Todos los días' },
   { value: '7', label: 'Últimos 7 días' },
   { value: '30', label: 'Últimos 30 días' },
-  { value: '90', label: 'Últimos 3 meses' }
+  { value: '90', label: 'Últimos 3 meses' },
+  { value: '180', label: 'Últimos 6 meses' },
+  { value: '365', label: 'Último año' },
+  { value: '730', label: 'Últimos 2 años' },
+  { value: '1095', label: 'Últimos 3 años' }
 ]
 
 function parseDate(dateLabel: string) {
@@ -22,43 +28,33 @@ function matchesDayRange(itemDate: string, selectedRange: string) {
     return true
   }
 
-  const now = new Date(2026, 4, 14).getTime()
+  const now = Date.now()
   const diffMs = now - parseDate(itemDate)
   const diffDays = diffMs / (1000 * 60 * 60 * 24)
 
   return diffDays <= Number(selectedRange)
 }
 
-export function useCrossManagement() {
+export function useCrossManagement(initialCrossData?: ICrossManagementListData | null) {
   const router = useRouter()
   const [searchValue, setSearchValue] = useState('')
-  const [periodValue, setPeriodValue] = useState('')
   const [dayRangeValue, setDayRangeValue] = useState('')
 
-  const periodOptions = useMemo(() => {
-    const uniquePeriods = Array.from(new Set(crossItemsMock.map((item) => item.period)))
-
-    return [
-      { value: '', label: 'Todos los períodos' },
-      ...uniquePeriods.map((period) => ({ value: period, label: period }))
-    ]
-  }, [])
-
   const filteredItems = useMemo(() => {
+    const initialItems = initialCrossData?.items ?? []
     const normalizedSearch = searchValue.trim().toLowerCase()
 
-    return crossItemsMock.filter((item) => {
+    return initialItems.filter((item) => {
       const matchesSearch =
         !normalizedSearch ||
         item.name.toLowerCase().includes(normalizedSearch) ||
         item.sourceRef.toLowerCase().includes(normalizedSearch)
 
-      const matchesPeriod = !periodValue || item.period === periodValue
       const matchesDays = matchesDayRange(item.date, dayRangeValue)
 
-      return matchesSearch && matchesPeriod && matchesDays
+      return matchesSearch && matchesDays
     })
-  }, [dayRangeValue, periodValue, searchValue])
+  }, [dayRangeValue, initialCrossData, searchValue])
 
   const openCrossPreview = (item: ICrossManagementItem) => {
     router.push(
@@ -70,12 +66,9 @@ export function useCrossManagement() {
     items: filteredItems,
     total: filteredItems.length,
     searchValue,
-    periodValue,
     dayRangeValue,
-    periodOptions,
     dayRangeOptions: DAY_FILTER_OPTIONS,
     setSearchValue,
-    setPeriodValue,
     setDayRangeValue,
     openCrossPreview
   }

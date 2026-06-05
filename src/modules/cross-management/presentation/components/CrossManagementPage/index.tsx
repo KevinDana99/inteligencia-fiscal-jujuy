@@ -4,21 +4,23 @@ import { Badge, Select, Table, Text, TextInput } from '@mantine/core'
 import { IconSearch } from '@tabler/icons-react'
 import { useCrossManagement } from '../../hooks'
 import classes from './CrossManagementPage.module.css'
+import type { ICrossManagementListData } from '../../../data/models/CrossManagement'
 
-export function CrossManagementPage() {
+export function CrossManagementPage({
+  initialCrossData
+}: {
+  initialCrossData?: ICrossManagementListData | null
+}) {
   const {
     items,
     total,
     searchValue,
-    periodValue,
     dayRangeValue,
-    periodOptions,
     dayRangeOptions,
     setSearchValue,
-    setPeriodValue,
     setDayRangeValue,
     openCrossPreview
-  } = useCrossManagement()
+  } = useCrossManagement(initialCrossData)
 
   return (
     <div className={classes.root}>
@@ -42,18 +44,6 @@ export function CrossManagementPage() {
             classNames={{
               input: classes.searchInputField,
               section: classes.searchInputSection
-            }}
-          />
-
-          <Select
-            data={periodOptions}
-            value={periodValue}
-            onChange={(value) => setPeriodValue(value ?? '')}
-            className={classes.filterSelect}
-            classNames={{
-              input: classes.filterSelectInput,
-              dropdown: classes.filterSelectDropdown,
-              option: classes.filterSelectOption
             }}
           />
 

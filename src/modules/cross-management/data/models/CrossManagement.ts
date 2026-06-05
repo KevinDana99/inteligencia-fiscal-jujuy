@@ -10,6 +10,59 @@ export interface ICrossManagementItem {
 
 export type ICrossManagementItems = Array<ICrossManagementItem>
 
+export interface ICrossManagementListParams {
+  search?: string | null
+  page?: number
+  itemsPerPage?: number
+}
+
+export interface ICrossManagementListData {
+  page: number
+  itemsPerPage: number
+  totalItems: number
+  totalPages: number
+  items: ICrossManagementItems
+}
+
+export interface ICrossResultSource {
+  code: string
+  sourcePreparationId: string | null
+  coverageStatus: string
+  required: boolean
+}
+
+export interface ICrossResultItem {
+  id: string
+  executionId: number
+  crossCode: string
+  crossVersion: string
+  taxpayerId: string
+  cuit: string
+  granularity: string
+  period: string
+  periodFrom: string
+  periodTo: string
+  calculationStatus: string
+  metrics: Record<string, unknown>
+  dynamicDetail: Record<string, unknown>
+  sources: ICrossResultSource[]
+  nonCalculableFields: string[]
+  createdAt: string
+}
+
+export interface ICrossResultsListParams {
+  page?: number
+  itemsPerPage?: number
+}
+
+export interface ICrossResultsListData {
+  page: number
+  itemsPerPage: number
+  totalItems: number
+  totalPages: number
+  results: ICrossResultItem[]
+}
+
 export interface ICrossPreviewIndicator {
   id: string
   label: string
@@ -86,6 +139,13 @@ export interface ICrossAnalysisFilterData {
 
 export interface ICrossAnalysisFilterQueryResult {
   data: ICrossAnalysisFilterData | null
+  error?: string
+  code?: string
+  status?: number
+}
+
+export interface ICrossManagementQueryResult<TData> {
+  data: TData | null
   error?: string
   code?: string
   status?: number

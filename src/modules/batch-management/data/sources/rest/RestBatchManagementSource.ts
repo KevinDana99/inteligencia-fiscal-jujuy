@@ -37,7 +37,7 @@ function appendCuits(formData: FormData, cuitsText?: string | null) {
     return;
   }
 
-  formData.append('cuits', cuitsText);
+  formData.append('Cuits', cuitsText);
 }
 
 function getFormDataEntries(formData: FormData) {
@@ -61,11 +61,11 @@ export class RestBatchManagementSource implements IBatchManagementSource {
     const searchParams = new URLSearchParams();
 
     if (params.search?.trim()) {
-      searchParams.set('busqueda', params.search.trim());
+      searchParams.set('Busqueda', params.search.trim());
     }
 
-    searchParams.set('pagina', String(params.page ?? 1));
-    searchParams.set('itemsPagina', String(params.itemsPerPage ?? 20));
+    searchParams.set('Pagina', String(params.page ?? 1));
+    searchParams.set('ItemsPagina', String(params.itemsPerPage ?? 20));
 
     const path = searchParams.size ? `/api/lotes?${searchParams.toString()}` : '/api/lotes';
     console.log({
@@ -73,9 +73,9 @@ export class RestBatchManagementSource implements IBatchManagementSource {
       action: 'RestBatchManagementSource.listBatches',
       METHOD: 'GET',
       REQUEST_RAW: {
-        busqueda: params.search ?? null,
-        pagina: params.page ?? 1,
-        itemsPagina: params.itemsPerPage ?? 20,
+        Busqueda: params.search ?? null,
+        Pagina: params.page ?? 1,
+        ItemsPagina: params.itemsPerPage ?? 20,
         requestUrl: path
       }
     });
@@ -119,11 +119,11 @@ export class RestBatchManagementSource implements IBatchManagementSource {
     const formData = new FormData();
 
     if (payload.file) {
-      formData.append('archivo', payload.file);
+      formData.append('Archivo', payload.file);
     }
 
     if (payload.regime?.trim()) {
-      formData.append('regimen', normalizeRequestRegime(payload.regime.trim()));
+      formData.append('Regimen', normalizeRequestRegime(payload.regime.trim()));
     }
 
     appendCuits(formData, payload.cuitsText);
@@ -154,16 +154,16 @@ export class RestBatchManagementSource implements IBatchManagementSource {
   async createBatch(payload: IBatchCreatePayload): Promise<IBatchCreatedSummary> {
     const formData = new FormData();
 
-    formData.append('nombre', payload.name.trim());
+    formData.append('Nombre', payload.name.trim());
 
     if (payload.description?.trim()) {
-      formData.append('descripcion', payload.description.trim());
+      formData.append('Descripcion', payload.description.trim());
     }
 
-    formData.append('regimen', normalizeRequestRegime(payload.regime.trim()));
+    formData.append('Regimen', normalizeRequestRegime(payload.regime.trim()));
 
     if (payload.file) {
-      formData.append('archivo', payload.file);
+      formData.append('Archivo', payload.file);
     }
 
     appendCuits(formData, payload.cuitsText);
