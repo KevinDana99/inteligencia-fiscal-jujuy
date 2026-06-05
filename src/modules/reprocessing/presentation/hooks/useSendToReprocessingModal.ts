@@ -14,7 +14,6 @@ export interface ISendToReprocessingModalProps {
 }
 
 export function useSendToReprocessingModal({
-  opened,
   contribuyenteId,
   cuit,
   razonSocial,
