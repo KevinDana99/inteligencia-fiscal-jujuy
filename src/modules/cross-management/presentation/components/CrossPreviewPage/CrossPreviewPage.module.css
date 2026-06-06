@@ -331,10 +331,12 @@
 }
 
 .tableWrap {
+  position: relative;
   overflow-x: auto;
 }
 
 .simpleTableWrap {
+  position: relative;
   overflow-x: auto;
 }
 
@@ -372,6 +374,11 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
   vertical-align: middle;
+}
+
+.planNeutralHeaderCell {
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-6);
 }
 
 .planTable .tableHeaderCell:first-child,
@@ -754,6 +761,13 @@
   color: var(--mantine-color-gray-5);
   font-size: 12px;
   text-align: center;
+}
+
+.tableErrorText {
+  padding: 10px 16px 0;
+  color: var(--mantine-color-red-6);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .tableFooter {

@@ -1,4 +1,6 @@
 import type {
+  IBatchCrossExecutionPayload,
+  IBatchCrossExecutionSummary,
   IBatchCreatedSummary,
   IBatchListData,
   IBatchManagementAuthor,
@@ -15,7 +17,9 @@ import type {
   ApiBatchListItemDto,
   ApiBatchListResponseDto,
   ApiBatchPreviewRecordDto,
-  ApiBatchPreviewResponseDto
+  ApiBatchPreviewResponseDto,
+  ApiExecuteBatchCrossRequestDto,
+  ApiExecuteBatchCrossResponseDto
 } from '../dtos/BatchManagementDtos';
 
 function mapBatchAuthor(dto: ApiBatchAuthorDto): IBatchManagementAuthor {
@@ -25,11 +29,19 @@ function mapBatchAuthor(dto: ApiBatchAuthorDto): IBatchManagementAuthor {
   };
 }
 
+function getBusinessName(dto: {
+  razonSocial?: string | null;
+  RazonSocial?: string | null;
+  razon_social?: string | null;
+}) {
+  return dto.razonSocial ?? dto.RazonSocial ?? dto.razon_social ?? null;
+}
+
 function mapBatchCuit(batchId: string, dto: ApiBatchCuitDto): IBatchManagementCuit {
   return {
     id: `${batchId}-${dto.orden}`,
     cuit: dto.cuit,
-    businessName: dto.razonSocial,
+    businessName: getBusinessName(dto),
     regime: dto.regimen,
     order: dto.orden
   };
@@ -84,7 +96,7 @@ function mapPreviewRecord(dto: ApiBatchPreviewRecordDto): IBatchPreviewRecord {
     record: dto.registro,
     originalCuit: dto.cuitOriginal,
     normalizedCuit: dto.cuitNormalizado,
-    businessName: dto.razonSocial,
+    businessName: getBusinessName(dto),
     status: statusByDto[dto.estado],
     reason: dto.motivo
   };
@@ -107,14 +119,45 @@ export function mapBatchPreviewResponseDto(
 export function mapBatchCreateResponseDto(
   dto: ApiBatchCreateResponseDto
 ): IBatchCreatedSummary {
+  const formattedNumber =
+    dto.numeroFormateado ?? dto.numeroLote ?? String(dto.numero ?? '');
+  const parsedNumber = Number(dto.numero ?? formattedNumber);
+
   return {
-    id: dto.id,
-    number: dto.numero,
-    formattedNumber: dto.numeroFormateado,
+    id: dto.id ?? formattedNumber,
+    number: Number.isNaN(parsedNumber) ? 0 : parsedNumber,
+    formattedNumber,
     name: dto.nombre,
     description: dto.descripcion,
     regime: dto.regimen,
     cuitCount: dto.cantidadCuits,
     createdAt: dto.fechaGeneracion
+  };
+}
+
+export function mapExecuteBatchCrossRequestDto(
+  payload: IBatchCrossExecutionPayload
+): ApiExecuteBatchCrossRequestDto {
+  return {
+    versionCruce: payload.crossVersion,
+    tipoOrigen: 'por_lote',
+    loteId: payload.batchId,
+    contribuyenteId: null,
+    periodoInicio: payload.periodFrom,
+    periodoFin: payload.periodTo,
+    parametros: payload.parameters ?? {}
+  };
+}
+
+export function mapExecuteBatchCrossResponseDto(
+  dto: ApiExecuteBatchCrossResponseDto
+): IBatchCrossExecutionSummary {
+  return {
+    executionId: dto.ejecucionId,
+    crossCode: dto.codigoCruce,
+    crossVersion: dto.versionCruce,
+    status: dto.estado,
+    idempotencyKey: dto.claveIdempotencia,
+    requestedAt: dto.fechaSolicitud
   };
 }

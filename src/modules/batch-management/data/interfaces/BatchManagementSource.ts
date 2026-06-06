@@ -1,4 +1,6 @@
 import type {
+  IBatchCrossExecutionPayload,
+  IBatchCrossExecutionSummary,
   IBatchCreatePayload,
   IBatchCreatedSummary,
   IBatchListData,
@@ -16,6 +18,9 @@ export interface IBatchManagementQueryPort {
 export interface IBatchManagementCommandPort {
   previewBatchLoad(payload: IBatchPreviewPayload): Promise<IBatchPreviewData>;
   createBatch(payload: IBatchCreatePayload): Promise<IBatchCreatedSummary>;
+  executeBatchCross(
+    payload: IBatchCrossExecutionPayload
+  ): Promise<IBatchCrossExecutionSummary>;
 }
 
 export interface IBatchManagementSource

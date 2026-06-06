@@ -1,11 +1,16 @@
-export type ApiBatchRegime = 'Convenio Multilateral' | 'Regimen Local';
+export type ApiBatchRegime =
+  | 'Convenio Multilateral'
+  | 'Regimen Local'
+  | 'No inscripto';
 export type ApiBatchRequestRegime =
   | 'CM'
   | 'Convenio Multilateral'
   | 'ConvenioMultilateral'
   | 'Convenio Multilateral (CM)'
   | 'Regimen Local'
-  | 'RegimenLocal';
+  | 'RegimenLocal'
+  | 'No inscripto'
+  | 'NoInscripto';
 
 export interface ApiBatchAuthorDto {
   id: string;
@@ -34,6 +39,8 @@ export interface ApiBatchListResponseDto {
 export interface ApiBatchCuitDto {
   cuit: string;
   razonSocial: string | null;
+  RazonSocial?: string | null;
+  razon_social?: string | null;
   regimen: ApiBatchRegime;
   orden: number;
 }
@@ -57,6 +64,8 @@ export interface ApiBatchPreviewRecordDto {
   cuitOriginal: string;
   cuitNormalizado: string | null;
   razonSocial: string | null;
+  RazonSocial?: string | null;
+  razon_social?: string | null;
   estado: ApiPreviewStatusDto;
   motivo: string | null;
 }
@@ -72,14 +81,35 @@ export interface ApiBatchPreviewResponseDto {
 }
 
 export interface ApiBatchCreateResponseDto {
-  id: string;
-  numero: number;
-  numeroFormateado: string;
+  id?: string | null;
+  numero?: number | null;
+  numeroFormateado?: string | null;
+  numeroLote?: string | null;
   nombre: string;
   descripcion: string | null;
   regimen: ApiBatchRegime;
   cantidadCuits: number;
   fechaGeneracion: string;
+  creadoPor?: ApiBatchAuthorDto | null;
+}
+
+export interface ApiExecuteBatchCrossRequestDto {
+  versionCruce: string;
+  tipoOrigen: 'por_lote';
+  loteId: string;
+  contribuyenteId: null;
+  periodoInicio: string;
+  periodoFin: string;
+  parametros: Record<string, string | null>;
+}
+
+export interface ApiExecuteBatchCrossResponseDto {
+  ejecucionId: number;
+  codigoCruce: string;
+  versionCruce: string;
+  estado: string;
+  claveIdempotencia: string;
+  fechaSolicitud: string;
 }
 
 export interface ApiBatchErrorDto {

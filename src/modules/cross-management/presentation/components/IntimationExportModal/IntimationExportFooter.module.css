@@ -1,0 +1,73 @@
+.bottomBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: var(--mantine-color-gray-9);
+  border-radius: 0 0 12px 12px;
+}
+
+.backButton {
+  border-radius: 999px;
+  padding: 9px 18px;
+  background: rgb(255 255 255 / 0.1);
+  color: var(--mantine-color-white);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.backButton:hover,
+.backButton[data-hovered],
+.backButton[data-active] {
+  background: rgb(255 255 255 / 0.2);
+}
+
+.downloadActions {
+  display: flex;
+  gap: 10px;
+}
+
+.secondaryDownloadButton {
+  border: 1px solid rgb(255 255 255 / 0.2);
+  border-radius: 999px;
+  padding: 9px 18px;
+  background: rgb(255 255 255 / 0.1);
+  color: var(--mantine-color-white);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.secondaryDownloadButton:hover,
+.secondaryDownloadButton[data-hovered],
+.secondaryDownloadButton[data-active] {
+  background: rgb(255 255 255 / 0.2);
+}
+
+.primaryDownloadButton {
+  border-radius: 999px;
+  padding: 9px 18px;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-9);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.primaryDownloadButton:hover,
+.primaryDownloadButton[data-hovered],
+.primaryDownloadButton[data-active] {
+  background: var(--mantine-color-white);
+  opacity: 0.9;
+}
+
+@media (max-width: 760px) {
+  .bottomBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .downloadActions {
+    width: 100%;
+    flex-direction: column;
+  }
+}

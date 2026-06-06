@@ -1,5 +1,6 @@
 import { Table } from '@mantine/core'
 import type {
+  ICrossDynamicColumn,
   ICrossPreviewAnalysisRow
 } from '../../../data/models/CrossManagement'
 import type { CrossPreviewStatus } from '../../hooks/useCrossPreview'
@@ -7,6 +8,7 @@ import { CrossPreviewAnalysisStatusSelect } from './CrossPreviewAnalysisStatusSe
 import classes from './CrossPreviewPage.module.css'
 
 interface CrossPreviewAnalysisRowProps {
+  columns: ICrossDynamicColumn[]
   onRequestStatusChange: (
     row: ICrossPreviewAnalysisRow,
     status: CrossPreviewStatus
@@ -16,28 +18,35 @@ interface CrossPreviewAnalysisRowProps {
 }
 
 export function CrossPreviewAnalysisRow({
+  columns,
   onRequestStatusChange,
   row,
   status
 }: CrossPreviewAnalysisRowProps) {
   return (
     <Table.Tr>
-      <Table.Td className={`${classes.analysisBodyCell} ${classes.analysisBodyCellMonospace}`}>{row.cuit}</Table.Td>
-      <Table.Td className={`${classes.analysisBodyCell} ${classes.analysisBodyCellLeft}`}>{row.businessName}</Table.Td>
-      <Table.Td className={classes.analysisBodyCell}>{row.declaredBase}</Table.Td>
-      <Table.Td className={classes.analysisBodyCell}>{row.pretendedBase}</Table.Td>
-      <Table.Td className={`${classes.analysisBodyCell} ${classes.analysisDangerCell}`}>{row.difference}</Table.Td>
-      <Table.Td className={`${classes.analysisBodyCell} ${classes.analysisDangerCell}`}>{row.tax}</Table.Td>
-      <Table.Td className={`${classes.analysisBodyCell} ${classes.analysisDangerCell}`}>{row.netDebt}</Table.Td>
-      <Table.Td className={classes.analysisBodyCell}>
-        <div className={classes.statusCell}>
-          <CrossPreviewAnalysisStatusSelect
-            onRequestStatusChange={onRequestStatusChange}
-            row={row}
-            status={status}
-          />
-        </div>
-      </Table.Td>
+      {columns.map((column) => (
+        <Table.Td
+          key={`${row.id}-${column.key}`}
+          className={`${classes.analysisBodyCell} ${
+            column.key === 'cuit' ? classes.analysisBodyCellMonospace : ''
+          } ${
+            column.key === 'razonSocial' ? classes.analysisBodyCellLeft : ''
+          }`}
+        >
+          {column.key === 'estadoRelevancia' ? (
+            <div className={classes.statusCell}>
+              <CrossPreviewAnalysisStatusSelect
+                onRequestStatusChange={onRequestStatusChange}
+                row={row}
+                status={status}
+              />
+            </div>
+          ) : (
+            row.values[column.key] ?? '-'
+          )}
+        </Table.Td>
+      ))}
     </Table.Tr>
   )
 }

@@ -1,43 +1,50 @@
-import { Table, Text } from '@mantine/core'
+import { LoadingOverlay, Table, Text } from '@mantine/core'
 import type {
+  ICrossDynamicColumn,
   ICrossPreviewPlanRow
 } from '../../../data/models/CrossManagement'
 import { CROSS_PREVIEW_SEARCH_EMPTY_MESSAGE } from '../../constants/crossPreviewLabels'
-import { CROSS_PREVIEW_PLAN_COLUMN_GROUPS } from '../../constants/crossPreviewPlanTable'
 import {
   useCrossPreviewPlanBodyCell,
-  useCrossPreviewPlanGroupHeaderCell,
   useCrossPreviewPlanHeaderCell
 } from '../../hooks/cross-preview/useCrossPreviewPlanTableClassNames'
 import classes from './CrossPreviewPage.module.css'
 
 interface CrossPreviewPlanTableProps {
-  columns: string[]
+  columns: ICrossDynamicColumn[]
+  isLoading?: boolean
   rows: ICrossPreviewPlanRow[]
 }
 
 export function CrossPreviewPlanTable({
   columns,
+  isLoading,
   rows
 }: CrossPreviewPlanTableProps) {
   return (
     <div className={classes.tableWrap}>
+      <LoadingOverlay
+        visible={Boolean(isLoading)}
+        zIndex={2}
+        overlayProps={{ radius: 'sm', blur: 1 }}
+      />
       <Table className={classes.planTable} withTableBorder={false} withColumnBorders={false}>
         <Table.Thead>
           <Table.Tr>
-            {CROSS_PREVIEW_PLAN_COLUMN_GROUPS.map((group) => (
-              <CrossPreviewPlanGroupHeaderCell key={group.label} group={group} />
-            ))}
-          </Table.Tr>
-          <Table.Tr>
             {columns.map((column) => (
-              <CrossPreviewPlanHeaderCell key={column} column={column} />
+              <CrossPreviewPlanHeaderCell key={column.key} column={column} />
             ))}
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
           {rows.length ? (
-            rows.map((row) => <CrossPreviewPlanRow key={row.id} row={row} />)
+            rows.map((row) => (
+              <CrossPreviewPlanRow
+                key={row.id}
+                columns={columns}
+                row={row}
+              />
+            ))
           ) : (
             <Table.Tr>
               <Table.Td colSpan={columns.length}>
@@ -53,38 +60,30 @@ export function CrossPreviewPlanTable({
   )
 }
 
-interface CrossPreviewPlanGroupHeaderCellProps {
-  group: (typeof CROSS_PREVIEW_PLAN_COLUMN_GROUPS)[number]
-}
-
-function CrossPreviewPlanGroupHeaderCell({
-  group
-}: CrossPreviewPlanGroupHeaderCellProps) {
-  const { className } = useCrossPreviewPlanGroupHeaderCell({
-    groupClassName: group.className
-  })
-
-  return (
-    <Table.Th colSpan={group.span} className={className}>
-      {group.label}
-    </Table.Th>
-  )
-}
-
-function CrossPreviewPlanHeaderCell({ column }: { column: string }) {
+function CrossPreviewPlanHeaderCell({
+  column
+}: {
+  column: ICrossDynamicColumn
+}) {
   const { className } = useCrossPreviewPlanHeaderCell(column)
 
-  return <Table.Th className={className}>{column}</Table.Th>
+  return <Table.Th className={className}>{column.label}</Table.Th>
 }
 
-function CrossPreviewPlanRow({ row }: { row: ICrossPreviewPlanRow }) {
+function CrossPreviewPlanRow({
+  columns,
+  row
+}: {
+  columns: ICrossDynamicColumn[]
+  row: ICrossPreviewPlanRow
+}) {
   return (
     <Table.Tr>
-      {row.cells.map((cell, index) => (
+      {columns.map((column) => (
         <CrossPreviewPlanBodyCell
-          key={`${row.id}-${index}`}
-          cell={cell}
-          index={index}
+          key={`${row.id}-${column.key}`}
+          cell={row.values[column.key] ?? '-'}
+          column={column}
         />
       ))}
     </Table.Tr>
@@ -93,12 +92,12 @@ function CrossPreviewPlanRow({ row }: { row: ICrossPreviewPlanRow }) {
 
 function CrossPreviewPlanBodyCell({
   cell,
-  index
+  column
 }: {
   cell: string
-  index: number
+  column: ICrossDynamicColumn
 }) {
-  const { className } = useCrossPreviewPlanBodyCell(index)
+  const { className } = useCrossPreviewPlanBodyCell(column)
 
   return <Table.Td className={className}>{cell}</Table.Td>
 }

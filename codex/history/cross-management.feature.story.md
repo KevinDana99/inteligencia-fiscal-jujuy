@@ -1,5 +1,21 @@
 # Cross Management Feature Story
 
+## 2026-06-05 Integracion Planilla/Resumen en preview
+
+- `/gestion-de-cruces/vista-previa-cruce/[crossId]` ahora carga la vista desde `POST /planilla` y `POST /resumen`, dejando `resultados-cruces` fuera de la preview.
+- Se agregaron DTOs, modelos, source methods, actions y mappers para esquemas dinamicos con `textos`, `fechas`, `metricas`, bloques de resumen y analisis sistemico.
+- Planilla y Resumen renderizan columnas desde los esquemas del backend; pagina 2+ reutiliza los esquemas recibidos en pagina 1 cuando el backend devuelve `null`.
+- Busqueda, filtros por columna y paginacion se ejecutan contra backend con loaders de tabla; se eliminaron hooks/utils de filtrado local y columnas fijas.
+- Los filtros del modal se construyen solo desde columnas `esFiltrable` y `operadoresPermitidos`.
+
+### Validation
+
+- `npx tsc --noEmit`
+- `npx eslint 'app/(private)/gestion-de-cruces/vista-previa-cruce/[crossId]/page.tsx' src/modules/cross-management`
+- `npm test -- src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.test.ts`
+- `npm run build`
+- `npm run lint -- 'app/(private)/gestion-de-cruces/vista-previa-cruce/[crossId]/page.tsx' src/modules/cross-management` queda bloqueado por deuda existente fuera del modulo: `src/modules/reprocessing/presentation/components/SendToReprocessingModal/useSendToReprocessingModal.ts` y warnings en `unified-register`.
+
 ## Cambio
 
 - Se conecto `Gestion de Cruces` con `GET /api/procesos-informacion/ejecuciones` desde la ruta server-side.
@@ -50,6 +66,19 @@
 - `bun x tsc --noEmit`
 - `bun x eslint app/'(private)'/gestion-de-cruces/vista-previa-cruce/'[crossId]'/page.tsx src/modules/cross-management/preview.tsx src/modules/cross-management/constants/crossPreviewRequest.ts src/modules/cross-management/data/actions/queries/getCrossPreviewAction.ts src/modules/cross-management/data/actions/index.ts src/modules/cross-management/presentation/constants/crossPreviewFilters.ts src/modules/cross-management/presentation/constants/crossPreviewLabels.ts src/modules/cross-management/presentation/constants/crossPreviewRoutes.ts src/modules/cross-management/presentation/constants/crossPreviewStatus.ts src/modules/cross-management/presentation/constants/crossPreviewPlanTable.ts src/modules/cross-management/presentation/utils/normalizeCrossPreviewSearch.ts src/modules/cross-management/presentation/utils/matchesCrossPreviewSearch.ts src/modules/cross-management/presentation/utils/filterCrossPreviewRowsBySearch.ts src/modules/cross-management/presentation/utils/parseCrossPreviewFilterNumber.ts src/modules/cross-management/presentation/utils/matchesCrossPreviewFilterCondition.ts src/modules/cross-management/presentation/utils/filterCrossPreviewAnalysisRows.ts src/modules/cross-management/presentation/hooks/useCrossPreview.ts src/modules/cross-management/presentation/hooks/cross-preview/*.ts src/modules/cross-management/presentation/components/CrossPreviewPage/*.tsx`
 - `bun run lint` sigue bloqueado por un error existente en `reprocessing` y 4 warnings existentes en `unified-register`; la subruta de preview queda limpia en lint acotado.
+
+## 2026-06-05 Intimation export modal refactor
+
+- `IntimationExportModal` dejó de concentrar el preview completo y quedó como composición de header, paginación, barra de contribuyente, documento y footer.
+- Se movió el mapa de columnas de la planilla adjunta a `presentation/constants` y la resolución de valores a `presentation/utils`.
+- Se agregaron hooks para estado del modal, paginación y documento, manteniendo el componente sin cálculo de contribuyente activo ni split de párrafos.
+- El CSS del modal se separó por bloque visual para evitar un módulo de estilos de más de 300 líneas.
+
+### Validation
+
+- `bun x tsc --noEmit`
+- `bun x eslint src/modules/cross-management/presentation/components/IntimationExportModal/*.tsx src/modules/cross-management/presentation/hooks/intimation-export/*.ts src/modules/cross-management/presentation/constants/intimationExportColumns.ts src/modules/cross-management/presentation/constants/intimationExportLabels.ts src/modules/cross-management/presentation/utils/resolveIntimationExportColumnValue.ts`
+- `bun run lint` sigue bloqueado por un error existente en `reprocessing` y 4 warnings existentes en `unified-register`; `IntimationExportModal` queda limpio en lint acotado.
 
 ## 2026-06-04 Preview de resultados de cruces
 

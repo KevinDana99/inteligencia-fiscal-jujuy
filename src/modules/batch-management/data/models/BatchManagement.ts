@@ -106,6 +106,24 @@ export interface IBatchPreviewPayload {
   cuitsText?: string | null;
 }
 
+export interface IBatchCrossExecutionPayload {
+  batchId: string;
+  crossCode: string;
+  crossVersion: string;
+  periodFrom: string;
+  periodTo: string;
+  parameters?: Record<string, string | null>;
+}
+
+export interface IBatchCrossExecutionSummary {
+  executionId: number;
+  crossCode: string;
+  crossVersion: string;
+  status: string;
+  idempotencyKey: string;
+  requestedAt: string;
+}
+
 export interface IBatchCreatedSummary {
   id: string;
   number: number;
