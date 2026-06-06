@@ -7,6 +7,7 @@ import { CrossPreviewModals } from './CrossPreviewModals'
 import { CrossPreviewPlanSection } from './CrossPreviewPlanSection'
 import { CrossPreviewResumenSection } from './CrossPreviewResumenSection'
 import { CrossPreviewTopBar } from './CrossPreviewTopBar'
+import { CrossFilterModal } from '../CrossFilterModal'
 import classes from './CrossPreviewPage.module.css'
 
 interface CrossPreviewPageContentProps {
@@ -27,27 +28,56 @@ export function CrossPreviewPageContent({ cross }: CrossPreviewPageContentProps)
 
       {preview.isPlanilla ? (
         <CrossPreviewPlanSection
+          columns={preview.planillaColumns}
           cross={cross}
-          filteredPlanRows={preview.filteredPlanRows}
+          error={preview.planillaError}
+          isLoading={preview.planillaIsLoading}
+          onSetPage={preview.setPlanillaPage}
           onSetPlanillaSearch={preview.setPlanillaSearch}
+          pagination={preview.planillaPagination}
           planillaSearch={preview.planillaSearch}
+          rows={preview.planillaRows}
         />
       ) : (
         <CrossPreviewResumenSection
+          analysisColumns={preview.analysisColumns}
           columnFilters={preview.columnFilters}
           cross={cross}
-          filteredAnalysisRows={preview.filteredAnalysisRows}
+          error={preview.resumenError}
+          isLoading={preview.resumenIsLoading}
           onOpenFilterModal={preview.openFilterModal}
+          onSetPage={preview.setResumenPage}
           onRequestStatusChange={preview.requestAnalysisStatusChange}
           onSetResumenSearch={preview.setResumenSearch}
+          pagination={preview.resumenPagination}
           resumenSearch={preview.resumenSearch}
+          rows={preview.resumenRows}
           statusByCuit={preview.statusByCuit}
+          summaryBlocks={preview.summaryBlocks}
         />
       )}
 
+      <CrossFilterModal
+        key={preview.activeFilterColumn?.key ?? 'closed'}
+        allowedOperators={preview.activeFilterColumn?.allowedOperators ?? []}
+        columnKey={preview.activeFilterColumn?.key ?? null}
+        columnLabel={preview.activeFilterColumn?.label ?? ''}
+        error={preview.resumenError}
+        initialValue={
+          preview.activeFilterColumn
+            ? preview.columnFilters[preview.activeFilterColumn.key] ?? null
+            : null
+        }
+        isPending={preview.resumenIsLoading}
+        onApply={preview.applyFilter}
+        onClear={preview.clearFilter}
+        onClose={preview.closeFilterModal}
+        opened={Boolean(preview.activeFilterColumn)}
+      />
+
       <CrossPreviewModals
         activePreviewIndex={preview.activePreviewIndex}
-        contributors={cross.planRows}
+        contributors={preview.planillaRows}
         exportModalOpened={preview.exportModalOpened}
         intimationModalOpened={preview.intimationModalOpened}
         onCloseExportModal={preview.closeExportModal}

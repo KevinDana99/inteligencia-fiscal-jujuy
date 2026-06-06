@@ -10,6 +10,7 @@ import {
   Group,
   Menu,
   Select,
+  type SelectProps,
   Stack,
   Table,
   Text
@@ -50,6 +51,16 @@ const MONTHLY_CROSS_OPTIONS: string[] = []
 const ANNUAL_CROSS_OPTIONS = [
   'Control de desvio de BI - Regimen CM'
 ]
+const BASE_CROSS_MENU_SELECT_COMBOBOX_PROPS = {
+  withinPortal: false,
+  width: 'target',
+  offset: 4,
+  position: 'bottom-start',
+  middlewares: {
+    flip: false,
+    shift: true
+  }
+} satisfies NonNullable<SelectProps['comboboxProps']>
 
 function getContributorTypeLabel(regime: string) {
   if (regime === 'Convenio Multilateral') {
@@ -175,6 +186,7 @@ function BatchManagementMenu({
                             input: classes.crossMenuSelectInput,
                             dropdown: classes.crossMenuSelectDropdown
                           }}
+                          comboboxProps={BASE_CROSS_MENU_SELECT_COMBOBOX_PROPS}
                         />
                         <Select
                           data={YEAR_OPTIONS}
@@ -185,6 +197,7 @@ function BatchManagementMenu({
                             input: classes.crossMenuYearInput,
                             dropdown: classes.crossMenuSelectDropdown
                           }}
+                          comboboxProps={BASE_CROSS_MENU_SELECT_COMBOBOX_PROPS}
                         />
                       </div>
                     </div>
@@ -201,6 +214,7 @@ function BatchManagementMenu({
                             input: classes.crossMenuSelectInput,
                             dropdown: classes.crossMenuSelectDropdown
                           }}
+                          comboboxProps={BASE_CROSS_MENU_SELECT_COMBOBOX_PROPS}
                         />
                         <Select
                           data={YEAR_OPTIONS}
@@ -211,6 +225,7 @@ function BatchManagementMenu({
                             input: classes.crossMenuYearInput,
                             dropdown: classes.crossMenuSelectDropdown
                           }}
+                          comboboxProps={BASE_CROSS_MENU_SELECT_COMBOBOX_PROPS}
                         />
                       </div>
                     </div>
@@ -271,6 +286,7 @@ function BatchManagementMenu({
                         input: classes.crossMenuSelectInput,
                         dropdown: classes.crossMenuSelectDropdown
                       }}
+                      comboboxProps={BASE_CROSS_MENU_SELECT_COMBOBOX_PROPS}
                     />
                   </div>
                   <span className={classes.periodArrow}>→</span>
@@ -285,6 +301,7 @@ function BatchManagementMenu({
                         input: classes.crossMenuSelectInput,
                         dropdown: classes.crossMenuSelectDropdown
                       }}
+                      comboboxProps={BASE_CROSS_MENU_SELECT_COMBOBOX_PROPS}
                     />
                   </div>
                 </Group>

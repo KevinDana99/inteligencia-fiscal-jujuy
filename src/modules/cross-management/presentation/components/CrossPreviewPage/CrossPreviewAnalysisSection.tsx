@@ -1,16 +1,17 @@
-import { Card, Table, Text } from '@mantine/core'
+import { Card, LoadingOverlay, Table, Text } from '@mantine/core'
 import type {
   ICrossColumnFilters,
+  ICrossDynamicColumn,
+  ICrossPaginationData,
   ICrossPreviewAnalysisRow
 } from '../../../data/models/CrossManagement'
-import { CROSS_PREVIEW_ANALYSIS_FILTERABLE_COLUMNS } from '../../constants/crossPreviewFilters'
 import {
   CROSS_PREVIEW_ANALYSIS_TABLE_TITLE,
   CROSS_PREVIEW_SEARCH_EMPTY_MESSAGE
 } from '../../constants/crossPreviewLabels'
 import type {
   CrossFilterColumnConfig
-} from '../../hooks/cross-preview/useCrossPreviewAnalysisFilters'
+} from '../../hooks/cross-preview/useCrossPreviewResumenQuery'
 import type { CrossPreviewStatus } from '../../hooks/useCrossPreview'
 import { CrossPreviewAnalysisHeaderCell } from './CrossPreviewAnalysisHeaderCell'
 import { CrossPreviewAnalysisRow } from './CrossPreviewAnalysisRow'
@@ -19,25 +20,35 @@ import { CrossPreviewToolbarSearch } from './CrossPreviewToolbarSearch'
 import classes from './CrossPreviewPage.module.css'
 
 interface CrossPreviewAnalysisSectionProps {
+  analysisColumns: ICrossDynamicColumn[]
   columnFilters: ICrossColumnFilters
-  filteredAnalysisRows: ICrossPreviewAnalysisRow[]
+  error?: string | null
+  isLoading: boolean
   onOpenFilterModal: (column: CrossFilterColumnConfig) => void
+  onSetPage: (page: number) => void
   onRequestStatusChange: (
     row: ICrossPreviewAnalysisRow,
     status: CrossPreviewStatus
   ) => void
   onSetResumenSearch: (value: string) => void
+  pagination: ICrossPaginationData
   resumenSearch: string
+  rows: ICrossPreviewAnalysisRow[]
   statusByCuit: Record<string, CrossPreviewStatus>
 }
 
 export function CrossPreviewAnalysisSection({
+  analysisColumns,
   columnFilters,
-  filteredAnalysisRows,
+  error,
+  isLoading,
   onOpenFilterModal,
+  onSetPage,
   onRequestStatusChange,
   onSetResumenSearch,
+  pagination,
   resumenSearch,
+  rows,
   statusByCuit
 }: CrossPreviewAnalysisSectionProps) {
   return (
@@ -54,35 +65,56 @@ export function CrossPreviewAnalysisSection({
       </div>
 
       <div className={classes.simpleTableWrap}>
+        <LoadingOverlay
+          visible={isLoading}
+          zIndex={2}
+          overlayProps={{ radius: 'sm', blur: 1 }}
+        />
         <Table className={classes.analysisTable} withTableBorder={false} withColumnBorders={false}>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th className={`${classes.analysisHeaderCell} ${classes.analysisHeaderCellLeft}`}>CUIT</Table.Th>
-              <Table.Th className={`${classes.analysisHeaderCell} ${classes.analysisHeaderCellLeft}`}>RAZÓN SOCIAL</Table.Th>
-              {CROSS_PREVIEW_ANALYSIS_FILTERABLE_COLUMNS.map((column) => (
-                <CrossPreviewAnalysisHeaderCell
-                  key={column.key}
-                  column={column}
-                  columnFilters={columnFilters}
-                  onOpenFilterModal={onOpenFilterModal}
-                />
-              ))}
-              <Table.Th className={classes.analysisHeaderCell}>ESTADO</Table.Th>
+              {analysisColumns.map((column) =>
+                column.isFilterable ? (
+                  <CrossPreviewAnalysisHeaderCell
+                    key={column.key}
+                    column={{
+                      allowedOperators: column.allowedOperators,
+                      key: column.key,
+                      label: column.label,
+                      title: column.label
+                    }}
+                    columnFilters={columnFilters}
+                    onOpenFilterModal={onOpenFilterModal}
+                  />
+                ) : (
+                  <Table.Th
+                    key={column.key}
+                    className={`${classes.analysisHeaderCell} ${
+                      column.key === 'cuit' || column.key === 'razonSocial'
+                        ? classes.analysisHeaderCellLeft
+                        : ''
+                    }`}
+                  >
+                    {column.label}
+                  </Table.Th>
+                )
+              )}
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {filteredAnalysisRows.length ? (
-              filteredAnalysisRows.map((row) => (
+            {rows.length ? (
+              rows.map((row) => (
                 <CrossPreviewAnalysisRow
-                  key={row.cuit}
+                  key={row.id}
+                  columns={analysisColumns}
                   onRequestStatusChange={onRequestStatusChange}
                   row={row}
-                  status={statusByCuit[row.cuit]}
+                  status={statusByCuit[row.cuit] ?? row.status}
                 />
               ))
             ) : (
               <Table.Tr>
-                <Table.Td colSpan={8}>
+                <Table.Td colSpan={Math.max(analysisColumns.length, 1)}>
                   <Text className={classes.emptyStateText}>
                     {CROSS_PREVIEW_SEARCH_EMPTY_MESSAGE}
                   </Text>
@@ -93,8 +125,15 @@ export function CrossPreviewAnalysisSection({
         </Table>
       </div>
 
+      {error ? <Text className={classes.tableErrorText}>{error}</Text> : null}
+
       <div className={classes.tableFooter}>
-        <CrossPreviewPager current={1} total={1} disabled />
+        <CrossPreviewPager
+          current={pagination.page}
+          disabled={isLoading}
+          onChange={onSetPage}
+          total={pagination.totalPages}
+        />
       </div>
     </Card>
   )

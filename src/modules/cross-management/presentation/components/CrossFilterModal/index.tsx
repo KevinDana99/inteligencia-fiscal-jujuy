@@ -11,22 +11,16 @@ import {
   Text
 } from '@mantine/core'
 import { IconInfoCircle, IconX } from '@tabler/icons-react'
+import { useMemo } from 'react'
 import type { ICrossFilterOperator } from '../../../data/models/CrossManagement'
+import {
+  CROSS_PREVIEW_FILTER_OPERATOR_LABELS
+} from '../../constants/crossPreviewFilterOperators'
 import {
   useCrossFilterModal,
   type ICrossFilterModalProps
 } from './useCrossFilterModal'
 import classes from './CrossFilterModal.module.css'
-
-const OPERATOR_OPTIONS: Array<{ value: ICrossFilterOperator | ''; label: string }> = [
-  { value: '', label: 'Seleccionar condición...' },
-  { value: 'mayor', label: 'es mayor que' },
-  { value: 'mayor_igual', label: 'es mayor o igual que' },
-  { value: 'menor', label: 'es menor que' },
-  { value: 'menor_igual', label: 'es menor o igual que' },
-  { value: 'igual', label: 'es igual a' },
-  { value: 'distinto', label: 'es distinto de' }
-]
 
 export function CrossFilterModal(props: ICrossFilterModalProps) {
   const {
@@ -41,6 +35,18 @@ export function CrossFilterModal(props: ICrossFilterModalProps) {
     handleApply,
     handleClose
   } = useCrossFilterModal(props)
+  const operatorOptions = useMemo<
+    Array<{ value: ICrossFilterOperator | ''; label: string }>
+  >(
+    () => [
+      { value: '', label: 'Seleccionar condición...' },
+      ...props.allowedOperators.map((operator) => ({
+        value: operator,
+        label: CROSS_PREVIEW_FILTER_OPERATOR_LABELS[operator]
+      }))
+    ],
+    [props.allowedOperators]
+  )
 
   return (
     <Modal
@@ -79,7 +85,7 @@ export function CrossFilterModal(props: ICrossFilterModalProps) {
               onChange={(nextValue) =>
                 setPrimaryOperator((nextValue as ICrossFilterOperator | '') ?? '')
               }
-              data={OPERATOR_OPTIONS}
+              data={operatorOptions}
               className={classes.fieldGrow}
               classNames={{
                 input: classes.fieldInput,
@@ -167,7 +173,7 @@ export function CrossFilterModal(props: ICrossFilterModalProps) {
               }
               data={[
                 { value: '', label: 'Sin segunda condición' },
-                ...OPERATOR_OPTIONS.slice(1)
+                ...operatorOptions.slice(1)
               ]}
               className={classes.fieldGrow}
               classNames={{
@@ -220,7 +226,7 @@ export function CrossFilterModal(props: ICrossFilterModalProps) {
             className={classes.applyButton}
             onClick={handleApply}
             loading={props.isPending}
-            disabled={!props.columnKey}
+            disabled={!props.columnKey || props.allowedOperators.length === 0}
           >
             Aplicar
           </Button>

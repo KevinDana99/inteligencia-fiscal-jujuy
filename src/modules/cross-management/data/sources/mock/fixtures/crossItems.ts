@@ -1,7 +1,44 @@
 import type {
+  ICrossManagementItem,
   ICrossManagementItems,
-  ICrossPreviewData
+  ICrossPreviewIndicator
 } from '../../../models/CrossManagement'
+
+interface LegacyCrossPreviewPlanRow {
+  id: string
+  cuit: string
+  businessName: string
+  cells: string[]
+}
+
+interface LegacyCrossPreviewSummaryRow {
+  regime: string
+  declaredBase: string
+  pretendedBase: string
+  difference: string
+  tax: string
+  netDebt: string
+}
+
+interface LegacyCrossPreviewAnalysisRow {
+  cuit: string
+  businessName: string
+  declaredBase: string
+  pretendedBase: string
+  difference: string
+  tax: string
+  netDebt: string
+  status: 'estado' | 'relevante' | 'reproceso'
+}
+
+export interface LegacyCrossPreviewMock extends ICrossManagementItem {
+  relevantCountLabel: string
+  indicators: ICrossPreviewIndicator[]
+  planColumns: string[]
+  planRows: LegacyCrossPreviewPlanRow[]
+  summaryRows: LegacyCrossPreviewSummaryRow[]
+  analysisRows: LegacyCrossPreviewAnalysisRow[]
+}
 
 export const crossItemsMock: ICrossManagementItems = [
   {
@@ -76,7 +113,7 @@ const defaultPlanColumns = [
   'EST. FINAL'
 ]
 
-export const crossPreviewMockById: Record<string, ICrossPreviewData> = {
+export const crossPreviewMockById: Record<string, LegacyCrossPreviewMock> = {
   'cross-1': {
     ...crossItemsMock[0],
     relevantCountLabel: '3 relevantes',

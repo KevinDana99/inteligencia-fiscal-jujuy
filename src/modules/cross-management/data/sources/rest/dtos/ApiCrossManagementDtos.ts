@@ -53,3 +53,112 @@ export interface ApiCrossResultsListResponseDto {
   totalPaginas: number
   resultadosCruces: ApiCrossResultDto[]
 }
+
+export type ApiCrossDynamicColumnTypeDto = 'string' | 'numero' | 'fecha'
+
+export type ApiCrossFilterOperatorDto =
+  | 'mayorQue'
+  | 'mayorOIgualQue'
+  | 'menorQue'
+  | 'menorOIgualQue'
+  | 'igualA'
+  | 'distintoDe'
+
+export type ApiCrossFilterConnectorDto = 'Y' | 'O'
+
+export interface ApiCrossDynamicColumnDto {
+  clave: string
+  tipo: ApiCrossDynamicColumnTypeDto
+  etiqueta: string
+  esFiltrable?: boolean
+  operadoresPermitidos?: ApiCrossFilterOperatorDto[]
+}
+
+export interface ApiCrossDynamicSchemaDto {
+  columnas: ApiCrossDynamicColumnDto[]
+}
+
+export interface ApiCrossDynamicValuesRowDto {
+  textos?: Record<string, string | null>
+  fechas?: Record<string, string | null>
+  metricas?: Record<string, number | null>
+}
+
+export interface ApiCrossPlanillaRowDto extends ApiCrossDynamicValuesRowDto {
+  cuit: string
+  razonSocial: string | null
+}
+
+export interface ApiCrossPlanillaRequestDto {
+  pagina: number
+  itemsPagina: number
+  busqueda: string
+}
+
+export interface ApiCrossPlanillaResponseDto {
+  esquema: ApiCrossDynamicSchemaDto | null
+  pagina: number
+  itemsPagina: number
+  totalItems: number
+  totalPaginas: number
+  filas: ApiCrossPlanillaRowDto[]
+}
+
+export interface ApiCrossResumenFilterConditionDto {
+  operador: ApiCrossFilterOperatorDto
+  valor: string
+}
+
+export interface ApiCrossResumenColumnFilterDto {
+  campo: string
+  conector: ApiCrossFilterConnectorDto
+  condiciones: ApiCrossResumenFilterConditionDto[]
+}
+
+export interface ApiCrossResumenRequestDto {
+  pagina: number
+  itemsPagina: number
+  busqueda: string
+  filtrosColumnas: ApiCrossResumenColumnFilterDto[]
+}
+
+export interface ApiCrossResumenMetadataDto {
+  ejecucionId?: number
+  codigoCruce?: string
+  versionCruce?: string
+  titulo?: string | null
+  subtitulo?: string | null
+  loteCuit?: string | null
+  periodo?: string | null
+  totalCuitsEjecucion?: number
+  cuitsRelevantes?: number | null
+}
+
+export interface ApiCrossResumenBlockDto {
+  clave: string
+  titulo: string
+  esquema?: ApiCrossDynamicSchemaDto
+  columnas?: ApiCrossDynamicColumnDto[]
+  filas: ApiCrossDynamicValuesRowDto[]
+}
+
+export interface ApiCrossAnalysisRowDto extends ApiCrossDynamicValuesRowDto {
+  cuit: string
+  razonSocial: string | null
+  estadoRelevancia: string | null
+}
+
+export interface ApiCrossAnalysisPaginationDto {
+  pagina: number
+  itemsPagina: number
+  totalItems: number
+  totalPaginas: number
+  filas: ApiCrossAnalysisRowDto[]
+}
+
+export interface ApiCrossResumenResponseDto {
+  metadatos: ApiCrossResumenMetadataDto
+  bloquesResumen: ApiCrossResumenBlockDto[] | null
+  esquemaAnalisisSistemico: ApiCrossDynamicSchemaDto | null
+  analisisSistemico: ApiCrossAnalysisPaginationDto
+}

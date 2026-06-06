@@ -1,16 +1,34 @@
 import type {
   ICrossManagementItem,
   ICrossManagementListData,
+  ICrossAnalysisData,
+  ICrossAnalysisRow,
+  ICrossDynamicColumn,
+  ICrossDynamicValuesRow,
+  ICrossPlanillaData,
+  ICrossPlanillaRow,
+  ICrossResumenBlock,
+  ICrossResumenData,
+  ICrossResumenMetadata,
   ICrossResultItem,
   ICrossResultSource,
   ICrossResultsListData
 } from '../../../models/CrossManagement'
 import type {
+  ApiCrossAnalysisPaginationDto,
+  ApiCrossAnalysisRowDto,
+  ApiCrossDynamicColumnDto,
+  ApiCrossDynamicValuesRowDto,
   ApiCrossExecutionDto,
   ApiCrossExecutionsListResponseDto,
+  ApiCrossPlanillaRowDto,
+  ApiCrossPlanillaResponseDto,
   ApiCrossResultDto,
   ApiCrossResultsListResponseDto,
-  ApiCrossResultSourceDto
+  ApiCrossResultSourceDto,
+  ApiCrossResumenBlockDto,
+  ApiCrossResumenMetadataDto,
+  ApiCrossResumenResponseDto
 } from '../dtos/ApiCrossManagementDtos'
 
 function formatDateLabel(value: string) {
@@ -124,5 +142,121 @@ export function mapCrossResultsListResponseDto(
     totalItems: dto.totalItems,
     totalPages: dto.totalPaginas,
     results: dto.resultadosCruces.map(mapCrossResultDto)
+  }
+}
+
+export function mapCrossDynamicColumnDto(
+  dto: ApiCrossDynamicColumnDto
+): ICrossDynamicColumn {
+  return {
+    key: dto.clave,
+    type: dto.tipo,
+    label: dto.etiqueta,
+    isFilterable: Boolean(dto.esFiltrable),
+    allowedOperators: dto.operadoresPermitidos ?? []
+  }
+}
+
+export function mapCrossDynamicValuesRowDto(
+  dto: ApiCrossDynamicValuesRowDto
+): ICrossDynamicValuesRow {
+  return {
+    texts: dto.textos ?? {},
+    dates: dto.fechas ?? {},
+    metrics: dto.metricas ?? {}
+  }
+}
+
+export function mapCrossPlanillaRowDto(
+  dto: ApiCrossPlanillaRowDto
+): ICrossPlanillaRow {
+  return {
+    cuit: dto.cuit,
+    businessName: dto.razonSocial,
+    ...mapCrossDynamicValuesRowDto(dto)
+  }
+}
+
+export function mapCrossPlanillaResponseDto(
+  dto: ApiCrossPlanillaResponseDto
+): ICrossPlanillaData {
+  return {
+    schema: dto.esquema
+      ? {
+          columns: dto.esquema.columnas.map(mapCrossDynamicColumnDto)
+        }
+      : null,
+    page: dto.pagina,
+    itemsPerPage: dto.itemsPagina,
+    totalItems: dto.totalItems,
+    totalPages: dto.totalPaginas,
+    rows: dto.filas.map(mapCrossPlanillaRowDto)
+  }
+}
+
+function mapCrossResumenMetadataDto(
+  dto: ApiCrossResumenMetadataDto
+): ICrossResumenMetadata {
+  return {
+    executionId: dto.ejecucionId ?? null,
+    crossCode: dto.codigoCruce ?? null,
+    crossVersion: dto.versionCruce ?? null,
+    title: dto.titulo ?? null,
+    subtitle: dto.subtitulo ?? null,
+    batchOrCuit: dto.loteCuit ?? null,
+    period: dto.periodo ?? null,
+    totalCuits: dto.totalCuitsEjecucion ?? 0,
+    relevantCuits: dto.cuitsRelevantes ?? null
+  }
+}
+
+function mapCrossResumenBlockDto(
+  dto: ApiCrossResumenBlockDto
+): ICrossResumenBlock {
+  return {
+    key: dto.clave,
+    title: dto.titulo,
+    columns: (dto.esquema?.columnas ?? dto.columnas ?? []).map(
+      mapCrossDynamicColumnDto
+    ),
+    rows: dto.filas.map(mapCrossDynamicValuesRowDto)
+  }
+}
+
+function mapCrossAnalysisRowDto(dto: ApiCrossAnalysisRowDto): ICrossAnalysisRow {
+  return {
+    cuit: dto.cuit,
+    businessName: dto.razonSocial,
+    relevanceStatus: dto.estadoRelevancia,
+    ...mapCrossDynamicValuesRowDto(dto)
+  }
+}
+
+function mapCrossAnalysisPaginationDto(
+  dto: ApiCrossAnalysisPaginationDto
+): ICrossAnalysisData {
+  return {
+    page: dto.pagina,
+    itemsPerPage: dto.itemsPagina,
+    totalItems: dto.totalItems,
+    totalPages: dto.totalPaginas,
+    rows: dto.filas.map(mapCrossAnalysisRowDto)
+  }
+}
+
+export function mapCrossResumenResponseDto(
+  dto: ApiCrossResumenResponseDto
+): ICrossResumenData {
+  return {
+    metadata: mapCrossResumenMetadataDto(dto.metadatos),
+    summaryBlocks: dto.bloquesResumen?.map(mapCrossResumenBlockDto) ?? null,
+    analysisSchema: dto.esquemaAnalisisSistemico
+      ? {
+          columns: dto.esquemaAnalisisSistemico.columnas.map(
+            mapCrossDynamicColumnDto
+          )
+        }
+      : null,
+    analysis: mapCrossAnalysisPaginationDto(dto.analisisSistemico)
   }
 }
