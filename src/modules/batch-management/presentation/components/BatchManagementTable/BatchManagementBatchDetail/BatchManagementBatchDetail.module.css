@@ -1,0 +1,57 @@
+.detailInner {
+  padding: 12px 16px 14px 48px;
+}
+
+.detailTitle {
+  display: block;
+  color: var(--mantine-color-gray-5);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.nestedTable :global(table) {
+  --table-border-color: var(--mantine-color-gray-1);
+}
+
+.nestedTable th {
+  padding: 10px 14px;
+  font-size: 10.5px;
+}
+
+.nestedTable td {
+  padding: 10px 14px;
+  font-size: 12px;
+}
+
+.regimeBadge {
+  background: var(--mantine-color-blue-1);
+  color: var(--mantine-color-blue-5);
+}
+
+.monoText {
+  font-family:
+    'SFMono-Regular',
+    Consolas,
+    'Liberation Mono',
+    Menlo,
+    monospace;
+}
+
+.batchDate,
+.expandHint,
+.emptyState {
+  color: var(--mantine-color-gray-5);
+}
+
+.expandActionButton {
+  border: 0;
+  background: transparent;
+  color: var(--mantine-color-blue-5);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: 0;
+}

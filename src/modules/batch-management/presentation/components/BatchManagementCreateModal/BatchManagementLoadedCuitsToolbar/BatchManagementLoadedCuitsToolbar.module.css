@@ -1,0 +1,81 @@
+.cuitToolbar {
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.cuitSearchInput {
+  flex: 1;
+}
+
+.cuitSearchField {
+  height: 40px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 8px;
+  padding-left: 38px;
+  padding-right: 12px;
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-7);
+  font-size: 13px;
+}
+
+.cuitSearchSection {
+  color: var(--mantine-color-gray-4);
+}
+
+.toolbarButton {
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 8px;
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-7);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.toolbarButton:hover,
+.toolbarButton:focus,
+.toolbarButton[data-hovered],
+.toolbarButton[data-active] {
+  background: var(--mantine-color-blue-1);
+  border-color: var(--mantine-color-blue-5);
+  color: var(--mantine-color-blue-5);
+}
+
+.hiddenFileInput {
+  display: none;
+}
+
+.manualInputRow {
+  margin-bottom: 10px;
+}
+
+.manualCuitInput {
+  flex: 1;
+}
+
+.manualCuitField {
+  height: 42px;
+  border: 1px solid var(--mantine-color-blue-5);
+  border-radius: 8px;
+  padding: 0 14px;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+  font-size: 13px;
+  box-shadow: 0 0 0 3px rgba(67, 117, 238, 0.1);
+}
+
+.submitInlineButton {
+  border-radius: 8px;
+  background: var(--mantine-color-blue-5);
+  border-color: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+}
+
+.submitInlineButton:hover,
+.submitInlineButton:focus,
+.submitInlineButton[data-hovered],
+.submitInlineButton[data-active] {
+  background: var(--mantine-color-blue-5);
+  border-color: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+}

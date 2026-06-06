@@ -1,0 +1,111 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 32px);
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--mantine-color-white);
+  box-shadow: var(--mantine-shadow-xl);
+}
+
+.overlay {
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.header {
+  padding: 22px 28px 18px;
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.title {
+  color: var(--mantine-color-gray-9);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.description {
+  color: var(--mantine-color-gray-6);
+  font-size: 14px;
+}
+
+.closeButton {
+  color: var(--mantine-color-gray-5);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0;
+  background: var(--mantine-color-white);
+}
+
+.previewContent {
+  padding: 18px 24px 0;
+  background: var(--mantine-color-white);
+}
+
+.previewStatusRow {
+  padding-bottom: 16px;
+}
+
+.validSummaryBadge,
+.validStateBadge {
+  background: rgba(47, 158, 68, 0.1);
+  color: var(--mantine-color-green-6);
+}
+
+.invalidSummaryBadge,
+.invalidStateBadge {
+  background: rgba(240, 62, 62, 0.08);
+  color: var(--mantine-color-red-6);
+}
+
+.previewAlert {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px solid rgba(230, 119, 0, 0.3);
+  border-radius: 10px;
+  background: rgba(230, 119, 0, 0.08);
+}
+
+.previewAlertIcon {
+  color: var(--mantine-color-yellow-6);
+}
+
+.previewAlertText {
+  color: #b45309;
+  font-size: 14px;
+}
+
+.previewAlertStrong {
+  font-weight: 700;
+}
+
+.footer {
+  margin-top: 0;
+  padding: 16px 28px 24px;
+  border-top: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+}
+
+.cancelButton {
+  min-width: 112px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 999px;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+}
+
+.submitButtonActive {
+  min-width: 148px;
+  border-radius: 999px;
+  background: var(--mantine-color-blue-5);
+  border-color: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+}

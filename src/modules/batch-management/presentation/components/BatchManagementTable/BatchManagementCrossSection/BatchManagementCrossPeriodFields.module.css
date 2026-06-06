@@ -1,0 +1,121 @@
+.crossChecks {
+  margin-top: 8px;
+}
+
+.periodCard {
+  margin-bottom: 8px;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.monthlyPeriodCard {
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+}
+
+.annualPeriodCard {
+  border: 1px solid #a7f3d0;
+  background: #f0fdf4;
+}
+
+.periodCardTitle {
+  margin-bottom: 8px;
+  color: #2563eb;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.annualPeriodCardTitle {
+  color: #059669;
+}
+
+.crossMenuSelectDropdown {
+  overflow: hidden;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 10px;
+  background: var(--mantine-color-white);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 10001;
+}
+
+.crossMenuSelect {
+  width: 100%;
+}
+
+.crossMenuSelectInput {
+  width: 100%;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-family: var(--font-dm-sans), var(--font-body), 'Segoe UI', sans-serif;
+  font-size: 13px;
+  color: var(--mantine-color-gray-7);
+  outline: none;
+  background: var(--mantine-color-white);
+}
+
+.crossMenuYearInput {
+  width: 60px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-family: var(--font-dm-sans), var(--font-body), 'Segoe UI', sans-serif;
+  font-size: 13px;
+  color: var(--mantine-color-gray-7);
+  outline: none;
+  background: var(--mantine-color-white);
+}
+
+.crossMenuCheckbox,
+.crossMenuCheckboxBody {
+  background: transparent;
+  margin: 0;
+}
+
+.crossMenuCheckboxBody {
+  padding: 7px 8px;
+}
+
+.crossMenuCheckboxBody:hover {
+  background: var(--mantine-color-blue-1);
+}
+
+.crossMenuCheckboxInput {
+  background: transparent;
+}
+
+.crossMenuCheckboxLabel {
+  background: transparent;
+  margin: 0;
+}
+
+.periodRow {
+  align-items: flex-end;
+}
+
+.periodField {
+  flex: 1;
+}
+
+.monthlySelectPair {
+  display: flex;
+  gap: 3px;
+}
+
+.periodArrow {
+  flex: 0 0 auto;
+  color: var(--mantine-color-gray-5);
+  margin-bottom: 10px;
+}
+
+.monthlyPeriodLabel {
+  font-size: 10px;
+  color: #2563eb;
+}
+
+.annualPeriodLabel {
+  font-size: 10px;
+  color: #059669;
+}

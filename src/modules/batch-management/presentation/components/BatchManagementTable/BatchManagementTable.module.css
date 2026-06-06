@@ -46,16 +46,20 @@
   border-top: 0 !important;
 }
 
-.chevronColumn {
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.chevronColumn,
+.chevronCell {
   width: 32px;
   padding-left: 14px !important;
   padding-right: 6px !important;
 }
 
-.chevronCell {
-  width: 32px;
-  padding-left: 14px !important;
-  padding-right: 6px !important;
+.actionColumn,
+.actionCell {
+  width: 44px;
 }
 
 .row {
@@ -64,10 +68,6 @@
 
 .rowExpanded td {
   background: var(--mantine-color-blue-1) !important;
-}
-
-.table tbody tr:last-child td {
-  border-bottom: 0;
 }
 
 .chevron {
@@ -82,13 +82,14 @@
   transform: rotate(90deg);
 }
 
-.batchNumber {
-  color: var(--mantine-color-gray-9);
-  font-weight: 700;
-}
-
 .batchCell {
   text-align: left;
+}
+
+.batchNumber,
+.cuitCountValue {
+  color: var(--mantine-color-gray-9);
+  font-weight: 700;
 }
 
 .batchName {
@@ -98,33 +99,15 @@
 
 .batchDescription,
 .batchDate,
-.emptyState,
-.expandHint {
+.emptyState {
   color: var(--mantine-color-gray-5);
-}
-
-.expandActionButton {
-  border: 0;
-  background: transparent;
-  color: var(--mantine-color-blue-5);
-  cursor: pointer;
-  font: inherit;
-  font-weight: 600;
-  padding: 0;
 }
 
 .cuitCountCell {
   text-align: center;
 }
 
-.cuitCountValue {
-  display: block;
-  color: var(--mantine-color-gray-9);
-  font-size: 12px;
-  font-weight: 700;
-  text-align: center;
-}
-
+.cuitCountValue,
 .cuitCountHeader {
   display: block;
   width: 100%;
@@ -140,357 +123,6 @@
   background: transparent;
 }
 
-.detailInner {
-  padding: 12px 16px 14px 48px;
-}
-
-.detailTitle {
-  display: block;
+.emptyStateIcon {
   color: var(--mantine-color-gray-5);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-align: left;
-  text-transform: uppercase;
-}
-
-.nestedTable :global(table) {
-  --table-border-color: var(--mantine-color-gray-1);
-}
-
-.nestedTable th {
-  padding: 10px 14px;
-  font-size: 10.5px;
-}
-
-.nestedTable td {
-  padding: 10px 14px;
-  font-size: 12px;
-}
-
-.regimeBadge {
-  background: var(--mantine-color-blue-1);
-  color: var(--mantine-color-blue-5);
-}
-
-.monoText {
-  font-family:
-    'SFMono-Regular',
-    Consolas,
-    'Liberation Mono',
-    Menlo,
-    monospace;
-}
-
-.menuSection {
-  border-bottom: 1px solid var(--mantine-color-gray-1);
-}
-
-.crossSection {
-  border-bottom: 1px solid var(--mantine-color-gray-1);
-}
-
-.crossSectionToggle {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 11px 16px;
-  border: 0;
-  background: var(--mantine-color-gray-0);
-  cursor: pointer;
-}
-
-.monthlySectionToggle:hover,
-.monthlySectionToggle:focus {
-  background: #eff6ff;
-}
-
-.annualSectionToggle:hover,
-.annualSectionToggle:focus {
-  background: #f0fdf4;
-}
-
-.crossSectionLeft {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.crossSectionTitle {
-  color: var(--mantine-color-gray-7);
-  font-size: 12.5px;
-  font-weight: 700;
-}
-
-.monthlyPill,
-.annualPill {
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.monthlyPill {
-  background: #dbeafe;
-  color: #2563eb;
-}
-
-.annualPill {
-  background: #d1fae5;
-  color: #059669;
-}
-
-.crossSectionChevron {
-  color: var(--mantine-color-gray-5);
-  transition: transform 0.2s;
-}
-
-.crossSectionChevronOpen {
-  transform: rotate(180deg);
-}
-
-.crossSectionBody {
-  padding: 10px 16px;
-}
-
-.crossChecks {
-  margin-top: 8px;
-}
-
-.periodCard {
-  margin-bottom: 8px;
-  border-radius: 10px;
-  padding: 10px 12px;
-}
-
-.monthlyPeriodCard {
-  border: 1px solid #bfdbfe;
-  background: #eff6ff;
-}
-
-.annualPeriodCard {
-  border: 1px solid #a7f3d0;
-  background: #f0fdf4;
-}
-
-.periodCardTitle {
-  margin-bottom: 8px;
-  color: #2563eb;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.annualPeriodCardTitle {
-  color: #059669;
-}
-
-.menuLabel {
-  padding: 14px 16px 12px;
-  color: var(--mantine-color-gray-5);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.menuSection .menuLabel {
-  margin: 0 0 8px;
-}
-
-.menuSectionLabel {
-  padding: 0;
-}
-
-.menuLabelHint {
-  color: var(--mantine-color-gray-3);
-  font-weight: 700;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-.rowActionButton {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--mantine-color-gray-5);
-  cursor: pointer;
-  transition: all 0.12s;
-}
-
-.rowActionButton:hover,
-.rowActionButton:focus,
-.rowActionButton[data-hovered],
-.rowActionButton[data-active] {
-  background: transparent;
-  color: var(--mantine-color-gray-5);
-}
-
-.crossMenuDropdown {
-  position: absolute;
-  width: 420px;
-  max-height: 500px;
-  min-width: 230px;
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  border: 1px solid var(--mantine-color-gray-2);
-  border-radius: 10px;
-  background: var(--mantine-color-white);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  z-index: 9999;
-}
-
-.crossMenuSelectDropdown {
-  overflow: hidden;
-  border: 1px solid var(--mantine-color-gray-2);
-  border-radius: 10px;
-  background: var(--mantine-color-white);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  z-index: 10001;
-}
-
-.crossMenuSelect {
-  width: 100%;
-}
-
-.crossMenuSelectInput {
-  width: 100%;
-  border: 1px solid var(--mantine-color-gray-2);
-  border-radius: 8px;
-  padding: 7px 10px;
-  font-family: var(--font-dm-sans), var(--font-body), 'Segoe UI', sans-serif;
-  font-size: 13px;
-  color: var(--mantine-color-gray-7);
-  outline: none;
-  background: var(--mantine-color-white);
-}
-
-.crossMenuYearInput {
-  width: 60px;
-  border: 1px solid var(--mantine-color-gray-2);
-  border-radius: 8px;
-  padding: 7px 10px;
-  font-family: var(--font-dm-sans), var(--font-body), 'Segoe UI', sans-serif;
-  font-size: 13px;
-  color: var(--mantine-color-gray-7);
-  outline: none;
-  background: var(--mantine-color-white);
-}
-
-.crossMenuCheckbox,
-.crossMenuCheckboxBody {
-  background: transparent;
-  margin: 0;
-}
-
-.crossMenuCheckboxBody {
-  padding: 7px 8px;
-}
-
-.crossMenuCheckboxBody:hover {
-  background: var(--mantine-color-blue-1);
-}
-
-.crossMenuCheckboxInput {
-  background: transparent;
-}
-
-.crossMenuCheckboxLabel {
-  background: transparent;
-  margin: 0;
-}
-
-.periodBody {
-  padding: 0 16px 12px;
-}
-
-.menuBody {
-  padding: 10px 16px 6px;
-}
-
-.menuFooter {
-  padding: 10px 16px;
-  border-top: 1px solid var(--mantine-color-gray-1);
-  display: flex;
-  justify-content: flex-end;
-}
-
-.periodRow {
-  align-items: flex-end;
-}
-
-.periodField {
-  flex: 1;
-}
-
-.monthlySelectPair {
-  display: flex;
-  gap: 3px;
-}
-
-.periodArrow {
-  flex: 0 0 auto;
-  color: var(--mantine-color-gray-5);
-  margin-bottom: 10px;
-}
-
-.menuHint {
-  display: block;
-  margin: 0 0 3px;
-  font-size: 10px;
-}
-
-.monthlyPeriodLabel {
-  font-size: 10px;
-  color: #2563eb;
-}
-
-.annualPeriodLabel {
-  font-size: 10px;
-  color: #059669;
-}
-
-.menuButton {
-  background: var(--mantine-color-blue-5);
-  border-color: var(--mantine-color-blue-5);
-}
-
-.menuButton:disabled,
-.menuButton[data-disabled] {
-  background: var(--mantine-color-blue-5);
-  border-color: var(--mantine-color-blue-5);
-  color: var(--mantine-color-white);
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.menuButton:disabled:hover,
-.menuButton:disabled:focus,
-.menuButton:disabled[data-hovered],
-.menuButton:disabled[data-active],
-.menuButton[data-disabled]:hover,
-.menuButton[data-disabled]:focus,
-.menuButton[data-disabled][data-hovered],
-.menuButton[data-disabled][data-active] {
-  background: var(--mantine-color-blue-5);
-  border-color: var(--mantine-color-blue-5);
-  color: var(--mantine-color-white);
-}
-
-.crossValidationMessage {
-  display: block;
-  padding: 8px 16px 0;
-  color: var(--mantine-color-red-6);
-  font-size: 12px;
 }

@@ -1,0 +1,79 @@
+.rowActionButton {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--mantine-color-gray-5);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.rowActionButton:hover,
+.rowActionButton:focus,
+.rowActionButton[data-hovered],
+.rowActionButton[data-active] {
+  background: transparent;
+  color: var(--mantine-color-gray-5);
+}
+
+.crossMenuDropdown {
+  position: absolute;
+  width: 420px;
+  max-height: 500px;
+  min-width: 230px;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 10px;
+  background: var(--mantine-color-white);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 9999;
+}
+
+.menuFooter {
+  padding: 10px 16px;
+  border-top: 1px solid var(--mantine-color-gray-1);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.menuButton {
+  background: var(--mantine-color-blue-5);
+  border-color: var(--mantine-color-blue-5);
+}
+
+.menuButton:disabled,
+.menuButton[data-disabled] {
+  background: var(--mantine-color-blue-5);
+  border-color: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.menuButton:disabled:hover,
+.menuButton:disabled:focus,
+.menuButton:disabled[data-hovered],
+.menuButton:disabled[data-active],
+.menuButton[data-disabled]:hover,
+.menuButton[data-disabled]:focus,
+.menuButton[data-disabled][data-hovered],
+.menuButton[data-disabled][data-active] {
+  background: var(--mantine-color-blue-5);
+  border-color: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+}
+
+.crossValidationMessage {
+  display: block;
+  padding: 8px 16px 0;
+  color: var(--mantine-color-red-6);
+  font-size: 12px;
+}

@@ -1,5 +1,22 @@
 # Batch Management Feature Story
 
+## 2026-06-06 Refactor de BatchManagementPage
+
+- `app/(private)/gestion-de-lotes/page.tsx` ahora delega la carga inicial a `BatchManagementModule`, dejando la ruta reducida a composición y manteniendo el layout de datos dentro del módulo.
+- `useBatchManagement` pasó a ser una fachada chica que orquesta hooks dedicados para lotes, búsqueda, creación y cruces; la lógica pesada quedó segmentada siguiendo responsabilidad única.
+- La CTA de `DashboardNavbarActionPortal` salió de `BatchManagementPage` a `BatchManagementNavbarAction`, y la barra de búsqueda quedó aislada en `BatchManagementSearchBar`.
+- `BatchManagementTable` se partió en fila, detalle, estado vacío, menú de cruces y secciones internas; el hook de cruces también se desacopló entre filtros y ejecución.
+- `BatchManagementCreateModal` se dividió en formulario, toolbar, tabla de CUITs, preview de importación y hooks auxiliares; el `ref` del input oculto quedó separado del resto del view-model para evitar acoplamiento con render.
+- Las funciones puras del módulo se movieron a `presentation/utils` y los datos estáticos a `presentation/constants`, evitando mezclar lógica, valores fijos y componentes.
+- La preview de importación ahora resetea su estado por remount controlado del modal en lugar de `setState` dentro de un `effect`, alineando el flujo con React y eliminando warnings del lint.
+
+### Validation
+
+- `bun x tsc --noEmit`
+- `bun x eslint app/'(private)'/gestion-de-lotes/page.tsx src/modules/batch-management`
+- `git diff --check`
+- `curl -I -s http://localhost:3000/gestion-de-lotes` responde `307 /login` con `x-auth-session-expired: true`, así que no hubo validación visual autenticada en esta pasada.
+
 ## Cambio
 
 - Se conecto la pagina `Gestion de Lotes` con la action server-side del modulo para cargar la primera pagina de `/api/lotes`.
