@@ -1,0 +1,9 @@
+.infoAlert {
+  border: 1px solid var(--mantine-color-blue-2);
+}
+
+.infoAlertText {
+  color: var(--mantine-color-gray-7);
+  font-size: 13px;
+  line-height: 1.55;
+}

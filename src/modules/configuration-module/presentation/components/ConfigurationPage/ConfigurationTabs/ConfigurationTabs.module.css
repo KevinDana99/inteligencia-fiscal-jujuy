@@ -1,0 +1,46 @@
+.tabsRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 4px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 999px;
+  background: var(--mantine-color-gray-0);
+}
+
+.tabButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 33px;
+  padding: 7px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mantine-color-gray-6);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.tabButton:hover,
+.tabButton:focus,
+.tabButton:focus-visible,
+.tabButton[data-hovered],
+.tabButton[data-active] {
+  background: transparent;
+  color: var(--mantine-color-gray-6);
+}
+
+.tabButtonActive,
+.tabButtonActive:hover,
+.tabButtonActive:focus,
+.tabButtonActive:focus-visible,
+.tabButtonActive[data-hovered],
+.tabButtonActive[data-active] {
+  background: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+}

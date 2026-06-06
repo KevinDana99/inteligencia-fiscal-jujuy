@@ -1,5 +1,5 @@
-import { DashboardConfigurationPage } from '@/modules/dashboard-layout/presentation/components/DashboardConfigurationPage';
+import { ConfigurationPage } from '@/modules/configuration-module';
 
 export default function ConfiguracionPage() {
-  return <DashboardConfigurationPage />;
+  return <ConfigurationPage />;
 }

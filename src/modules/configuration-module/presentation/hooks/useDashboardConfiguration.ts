@@ -1,31 +1,26 @@
 'use client'
 
 import { useCallback, useState } from 'react'
+import { useConfig } from './useConfig'
+import type { ReportType } from '../../data/models/Configuration'
 
 export type DashboardConfigurationTab = 'intimacion' | 'informe'
 
 type DashboardConfigurationState = {
   activeTab: DashboardConfigurationTab
-  informe: {
-    titulo: string
-    cuerpo: string
-  }
 }
 
 const DEFAULT_STATE: DashboardConfigurationState = {
-  activeTab: 'intimacion',
-  informe: {
-    titulo: 'INFORME DE INVESTIGACIÓN',
-    cuerpo:
-      'Se eleva para su conocimiento y consideración, informe sobre la situación fiscal del contribuyente abajo descripto, solicitando el cargo al Dpto. Inspecciones y Verificaciones, conforme a los fundamentos, datos y periodos fiscales que se indican a continuación:'
-  }
+  activeTab: 'intimacion'
 }
 
 export function useDashboardConfiguration() {
+  const { configuration, updateConfig } = useConfig()
   const [state, setState] = useState(DEFAULT_STATE)
   const [successOpened, setSuccessOpened] = useState(false)
 
   const activeTab = state.activeTab
+  const informe = configuration.informe
 
   const updateTab = useCallback((tab: DashboardConfigurationTab) => {
     setState((current) => ({
@@ -35,16 +30,17 @@ export function useDashboardConfiguration() {
   }, [])
 
   const updateInforme = useCallback(
-    (field: keyof DashboardConfigurationState['informe'], value: string) => {
-      setState((current) => ({
-        ...current,
+    (
+      field: keyof ReportType,
+      value: string
+    ) => {
+      updateConfig({
         informe: {
-          ...current.informe,
           [field]: value
         }
-      }))
+      })
     },
-    []
+    [updateConfig]
   )
 
   const confirmChanges = useCallback(() => {
@@ -57,6 +53,7 @@ export function useDashboardConfiguration() {
 
   return {
     state,
+    informe,
     activeTab,
     successOpened,
     updateTab,

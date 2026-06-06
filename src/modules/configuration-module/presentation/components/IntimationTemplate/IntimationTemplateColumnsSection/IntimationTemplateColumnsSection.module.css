@@ -1,0 +1,133 @@
+.sectionCard {
+  padding: 18px 20px;
+  border: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+
+.sectionLabel {
+  margin-bottom: 12px;
+  color: var(--mantine-color-gray-7);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.sectionHint {
+  margin-bottom: 12px;
+  color: var(--mantine-color-gray-5);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.columnList {
+  margin-bottom: 14px;
+}
+
+.columnRow {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) 36px;
+  align-items: center;
+  gap: 10px;
+}
+
+.columnToken {
+  color: var(--mantine-color-green-5);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.columnInput {
+  min-width: 0;
+}
+
+.columnRemove {
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.columnRemove:hover,
+.columnRemove:focus,
+.columnRemove:focus-visible,
+.columnRemove[data-hovered],
+.columnRemove[data-active] {
+  border: none;
+  background: transparent;
+  color: #dc2626;
+}
+
+.addColumnButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 18px;
+  border: 1px dashed var(--mantine-color-gray-3);
+  border-radius: 8px;
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-5);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 8px;
+  font-family: var(--font-dm-sans), sans-serif;
+  transition: 0.12s;
+  outline: none;
+  box-shadow: none;
+}
+
+.addColumnButton:hover,
+.addColumnButton:focus,
+.addColumnButton:focus-visible,
+.addColumnButton[data-hovered],
+.addColumnButton[data-active] {
+  border-style: dashed;
+  border-color: var(--mantine-color-blue-5);
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-blue-5);
+  outline: none;
+  box-shadow: none;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fieldGroupFooter {
+  margin-top: 12px;
+}
+
+.fieldTitle {
+  color: var(--mantine-color-gray-7);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.optionalLabel {
+  color: var(--mantine-color-gray-5);
+  font-weight: 400;
+}
+
+.formInput {
+  border: 1px solid var(--mantine-color-gray-3);
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-9);
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
+.formInput:hover,
+.formInput:focus,
+.formInput:focus-visible {
+  border-color: var(--mantine-color-blue-5);
+  background: var(--mantine-color-white);
+}
