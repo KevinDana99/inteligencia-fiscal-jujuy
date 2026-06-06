@@ -44,6 +44,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang='es' {...mantineHtmlProps} className={dmSans.variable}>
       <head>
         <ColorSchemeScript defaultColorScheme='light' />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body suppressHydrationWarning>
         <Providers>{children}</Providers>
