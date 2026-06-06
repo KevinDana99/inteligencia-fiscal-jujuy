@@ -9,7 +9,8 @@ import {
   Table,
   Text
 } from '@mantine/core';
-import { IconSearch, IconX } from '@tabler/icons-react';
+import { IconPlus, IconSearch, IconX } from '@tabler/icons-react';
+import { DashboardNavbarActionPortal } from '@/modules/dashboard-layout/presentation/contexts';
 import type { ExplorerRegisterPillKey } from '../../../data/models/ExplorerRegister';
 import { useExplorerRegister } from '../../hooks/useExplorerRegister';
 import classes from './ExplorerRegisterPage.module.css';
@@ -42,86 +43,103 @@ export function ExplorerRegisterPage() {
     hasSearched,
     visibleResults,
     visibleFilterOptions,
-    deselectResult
+    deselectResult,
+    explorerSelectedCount
   } = useExplorerRegister();
 
   return (
-    <div className={classes.page}>
-      <div>
-        <Text className={classes.sectionLabel}>Columnas y filtros disponibles</Text>
-        <div className={classes.pillsRow}>
-          {pills.map((pill) => {
-            const isActive = activePills.includes(pill.key);
+    <>
+      <DashboardNavbarActionPortal>
+        <Button
+          size="sm"
+          radius="xl"
+          leftSection={<IconPlus size={16} />}
+          className={classes.navbarActionButton}
+        >
+          Crear lote con {explorerSelectedCount} resultados
+        </Button>
+      </DashboardNavbarActionPortal>
 
-            return (
-              <Button
-                key={pill.key}
-                variant="default"
-                radius="xl"
-                className={`${classes.pillButton} ${
-                  isActive ? classes.pillButtonActive : ''
-                }`}
-                onClick={() => togglePill(pill.key)}
-              >
-                {pill.label}
-              </Button>
-            );
-          })}
+      <div className={classes.page}>
+        <div>
+          <Text className={classes.sectionLabel}>
+            Columnas y filtros disponibles
+          </Text>
+          <div className={classes.pillsRow}>
+            {pills.map((pill) => {
+              const isActive = activePills.includes(pill.key);
+
+              return (
+                <Button
+                  key={pill.key}
+                  variant="default"
+                  radius="xl"
+                  className={`${classes.pillButton} ${
+                    isActive ? classes.pillButtonActive : ''
+                  }`}
+                  onClick={() => togglePill(pill.key)}
+                >
+                  {pill.label}
+                </Button>
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      <Card className={classes.filtersCard} radius="lg" padding="lg">
-        <Stack gap="md">
-          <div className={classes.filtersHeader}>
-            <Text className={classes.filtersTitle}>Configurar filtros</Text>
-            <div className={classes.filtersActions}>
-              <Button
-                variant="default"
-                radius="xl"
-                className={classes.clearButton}
-                onClick={clearFilters}
-              >
-                Limpiar filtros
-              </Button>
-              <Button
-                radius="xl"
-                leftSection={<IconSearch size={13} />}
-                className={classes.searchButton}
-                onClick={search}
-              >
-                Buscar
-              </Button>
-            </div>
-          </div>
-
-          <div className={classes.filtersGrid}>
-            {activePills.map((pill) => (
-              <div
-                key={pill}
-                className={`${classes.filterField} ${
-                  pill === 'actividad' || pill === 'domicilio'
-                    ? classes.filterFieldWide
-                    : ''
-                }`}
-              >
-                <Text className={classes.filterLabel}>{PILL_LABEL_BY_KEY[pill]}</Text>
-                <Select
-                  value={filters[pill]}
-                  onChange={(value) => updateFilter(pill, value)}
-                  data={[
-                    { value: '', label: 'Todas las opciones' },
-                    ...(visibleFilterOptions.get(pill) ?? []).map((option) => ({
-                      value: option,
-                      label: option
-                    }))
-                  ]}
-                  className={classes.filterSelect}
-                />
+        <Card className={classes.filtersCard} radius="lg" padding="lg">
+          <Stack gap="md">
+            <div className={classes.filtersHeader}>
+              <Text className={classes.filtersTitle}>Configurar filtros</Text>
+              <div className={classes.filtersActions}>
+                <Button
+                  variant="default"
+                  radius="xl"
+                  className={classes.clearButton}
+                  onClick={clearFilters}
+                >
+                  Limpiar filtros
+                </Button>
+                <Button
+                  radius="xl"
+                  leftSection={<IconSearch size={13} />}
+                  className={classes.searchButton}
+                  onClick={search}
+                >
+                  Buscar
+                </Button>
               </div>
-            ))}
-          </div>
-        </Stack>
-      </Card>
+            </div>
+
+            <div className={classes.filtersGrid}>
+              {activePills.map((pill) => (
+                <div
+                  key={pill}
+                  className={`${classes.filterField} ${
+                    pill === 'actividad' || pill === 'domicilio'
+                      ? classes.filterFieldWide
+                      : ''
+                  }`}
+                >
+                  <Text className={classes.filterLabel}>
+                    {PILL_LABEL_BY_KEY[pill]}
+                  </Text>
+                  <Select
+                    value={filters[pill]}
+                    onChange={(value) => updateFilter(pill, value)}
+                    data={[
+                      { value: '', label: 'Todas las opciones' },
+                      ...(visibleFilterOptions.get(pill) ?? []).map((option) => ({
+                        value: option,
+                        label: option
+                      }))
+                    ]}
+                    className={classes.filterSelect}
+                  />
+                </div>
+              ))}
+            </div>
+          </Stack>
+        </Card>
 
       {hasSearched ? (
         visibleResults.length > 0 ? (
@@ -181,6 +199,7 @@ export function ExplorerRegisterPage() {
           </Text>
         </Card>
       )}
-    </div>
+      </div>
+    </>
   );
 }

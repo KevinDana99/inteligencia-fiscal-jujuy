@@ -1,7 +1,9 @@
 'use client'
 import Link from 'next/link'
-import { Avatar } from '@mantine/core'
+import { ActionIcon, Avatar, Tooltip } from '@mantine/core'
+import { IconDoorExit } from '@tabler/icons-react'
 import type { IAuthSession } from '@/modules/auth/data/models/Auth'
+import { useSignOut } from '@/modules/auth/presentation/hooks'
 import type {
   DashboardSection,
   IDashboardNavItem
@@ -25,6 +27,8 @@ export function DashboardSidebar({
   seguimientoItems: IDashboardNavItem[]
   personalizacionItems: IDashboardNavItem[]
 }) {
+  const { signOut, isPending } = useSignOut()
+
   return (
     <aside className={classes.sidebar}>
       <div className={classes.sidebarTop}>
@@ -113,6 +117,21 @@ export function DashboardSidebar({
               {getRoleLabel(session.user.tipoUsuario)}
             </span>
           </div>
+
+          <Tooltip label='Salir' position='right' withArrow>
+            <ActionIcon
+              variant='default'
+              color='gray'
+              size='lg'
+              radius='md'
+              onClick={signOut}
+              disabled={isPending}
+              aria-label='Salir'
+              className={classes.sidebarLogoutButton}
+            >
+              <IconDoorExit size={16} />
+            </ActionIcon>
+          </Tooltip>
         </div>
       </div>
     </aside>

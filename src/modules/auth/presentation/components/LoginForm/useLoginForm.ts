@@ -13,7 +13,12 @@ export function useLoginForm() {
     INITIAL_SIGN_IN_STATE
   )
   const error = state.message
-  const hasError = submitAttempted && Boolean(error) && !recoveryNoticeVisible
+  const hasError =
+    state.success === false &&
+    submitAttempted &&
+    Boolean(error) &&
+    !recoveryNoticeVisible &&
+    !isPending
 
   const handleSubmitAttempt = () => {
     setRecoveryNoticeVisible(false)

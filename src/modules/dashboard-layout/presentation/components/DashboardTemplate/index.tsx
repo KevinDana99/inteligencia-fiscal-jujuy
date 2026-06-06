@@ -37,7 +37,6 @@ export function DashboardTemplate({
 
       <DashboardNavbar
         session={session}
-        currentSection={currentSection}
         currentSectionLabel={currentSectionLabel}
       />
 

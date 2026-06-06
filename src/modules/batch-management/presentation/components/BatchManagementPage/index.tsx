@@ -7,6 +7,7 @@ import { BatchManagementCreateModal } from '../BatchManagementCreateModal'
 import { BatchManagementTable } from '../BatchManagementTable'
 import classes from './BatchManagementPage.module.css'
 import type { IBatchListData } from '../../../data/models/BatchManagement'
+import { DashboardNavbarActionPortal } from '@/modules/dashboard-layout/presentation/contexts'
 
 export function BatchManagementPage({
   initialBatchData
@@ -55,17 +56,8 @@ export function BatchManagementPage({
   } = useBatchManagement(initialBatchData)
 
   return (
-    <Stack gap="xl" className={classes.root}>
-      <Group justify="space-between" align="flex-start">
-        <Stack gap="xs">
-          <Title order={3} className={classes.headerTitle}>
-            Gestion de Lotes
-          </Title>
-          <Text size="sm" className={classes.headerSubtitle}>
-            Administra los lotes de CUITs para analisis fiscal
-          </Text>
-        </Stack>
-
+    <>
+      <DashboardNavbarActionPortal>
         <Button
           variant="filled"
           color="blue"
@@ -77,68 +69,70 @@ export function BatchManagementPage({
         >
           Nuevo Lote
         </Button>
-      </Group>
+      </DashboardNavbarActionPortal>
 
-      <Group justify="space-between" gap="md" className={classes.searchGroup}>
-        <TextInput
-          leftSection={<IconSearch size={16} />}
-          radius="xl"
-          placeholder="Buscar por numero de lote..."
-          value={searchValue}
-          onChange={(event) => setSearchValue(event.currentTarget.value)}
-          rightSection={isSearchPending ? <IconSearch size={14} /> : null}
-          className={classes.searchInput}
-          classNames={{
-            input: classes.searchInputField,
-            section: classes.searchInputSection
-          }}
+      <Stack gap="xl" className={classes.root}>
+        <Group justify="space-between" gap="md" className={classes.searchGroup}>
+          <TextInput
+            leftSection={<IconSearch size={16} />}
+            radius="xl"
+            placeholder="Buscar por numero de lote..."
+            value={searchValue}
+            onChange={(event) => setSearchValue(event.currentTarget.value)}
+            rightSection={isSearchPending ? <IconSearch size={14} /> : null}
+            className={classes.searchInput}
+            classNames={{
+              input: classes.searchInputField,
+              section: classes.searchInputSection
+            }}
+          />
+          <Text size="sm" className={classes.searchCounter}>
+            {filteredBatches.length} de {totalBatches} lotes
+          </Text>
+        </Group>
+
+        <BatchManagementTable
+          batches={filteredBatches}
+          expandedBatchId={expandedBatchId}
+          onToggleBatch={toggleExpandedBatch}
+          getBatchCrossFilters={getBatchCrossFilters}
+          getBatchCrossValidationMessage={getBatchCrossValidationMessage}
+          getBatchCrossExecutionError={getBatchCrossExecutionError}
+          isBatchCrossExecutionPending={isBatchCrossExecutionPending}
+          canConfirmBatchCrossFilters={canConfirmBatchCrossFilters}
+          onBatchCrossSectionToggle={toggleBatchCrossSection}
+          onBatchCrossYearChange={setBatchCrossYear}
+          onBatchCrossMonthChange={setBatchCrossMonth}
+          onBatchCrossTypeToggle={toggleBatchCrossType}
+          onBatchCrossConfirm={confirmBatchCrossFilters}
         />
-        <Text size="sm" className={classes.searchCounter}>
-          {filteredBatches.length} de {totalBatches} lotes
-        </Text>
-      </Group>
 
-      <BatchManagementTable
-        batches={filteredBatches}
-        expandedBatchId={expandedBatchId}
-        onToggleBatch={toggleExpandedBatch}
-        getBatchCrossFilters={getBatchCrossFilters}
-        getBatchCrossValidationMessage={getBatchCrossValidationMessage}
-        getBatchCrossExecutionError={getBatchCrossExecutionError}
-        isBatchCrossExecutionPending={isBatchCrossExecutionPending}
-        canConfirmBatchCrossFilters={canConfirmBatchCrossFilters}
-        onBatchCrossSectionToggle={toggleBatchCrossSection}
-        onBatchCrossYearChange={setBatchCrossYear}
-        onBatchCrossMonthChange={setBatchCrossMonth}
-        onBatchCrossTypeToggle={toggleBatchCrossType}
-        onBatchCrossConfirm={confirmBatchCrossFilters}
-      />
-
-      <BatchManagementCreateModal
-        opened={isCreateModalOpen}
-        batchNumber={createForm.batchNumber}
-        name={createForm.name}
-        regime={createForm.regime}
-        description={createForm.description}
-        loadedCuitsSearchValue={loadedCuitsSearchValue}
-        loadedCuitsCount={loadedCuits.length}
-        filteredLoadedCuits={filteredLoadedCuits}
-        previewData={previewData}
-        previewError={previewError}
-        createError={createError}
-        isImportPreviewOpen={isImportPreviewOpen}
-        isPreviewPending={isPreviewPending}
-        isCreatePending={isCreatePending}
-        onClose={closeCreateModal}
-        onFieldChange={setCreateFormField}
-        onManualCuitsAdd={addManualCuits}
-        onLoadedCuitRemove={removeLoadedCuit}
-        onLoadedCuitsSearchChange={setLoadedCuitsSearchValue}
-        onImportFileSelect={openImportPreview}
-        onImportPreviewClose={closeImportPreview}
-        onImportPreviewConfirm={confirmImportPreview}
-        onSubmit={createBatch}
-      />
-    </Stack>
+        <BatchManagementCreateModal
+          opened={isCreateModalOpen}
+          batchNumber={createForm.batchNumber}
+          name={createForm.name}
+          regime={createForm.regime}
+          description={createForm.description}
+          loadedCuitsSearchValue={loadedCuitsSearchValue}
+          loadedCuitsCount={loadedCuits.length}
+          filteredLoadedCuits={filteredLoadedCuits}
+          previewData={previewData}
+          previewError={previewError}
+          createError={createError}
+          isImportPreviewOpen={isImportPreviewOpen}
+          isPreviewPending={isPreviewPending}
+          isCreatePending={isCreatePending}
+          onClose={closeCreateModal}
+          onFieldChange={setCreateFormField}
+          onManualCuitsAdd={addManualCuits}
+          onLoadedCuitRemove={removeLoadedCuit}
+          onLoadedCuitsSearchChange={setLoadedCuitsSearchValue}
+          onImportFileSelect={openImportPreview}
+          onImportPreviewClose={closeImportPreview}
+          onImportPreviewConfirm={confirmImportPreview}
+          onSubmit={createBatch}
+        />
+      </Stack>
+    </>
   )
 }

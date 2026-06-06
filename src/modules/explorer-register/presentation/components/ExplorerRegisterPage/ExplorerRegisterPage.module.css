@@ -4,6 +4,19 @@
   gap: 16px;
 }
 
+.navbarActionButton {
+  flex-shrink: 0;
+  height: 36px;
+  padding-inline: 16px;
+  background: var(--mantine-color-blue-5);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.navbarActionButton:hover {
+  background: var(--mantine-color-blue-6);
+}
+
 .sectionLabel {
   margin-bottom: 10px;
   color: var(--mantine-color-gray-5);
