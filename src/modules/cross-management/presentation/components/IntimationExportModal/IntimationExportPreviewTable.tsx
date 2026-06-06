@@ -1,5 +1,5 @@
 import { Table, Text } from '@mantine/core'
-import type { IntimationTemplateColumn } from '@/modules/dashboard-layout/presentation/components/IntimationTemplate/useIntimationTemplate'
+import type { IntimationTemplateColumn } from '@/modules/configuration-module/presentation/hooks/intimation-template'
 import { INTIMATION_EXPORT_TABLE_TITLE } from '../../constants/intimationExportLabels'
 import classes from './IntimationExportPreview.module.css'
 

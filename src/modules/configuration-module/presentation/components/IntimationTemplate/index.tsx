@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import type { IntimationTemplateController } from './useIntimationTemplate'
+import type { IntimationTemplateController } from '../../hooks/intimation-template'
 import { INTIMATION_TEMPLATE_LABELS } from '../../constants'
 import { IntimationTemplateBodySection } from './IntimationTemplateBodySection'
 import { IntimationTemplateColumnPickerModal } from './IntimationTemplateColumnPickerModal'

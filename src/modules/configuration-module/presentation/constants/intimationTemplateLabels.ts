@@ -19,7 +19,9 @@ export const INTIMATION_TEMPLATE_LABELS = {
     addColumns: 'Elegir columnas de planilla',
     confirmChanges: 'Confirmar cambios',
     cancel: 'Cancelar',
-    accept: 'Aceptar'
+    accept: 'Aceptar',
+    addSelectedColumn: 'Agregar columna visible',
+    removeSelectedColumn: 'Quitar columna visible'
   },
   placeholders: {
     informationSource: 'Ej: Facturación de compras, ARCA, etc.'

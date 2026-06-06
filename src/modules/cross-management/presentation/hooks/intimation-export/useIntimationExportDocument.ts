@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import type { IntimationTemplateState } from '@/modules/dashboard-layout/presentation/components/IntimationTemplate/useIntimationTemplate'
+import type { IntimationTemplateState } from '@/modules/configuration-module/presentation/hooks/intimation-template'
 import { INTIMATION_EXPORT_EMPTY_VALUE } from '../../constants/intimationExportLabels'
 import { resolveIntimationExportColumnValue } from '../../utils/resolveIntimationExportColumnValue'
 import type { IntimationExportContributor } from './useIntimationExportModal'

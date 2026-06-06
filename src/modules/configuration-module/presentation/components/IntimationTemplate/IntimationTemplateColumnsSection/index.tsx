@@ -2,7 +2,7 @@
 
 import { ActionIcon, Button, Card, Stack, Text, TextInput } from '@mantine/core'
 import { IconPlus, IconXFilled } from '@tabler/icons-react'
-import type { IntimationTemplateController } from '../useIntimationTemplate'
+import type { IntimationTemplateController } from '../../../hooks/intimation-template'
 import { INTIMATION_TEMPLATE_LABELS } from '../../../constants'
 import classes from './IntimationTemplateColumnsSection.module.css'
 
@@ -15,12 +15,9 @@ export function IntimationTemplateColumnsSection({
 }: IntimationTemplateColumnsSectionProps) {
   const {
     state,
-    isProviderBacked,
-    visibleColumns,
-    updateColumn,
-    removeColumn,
+    columnRows,
     openColumnPicker,
-    updateField
+    fieldHandlers
   } = controller
 
   return (
@@ -33,23 +30,21 @@ export function IntimationTemplateColumnsSection({
       </Text>
 
       <Stack gap='sm' className={classes.columnList}>
-        {visibleColumns.map((column) => (
+        {columnRows.map((column) => (
           <div key={column.id} className={classes.columnRow}>
             <span className={classes.columnToken}>✓</span>
             <TextInput
               value={column.value}
-              onChange={(event) =>
-                updateColumn(column.id, event.currentTarget.value)
-              }
-              readOnly={isProviderBacked}
+              onChange={column.handleChange}
+              readOnly={column.readOnly}
               className={classes.columnInput}
               classNames={{ input: classes.formInput }}
             />
             <ActionIcon
               variant='subtle'
               color='red'
-              aria-label={`Eliminar columna ${column.value}`}
-              onClick={() => removeColumn(column.id)}
+              aria-label={column.removeLabel}
+              onClick={column.handleRemove}
               className={classes.columnRemove}
             >
               <IconXFilled size={16} />
@@ -76,9 +71,7 @@ export function IntimationTemplateColumnsSection({
         </Text>
         <TextInput
           value={state.fuenteInformacion}
-          onChange={(event) =>
-            updateField('fuenteInformacion', event.currentTarget.value)
-          }
+          onChange={fieldHandlers.handleInformationSourceChange}
           placeholder={INTIMATION_TEMPLATE_LABELS.placeholders.informationSource}
           classNames={{ input: classes.formInput }}
         />
@@ -90,9 +83,7 @@ export function IntimationTemplateColumnsSection({
         </Text>
         <TextInput
           value={state.fechaCorte}
-          onChange={(event) =>
-            updateField('fechaCorte', event.currentTarget.value)
-          }
+          onChange={fieldHandlers.handleCutoffDateChange}
           classNames={{ input: classes.formInput }}
         />
       </div>

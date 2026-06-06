@@ -2,6 +2,10 @@
   margin: 0 0 4px;
 }
 
+.customActions {
+  display: contents;
+}
+
 .primaryButton {
   height: 28px;
   padding: 5px 11px;

@@ -1,3 +1,5 @@
 export * from './dashboardConfigurationLabels'
+export * from './dashboardConfigurationTabs'
 export * from './configurationDefaults'
+export * from './intimationTemplateColumns'
 export * from './intimationTemplateLabels'

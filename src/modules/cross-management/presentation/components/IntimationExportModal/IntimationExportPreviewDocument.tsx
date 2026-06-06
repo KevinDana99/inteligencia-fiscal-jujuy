@@ -1,5 +1,5 @@
 import { Text } from '@mantine/core'
-import type { IntimationTemplateState } from '@/modules/dashboard-layout/presentation/components/IntimationTemplate/useIntimationTemplate'
+import type { IntimationTemplateState } from '@/modules/configuration-module/presentation/hooks/intimation-template'
 import type { IntimationExportContributor } from '../../hooks/intimation-export/useIntimationExportModal'
 import { useIntimationExportDocument } from '../../hooks/intimation-export/useIntimationExportDocument'
 import { IntimationExportPreviewTable } from './IntimationExportPreviewTable'

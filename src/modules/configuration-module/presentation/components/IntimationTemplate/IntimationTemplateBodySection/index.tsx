@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, Stack, Text, Textarea, TextInput } from '@mantine/core'
-import type { IntimationTemplateController } from '../useIntimationTemplate'
+import type { IntimationTemplateController } from '../../../hooks/intimation-template'
 import { INTIMATION_TEMPLATE_LABELS } from '../../../constants'
 import classes from './IntimationTemplateBodySection.module.css'
 
@@ -12,7 +12,7 @@ type IntimationTemplateBodySectionProps = {
 export function IntimationTemplateBodySection({
   controller
 }: IntimationTemplateBodySectionProps) {
-  const { state, updateField } = controller
+  const { state, fieldHandlers } = controller
 
   return (
     <Card className={classes.sectionCard} radius='lg' padding={0}>
@@ -26,7 +26,7 @@ export function IntimationTemplateBodySection({
           </Text>
           <TextInput
             value={state.saludo}
-            onChange={(event) => updateField('saludo', event.currentTarget.value)}
+            onChange={fieldHandlers.handleGreetingChange}
             classNames={{ input: classes.formInput }}
           />
         </div>
@@ -37,7 +37,7 @@ export function IntimationTemplateBodySection({
           </Text>
           <Textarea
             value={state.cuerpo}
-            onChange={(event) => updateField('cuerpo', event.currentTarget.value)}
+            onChange={fieldHandlers.handleBodyChange}
             classNames={{ input: classes.formInput }}
           />
         </div>

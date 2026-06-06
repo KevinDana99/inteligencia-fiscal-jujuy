@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, Text, TextInput } from '@mantine/core'
-import type { IntimationTemplateController } from '../useIntimationTemplate'
+import type { IntimationTemplateController } from '../../../hooks/intimation-template'
 import { INTIMATION_TEMPLATE_LABELS } from '../../../constants'
 import classes from './IntimationTemplateSubjectSection.module.css'
 
@@ -12,7 +12,7 @@ type IntimationTemplateSubjectSectionProps = {
 export function IntimationTemplateSubjectSection({
   controller
 }: IntimationTemplateSubjectSectionProps) {
-  const { state, updateField } = controller
+  const { state, fieldHandlers } = controller
 
   return (
     <Card className={classes.sectionCard} radius='lg' padding={0}>
@@ -25,7 +25,7 @@ export function IntimationTemplateSubjectSection({
         </Text>
         <TextInput
           value={state.asunto}
-          onChange={(event) => updateField('asunto', event.currentTarget.value)}
+          onChange={fieldHandlers.handleSubjectChange}
           classNames={{ input: classes.formInput }}
         />
       </div>

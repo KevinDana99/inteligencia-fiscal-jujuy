@@ -1,26 +1,14 @@
 'use client'
 
-import { IntimationTemplate } from '../IntimationTemplate'
-import { useIntimationTemplate } from '../IntimationTemplate/useIntimationTemplate'
-import { useDashboardConfiguration } from '../../hooks/useDashboardConfiguration'
+import { useConfigurationPage } from '../../hooks/configuration-page'
+import { ConfigurationContentView } from './ConfigurationContentView'
 import { ConfigurationHeader } from './ConfigurationHeader'
 import { ConfigurationTabs } from './ConfigurationTabs'
-import { ConfigurationInfoAlert } from './ConfigurationInfoAlert'
-import { ConfigurationReportForm } from './ConfigurationReportForm'
 import { ConfigurationSuccessModal } from './ConfigurationSuccessModal'
 import classes from './ConfigurationPage.module.css'
 
 export function ConfigurationPage() {
-  const intimacionTemplate = useIntimationTemplate()
-  const {
-    informe,
-    activeTab,
-    successOpened,
-    updateTab,
-    updateInforme,
-    confirmChanges,
-    closeSuccess
-  } = useDashboardConfiguration()
+  const controller = useConfigurationPage()
 
   return (
     <div className={classes.page}>
@@ -28,34 +16,13 @@ export function ConfigurationPage() {
         <div className={classes.shellBody}>
           <ConfigurationHeader />
 
-          <ConfigurationTabs activeTab={activeTab} onChange={updateTab} />
+          <ConfigurationTabs {...controller.tabs} />
 
-          <div className={classes.contentView}>
-            <div className={classes.viewColumn}>
-              {activeTab === 'intimacion' ? (
-                <IntimationTemplate
-                  controller={intimacionTemplate}
-                  onConfirm={confirmChanges}
-                />
-              ) : (
-                <>
-                  <ConfigurationInfoAlert />
-                  <ConfigurationReportForm
-                    informe={informe}
-                    onChange={updateInforme}
-                    onConfirm={confirmChanges}
-                  />
-                </>
-              )}
-            </div>
-          </div>
+          <ConfigurationContentView content={controller.content} />
         </div>
       </div>
 
-      <ConfigurationSuccessModal
-        opened={successOpened}
-        onClose={closeSuccess}
-      />
+      <ConfigurationSuccessModal {...controller.successModal} />
     </div>
   )
 }

@@ -3,6 +3,7 @@
 import { Button, Card, Group, Text, Textarea, TextInput } from '@mantine/core'
 import type { ReportType } from '../../../../data/models/Configuration'
 import { DASHBOARD_CONFIGURATION_LABELS } from '../../../constants'
+import { useConfigurationReportForm } from '../../../hooks/configuration-page'
 import classes from './ConfigurationReportForm.module.css'
 
 type ConfigurationReportFormProps = {
@@ -16,6 +17,11 @@ export function ConfigurationReportForm({
   onChange,
   onConfirm
 }: ConfigurationReportFormProps) {
+  const { titleInput, bodyInput } = useConfigurationReportForm({
+    informe,
+    onChange
+  })
+
   return (
     <div className={classes.root}>
       <Card className={classes.sectionCard} radius='lg' padding={0}>
@@ -27,8 +33,7 @@ export function ConfigurationReportForm({
             {DASHBOARD_CONFIGURATION_LABELS.report.titleField}
           </Text>
           <TextInput
-            value={informe.titulo}
-            onChange={(event) => onChange('titulo', event.currentTarget.value)}
+            {...titleInput}
             classNames={{ input: classes.formInput }}
           />
         </div>
@@ -43,8 +48,7 @@ export function ConfigurationReportForm({
             {DASHBOARD_CONFIGURATION_LABELS.report.bodyField}
           </Text>
           <Textarea
-            value={informe.cuerpo}
-            onChange={(event) => onChange('cuerpo', event.currentTarget.value)}
+            {...bodyInput}
             minRows={5}
             classNames={{ input: classes.formInput }}
           />

@@ -1,7 +1,7 @@
 'use client'
 
 import type { DashboardConfigurationTab } from '../../../hooks/useDashboardConfiguration'
-import { DASHBOARD_CONFIGURATION_LABELS } from '../../../constants'
+import { useConfigurationTabs } from '../../../hooks/configuration-page'
 import classes from './ConfigurationTabs.module.css'
 
 type ConfigurationTabsProps = {
@@ -13,24 +13,24 @@ export function ConfigurationTabs({
   activeTab,
   onChange
 }: ConfigurationTabsProps) {
-  const isIntimacion = activeTab === 'intimacion'
+  const { tabs } = useConfigurationTabs({
+    activeTab,
+    onChange,
+    classes
+  })
 
   return (
     <div className={classes.tabsRow}>
-      <button
-        type='button'
-        className={`${classes.tabButton} ${isIntimacion ? classes.tabButtonActive : ''}`}
-        onClick={() => onChange('intimacion')}
-      >
-        {DASHBOARD_CONFIGURATION_LABELS.tabs.intimacion}
-      </button>
-      <button
-        type='button'
-        className={`${classes.tabButton} ${!isIntimacion ? classes.tabButtonActive : ''}`}
-        onClick={() => onChange('informe')}
-      >
-        {DASHBOARD_CONFIGURATION_LABELS.tabs.informe}
-      </button>
+      {tabs.map((tab) => (
+        <button
+          key={tab.id}
+          type='button'
+          className={tab.className}
+          onClick={tab.handleClick}
+        >
+          {tab.label}
+        </button>
+      ))}
     </div>
   )
 }
