@@ -10,6 +10,7 @@ import type {
 
 export interface ICrossFilterModalProps {
   opened: boolean
+  allowedOperators: ICrossFilterOperator[]
   columnKey: ICrossFilterColumnKey | null
   columnLabel: string
   initialValue: ICrossColumnFilterState | null

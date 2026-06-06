@@ -1,0 +1,21 @@
+.searchRow {
+  margin: 0 0 16px;
+}
+
+.searchInput {
+  width: 460px;
+  max-width: 100%;
+}
+
+.searchInputField {
+  height: 40px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 12px;
+  background: var(--mantine-color-white);
+  padding: 10px 16px 10px 40px;
+  color: var(--mantine-color-gray-7);
+}
+
+.searchInputSection {
+  color: var(--mantine-color-gray-5);
+}

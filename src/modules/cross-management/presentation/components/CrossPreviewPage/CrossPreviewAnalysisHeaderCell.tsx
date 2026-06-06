@@ -2,16 +2,13 @@ import { Table } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
 import type { ICrossColumnFilters } from '../../../data/models/CrossManagement'
 import type {
-  CrossPreviewAnalysisFilterColumn
-} from '../../constants/crossPreviewFilters'
-import { useCrossPreviewAnalysisHeaderCell } from '../../hooks/cross-preview/useCrossPreviewAnalysisHeaderCell'
-import type {
   CrossFilterColumnConfig
-} from '../../hooks/cross-preview/useCrossPreviewAnalysisFilters'
+} from '../../hooks/cross-preview/useCrossPreviewResumenQuery'
+import { useCrossPreviewAnalysisHeaderCell } from '../../hooks/cross-preview/useCrossPreviewAnalysisHeaderCell'
 import classes from './CrossPreviewPage.module.css'
 
 interface CrossPreviewAnalysisHeaderCellProps {
-  column: CrossPreviewAnalysisFilterColumn
+  column: CrossFilterColumnConfig
   columnFilters: ICrossColumnFilters
   onOpenFilterModal: (column: CrossFilterColumnConfig) => void
 }

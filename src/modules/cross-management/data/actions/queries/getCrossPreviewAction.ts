@@ -2,15 +2,17 @@
 
 import {
   DEFAULT_CROSS_PREVIEW_ITEMS_PER_PAGE,
-  DEFAULT_CROSS_PREVIEW_PAGE
+  DEFAULT_CROSS_PREVIEW_PAGE,
+  MAX_CROSS_PREVIEW_EXECUTIONS_FALLBACK_ITEMS
 } from '../../../constants/crossPreviewRequest'
-import { mapCrossResultsToPreview } from '../../mappers/mapCrossResultsToPreview'
+import { mapCrossPreviewContractToView } from '../../mappers/mapCrossPreviewContractToView'
 import type {
   ICrossManagementQueryResult,
   ICrossPreviewData
 } from '../../models/CrossManagement'
 import { getCrossManagementAction } from './getCrossManagementAction'
-import { getCrossResultsAction } from './getCrossResultsAction'
+import { getCrossPlanillaAction } from './getCrossPlanillaAction'
+import { getCrossResumenAction } from './getCrossResumenAction'
 
 export async function getCrossPreviewAction(
   crossId: string
@@ -24,23 +26,37 @@ export async function getCrossPreviewAction(
     }
   }
 
-  const [resultsResponse, executionsResponse] = await Promise.all([
-    getCrossResultsAction(executionId, {
+  const [planillaResponse, resumenResponse, executionsResponse] = await Promise.all([
+    getCrossPlanillaAction(executionId, {
       itemsPerPage: DEFAULT_CROSS_PREVIEW_ITEMS_PER_PAGE,
       page: DEFAULT_CROSS_PREVIEW_PAGE
     }),
-    getCrossManagementAction({
+    getCrossResumenAction(executionId, {
       itemsPerPage: DEFAULT_CROSS_PREVIEW_ITEMS_PER_PAGE,
+      page: DEFAULT_CROSS_PREVIEW_PAGE,
+      columnFilters: []
+    }),
+    getCrossManagementAction({
+      itemsPerPage: MAX_CROSS_PREVIEW_EXECUTIONS_FALLBACK_ITEMS,
       page: DEFAULT_CROSS_PREVIEW_PAGE
     })
   ])
 
-  if (!resultsResponse.data) {
+  if (!planillaResponse.data) {
     return {
       data: null,
-      error: resultsResponse.error,
-      code: resultsResponse.code,
-      status: resultsResponse.status
+      error: planillaResponse.error,
+      code: planillaResponse.code,
+      status: planillaResponse.status
+    }
+  }
+
+  if (!resumenResponse.data) {
+    return {
+      data: null,
+      error: resumenResponse.error,
+      code: resumenResponse.code,
+      status: resumenResponse.status
     }
   }
 
@@ -48,6 +64,11 @@ export async function getCrossPreviewAction(
     executionsResponse.data?.items.find((item) => item.id === crossId) ?? null
 
   return {
-    data: mapCrossResultsToPreview(executionId, resultsResponse.data, execution)
+    data: mapCrossPreviewContractToView(
+      executionId,
+      planillaResponse.data,
+      resumenResponse.data,
+      execution
+    )
   }
 }

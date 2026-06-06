@@ -58,3 +58,16 @@
 - `bun x eslint src/modules/batch-management/presentation/hooks/useBatchManagement.ts`
 - `bun x eslint src/modules/batch-management/presentation/hooks/useBatchManagement.ts src/modules/batch-management/presentation/components/BatchManagementTable/index.tsx`
 - `git diff --check`
+
+## 2026-06-05 Ajuste de select y periodos anuales de cruces
+
+- Se configuro el `Select` del menu de cruces para renderizar el dropdown dentro del mismo contenedor visual, evitando que el click en opciones portaleadas sea interpretado como click externo del menu/modal.
+- Los selects del menu de cruces abren hacia abajo dentro del mismo arbol del menu, manteniendo el listado dentro del flujo de configuracion.
+- Se extrajo la construccion de periodos a `batchCrossPeriods` y se dejo explicito que un rango anual `Desde 2024` / `Hasta 2024` serializa `periodoInicio: 2024-01-01` y `periodoFin: 2024-12-31`.
+- Se agregaron pruebas unitarias para rangos anuales de un mismo año y de multiples años.
+
+### Validation
+
+- `bun x jest src/modules/batch-management/presentation/utils/batchCrossPeriods.test.ts --runInBand`
+- `bun x eslint src/modules/batch-management/presentation/components/BatchManagementTable/index.tsx src/modules/batch-management/presentation/hooks/useBatchManagement.ts src/modules/batch-management/presentation/utils/batchCrossPeriods.ts src/modules/batch-management/presentation/utils/batchCrossPeriods.test.ts`
+- `bun x tsc --noEmit`

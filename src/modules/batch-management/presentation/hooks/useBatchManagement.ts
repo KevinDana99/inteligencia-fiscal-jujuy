@@ -19,6 +19,10 @@ import type {
   IBatchManagementItems,
   IBatchPreviewData
 } from '../../data/models/BatchManagement'
+import {
+  buildAnnualCrossPeriod,
+  buildMonthlyCrossPeriod
+} from '../utils/batchCrossPeriods'
 
 const CURRENT_DATE = new Date()
 const CURRENT_YEAR = CURRENT_DATE.getFullYear()
@@ -87,40 +91,11 @@ function getBatchCrossOption(crossType: string) {
   ] ?? null
 }
 
-function formatDateOnly(year: string, month: string, day: number) {
-  return `${year}-${month}-${String(day).padStart(2, '0')}`
-}
-
-function getLastDayOfMonth(year: string, month: string) {
-  return new Date(Number(year), Number(month), 0).getDate()
-}
-
-function buildMonthlyCrossPeriod(section: IBatchCrossSectionFilters) {
-  const fromMonth = section.fromMonth ?? CURRENT_MONTH
-  const toMonth = section.toMonth ?? CURRENT_MONTH
-
-  return {
-    periodFrom: formatDateOnly(section.fromYear, fromMonth, 1),
-    periodTo: formatDateOnly(
-      section.toYear,
-      toMonth,
-      getLastDayOfMonth(section.toYear, toMonth)
-    )
-  }
-}
-
-function buildAnnualCrossPeriod(section: IBatchCrossSectionFilters) {
-  return {
-    periodFrom: formatDateOnly(section.fromYear, '01', 1),
-    periodTo: formatDateOnly(section.toYear, '12', 31)
-  }
-}
-
 function buildBatchCrossExecutionPayloads(
   batchId: string,
   filters: IBatchCrossFilters
 ): IBatchCrossExecutionPayload[] {
-  const monthlyPeriod = buildMonthlyCrossPeriod(filters.monthly)
+  const monthlyPeriod = buildMonthlyCrossPeriod(filters.monthly, CURRENT_MONTH)
   const annualPeriod = buildAnnualCrossPeriod(filters.annual)
 
   return [

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import type {
   ICrossPreviewAnalysisRow
 } from '../../../data/models/CrossManagement'
@@ -14,13 +14,19 @@ interface UseCrossPreviewStatusParams {
 export function useCrossPreviewStatus({ rows }: UseCrossPreviewStatusParams) {
   const [pendingReprocessingRow, setPendingReprocessingRow] =
     useState<ICrossPreviewAnalysisRow | null>(null)
-  const [statusByCuit, setStatusByCuit] = useState<Record<string, CrossPreviewStatus>>(
-    () => Object.fromEntries(rows.map((row) => [row.cuit, row.status]))
+  const [statusOverridesByCuit, setStatusOverridesByCuit] =
+    useState<Record<string, CrossPreviewStatus>>({})
+  const statusByCuit = useMemo(
+    () => ({
+      ...Object.fromEntries(rows.map((row) => [row.cuit, row.status])),
+      ...statusOverridesByCuit
+    }),
+    [rows, statusOverridesByCuit]
   )
 
   const updateAnalysisStatus = useCallback(
     (cuit: string, status: CrossPreviewStatus) => {
-      setStatusByCuit((current) => ({
+      setStatusOverridesByCuit((current) => ({
         ...current,
         [cuit]: status
       }))

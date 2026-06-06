@@ -1,26 +1,39 @@
 import { Card, Text } from '@mantine/core'
 import type {
+  ICrossDynamicColumn,
+  ICrossPaginationData,
   ICrossPreviewData,
   ICrossPreviewPlanRow
 } from '../../../data/models/CrossManagement'
 import { CROSS_PREVIEW_PLAN_TABLE_TITLE } from '../../constants/crossPreviewLabels'
 import { CrossPreviewIndicators } from './CrossPreviewIndicators'
+import { CrossPreviewPager } from './CrossPreviewPager'
 import { CrossPreviewPlanTable } from './CrossPreviewPlanTable'
 import { CrossPreviewToolbarSearch } from './CrossPreviewToolbarSearch'
 import classes from './CrossPreviewPage.module.css'
 
 interface CrossPreviewPlanSectionProps {
+  columns: ICrossDynamicColumn[]
   cross: ICrossPreviewData
-  filteredPlanRows: ICrossPreviewPlanRow[]
+  error?: string | null
+  isLoading: boolean
+  onSetPage: (page: number) => void
   onSetPlanillaSearch: (value: string) => void
+  pagination: ICrossPaginationData
   planillaSearch: string
+  rows: ICrossPreviewPlanRow[]
 }
 
 export function CrossPreviewPlanSection({
+  columns,
   cross,
-  filteredPlanRows,
+  error,
+  isLoading,
+  onSetPage,
   onSetPlanillaSearch,
-  planillaSearch
+  pagination,
+  planillaSearch,
+  rows
 }: CrossPreviewPlanSectionProps) {
   return (
     <div className={`${classes.contentStack} ${classes.planillaStack}`}>
@@ -39,9 +52,21 @@ export function CrossPreviewPlanSection({
         </div>
 
         <CrossPreviewPlanTable
-          columns={cross.planColumns}
-          rows={filteredPlanRows}
+          columns={columns}
+          isLoading={isLoading}
+          rows={rows}
         />
+
+        {error ? <Text className={classes.tableErrorText}>{error}</Text> : null}
+
+        <div className={classes.tableFooter}>
+          <CrossPreviewPager
+            current={pagination.page}
+            disabled={isLoading}
+            onChange={onSetPage}
+            total={pagination.totalPages}
+          />
+        </div>
       </Card>
     </div>
   )

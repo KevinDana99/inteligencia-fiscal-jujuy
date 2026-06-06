@@ -1,17 +1,27 @@
-import { getJson, type ApiClientConfig } from '@/lib/api-client'
+import { getJson, postJson, type ApiClientConfig } from '@/lib/api-client'
 import type { ICrossManagementSource } from '../../interfaces/CrossManagementSource'
 import type {
   ICrossManagementListData,
   ICrossManagementListParams,
+  ICrossPlanillaData,
+  ICrossPlanillaRequestParams,
+  ICrossResumenData,
+  ICrossResumenRequestParams,
   ICrossResultsListData,
   ICrossResultsListParams
 } from '../../models/CrossManagement'
 import type {
   ApiCrossExecutionsListResponseDto,
+  ApiCrossPlanillaRequestDto,
+  ApiCrossPlanillaResponseDto,
+  ApiCrossResumenRequestDto,
+  ApiCrossResumenResponseDto,
   ApiCrossResultsListResponseDto
 } from './dtos/ApiCrossManagementDtos'
 import {
   mapCrossExecutionsListResponseDto,
+  mapCrossPlanillaResponseDto,
+  mapCrossResumenResponseDto,
   mapCrossResultsListResponseDto
 } from './mappers/mapCrossManagementDto'
 
@@ -37,6 +47,35 @@ function buildResultsQueryString(params: ICrossResultsListParams = {}) {
   return `?${searchParams.toString()}`
 }
 
+function mapPlanillaRequestParams(
+  params: ICrossPlanillaRequestParams = {}
+): ApiCrossPlanillaRequestDto {
+  return {
+    pagina: params.page ?? 1,
+    itemsPagina: params.itemsPerPage ?? 20,
+    busqueda: params.search?.trim() ?? ''
+  }
+}
+
+function mapResumenRequestParams(
+  params: ICrossResumenRequestParams = {}
+): ApiCrossResumenRequestDto {
+  return {
+    pagina: params.page ?? 1,
+    itemsPagina: params.itemsPerPage ?? 20,
+    busqueda: params.search?.trim() ?? '',
+    filtrosColumnas:
+      params.columnFilters?.map((filter) => ({
+        campo: filter.field,
+        conector: filter.connector,
+        condiciones: filter.conditions.map((condition) => ({
+          operador: condition.operator,
+          valor: condition.value
+        }))
+      })) ?? []
+  }
+}
+
 export class RestCrossManagementSource implements ICrossManagementSource {
   constructor(private readonly config: ApiClientConfig) {}
 
@@ -49,6 +88,38 @@ export class RestCrossManagementSource implements ICrossManagementSource {
     )
 
     return mapCrossExecutionsListResponseDto(response)
+  }
+
+  async getPlanilla(
+    executionId: number,
+    params: ICrossPlanillaRequestParams = {}
+  ): Promise<ICrossPlanillaData> {
+    const response = await postJson<
+      ApiCrossPlanillaResponseDto,
+      ApiCrossPlanillaRequestDto
+    >(
+      `/api/procesos-informacion/ejecuciones/${executionId}/planilla`,
+      mapPlanillaRequestParams(params),
+      this.config
+    )
+
+    return mapCrossPlanillaResponseDto(response)
+  }
+
+  async getResumen(
+    executionId: number,
+    params: ICrossResumenRequestParams = {}
+  ): Promise<ICrossResumenData> {
+    const response = await postJson<
+      ApiCrossResumenResponseDto,
+      ApiCrossResumenRequestDto
+    >(
+      `/api/procesos-informacion/ejecuciones/${executionId}/resumen`,
+      mapResumenRequestParams(params),
+      this.config
+    )
+
+    return mapCrossResumenResponseDto(response)
   }
 
   async listResults(
