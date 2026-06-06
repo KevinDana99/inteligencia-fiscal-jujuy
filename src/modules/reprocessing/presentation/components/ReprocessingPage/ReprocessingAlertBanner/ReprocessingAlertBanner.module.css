@@ -1,0 +1,35 @@
+.alertCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fff5f5;
+}
+
+.alertContent {
+  flex: 1;
+}
+
+.alertTitle {
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.alertDescription {
+  margin-top: 2px;
+  color: #991b1b;
+  font-size: 12px;
+}
+
+.alertBadge {
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: #dc2626;
+  color: var(--mantine-color-white);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}

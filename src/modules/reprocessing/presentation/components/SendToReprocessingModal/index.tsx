@@ -1,21 +1,14 @@
 'use client'
 
-import {
-  Button,
-  Group,
-  Modal,
-  Stack,
-  Text,
-  Textarea
-} from '@mantine/core'
-import {
-  IconAlertTriangle,
-  IconCheck,
-} from '@tabler/icons-react'
+import { Modal } from '@mantine/core'
 import {
   useSendToReprocessingModal,
   type ISendToReprocessingModalProps
-} from './useSendToReprocessingModal'
+} from '../../hooks'
+import { SendToReprocessingModalAlert } from './SendToReprocessingModalAlert'
+import { SendToReprocessingModalFooter } from './SendToReprocessingModalFooter'
+import { SendToReprocessingModalForm } from './SendToReprocessingModalForm'
+import { SendToReprocessingModalHeader } from './SendToReprocessingModalHeader'
 import classes from './SendToReprocessingModal.module.css'
 
 export function SendToReprocessingModal(
@@ -36,18 +29,7 @@ export function SendToReprocessingModal(
       onClose={handleClose}
       centered
       withCloseButton
-      title={
-        <Stack className={classes.headerStack}>
-          <div className={classes.titleRow}>
-            <span className={classes.statusBadge}>
-              <span className={classes.statusDot} />
-              En Reproceso
-            </span>
-            <Text className={classes.title}>Agregar descripción</Text>
-          </div>
-          <Text className={classes.subtitle}>{subtitle}</Text>
-        </Stack>
-      }
+      title={<SendToReprocessingModalHeader subtitle={subtitle} />}
       classNames={{
         content: classes.modalContent,
         overlay: classes.modalOverlay,
@@ -56,55 +38,20 @@ export function SendToReprocessingModal(
         close: classes.modalCloseButton
       }}
     >
-      <div className={classes.fieldGroup}>
-        <Text component='label' className={classes.fieldLabel}>
-          Motivo / Descripción <span className={classes.optionalLabel}>(opcional)</span>
-        </Text>
-        <Textarea
-          value={description}
-          onChange={(event) => setDescription(event.currentTarget.value)}
-          placeholder='Ej: Pendiente revisión de coeficientes, desvío detectado en período 2024...'
-          autosize
-          minRows={3}
-          classNames={{ input: classes.textarea }}
-        />
-        <Text className={classes.fieldHint}>
-          Esta descripción aparecerá en la pantalla de Reproceso.
-        </Text>
-      </div>
+      <SendToReprocessingModalForm
+        description={description}
+        onChange={setDescription}
+      />
 
-      <div className={classes.alertBox}>
-        <IconAlertTriangle size={16} className={classes.alertIcon} />
-        <Text className={classes.alertText}>
-          <span className={classes.alertTextLine}>
-            El CUIT quedará marcado como pendiente de investigación
-          </span>
-          <span className={classes.alertTextLine}>profunda.</span>
-        </Text>
-      </div>
+      <SendToReprocessingModalAlert />
 
-      <Group justify='flex-end' gap={8} className={classes.modalFooter}>
-        <Button
-          variant='default'
-          className={classes.cancelButton}
-          onClick={handleClose}
-          disabled={isSubmitting}
-        >
-          Cancelar
-        </Button>
-        <Button
-          className={classes.confirmButton}
-          onClick={() => {
-            void handleConfirm()
-          }}
-          loading={isSubmitting}
-          leftSection={<IconCheck size={13} />}
-        >
-          Confirmar reproceso
-        </Button>
-      </Group>
+      <SendToReprocessingModalFooter
+        isSubmitting={isSubmitting}
+        onCancel={handleClose}
+        onConfirm={handleConfirm}
+      />
     </Modal>
   )
 }
 
-export type { ISendToReprocessingModalProps } from './useSendToReprocessingModal'
+export type { ISendToReprocessingModalProps } from '../../hooks'
