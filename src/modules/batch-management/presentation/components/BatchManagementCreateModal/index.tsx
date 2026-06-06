@@ -5,6 +5,7 @@ import {
   ActionIcon,
   Badge,
   Button,
+  Checkbox,
   Group,
   Modal,
   Select,
@@ -43,10 +44,25 @@ function ImportPreviewModal({
   opened: boolean
   previewData: IBatchPreviewData | null
   onClose: () => void
-  onConfirm: () => void
+  onConfirm: (acceptedNormalizedCuits?: string[]) => void
 }) {
+  const [acceptedNormalizedCuits, setAcceptedNormalizedCuits] = useState<string[]>([])
   const validCount = previewData?.validCount ?? 0
   const invalidCount = (previewData?.invalidCount ?? 0) + (previewData?.duplicatedCount ?? 0)
+  const suggestedCount = acceptedNormalizedCuits.length
+  const importCount = validCount + suggestedCount
+
+  const toggleAcceptedNormalizedCuit = (normalizedCuit: string) => {
+    setAcceptedNormalizedCuits((current) =>
+      current.includes(normalizedCuit)
+        ? current.filter((item) => item !== normalizedCuit)
+        : [...current, normalizedCuit]
+    )
+  }
+
+  const handleConfirm = () => {
+    onConfirm(acceptedNormalizedCuits)
+  }
 
   return (
     <Modal
@@ -96,6 +112,11 @@ function ImportPreviewModal({
             <Table.Tbody>
               {previewData?.records.map((row) => {
                 const isInvalid = row.status !== 'valid'
+                const hasNormalizedSuggestion =
+                  isInvalid &&
+                  row.status !== 'duplicated' &&
+                  Boolean(row.normalizedCuit?.trim())
+                const normalizedSuggestion = row.normalizedCuit?.trim() ?? ''
 
                 return (
                   <Table.Tr
@@ -104,7 +125,28 @@ function ImportPreviewModal({
                   >
                     <Table.Td>{row.record}</Table.Td>
                     <Table.Td className={isInvalid ? classes.previewInvalidText : classes.previewMonoText}>
-                      {row.originalCuit}
+                      <Stack gap={4}>
+                        <Text
+                          className={
+                            isInvalid ? classes.previewInvalidText : classes.previewMonoText
+                          }
+                        >
+                          {row.originalCuit}
+                        </Text>
+                        {hasNormalizedSuggestion ? (
+                          <Checkbox
+                            size="xs"
+                            radius="xl"
+                            checked={acceptedNormalizedCuits.includes(normalizedSuggestion)}
+                            onChange={() => toggleAcceptedNormalizedCuit(normalizedSuggestion)}
+                            label={`Usar sugerido: ${normalizedSuggestion}`}
+                            classNames={{
+                              root: classes.previewSuggestionCheckbox,
+                              label: classes.previewSuggestionLabel
+                            }}
+                          />
+                        ) : null}
+                      </Stack>
                     </Table.Td>
                     <Table.Td className={isInvalid ? classes.previewInvalidText : undefined}>
                       {row.businessName ?? '—'}
@@ -133,8 +175,9 @@ function ImportPreviewModal({
         <Group gap="xs" className={classes.previewAlert}>
           <IconAlertTriangleFilled size={16} className={classes.previewAlertIcon} />
           <Text className={classes.previewAlertText}>
-            El CUIT inválido será ignorado. Se importarán{' '}
-            <span className={classes.previewAlertStrong}>{validCount} CUITs válidos</span>.
+            Los CUITs inválidos serán ignorados salvo que elijas una sugerencia. Se
+            importarán{' '}
+            <span className={classes.previewAlertStrong}>{importCount} CUITs</span>.
           </Text>
         </Group>
       </Stack>
@@ -146,9 +189,9 @@ function ImportPreviewModal({
         <Button
           className={classes.submitButtonActive}
           leftSection={<IconCheck size={14} />}
-          onClick={onConfirm}
+          onClick={handleConfirm}
         >
-          Confirmar importación ({validCount} CUITs)
+          Confirmar importación ({importCount} CUITs)
         </Button>
       </Group>
     </Modal>
@@ -162,8 +205,11 @@ type BatchManagementCreateModalProps = {
   regime: string | null
   description: string
   loadedCuitsSearchValue: string
+  loadedCuitsCount: number
   filteredLoadedCuits: IBatchLoadedCuitRow[]
   previewData: IBatchPreviewData | null
+  previewError: string | null
+  createError: string | null
   isImportPreviewOpen: boolean
   isPreviewPending: boolean
   isCreatePending: boolean
@@ -177,7 +223,7 @@ type BatchManagementCreateModalProps = {
   onLoadedCuitsSearchChange: (value: string) => void
   onImportFileSelect: (file: File) => void
   onImportPreviewClose: () => void
-  onImportPreviewConfirm: () => void
+  onImportPreviewConfirm: (acceptedNormalizedCuits?: string[]) => void
   onSubmit: () => boolean
 }
 
@@ -187,6 +233,8 @@ function BatchManagementCreateModalContent({
   regime,
   description,
   previewData,
+  previewError,
+  createError,
   isImportPreviewOpen,
   isPreviewPending,
   isCreatePending,
@@ -195,6 +243,7 @@ function BatchManagementCreateModalContent({
   onManualCuitsAdd,
   onLoadedCuitRemove,
   loadedCuitsSearchValue,
+  loadedCuitsCount,
   filteredLoadedCuits,
   onLoadedCuitsSearchChange,
   onImportFileSelect,
@@ -205,7 +254,8 @@ function BatchManagementCreateModalContent({
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [isManualInputOpen, setIsManualInputOpen] = useState(false)
   const [manualCuitValue, setManualCuitValue] = useState('')
-  const isCreateReady = Boolean(name.trim() && regime && filteredLoadedCuits.length)
+  const hasLoadedCuitsFilter = Boolean(loadedCuitsSearchValue.trim())
+  const isCreateReady = Boolean(name.trim() && regime && loadedCuitsCount)
 
   const handleImportButtonClick = () => {
     fileInputRef.current?.click()
@@ -218,7 +268,6 @@ function BatchManagementCreateModalContent({
       return
     }
 
-    onFieldChange('file', file)
     onImportFileSelect(file)
     event.currentTarget.value = ''
   }
@@ -426,9 +475,17 @@ function BatchManagementCreateModalContent({
             </div>
 
             <Group justify="space-between" align="center" className={classes.cuitMetaRow}>
-              <div className={classes.errorSlot} />
+              <div className={classes.errorSlot}>
+                {createError || previewError ? (
+                  <Text className={classes.errorText}>
+                    {createError ?? previewError}
+                  </Text>
+                ) : null}
+              </div>
               <Text className={classes.cuitCounter}>
-                {filteredLoadedCuits.length} CUITs cargados
+                {hasLoadedCuitsFilter
+                  ? `${filteredLoadedCuits.length} de ${loadedCuitsCount} CUITs cargados`
+                  : `${loadedCuitsCount} CUITs cargados`}
               </Text>
             </Group>
           </div>
@@ -450,6 +507,7 @@ function BatchManagementCreateModalContent({
       </Modal>
 
       <ImportPreviewModal
+        key={`${previewData?.fileName ?? 'sin-archivo'}-${previewData?.foundRecords ?? 0}-${previewData?.records.map((row) => `${row.record}-${row.originalCuit}-${row.normalizedCuit ?? ''}`).join('|') ?? 'empty'}`}
         opened={isImportPreviewOpen}
         previewData={previewData}
         onClose={onImportPreviewClose}

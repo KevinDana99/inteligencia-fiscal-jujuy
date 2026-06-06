@@ -1,11 +1,9 @@
-import { CrossPreviewPage } from '@/modules/cross-management/presentation/components/CrossPreviewPage'
+import CrossPreviewModule from '@/modules/cross-management/preview'
 
-export default async function CrossPreviewRoute({
+export default function CrossPreviewRoute({
   params
 }: {
   params: Promise<{ crossId: string }>
 }) {
-  const { crossId } = await params
-
-  return <CrossPreviewPage crossId={crossId} />
+  return <CrossPreviewModule params={params} />
 }

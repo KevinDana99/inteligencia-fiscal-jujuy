@@ -1,0 +1,98 @@
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: var(--mantine-color-gray-9);
+  border-radius: 12px 12px 0 0;
+}
+
+.topBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topBarTitle {
+  color: var(--mantine-color-white);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.countBadge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: rgb(51 65 85);
+  padding: 2px 8px;
+  color: var(--mantine-color-gray-4);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.closeButton {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.1);
+  color: var(--mantine-color-white);
+}
+
+.closeButton:hover,
+.closeButton[data-hovered],
+.closeButton[data-active] {
+  background: rgb(255 255 255 / 0.2);
+}
+
+.paginationBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 10px 20px;
+  background: #273549;
+}
+
+.pageButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.1);
+  color: var(--mantine-color-white);
+}
+
+.pageButton:hover,
+.pageButton[data-hovered],
+.pageButton[data-active] {
+  background: rgb(255 255 255 / 0.18);
+}
+
+.pageButton:disabled,
+.pageButton[data-disabled] {
+  opacity: 0.3;
+}
+
+.paginationLabel {
+  min-width: 180px;
+  color: var(--mantine-color-white);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.contributorBar {
+  padding: 8px 20px;
+  background: #1e3a5f;
+}
+
+.contributorName {
+  color: var(--mantine-color-blue-3);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.contributorCuit {
+  margin-left: 10px;
+  color: var(--mantine-color-gray-5);
+  font-size: 12px;
+}

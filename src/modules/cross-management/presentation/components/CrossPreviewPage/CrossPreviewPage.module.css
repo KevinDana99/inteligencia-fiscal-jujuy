@@ -1,64 +1,943 @@
 .root {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
 }
 
-.backLink {
-  display: inline-flex;
-  width: fit-content;
+.topBar {
+  display: flex;
   align-items: center;
-  gap: 8px;
-  color: var(--mantine-color-gray-7);
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.topBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.backButton {
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 999px;
+  background: var(--mantine-color-white);
+  height: 35px;
+  padding: 8px 16px;
+  color: var(--mantine-color-gray-6);
   font-size: 13px;
   font-weight: 600;
+  line-height: 1;
   text-decoration: none;
 }
 
-.card {
-  border: 1px solid var(--mantine-color-gray-2);
-  background: var(--mantine-color-white);
+.viewToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: 999px;
+  background: var(--mantine-color-gray-0);
+  padding: 3px;
 }
 
-.eyebrow {
+.viewToggleButton {
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  width: fit-content;
+  height: 30px;
+  padding: 7px 16px;
+  color: var(--mantine-color-gray-5);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.viewToggleButtonActive {
+  background: var(--mantine-color-white);
   color: var(--mantine-color-blue-5);
-  font-size: 11px;
+  box-shadow: rgb(0 0 0 / 0.1) 0 1px 4px;
+}
+
+.viewToggleButton:hover,
+.viewToggleButton:focus,
+.viewToggleButton:focus-visible,
+.viewToggleButton[data-hovered],
+.viewToggleButton[data-active] {
+  background: transparent;
+  color: var(--mantine-color-gray-5);
+}
+
+.viewToggleButtonActive:hover,
+.viewToggleButtonActive:focus,
+.viewToggleButtonActive:focus-visible,
+.viewToggleButtonActive[data-hovered],
+.viewToggleButtonActive[data-active] {
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-blue-5);
+}
+
+.primaryButton {
+  background: var(--mantine-color-blue-5);
+}
+
+.headerCard {
+  border: 1px solid var(--mantine-color-blue-2);
+  background: var(--mantine-color-blue-0);
+  padding: 14px 20px;
+  margin: 0 0 20px;
+}
+
+.headerCardInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.headerIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.headerTitleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.headerEyebrow {
+  display: block;
+  height: 13px;
+  color: var(--mantine-color-blue-5);
+  font-size: 10.5px;
   font-weight: 700;
+  line-height: 13px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.title {
+.headerTitle {
   color: var(--mantine-color-gray-9);
-  font-size: 18px;
-  font-weight: 800;
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 2px;
+  line-height: 1.25;
 }
 
-.description {
-  color: var(--mantine-color-gray-5);
-  font-size: 13px;
+.headerMeta {
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-left: auto;
 }
 
-.metaGrid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.metaCard {
-  border: 1px solid var(--mantine-color-gray-2);
-  background: var(--mantine-color-gray-0);
+.metaItem {
+  min-width: auto;
+  width: auto;
+  text-align: center;
 }
 
 .metaLabel {
   color: var(--mantine-color-gray-5);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-size: 10px;
+  line-height: 1.2;
+  margin-bottom: 2px;
 }
 
 .metaValue {
-  color: var(--mantine-color-gray-8);
+  color: var(--mantine-color-gray-9);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.metaValueSuccess {
+  color: var(--mantine-color-green-6);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.contentStack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.planillaStack {
+  gap: 0;
+}
+
+.indicatorsRow {
+  align-items: center;
+  column-gap: 16px;
+  row-gap: 10px;
+  margin: 0 0 10px;
+}
+
+.indicatorItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1;
+}
+
+.indicatorSwatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.indicatorBlue {
+  background: var(--mantine-color-blue-4);
+}
+
+.indicatorViolet {
+  background: var(--mantine-color-violet-4);
+}
+
+.indicatorGreen {
+  background: var(--mantine-color-green-4);
+}
+
+.indicatorOrange {
+  background: var(--mantine-color-orange-3);
+}
+
+.indicatorRed {
+  background: var(--mantine-color-red-4);
+}
+
+.indicatorDarkBlue {
+  background: var(--mantine-color-blue-5);
+}
+
+.indicatorLabel {
+  display: inline-flex;
+  align-items: center;
+  color: var(--mantine-color-gray-7);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.tableCard {
+  overflow: hidden;
+  border: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+}
+
+.tableToolbar {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  gap: 16px;
+  background: var(--mantine-color-blue-5);
+  border-radius: 10px 10px 0 0;
+  padding: 10px 16px;
+}
+
+.tableToolbarTall {
+  height: 50px;
+  justify-content: space-between;
+}
+
+.tableToolbarCompact {
+  height: 42px;
+  justify-content: space-between;
+}
+
+.tableToolbarTitle {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mantine-color-white);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.toolbarSearch {
+  display: flex;
+  align-items: center;
+  align-self: center;
+  flex: 0 0 200px;
+  margin: 0;
+  width: 200px;
+  height: 30px;
+  max-width: 100%;
+}
+
+.toolbarSearch :global(.mantine-Input-wrapper) {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 30px;
+  margin: 0;
+}
+
+.toolbarSearchInput {
+  box-sizing: border-box;
+  height: 30px;
+  border: 1px solid rgb(255 255 255 / 0.35);
+  background: rgb(255 255 255 / 0.18);
+  color: var(--mantine-color-white);
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 12px;
+  outline: none;
+  padding: 6px 10px 6px 28px;
+}
+
+.toolbarSearchInput::placeholder {
+  color: rgb(255 255 255 / 0.8);
+}
+
+.toolbarSearchSection {
+  height: 30px;
+  color: var(--mantine-color-white);
+  opacity: 0.8;
+}
+
+.toolbarBadge {
+  border: 0;
+  background: rgb(255 255 255 / 0.18);
+  color: var(--mantine-color-white);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.tableWrap {
+  position: relative;
+  overflow-x: auto;
+}
+
+.simpleTableWrap {
+  position: relative;
+  overflow-x: auto;
+}
+
+.planTable,
+.summaryTable,
+.analysisTable {
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+.planTable th,
+.planTable td,
+.summaryTable th,
+.summaryTable td,
+.analysisTable th,
+.analysisTable td {
+  white-space: nowrap;
+}
+
+.planTable thead th.tableHeaderCell,
+.summaryTable thead th.summaryHeaderCell,
+.analysisTable thead th.analysisHeaderCell {
+  vertical-align: middle !important;
+}
+
+.tableHeaderCell {
+  box-sizing: border-box;
+  border-bottom: 2px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-gray-0);
+  padding: 7px 10px;
+  color: var(--mantine-color-gray-5);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.planNeutralHeaderCell {
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-6);
+}
+
+.planTable .tableHeaderCell:first-child,
+.summaryTable .tableHeaderCell:first-child,
+.analysisTable .tableHeaderCell:first-child {
+  border-left: 2px solid var(--mantine-color-gray-3);
+}
+
+.tableBodyCell {
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--mantine-color-gray-1);
+  padding: 12px 14px;
+  color: var(--mantine-color-gray-7);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.planTable thead th.planGroupHeaderCell {
+  box-sizing: border-box;
+  padding: 8px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.05em;
+  text-align: left;
+  text-transform: uppercase;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.planGroupNeutralHeaderCell {
+  background: var(--mantine-color-gray-0);
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  color: var(--mantine-color-gray-5);
+}
+
+.planGroupBiHeaderCell {
+  background: var(--mantine-color-blue-0);
+  border-bottom: 1px solid var(--mantine-color-blue-2);
+  border-left: 2px solid var(--mantine-color-blue-4);
+  color: var(--mantine-color-blue-5);
+}
+
+.planGroupCmHeaderCell {
+  background: var(--mantine-color-violet-0);
+  border-bottom: 1px solid var(--mantine-color-violet-2);
+  border-left: 2px solid var(--mantine-color-violet-3);
+  color: var(--mantine-color-violet-5);
+}
+
+.planGroupDiffHeaderCell {
+  background: var(--mantine-color-yellow-2);
+  border-bottom: 1px solid var(--mantine-color-yellow-4);
+  border-left: 2px solid var(--mantine-color-yellow-4);
+  color: var(--mantine-color-yellow-8);
+}
+
+.planGroupCoefHeaderCell {
+  background: var(--mantine-color-green-0);
+  border-bottom: 1px solid var(--mantine-color-green-2);
+  border-left: 2px solid var(--mantine-color-green-4);
+  color: var(--mantine-color-green-7);
+}
+
+.planGroupEstimatedHeaderCell {
+  background: var(--mantine-color-orange-0);
+  border-bottom: 1px solid var(--mantine-color-orange-2);
+  border-left: 2px solid var(--mantine-color-orange-4);
+  color: var(--mantine-color-orange-6);
+}
+
+.planGroupTaxHeaderCell {
+  background: var(--mantine-color-red-1);
+  border-bottom: 1px solid var(--mantine-color-red-2);
+  border-left: 2px solid var(--mantine-color-red-4);
+  color: var(--mantine-color-red-6);
+}
+
+.planGroupFinalHeaderCell {
+  background: var(--mantine-color-blue-6);
+  border-bottom: 0;
+  border-left: 0;
+  box-shadow: inset 0 -1px 0 0 var(--mantine-color-blue-6);
+  color: var(--mantine-color-white);
+}
+
+.summaryTable th.summaryHeaderCell {
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-gray-0);
+  padding: 9px 14px;
+  color: var(--mantine-color-blue-5);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-align: right;
+  text-transform: uppercase;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.summaryHeaderCellLeft {
+  text-align: left;
+}
+
+.summaryTable th.summaryHeaderCell.summaryHeaderCellLeft {
+  text-align: left;
+}
+
+.analysisHeaderCell {
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-gray-0);
+  padding: 9px 14px;
+  color: var(--mantine-color-blue-5);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-align: right;
+  text-transform: uppercase;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.analysisHeaderCellLeft {
+  text-align: left;
+}
+
+.analysisTable th.analysisHeaderCell.analysisHeaderCellLeft {
+  text-align: left;
+}
+
+.columnFilterButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.columnFilterButtonActive {
+  color: var(--mantine-color-blue-6);
+}
+
+.summaryBodyCell {
+  box-sizing: border-box;
+  padding: 10px 14px;
+  color: var(--mantine-color-gray-9);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
+  vertical-align: middle;
+}
+
+.summaryBodyCellLeft {
+  text-align: left;
+}
+
+.summaryDangerCell {
+  color: var(--mantine-color-red-6);
+}
+
+.analysisBodyCell {
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--mantine-color-gray-1);
+  padding: 10px 14px;
+  color: var(--mantine-color-gray-9);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
+  vertical-align: middle;
+}
+
+.analysisBodyCellMonospace {
+  font-family: monospace;
+  text-align: left;
+}
+
+.analysisBodyCellLeft {
+  text-align: left;
+}
+
+.analysisDangerCell {
+  color: var(--mantine-color-red-6);
+}
+
+.statusCell {
+  display: flex;
+  justify-content: center;
+}
+
+.statusSelect {
+  border: none;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.statusSelectNeutral {
+  background: var(--mantine-color-gray-1);
+  color: var(--mantine-color-gray-6);
+}
+
+.statusSelectRelevant {
+  background: var(--mantine-color-green-0);
+  color: var(--mantine-color-green-6);
+}
+
+.statusSelectReprocessing {
+  background: var(--mantine-color-red-0);
+  color: var(--mantine-color-red-7);
+}
+
+.planTable td {
+  border-bottom: 1px solid var(--mantine-color-gray-1);
+  padding: 9px 10px;
+  color: var(--mantine-color-gray-7);
+  font-size: 12px;
+}
+
+.planIdCell {
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-6);
+  font-size: 13px;
+  padding: 12px 14px;
+  vertical-align: middle;
+}
+
+.planTable td.planCuitCell {
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-6);
+  font-family: monospace;
+  font-size: 13px;
+  padding: 12px 14px;
+  vertical-align: middle;
+}
+
+.planTable td.planBusinessNameCell {
+  min-width: 180px;
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-6);
   font-size: 13px;
   font-weight: 600;
+}
+
+.planTable th.planBiHeaderCell {
+  background: var(--mantine-color-blue-1);
+  color: var(--mantine-color-blue-6);
+}
+
+.planTable td.planBiBodyCell {
+  background: var(--mantine-color-blue-1);
+  color: var(--mantine-color-blue-6);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 14px;
+}
+
+.planTable th.planCmHeaderCell {
+  background: var(--mantine-color-violet-0);
+  color: var(--mantine-color-violet-5);
+}
+
+.planTable td.planCmBodyCell {
+  background: var(--mantine-color-violet-0);
+  color: var(--mantine-color-violet-5);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 14px;
+}
+
+.planTable th.planDiffHeaderCell {
+  background: var(--mantine-color-yellow-2);
+  color: var(--mantine-color-yellow-8);
+}
+
+.planTable td.planDiffBodyCell {
+  background: var(--mantine-color-yellow-2);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 14px;
+}
+
+.planTable td.planDiffValueCell {
+  color: var(--mantine-color-red-6);
+}
+
+.planTable td.planDiffMetaCell {
+  color: var(--mantine-color-yellow-8);
+}
+
+.planTable th.planCoefHeaderCell {
+  background: var(--mantine-color-green-0);
+  color: var(--mantine-color-green-6);
+}
+
+.planTable td.planCoefBodyCell {
+  background: var(--mantine-color-green-0);
+  color: var(--mantine-color-green-6);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 14px;
+}
+
+.planTable th.planEstimatedHeaderCell {
+  background: var(--mantine-color-orange-0);
+  color: var(--mantine-color-orange-6);
+}
+
+.planTable td.planEstimatedBodyCell {
+  background: var(--mantine-color-orange-0);
+  color: var(--mantine-color-orange-6);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 14px;
+}
+
+.planTable td.planEstimatedBlueCell {
+  background: var(--mantine-color-blue-1);
+  color: var(--mantine-color-blue-6);
+}
+
+.planTable th.planTaxHeaderCell {
+  background: var(--mantine-color-red-1);
+  color: var(--mantine-color-red-6);
+}
+
+.planTable td.planTaxBodyCell {
+  background: var(--mantine-color-red-1);
+  color: var(--mantine-color-red-6);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 14px;
+}
+
+.planTable th.planFinalHeaderCell {
+  background: var(--mantine-color-blue-6);
+  border-bottom: 0;
+  border-top: 0;
+  color: #fff;
+}
+
+.planTable td.planFinalBodyCell {
+  background: var(--mantine-color-blue-6);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 14px;
+}
+
+.summaryTable td,
+.analysisTable td {
+  border-bottom: 1px solid var(--mantine-color-gray-1);
+}
+
+.summaryTable tbody tr:last-child td,
+.analysisTable tbody tr:last-child td,
+.planTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.emptyStateText {
+  padding: 18px 0;
+  color: var(--mantine-color-gray-5);
+  font-size: 12px;
+  text-align: center;
+}
+
+.tableErrorText {
+  padding: 10px 16px 0;
+  color: var(--mantine-color-red-6);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tableFooter {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+  margin-top: 10px;
+  border-top: 1px solid var(--mantine-color-gray-2);
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagerButton {
+  width: 26px;
+  height: 26px;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+  border-color: var(--mantine-color-gray-2);
+}
+
+.pagerButton:hover,
+.pagerButton[data-hovered],
+.pagerButton[data-active] {
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+  border-color: var(--mantine-color-gray-2);
+}
+
+.pagerLabel {
+  color: var(--mantine-color-gray-5);
+  font-size: 12px;
+}
+
+.emptyCard {
+  border: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+}
+
+.emptyTitle {
+  color: var(--mantine-color-gray-9);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.emptyText {
+  color: var(--mantine-color-gray-5);
+  font-size: 13px;
+}
+
+.intimationModalOverlay {
+  background: rgb(15 23 42 / 0.45);
+  backdrop-filter: blur(3px);
+}
+
+.intimationModalContent {
+  width: 640px;
+  max-width: 96vw;
+  max-height: 92vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 16px;
+  background: var(--mantine-color-white);
+  box-shadow: 0 22px 48px rgb(15 23 42 / 0.18);
+}
+
+.intimationModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+}
+
+.intimationModalBody {
+  padding: 32px;
+  overflow: auto;
+  background: var(--mantine-color-white);
+}
+
+.intimationModalTitle {
+  color: var(--mantine-color-gray-9);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.intimationModalClose {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-5);
+}
+
+.intimationModalNextButton {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 999px;
+  background: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.intimationModalNextButton:hover,
+.intimationModalNextButton[data-hovered],
+.intimationModalNextButton[data-active] {
+  background: var(--mantine-color-blue-5);
+}
+
+@media (max-width: 960px) {
+  .tableToolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .toolbarSearch {
+    width: 100%;
+  }
+
+  .headerMeta {
+    width: 100%;
+    justify-content: flex-start;
+    margin-left: 0;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .topBar {
+    align-items: stretch;
+  }
+
+  .topBarLeft {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .viewToggle {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .viewToggleButton {
+    justify-content: center;
+    flex: 1 1 0;
+  }
+
+  .backButton,
+  .primaryButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .headerCardInner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .metaItem {
+    min-width: 0;
+    text-align: left;
+  }
 }

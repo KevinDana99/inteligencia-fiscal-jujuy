@@ -1,5 +1,5 @@
-import CrossManagementModule from '@/modules/cross-management';
+import CrossManagementModule from '@/modules/cross-management'
 
 export default function GestionDeCrucesPage() {
-  return <CrossManagementModule />;
+  return <CrossManagementModule />
 }

@@ -1,0 +1,42 @@
+.tableWrap {
+  overflow: hidden;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 12px;
+  background: var(--mantine-color-white);
+}
+
+.table :global(table) {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table :global(thead) {
+  background: var(--mantine-color-gray-0);
+}
+
+.table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mantine-color-gray-5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--mantine-color-gray-2);
+}
+
+.table td {
+  padding: 14px;
+  border-bottom: 1px solid var(--mantine-color-gray-1);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.emptyState {
+  padding: 32px 20px;
+  color: var(--mantine-color-gray-5);
+  font-size: 14px;
+  text-align: center;
+}

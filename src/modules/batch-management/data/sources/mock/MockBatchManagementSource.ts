@@ -1,5 +1,7 @@
 import type { IBatchManagementSource } from '../../interfaces/BatchManagementSource';
 import type {
+  IBatchCrossExecutionPayload,
+  IBatchCrossExecutionSummary,
   IBatchCreatePayload,
   IBatchCreatedSummary,
   IBatchListData,
@@ -389,6 +391,54 @@ export class MockBatchManagementSource implements IBatchManagementSource {
             regimen: response.regime,
             cantidadCuits: response.cuitCount,
             fechaGeneracion: response.createdAt
+          }
+        },
+        null,
+        2
+      )
+    );
+
+    return response;
+  }
+
+  async executeBatchCross(
+    payload: IBatchCrossExecutionPayload
+  ): Promise<IBatchCrossExecutionSummary> {
+    const response: IBatchCrossExecutionSummary = {
+      executionId: Date.now(),
+      crossCode: payload.crossCode,
+      crossVersion: payload.crossVersion,
+      status: 'pendiente',
+      idempotencyKey: `mock-${payload.crossCode}-${payload.batchId}`,
+      requestedAt: new Date().toISOString()
+    };
+
+    console.log(
+      JSON.stringify(
+        {
+          endpoint: '/api/procesos-informacion/cruces/{codigoCruce}/ejecuciones',
+          action: 'MockBatchManagementSource.executeBatchCross',
+          METHOD: 'POST',
+          REQUEST_RAW: {
+            codigoCruce: payload.crossCode,
+            requestUrl: `/api/procesos-informacion/cruces/${payload.crossCode}/ejecuciones`,
+            body: {
+              versionCruce: payload.crossVersion,
+              tipoOrigen: 'por_lote',
+              loteId: payload.batchId,
+              contribuyenteId: null,
+              periodoInicio: payload.periodFrom,
+              periodoFin: payload.periodTo,
+              parametros: payload.parameters ?? {}
+            }
+          },
+          RESPONSE_RAW: {
+            ejecucionId: response.executionId,
+            codigoCruce: response.crossCode,
+            versionCruce: response.crossVersion,
+            estado: response.status,
+            claveIdempotencia: response.idempotencyKey,
+            fechaSolicitud: response.requestedAt
           }
         },
         null,
