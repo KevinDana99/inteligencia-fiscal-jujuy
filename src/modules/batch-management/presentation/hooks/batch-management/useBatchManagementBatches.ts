@@ -24,6 +24,16 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
   const [totalBatches, setTotalBatches] = useState(initialBatchData?.totalItems ?? 0)
   const [expandedBatchId, setExpandedBatchId] = useState<string | null>(null)
 
+  async function hydrateBatchDetail(batchId: string) {
+    const result = await getBatchDetailAction(batchId)
+
+    if (!result.data) {
+      return
+    }
+
+    setBatches((current) => applyBatchDetailToList(current, batchId, result.data))
+  }
+
   function applyBatchListData(batchListData: IBatchListData) {
     const presentationData = mapBatchListDataForPresentation(batchListData)
 
@@ -32,19 +42,15 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
   }
 
   async function toggleExpandedBatch(batchId: string) {
+    const isOpeningBatch = expandedBatchId !== batchId
+
     setExpandedBatchId((current) => (current === batchId ? null : batchId))
 
-    const result = await getBatchDetailAction(batchId)
-
-    if (!result.data) {
+    if (!isOpeningBatch) {
       return
     }
 
-    const batchDetail = result.data
-
-    setBatches((current) =>
-      applyBatchDetailToList(current, batchId, batchDetail)
-    )
+    await hydrateBatchDetail(batchId)
   }
 
   async function handleBatchCreated(
@@ -60,9 +66,20 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
         mapBatchListDataForPresentation(refreshedResult.data).batches
       const createdBatch = findCreatedBatch(refreshedBatches, createdSummary)
 
-      setBatches(refreshedBatches)
-      setTotalBatches(refreshedResult.data.totalItems)
-      setExpandedBatchId(createdBatch?.id ?? null)
+      if (createdBatch) {
+        setBatches(refreshedBatches)
+        setTotalBatches(refreshedResult.data.totalItems)
+        setExpandedBatchId(createdBatch.id)
+        await hydrateBatchDetail(createdBatch.id)
+        return
+      }
+
+      const fallbackCreatedBatch = buildFallbackCreatedBatch(createdSummary, parsedCuits)
+
+      setBatches(prependCreatedBatch(refreshedBatches, fallbackCreatedBatch))
+      setTotalBatches(Math.max(refreshedResult.data.totalItems, refreshedBatches.length + 1))
+      setExpandedBatchId(fallbackCreatedBatch.id)
+      await hydrateBatchDetail(fallbackCreatedBatch.id)
       return
     }
 
@@ -71,6 +88,7 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
     setBatches((current) => prependCreatedBatch(current, createdBatch))
     setTotalBatches((current) => current + 1)
     setExpandedBatchId(createdBatch.id)
+    await hydrateBatchDetail(createdBatch.id)
   }
 
   return {

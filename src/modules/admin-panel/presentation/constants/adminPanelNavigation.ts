@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
 import { IconHome, IconSettings } from '@tabler/icons-react'
+import { ADMIN_PANEL_ROUTES } from '@/constants'
 import type { AdminPanelSection } from '../../data/models/AdminPanel'
 
 export const ADMIN_PANEL_NAV_GROUPS: AdminPanelNavGroup[] = [
@@ -8,7 +9,7 @@ export const ADMIN_PANEL_NAV_GROUPS: AdminPanelNavGroup[] = [
     items: [
       {
         section: 'dashboard',
-        href: '/admin',
+        href: ADMIN_PANEL_ROUTES.dashboard,
         label: 'Inicio',
         Icon: IconHome
       }
@@ -20,7 +21,7 @@ export const ADMIN_PANEL_NAV_GROUPS: AdminPanelNavGroup[] = [
     items: [
       {
         section: 'settings',
-        href: '/admin/configuracion',
+        href: ADMIN_PANEL_ROUTES.settings,
         label: 'Configuración',
         Icon: IconSettings
       }
@@ -41,4 +42,5 @@ export interface AdminPanelNavItem {
   Icon: ComponentType<{ size?: number }>
 }
 
-export type AdminPanelNavHref = '/admin' | '/admin/configuracion'
+export type AdminPanelNavHref =
+  (typeof ADMIN_PANEL_ROUTES)[keyof typeof ADMIN_PANEL_ROUTES]

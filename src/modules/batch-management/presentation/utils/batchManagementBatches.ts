@@ -43,12 +43,10 @@ export function findCreatedBatch(
   refreshedBatches: IBatchManagementItems,
   createdSummary: IBatchCreatedSummary
 ) {
-  return (
-    refreshedBatches.find(
-      (batch) =>
-        batch.name === createdSummary.name &&
-        batch.batchNumber === createdSummary.formattedNumber
-    ) ?? refreshedBatches[0]
+  return refreshedBatches.find(
+    (batch) =>
+      batch.name === createdSummary.name &&
+      batch.batchNumber === createdSummary.formattedNumber
   )
 }
 

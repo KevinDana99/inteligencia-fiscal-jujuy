@@ -1,12 +1,12 @@
 'use client'
 
 import { useCallback } from 'react'
+import { getInitials } from '@/utils'
 import type { IAdminPanelUser } from '../../data/models/AdminPanel'
 import {
   getAvatarColorStyles,
   type AvatarColorTone
 } from '../utils/getAvatarColorStyles'
-import { getInitials } from '../utils/getInitials'
 import classes from '../styles/AdminPanel.module.css'
 
 export function useAdminPanelUserRow({

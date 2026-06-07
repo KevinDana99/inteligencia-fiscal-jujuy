@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ActionIcon, Avatar, Tooltip } from '@mantine/core'
 import { IconDoorExit, IconX } from '@tabler/icons-react'
+import { getInitials, getRoleLabel } from '@/utils'
 import type { IAuthSession } from '@/modules/auth/data/models/Auth'
 import { useSignOut } from '@/modules/auth/presentation/hooks'
 import type {
@@ -13,9 +14,7 @@ import {
   DASHBOARD_NAV_GROUP_LABELS,
   DASHBOARD_NAV_GROUPS
 } from '../../../constants'
-import { getInitials } from '../../utils/getInitials'
 import classes from '../DashboardLayoutShell/DashboardLayoutShell.module.css'
-import getRoleLabel from '../../utils/getRoleLabel'
 import CustomIcon from '@/global/icons'
 
 interface DashboardSidebarProps {

@@ -1,4 +1,5 @@
-import { AUTH_MOCK_USERS, USER_ROLES } from '@/lib/auth/constants';
+import { USER_ROLES } from '@/constants';
+import { AUTH_MOCK_USERS } from '@/lib/auth/constants';
 import type { IAuthSource } from '../../interfaces/AuthSource';
 import type {
   ICommandResult,

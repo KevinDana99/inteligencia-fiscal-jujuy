@@ -1,4 +1,4 @@
-import type { UserRole } from '@/lib/auth/constants';
+import type { UserRole } from '@/constants';
 
 export type ApiIamSignInRequestDto = {
   correo: string;

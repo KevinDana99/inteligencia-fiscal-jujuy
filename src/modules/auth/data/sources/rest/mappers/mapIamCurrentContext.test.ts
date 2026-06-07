@@ -1,4 +1,4 @@
-import { USER_ROLES } from '@/lib/auth/constants';
+import { USER_ROLES } from '@/constants';
 import { mapIamCurrentContextDto } from './mapIamCurrentContext';
 
 describe('mapIamCurrentContextDto', () => {

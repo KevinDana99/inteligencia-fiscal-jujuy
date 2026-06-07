@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { ADMIN_PANEL_ROUTES } from '@/constants'
 import { createServerAdminPanelSource } from '../../data-access'
 import type { IAdminPanelCommandResult } from '../../models/AdminPanel'
 
@@ -28,7 +29,7 @@ export async function deleteAllowedDomainAction(
     })
 
     if (result.success) {
-      revalidatePath('/admin/configuracion')
+      revalidatePath(ADMIN_PANEL_ROUTES.settings)
     }
 
     return result

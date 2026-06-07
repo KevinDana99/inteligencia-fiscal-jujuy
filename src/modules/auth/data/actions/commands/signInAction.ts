@@ -6,8 +6,9 @@ import { redirect } from 'next/navigation';
 import {
   mapIamSessionResponseToSerializedAuthSession
 } from '@/lib/auth/session-mapper';
+import { AUTH_ROUTES } from '@/constants';
 import { setServerAuthCookies } from '@/lib/auth/cookies';
-import { AUTH_COOKIE_NAMES, AUTH_ROUTES } from '@/lib/auth/constants';
+import { AUTH_COOKIE_NAMES } from '@/lib/auth/constants';
 import { getRedirectPathByUserType } from '@/lib/auth/proxy-session'
 import { createServerAuthSource } from '../../data-access';
 import type {

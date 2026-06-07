@@ -7,7 +7,7 @@ import {
   refreshExpiredRequestSession,
   resolveCurrentUserType
 } from '@/lib/auth/proxy-session'
-import { AUTH_ROUTES, USER_ROLES } from '@/lib/auth/constants'
+import { AUTH_ROUTES, USER_ROLES } from '@/constants'
 import { getProtectedRouteRedirect, isLoginRoute } from '@/lib/auth/route-access'
 import type { AuthUserType } from '@/lib/auth/proxy-session'
 
