@@ -1,13 +1,15 @@
 import { Card, Stack, Text, Title } from '@mantine/core';
 import classes from '../DashboardLayoutShell/DashboardLayoutShell.module.css';
 
+interface DashboardPagePlaceholderProps {
+  title: string;
+  description: string;
+}
+
 export function DashboardPagePlaceholder({
   title,
   description
-}: {
-  title: string;
-  description: string;
-}) {
+}: DashboardPagePlaceholderProps) {
   return (
     <Card className={classes.pageCard} radius="lg" padding="xl">
       <Stack gap="xs">

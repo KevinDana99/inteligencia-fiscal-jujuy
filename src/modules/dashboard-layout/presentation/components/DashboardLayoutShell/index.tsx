@@ -9,16 +9,19 @@ import {
 } from '../../contexts'
 import { DashboardTemplate } from '../DashboardTemplate'
 import { useDashboardLayoutShell } from '../../hooks'
+import { DASHBOARD_NAV_GROUPS } from '../../../constants'
+
+interface DashboardLayoutShellProps {
+  session: IAuthSession;
+  initialConfig: ConfigurationType;
+  children: ReactNode;
+}
 
 export function DashboardLayoutShell({
   session,
   initialConfig,
   children
-}: {
-  session: IAuthSession
-  initialConfig: ConfigurationType
-  children: ReactNode
-}) {
+}: DashboardLayoutShellProps) {
   const { currentSection, currentSectionLabel, navGroups } =
     useDashboardLayoutShell()
 
@@ -29,9 +32,9 @@ export function DashboardLayoutShell({
           session={session}
           currentSection={currentSection}
           currentSectionLabel={currentSectionLabel}
-          analisisItems={navGroups.analisis}
-          seguimientoItems={navGroups.seguimiento}
-          personalizacionItems={navGroups.personalizacion}
+          analisisItems={navGroups[DASHBOARD_NAV_GROUPS.ANALYSIS]}
+          seguimientoItems={navGroups[DASHBOARD_NAV_GROUPS.TRACKING]}
+          personalizacionItems={navGroups[DASHBOARD_NAV_GROUPS.CUSTOMIZATION]}
         >
           {children}
         </DashboardTemplate>

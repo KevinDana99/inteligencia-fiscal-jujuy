@@ -60,16 +60,14 @@ export default function PrivateLayoutFallback() {
       </aside>
 
       <header className={classes.header}>
+        <div className={classes.mobileMenuButton} aria-hidden="true">
+          <Skeleton height={28} width={28} radius="md" />
+        </div>
+
         <div className={classes.breadcrumb}>
           <span className={classes.breadcrumbBase}>Sistema IF</span>
           <span className={classes.breadcrumbDivider}>/</span>
           <Skeleton height={12} width={128} radius="xl" />
-        </div>
-
-        <div className={classes.headerActions}>
-          <Skeleton height={40} width={152} radius="xl" />
-          <Skeleton height={40} width={144} radius="xl" />
-          <Skeleton height={39} width={76} radius="md" />
         </div>
       </header>
 

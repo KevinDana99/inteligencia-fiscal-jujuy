@@ -18,13 +18,19 @@ interface IDashboardNavbarActionContext {
   registerNavbarActionTarget: (target: HTMLDivElement | null) => void;
 }
 
+interface DashboardNavbarActionProviderProps {
+  children: ReactNode;
+}
+
+interface DashboardNavbarActionPortalProps {
+  children: ReactNode;
+}
+
 const DashboardNavbarActionContext = createContext<IDashboardNavbarActionContext | null>(null);
 
 export function DashboardNavbarActionProvider({
   children
-}: {
-  children: ReactNode;
-}) {
+}: DashboardNavbarActionProviderProps) {
   const [explorerSelectedCount, setExplorerSelectedCount] = useState(0);
   const [navbarActionTarget, setNavbarActionTarget] =
     useState<HTMLDivElement | null>(null);
@@ -77,9 +83,7 @@ export function useDashboardNavbarActionContext() {
 
 export function DashboardNavbarActionPortal({
   children
-}: {
-  children: ReactNode;
-}) {
+}: DashboardNavbarActionPortalProps) {
   const { navbarActionTarget } = useDashboardNavbarActionContext();
 
   if (!navbarActionTarget) {
