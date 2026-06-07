@@ -1,17 +1,30 @@
 import Image from 'next/image'
-import { Avatar, Button, Text } from '@mantine/core'
-import { IconDoorExit } from '@tabler/icons-react'
+import { ActionIcon, Avatar, Button, Text } from '@mantine/core'
+import { IconDoorExit, IconMenu2 } from '@tabler/icons-react'
 import classes from '../../styles/AdminPanel.module.css'
 
 export function AdminPanelNavbar({
   profileInitials,
   profileLabel,
   isSignOutPending,
-  onSignOutClick
+  onSignOutClick,
+  onSidebarOpen
 }: AdminPanelNavbarProps) {
   return (
     <header className={classes.header}>
       <div className={classes.headerInner}>
+        <ActionIcon
+          variant='subtle'
+          color='gray'
+          size='lg'
+          radius='md'
+          aria-label='Abrir navegación'
+          className={classes.mobileMenuButton}
+          onClick={onSidebarOpen}
+        >
+          <IconMenu2 size={20} stroke={1.9} />
+        </ActionIcon>
+
         <div className={classes.brand}>
           <div className={classes.brandMark}>
             <Image
@@ -51,7 +64,7 @@ export function AdminPanelNavbar({
             leftSection={<IconDoorExit size={16} />}
             className={classes.secondaryButton}
           >
-            Salir
+            <span className={classes.signOutLabel}>Salir</span>
           </Button>
         </div>
       </div>
@@ -64,4 +77,5 @@ interface AdminPanelNavbarProps {
   profileLabel: string
   isSignOutPending: boolean
   onSignOutClick: () => void
+  onSidebarOpen: () => void
 }
