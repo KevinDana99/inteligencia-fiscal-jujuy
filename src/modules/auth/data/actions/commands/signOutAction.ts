@@ -1,15 +1,19 @@
 'use server';
 
+import { redirect } from 'next/navigation';
+import { AUTH_ROUTES } from '@/constants';
 import { clearServerAuthCookies, readServerAuthSession } from '@/lib/auth/cookies';
 import { createServerAuthSource } from '../../data-access';
-import type { ICommandResult } from '../../models/Auth';
 
-export async function signOutAction(): Promise<ICommandResult> {
+export async function signOutAction() {
   const source = await createServerAuthSource();
   const session = await readServerAuthSession();
-  const result = await source.signOut(session?.refreshToken);
 
-  await clearServerAuthCookies();
+  try {
+    await source.signOut(session?.refreshToken);
+  } finally {
+    await clearServerAuthCookies();
+  }
 
-  return result.success ? result : { success: true };
+  redirect(AUTH_ROUTES.login);
 }

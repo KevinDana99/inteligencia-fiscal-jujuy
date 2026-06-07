@@ -23,7 +23,6 @@ const CustomIcon = (props: {
   size?: number
   color?: string
 }) => {
-  console.log({ props })
   const SelectedIcon = iconMapList[props.name]
   return <SelectedIcon {...props} />
 }

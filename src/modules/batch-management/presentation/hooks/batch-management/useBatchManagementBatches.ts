@@ -26,12 +26,13 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
 
   async function hydrateBatchDetail(batchId: string) {
     const result = await getBatchDetailAction(batchId)
+    const batchDetail = result.data
 
-    if (!result.data) {
+    if (!batchDetail) {
       return
     }
 
-    setBatches((current) => applyBatchDetailToList(current, batchId, result.data))
+    setBatches((current) => applyBatchDetailToList(current, batchId, batchDetail))
   }
 
   function applyBatchListData(batchListData: IBatchListData) {

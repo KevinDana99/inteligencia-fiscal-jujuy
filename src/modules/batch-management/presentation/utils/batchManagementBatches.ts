@@ -26,7 +26,7 @@ export function applyBatchDetailToList(
   currentBatches: IBatchManagementItems,
   batchId: string,
   batchDetail: IBatchManagementItem
-) {
+): IBatchManagementItems {
   return currentBatches.map((batch) =>
     batch.id === batchId ? mapBatchForPresentation(batchDetail) : batch
   )

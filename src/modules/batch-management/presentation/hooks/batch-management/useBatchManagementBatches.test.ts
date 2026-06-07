@@ -22,6 +22,11 @@ jest.mock('../../../data/actions', () => ({
 }))
 
 type HookValue = ReturnType<typeof useBatchManagementBatches>
+type ReactActEnvironmentGlobal = typeof globalThis & {
+  IS_REACT_ACT_ENVIRONMENT?: boolean
+}
+
+const reactActEnvironmentGlobal = globalThis as ReactActEnvironmentGlobal
 
 const LIST_BATCH: IBatchManagementItem = {
   id: 'batch-1',
@@ -97,7 +102,7 @@ describe('useBatchManagementBatches', () => {
     getBatchDetailAction as jest.MockedFunction<typeof getBatchDetailAction>
 
   beforeEach(async () => {
-    globalThis.IS_REACT_ACT_ENVIRONMENT = true
+    reactActEnvironmentGlobal.IS_REACT_ACT_ENVIRONMENT = true
     latestValue = null
     mockGetBatchManagementAction.mockReset()
     mockGetBatchDetailAction.mockReset()
@@ -123,7 +128,7 @@ describe('useBatchManagementBatches', () => {
     })
 
     container.remove()
-    delete globalThis.IS_REACT_ACT_ENVIRONMENT
+    reactActEnvironmentGlobal.IS_REACT_ACT_ENVIRONMENT = undefined
   })
 
   it('hydrates the newly created batch detail after auto-expanding it', async () => {
