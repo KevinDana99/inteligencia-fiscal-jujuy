@@ -56,35 +56,46 @@ promover_k3s_infra_dev:
     - construir_imagen
   resource_group: rentas-if-k3s-infra-dev
   script:
-    - export IMAGE_TAG="$REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
-    - export WORKDIR="/tmp/k3s-infra-frontend-$CI_PIPELINE_ID"
-    - rm -rf "$WORKDIR"
-    - git clone --branch "$K3S_INFRA_BRANCH" "https://oauth2:${K3S_INFRA_PUSH_TOKEN}@${K3S_INFRA_REPO}" "$WORKDIR"
-    - cd "$WORKDIR"
-    - git config user.email "ci-rentas-if@gitlab.local"
-    - git config user.name "CI Rentas IF"
     - |
-      printf '%s\n' \
-        'apiVersion: apps/v1' \
-        'kind: Deployment' \
-        'metadata:' \
-        '  name: rentas-if-frontend' \
-        '  namespace: rentas-if' \
-        'spec:' \
-        '  template:' \
-        '    spec:' \
-        '      imagePullSecrets:' \
-        '        - name: gitlab-registry' \
-        '      containers:' \
-        '        - name: web' \
-        "          image: ${IMAGE_TAG}" \
-        > "$FRONTEND_PATCH_FILE"
-    - git diff -- "$FRONTEND_PATCH_FILE"
-    - |
+      set -euo pipefail
+
+      IMAGE_TAG="${REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
+      WORKDIR="/tmp/k3s-infra-frontend-${CI_PIPELINE_ID}"
+
+      rm -rf "$WORKDIR"
+
+      git clone --branch "$K3S_INFRA_BRANCH" "https://oauth2:${K3S_INFRA_PUSH_TOKEN}@${K3S_INFRA_REPO}" "$WORKDIR"
+
+      cd "$WORKDIR"
+
+      git config user.email "ci-rentas-if@gitlab.local"
+      git config user.name "CI Rentas IF"
+
+      mkdir -p "$(dirname "$FRONTEND_PATCH_FILE")"
+
+      cat > "$FRONTEND_PATCH_FILE" <<EOF
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: rentas-if-frontend
+        namespace: rentas-if
+      spec:
+        template:
+          spec:
+            imagePullSecrets:
+              - name: gitlab-registry
+            containers:
+              - name: web
+                image: ${IMAGE_TAG}
+      EOF
+
+      git diff -- "$FRONTEND_PATCH_FILE"
+
       if git diff --quiet -- "$FRONTEND_PATCH_FILE"; then
         echo "No hay cambios para promover."
         exit 0
       fi
-    - git add "$FRONTEND_PATCH_FILE"
-    - git commit -m "chore(dev): actualiza imagen frontend a ${CI_COMMIT_SHORT_SHA}"
-    - git push origin HEAD:"$K3S_INFRA_BRANCH"
+
+      git add "$FRONTEND_PATCH_FILE"
+      git commit -m "chore dev actualiza imagen frontend a ${CI_COMMIT_SHORT_SHA}"
+      git push origin HEAD:"$K3S_INFRA_BRANCH"
