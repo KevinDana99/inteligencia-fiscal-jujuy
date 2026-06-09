@@ -3,6 +3,7 @@
 import { MantineProvider } from '@mantine/core';
 import type { CSSVariablesResolver } from '@mantine/core';
 import type { ReactNode } from 'react';
+import { ToastViewport } from '@/components/core/toasts';
 import { theme } from '@/theme';
 
 const cssVariablesResolver: CSSVariablesResolver = (mantineTheme) => ({
@@ -18,6 +19,7 @@ export function Providers({ children }: { children: ReactNode }) {
       forceColorScheme='light'
       cssVariablesResolver={cssVariablesResolver}
     >
+      <ToastViewport />
       {children}
     </MantineProvider>
   );

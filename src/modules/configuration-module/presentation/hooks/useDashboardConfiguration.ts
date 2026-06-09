@@ -25,10 +25,8 @@ export function useDashboardConfiguration() {
     informe: report.informe,
     activeTab: tabs.activeTab,
     isIntimationTab: tabs.isIntimationTab,
-    successOpened: success.successOpened,
     updateTab: tabs.updateTab,
     updateInforme: report.updateInforme,
-    confirmChanges: success.confirmChanges,
-    closeSuccess: success.closeSuccess
+    confirmChanges: success.confirmChanges
   }
 }

@@ -24,10 +24,6 @@ export function useConfigurationPage() {
         onChange: dashboardConfiguration.updateInforme,
         onConfirm: dashboardConfiguration.confirmChanges
       }
-    },
-    successModal: {
-      opened: dashboardConfiguration.successOpened,
-      onClose: dashboardConfiguration.closeSuccess
     }
   }
 }

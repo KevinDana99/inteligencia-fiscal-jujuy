@@ -1,33 +1,17 @@
-.notificationRoot {
-  padding: 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  overflow: visible;
-}
-
-.notificationBody,
-.notificationMessage {
-  width: 100%;
-  margin: 0;
-}
-
-.notificationCloseButton {
-  display: none;
-}
-
 .content {
   position: relative;
   display: flex;
-  min-height: 104px;
-  align-items: center;
-  gap: 22px;
+  width: 100%;
+  max-width: 320px;
+  box-sizing: border-box;
+  align-items: flex-start;
+  gap: 10px;
   overflow: hidden;
-  padding: 26px 30px 26px 42px;
+  padding: 13px 16px;
   border: 1px solid rgba(226, 232, 240, 0.92);
-  border-radius: 14px;
+  border-radius: 8px;
   background: var(--mantine-color-white);
-  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.16);
 }
 
 .content::before {
@@ -35,29 +19,34 @@
   top: 0;
   bottom: 0;
   left: 0;
-  width: 6px;
+  width: 4px;
   background: #2f9e44;
   content: '';
 }
 
 .iconSlot {
   display: flex;
-  width: 32px;
-  height: 32px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  align-self: flex-start;
+  margin-top: 1px;
   color: #2f9e44;
 }
 
 .icon {
-  width: 32px;
-  height: 32px;
+  width: 18px;
+  height: 18px;
   color: #2f9e44;
 }
 
 .text {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .title {
@@ -65,42 +54,43 @@
   overflow-wrap: anywhere;
   color: #2b2f38;
   font-family: var(--font-body);
-  font-size: 20px;
+  font-size: 13px;
   font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.15;
+}
+
+.description {
+  margin: 2px 0 0;
+  overflow-wrap: anywhere;
+  color: var(--mantine-color-gray-5);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
   letter-spacing: 0;
   line-height: 1.2;
 }
 
-.description {
-  margin: 8px 0 0;
-  overflow-wrap: anywhere;
-  color: var(--mantine-color-gray-5);
-  font-family: var(--font-body);
-  font-size: 16px;
-  font-weight: 500;
-  letter-spacing: 0;
-  line-height: 1.35;
-}
-
 @media (max-width: 640px) {
   .content {
-    min-height: 88px;
-    gap: 14px;
-    padding: 20px 18px 20px 28px;
+    width: 100%;
+    max-width: 320px;
+    gap: 10px;
+    padding: 13px 16px;
   }
 
   .iconSlot,
   .icon {
-    width: 28px;
-    height: 28px;
+    width: 18px;
+    height: 18px;
   }
 
   .title {
-    font-size: 16px;
+    font-size: 13px;
   }
 
   .description {
-    margin-top: 5px;
-    font-size: 14px;
+    margin-top: 2px;
+    font-size: 11px;
   }
 }

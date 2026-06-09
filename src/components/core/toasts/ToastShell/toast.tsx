@@ -1,12 +1,12 @@
 'use client'
 
 import { notifications } from '@mantine/notifications'
-import { ToastContent } from './ToastContent'
-import classes from './ToastContent.module.css'
-import type { ToastSuccessOptions } from './types'
+import { ToastContent } from '../ToastContent/ToastContent'
+import classes from './ToastShell.module.css'
+import type { ToastSuccessOptions } from '../types'
 
 const TOAST_DEFAULT_AUTO_CLOSE = 4500
-const TOAST_DEFAULT_POSITION = 'top-right'
+const TOAST_DEFAULT_POSITION = 'bottom-right'
 
 function success({
   id,

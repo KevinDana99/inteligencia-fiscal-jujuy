@@ -4,7 +4,6 @@ import { useConfigurationPage } from '../../hooks/configuration-page'
 import { ConfigurationContentView } from './ConfigurationContentView'
 import { ConfigurationHeader } from './ConfigurationHeader'
 import { ConfigurationTabs } from './ConfigurationTabs'
-import { ConfigurationSuccessModal } from './ConfigurationSuccessModal'
 import classes from './ConfigurationPage.module.css'
 
 export function ConfigurationPage() {
@@ -21,8 +20,6 @@ export function ConfigurationPage() {
           <ConfigurationContentView content={controller.content} />
         </div>
       </div>
-
-      <ConfigurationSuccessModal {...controller.successModal} />
     </div>
   )
 }
