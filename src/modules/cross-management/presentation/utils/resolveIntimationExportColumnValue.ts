@@ -4,7 +4,7 @@ import { INTIMATION_EXPORT_EMPTY_VALUE } from '../constants/intimationExportLabe
 
 type IntimationExportContributor = Pick<
   ICrossPreviewPlanRow,
-  'id' | 'cuit' | 'businessName' | 'cells'
+  'id' | 'cuit' | 'businessName' | 'cells' | 'values'
 >
 
 export function resolveIntimationExportColumnValue(
@@ -13,6 +13,12 @@ export function resolveIntimationExportColumnValue(
 ) {
   if (!contributor) {
     return INTIMATION_EXPORT_EMPTY_VALUE
+  }
+
+  const valueByKey = contributor.values[columnId]
+
+  if (valueByKey) {
+    return valueByKey
   }
 
   const index = INTIMATION_EXPORT_COLUMN_CELL_INDEX_BY_ID[columnId]

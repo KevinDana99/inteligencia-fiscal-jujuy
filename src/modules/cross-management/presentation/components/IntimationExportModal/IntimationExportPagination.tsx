@@ -11,7 +11,9 @@ import { useIntimationExportPagination } from '../../hooks/intimation-export/use
 import classes from './IntimationExportModalHeader.module.css'
 
 interface IntimationExportPaginationProps {
+  contributorLabel: string
   currentPage: number
+  cuitLabel: string
   onNext: () => void
   onPrevious: () => void
   paginationLabel: string
@@ -19,7 +21,9 @@ interface IntimationExportPaginationProps {
 }
 
 export function IntimationExportPagination({
+  contributorLabel,
   currentPage,
+  cuitLabel,
   onNext,
   onPrevious,
   paginationLabel,
@@ -41,7 +45,13 @@ export function IntimationExportPagination({
       >
         <IconChevronLeft size={14} />
       </ActionIcon>
-      <Text className={classes.paginationLabel}>{paginationLabel}</Text>
+      <div className={classes.contributorNavContent}>
+        <Text className={classes.contributorNavName}>{contributorLabel}</Text>
+        <Text className={classes.contributorNavMeta}>
+          {cuitLabel} <span className={classes.metaDivider}>·</span>{' '}
+          {paginationLabel}
+        </Text>
+      </div>
       <ActionIcon
         variant="subtle"
         className={classes.pageButton}

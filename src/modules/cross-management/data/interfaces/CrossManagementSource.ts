@@ -5,6 +5,8 @@ import type {
   ICrossPlanillaRequestParams,
   ICrossResumenData,
   ICrossResumenRequestParams,
+  IGenerateIntimationDocumentPayload,
+  IIntimationDocumentGeneratedSummary,
   ICrossResultsListData,
   ICrossResultsListParams
 } from '../models/CrossManagement'
@@ -25,4 +27,11 @@ export interface ICrossManagementQueryPort {
   ): Promise<ICrossResultsListData>
 }
 
-export type ICrossManagementSource = ICrossManagementQueryPort
+export interface ICrossManagementCommandPort {
+  generateIntimationDocument(
+    payload: IGenerateIntimationDocumentPayload
+  ): Promise<IIntimationDocumentGeneratedSummary>
+}
+
+export type ICrossManagementSource = ICrossManagementQueryPort &
+  ICrossManagementCommandPort

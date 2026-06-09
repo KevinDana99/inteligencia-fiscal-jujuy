@@ -22,5 +22,11 @@ export const INTIMATION_EXPORT_COLUMN_CELL_INDEX_BY_ID: Record<string, number> =
   saf: 29,
   'base-interna': 10,
   'base-terceros': 23,
-  'diferencia-base': 12
+  'diferencia-base': 12,
+  baseImponibleIngresosBrutos: 10,
+  baseImponibleInformadaPorTerceros: 23,
+  diferenciaBaseImponible: 12,
+  base_imponible_ingresos_brutos: 10,
+  base_imponible_informada_por_terceros: 23,
+  diferencia_de_base_imponible: 12
 }

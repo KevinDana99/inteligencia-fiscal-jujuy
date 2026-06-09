@@ -10,9 +10,11 @@ import type {
   ICrossManagementQueryResult,
   ICrossPreviewData
 } from '../../models/CrossManagement'
+import { enrichCrossPlanillaRowsWithTaxpayerIds } from '../../utils/enrichCrossPlanillaRowsWithTaxpayerIds'
 import { getCrossManagementAction } from './getCrossManagementAction'
 import { getCrossPlanillaAction } from './getCrossPlanillaAction'
 import { getCrossResumenAction } from './getCrossResumenAction'
+import { getCrossResultsAction } from './getCrossResultsAction'
 
 export async function getCrossPreviewAction(
   crossId: string
@@ -26,7 +28,12 @@ export async function getCrossPreviewAction(
     }
   }
 
-  const [planillaResponse, resumenResponse, executionsResponse] = await Promise.all([
+  const [
+    planillaResponse,
+    resumenResponse,
+    executionsResponse,
+    resultsResponse
+  ] = await Promise.all([
     getCrossPlanillaAction(executionId, {
       itemsPerPage: DEFAULT_CROSS_PREVIEW_ITEMS_PER_PAGE,
       page: DEFAULT_CROSS_PREVIEW_PAGE
@@ -37,6 +44,10 @@ export async function getCrossPreviewAction(
       columnFilters: []
     }),
     getCrossManagementAction({
+      itemsPerPage: MAX_CROSS_PREVIEW_EXECUTIONS_FALLBACK_ITEMS,
+      page: DEFAULT_CROSS_PREVIEW_PAGE
+    }),
+    getCrossResultsAction(executionId, {
       itemsPerPage: MAX_CROSS_PREVIEW_EXECUTIONS_FALLBACK_ITEMS,
       page: DEFAULT_CROSS_PREVIEW_PAGE
     })
@@ -62,11 +73,18 @@ export async function getCrossPreviewAction(
 
   const execution =
     executionsResponse.data?.items.find((item) => item.id === crossId) ?? null
+  const planillaData = {
+    ...planillaResponse.data,
+    rows: enrichCrossPlanillaRowsWithTaxpayerIds(
+      planillaResponse.data.rows,
+      resultsResponse.data?.results ?? []
+    )
+  }
 
   return {
     data: mapCrossPreviewContractToView(
       executionId,
-      planillaResponse.data,
+      planillaData,
       resumenResponse.data,
       execution
     )

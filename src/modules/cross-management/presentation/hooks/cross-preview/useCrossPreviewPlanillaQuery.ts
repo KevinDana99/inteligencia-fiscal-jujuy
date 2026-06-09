@@ -1,10 +1,15 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
-import { getCrossPlanillaAction } from '../../../data/actions'
+import {
+  getCrossPlanillaAction,
+  getCrossResultsAction
+} from '../../../data/actions'
+import { MAX_CROSS_PREVIEW_EXECUTIONS_FALLBACK_ITEMS } from '../../../constants/crossPreviewRequest'
 import {
   mapPlanillaRowsToPreview
 } from '../../../data/mappers/mapCrossPreviewContractToView'
+import { enrichCrossPlanillaRowsWithTaxpayerIds } from '../../../data/utils/enrichCrossPlanillaRowsWithTaxpayerIds'
 import type {
   ICrossDynamicColumn,
   ICrossPaginationData,
@@ -61,9 +66,27 @@ export function useCrossPreviewPlanillaQuery({
 
       const resolvedColumns =
         response.data.schema?.columns ?? nextColumns ?? columns
+      const needsTaxpayerIds = response.data.rows.some((row) => !row.taxpayerId)
+      const resultsResponse = needsTaxpayerIds
+        ? await getCrossResultsAction(cross.executionId, {
+            itemsPerPage: Math.max(
+              response.data.totalItems,
+              MAX_CROSS_PREVIEW_EXECUTIONS_FALLBACK_ITEMS
+            ),
+            page: 1
+          })
+        : null
+      const enrichedRows = enrichCrossPlanillaRowsWithTaxpayerIds(
+        response.data.rows,
+        resultsResponse?.data?.results ?? []
+      )
+
+      if (requestId !== latestRequestRef.current) {
+        return
+      }
 
       setColumns(resolvedColumns)
-      setRows(mapPlanillaRowsToPreview(response.data.rows, resolvedColumns))
+      setRows(mapPlanillaRowsToPreview(enrichedRows, resolvedColumns))
       setPagination({
         page: response.data.page,
         itemsPerPage: response.data.itemsPerPage,

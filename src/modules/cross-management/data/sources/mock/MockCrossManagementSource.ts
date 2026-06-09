@@ -9,6 +9,8 @@ import type {
   ICrossPlanillaRow,
   ICrossResumenData,
   ICrossResumenRequestParams,
+  IGenerateIntimationDocumentPayload,
+  IIntimationDocumentGeneratedSummary,
   ICrossResultsListData,
   ICrossResultsListParams
 } from '../../models/CrossManagement'
@@ -48,6 +50,11 @@ function parseMockNumber(value: string) {
   return Number.isFinite(parsed) ? parsed : null
 }
 
+function buildMockTaxpayerId(executionId: number, rowIndex: number) {
+  return `00000000-0000-4000-8000-${String(executionId)
+    .padStart(6, '0')}${String(rowIndex + 1).padStart(6, '0')}`
+}
+
 function matchesSearch(cuit: string, businessName: string, search?: string | null) {
   const normalized = normalizeSearchValue(search ?? '')
 
@@ -62,6 +69,17 @@ function matchesSearch(cuit: string, businessName: string, search?: string | nul
 }
 
 export class MockCrossManagementSource implements ICrossManagementSource {
+  async generateIntimationDocument(
+    payload: IGenerateIntimationDocumentPayload
+  ): Promise<IIntimationDocumentGeneratedSummary> {
+    const documentId = `mock-${payload.contribuyente.id}-${payload.formato.toLowerCase()}`
+
+    return {
+      documentId,
+      downloadUrl: `/api/documentos/${documentId}/descargar`
+    }
+  }
+
   async listExecutions(
     params: ICrossManagementListParams = {}
   ): Promise<ICrossManagementListData> {
@@ -114,9 +132,10 @@ export class MockCrossManagementSource implements ICrossManagementSource {
     const filteredRows = preview.planRows.filter((row) =>
       matchesSearch(row.cuit, row.businessName, params.search)
     )
-    const rows: ICrossPlanillaRow[] = filteredRows.map((row) => ({
+    const rows: ICrossPlanillaRow[] = filteredRows.map((row, rowIndex) => ({
       cuit: row.cuit,
       businessName: row.businessName,
+      taxpayerId: buildMockTaxpayerId(executionId, rowIndex),
       texts: Object.fromEntries(
         columns.map((column, index) => [column.key, row.cells[index] ?? null])
       ),

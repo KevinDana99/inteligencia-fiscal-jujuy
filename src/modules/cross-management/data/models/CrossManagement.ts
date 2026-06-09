@@ -111,6 +111,7 @@ export interface ICrossPlanillaSchema {
 export interface ICrossPlanillaRow extends ICrossDynamicValuesRow {
   cuit: string
   businessName: string | null
+  taxpayerId: string | null
 }
 
 export interface ICrossPlanillaData extends ICrossPaginationData {
@@ -195,6 +196,7 @@ export interface ICrossPreviewIndicator {
 
 export interface ICrossPreviewPlanRow {
   id: string
+  taxpayerId: string | null
   cuit: string
   businessName: string
   values: Record<string, string>
@@ -242,6 +244,50 @@ export interface ICrossManagementQueryResult<TData> {
   error?: string
   code?: string
   status?: number
+}
+
+export interface ICrossManagementCommandResult<TData = null> {
+  success: boolean
+  data: TData | null
+  error?: string
+  code?: string
+  status?: number
+}
+
+export type IIntimationDocumentFormat = 'Pdf' | 'Docx'
+
+export type IIntimationSpreadsheetCellValue = string | number | boolean
+
+export type IIntimationSpreadsheetRow = Record<
+  string,
+  IIntimationSpreadsheetCellValue
+>
+
+export interface IIntimationDocumentContributorPayload {
+  id: string
+  cuit: string
+  razonSocial?: string | null
+}
+
+export interface IIntimationDocumentSnapshot {
+  asunto: string
+  saludo: string
+  cuerpo: string
+  fuenteInformacion?: string | null
+  fechaCorte: string
+  columnasSeleccionadas: string[]
+}
+
+export interface IGenerateIntimationDocumentPayload {
+  contribuyente: IIntimationDocumentContributorPayload
+  formato: IIntimationDocumentFormat
+  snapshotIntimacion?: IIntimationDocumentSnapshot | null
+  filasPlanilla: IIntimationSpreadsheetRow[]
+}
+
+export interface IIntimationDocumentGeneratedSummary {
+  documentId: string
+  downloadUrl: string
 }
 
 export interface ICrossPreviewData extends ICrossManagementItem {

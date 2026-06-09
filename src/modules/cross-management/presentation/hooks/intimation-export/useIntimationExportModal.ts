@@ -6,7 +6,7 @@ import { INTIMATION_EXPORT_EMPTY_CONTRIBUTOR } from '../../constants/intimationE
 
 export type IntimationExportContributor = Pick<
   ICrossPreviewPlanRow,
-  'id' | 'cuit' | 'businessName' | 'cells'
+  'id' | 'taxpayerId' | 'cuit' | 'businessName' | 'values' | 'cells'
 >
 
 interface UseIntimationExportModalParams {

@@ -97,7 +97,8 @@ export function mapPlanillaRowsToPreview(
     )
 
     return {
-      id: `${row.cuit}-${rowIndex}`,
+      id: row.taxpayerId ?? `${row.cuit}-${rowIndex}`,
+      taxpayerId: row.taxpayerId,
       cuit: formatCuit(row.cuit),
       businessName: normalizeText(row.businessName),
       values,

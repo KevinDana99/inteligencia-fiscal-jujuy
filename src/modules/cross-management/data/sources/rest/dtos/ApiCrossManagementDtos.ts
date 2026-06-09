@@ -85,6 +85,7 @@ export interface ApiCrossDynamicValuesRowDto {
 }
 
 export interface ApiCrossPlanillaRowDto extends ApiCrossDynamicValuesRowDto {
+  contribuyenteId?: string | null
   cuit: string
   razonSocial: string | null
 }

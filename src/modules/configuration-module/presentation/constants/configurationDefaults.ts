@@ -13,9 +13,9 @@ export const DEFAULT_INTIMATION: IntimationType = {
   pie: 'Fecha de corte 11/2025.',
   columnas_seleccionadas: [
     'anio',
-    'base_imponible_ingresos_brutos',
-    'base_imponible_informada_por_terceros',
-    'diferencia_de_base_imponible'
+    'baseImponibleIngresosBrutos',
+    'baseImponibleInformadaPorTerceros',
+    'diferenciaBaseImponible'
   ]
 }
 

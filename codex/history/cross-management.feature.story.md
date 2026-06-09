@@ -1,5 +1,39 @@
 # Cross Management Feature Story
 
+## 2026-06-09 Ajuste responsive del modal de previsualizacion de intimacion
+
+- `IntimationExportModal` ahora limita su alto a `100dvh` con margen seguro y usa layout flex para mantener visibles encabezado, navegacion y footer.
+- El alto del modal se estira a toda la pantalla disponible con un espaciado minimo de `10px` contra el viewport.
+- El header usa fuentes de `12px`, reduce su alto y fuerza el ancho del modal para evitar cortes visuales.
+- Las acciones de descarga corrigen estados hover, disabled y loading para mantener contraste y loaders visibles.
+- La descarga de documentos usa `formato=pdf/docx` segun contrato GET, valida `documentoId` y acepta alias de respuesta al generar el documento.
+- Se agregaron logs de diagnostico en generacion, proxy de descarga y fetch del cliente para distinguir errores de frontend, proxy o backend sin imprimir token.
+- Las filas de planilla se enriquecen con `contribuyenteId` desde `resultados-cruces` por CUIT para generar intimaciones cuando `/planilla` no devuelve UUID.
+- El documento mantiene su visualizacion previa: sin cambios de contenido, logo, fecha, tipografia, tabla ni dimensiones internas.
+
+### Validation
+
+- `bun x tsc --noEmit --pretty false --incremental false`
+- `bun run test -- src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.test.ts --runInBand`
+- `bun run lint` sin errores; persisten 4 warnings existentes en `unified-register`.
+- `git diff --check`
+
+## 2026-06-09 Contratos de documentos de intimacion en preview
+
+- `CrossPreviewModals` dejó de usar handlers `noop` para PDF/DOCX y ahora coordina la generación/descarga mediante hooks desacoplados.
+- Se agregó el comando `generateIntimationDocumentAction` para `POST /api/documentos/intimacion/generar`, con DTOs, modelos, source REST y source mock.
+- Se agregó el proxy local `GET /api/documentos/{documentoId}/descargar?formato=...` para descargar binarios con el Bearer token de la sesión server-side.
+- El payload de generación se arma en `presentation/utils`: `snapshotIntimacion` usa `asunto`, `saludo`, `cuerpo`, `fuenteInformacion`, `fechaCorte` y `columnasSeleccionadas`; `filasPlanilla` se construye con claves exactas de columnas.
+- Las constantes de endpoints, formatos, MIME types y mensajes quedaron separadas en carpetas `constants`.
+- Se compatibilizó la lectura de configuración de intimación con el contrato nuevo (`fechaCorte`, `fuenteInformacion`) y se preservó el modelo interno actual.
+- Las filas de planilla conservan `contribuyenteId` como `taxpayerId` para cumplir el requisito de UUID del backend al generar intimaciones.
+
+### Validation
+
+- `bunx tsc --noEmit --pretty false --incremental false`
+- `bun run test -- src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.test.ts --runInBand`
+- `bun run lint` sin errores; persisten 4 warnings existentes en `unified-register`.
+
 ## 2026-06-05 Integracion Planilla/Resumen en preview
 
 - `/gestion-de-cruces/vista-previa-cruce/[crossId]` ahora carga la vista desde `POST /planilla` y `POST /resumen`, dejando `resultados-cruces` fuera de la preview.
