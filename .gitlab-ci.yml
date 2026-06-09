@@ -1,8 +1,7 @@
 stages:
   - validar
   - construir
-  - desplegar
-  - smoke
+  - promover
 
 workflow:
   rules:
@@ -18,11 +17,11 @@ default:
 
 variables:
   NODE_IMAGE: docker.io/library/node:22-alpine
-  KUBE_NAMESPACE: rentas-if
-  IMAGE_NAME: localhost/rentas-if-frontend
-  IMAGE_LOCAL: rentas-if-frontend:dev
-  SMOKE_URL: http://192.168.119.106/login
-  SMOKE_HOST: app.rentas-if.dev.local
+  REGISTRY_HOST: gitlab.local.internal:5050
+  REGISTRY_IMAGE: gitlab.local.internal:5050/if-rentas/frontend
+  K3S_INFRA_REPO: gitlab.kamakia.io/if-rentas/k3s-infra.git
+  K3S_INFRA_BRANCH: develop
+  FRONTEND_PATCH_FILE: overlays/dev/if/patches/frontend-dev-image.yaml
 
 validar_frontend:
   stage: validar
@@ -40,37 +39,52 @@ construir_imagen:
     - validar_frontend
   interruptible: true
   script:
-    - export IMAGE_TAG="$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+    - export IMAGE_TAG="$REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+    - export IMAGE_LATEST="$REGISTRY_IMAGE:develop-latest"
+    - sudo -n podman login "$REGISTRY_HOST" -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
     - >
       sudo -n podman build --pull=missing
       -t "$IMAGE_TAG"
-      -t "$IMAGE_LOCAL"
+      -t "$IMAGE_LATEST"
       .
-    - sudo -n podman save "$IMAGE_TAG" | sudo -n /usr/local/bin/k3s ctr -n k8s.io images import -
+    - sudo -n podman push "$IMAGE_TAG"
+    - sudo -n podman push "$IMAGE_LATEST"
 
-desplegar_dev:
-  stage: desplegar
+promover_k3s_infra_dev:
+  stage: promover
   needs:
     - construir_imagen
-  resource_group: rentas-if-frontend-dev
-  environment:
-    name: dev
-    url: http://app.rentas-if.dev.local/login
+  resource_group: rentas-if-k3s-infra-dev
   script:
-    - export IMAGE_TAG="$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
-    - sudo -n /usr/local/bin/kubectl apply -f k3s/namespace.yaml
-    - >
-      sudo -n /usr/local/bin/kubectl kustomize k3s |
-      sed "s|image: $IMAGE_LOCAL|image: $IMAGE_TAG|g" |
-      sudo -n /usr/local/bin/kubectl apply -f -
-    - sudo -n /usr/local/bin/kubectl -n "$KUBE_NAMESPACE" rollout status deployment/rentas-if-frontend --timeout=300s
-
-smoke_dev:
-  stage: smoke
-  needs:
-    - desplegar_dev
-  script:
-    - export SMOKE_FILE="/tmp/rentas-if-frontend-smoke-$CI_JOB_ID.html"
-    - 'curl -fsS -H "Host: $SMOKE_HOST" "$SMOKE_URL" -o "$SMOKE_FILE"'
-    - grep -q "Sistema de Inteligencia" "$SMOKE_FILE"
-    - rm -f "$SMOKE_FILE"
+    - export IMAGE_TAG="$REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+    - export WORKDIR="/tmp/k3s-infra-frontend-$CI_PIPELINE_ID"
+    - rm -rf "$WORKDIR"
+    - git clone --branch "$K3S_INFRA_BRANCH" "https://oauth2:${K3S_INFRA_PUSH_TOKEN}@${K3S_INFRA_REPO}" "$WORKDIR"
+    - cd "$WORKDIR"
+    - git config user.email "ci-rentas-if@gitlab.local"
+    - git config user.name "CI Rentas IF"
+    - |
+      printf '%s\n' \
+        'apiVersion: apps/v1' \
+        'kind: Deployment' \
+        'metadata:' \
+        '  name: rentas-if-frontend' \
+        '  namespace: rentas-if' \
+        'spec:' \
+        '  template:' \
+        '    spec:' \
+        '      imagePullSecrets:' \
+        '        - name: gitlab-registry' \
+        '      containers:' \
+        '        - name: web' \
+        "          image: ${IMAGE_TAG}" \
+        > "$FRONTEND_PATCH_FILE"
+    - git diff -- "$FRONTEND_PATCH_FILE"
+    - |
+      if git diff --quiet -- "$FRONTEND_PATCH_FILE"; then
+        echo "No hay cambios para promover."
+        exit 0
+      fi
+    - git add "$FRONTEND_PATCH_FILE"
+    - git commit -m "chore(dev): actualiza imagen frontend a ${CI_COMMIT_SHORT_SHA}"
+    - git push origin HEAD:"$K3S_INFRA_BRANCH"
