@@ -25,63 +25,83 @@ export async function createAdminUserAction(
   _previousState: IAdminPanelActionState<IAdminPanelCreateUserActionData>,
   formData: FormData
 ): Promise<IAdminPanelActionState<IAdminPanelCreateUserActionData>> {
-  const params = {
-    nombre: String(formData.get('nombre') ?? '').trim(),
-    apellido: String(formData.get('apellido') ?? '').trim(),
-    correo: String(formData.get('correo') ?? '').trim().toLowerCase(),
-    cargo: String(formData.get('cargo') ?? '').trim(),
-    contrasena: String(formData.get('contrasena') ?? ''),
-    confirmarContrasena: String(formData.get('confirmarContrasena') ?? '')
-  }
-
-  const requestPayload = {
-    ...params,
-    contrasena: params.contrasena ? '[REDACTED]' : '',
-    confirmarContrasena: params.confirmarContrasena ? '[REDACTED]' : ''
-  };
-
-  const source = await createServerAdminPanelSource();
-  const result = await source.createAdminUser({
-    firstName: params.nombre,
-    lastName: params.apellido,
-    email: params.correo,
-    roleLabel: params.cargo,
-    password: params.contrasena,
-    confirmPassword: params.confirmarContrasena
-  });
-
-  console.log({
-    endpoint: '/api/super-administrador/usuarios',
-    action: 'createAdminUserAction',
-    METHOD: 'POST',
-    REQUEST: requestPayload,
-    RESPONSE: {
-      success: result.success,
-      status: result.status,
-      code: result.code,
-      error: result.error,
-      data: result.data ? mapUserToContract(result.data) : null
+  try {
+    const params = {
+      nombre: String(formData.get('nombre') ?? '').trim(),
+      apellido: String(formData.get('apellido') ?? '').trim(),
+      correo: String(formData.get('correo') ?? '').trim().toLowerCase(),
+      cargo: String(formData.get('cargo') ?? '').trim(),
+      contrasena: String(formData.get('contrasena') ?? ''),
+      confirmarContrasena: String(formData.get('confirmarContrasena') ?? '')
     }
-  });
 
-  if (result.success) {
+    const requestPayload = {
+      ...params,
+      contrasena: params.contrasena ? '[REDACTED]' : '',
+      confirmarContrasena: params.confirmarContrasena ? '[REDACTED]' : ''
+    }
+
+    const source = await createServerAdminPanelSource()
+    const result = await source.createAdminUser({
+      firstName: params.nombre,
+      lastName: params.apellido,
+      email: params.correo,
+      roleLabel: params.cargo,
+      password: params.contrasena,
+      confirmPassword: params.confirmarContrasena
+    })
+
+    console.log({
+      endpoint: '/api/super-administrador/usuarios',
+      action: 'createAdminUserAction',
+      METHOD: 'POST',
+      REQUEST: requestPayload,
+      RESPONSE: {
+        success: result.success,
+        status: result.status,
+        code: result.code,
+        error: result.error,
+        data: result.data ? mapUserToContract(result.data) : null
+      }
+    })
+
+    if (result.success) {
+      return {
+        success: true,
+        message: null,
+        errors: null,
+        data: result.data ? mapUserToContract(result.data) : null
+      }
+    }
+
     return {
-      success: true,
-      message: null,
-      errors: null,
-      data: result.data ? mapUserToContract(result.data) : null
-    }
-  }
-
-  return {
-    success: false,
-    message: result.error ?? 'No fue posible crear el usuario.',
-    errors: {
-      code:
-        result.code ?? 'super_administrador.usuarios.crear.error_interno',
+      success: false,
       message: result.error ?? 'No fue posible crear el usuario.',
-      statusCode: result.status ?? 500
-    },
-    data: null
+      errors: {
+        code:
+          result.code ?? 'super_administrador.usuarios.crear.error_interno',
+        message: result.error ?? 'No fue posible crear el usuario.',
+        statusCode: result.status ?? 500
+      },
+      data: null
+    }
+  } catch (error) {
+    console.error({
+      endpoint: '/api/super-administrador/usuarios',
+      action: 'createAdminUserAction',
+      METHOD: 'POST',
+      error
+    })
+
+    return {
+      success: false,
+      message: 'No fue posible crear el usuario.',
+      errors: {
+        code: 'super_administrador.usuarios.crear.error_interno',
+        message: 'No fue posible crear el usuario.',
+        statusCode: 500
+      },
+      data: null
+    }
   }
 }

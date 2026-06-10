@@ -1,13 +1,17 @@
-import type { ReactNode } from 'react'
 import type { NotificationData } from '@mantine/notifications'
+import { ToastStatus } from './constants'
+import { ReactNode } from 'react'
 
 export type ToastPosition = NonNullable<NotificationData['position']>
 
-export interface ToastSuccessOptions {
-  id?: string
-  title: string
-  description?: string
+export interface ToastShowOptions {
   autoClose?: NotificationData['autoClose']
   position?: ToastPosition
+}
+
+export interface ToastContentProps {
+  title: string
+  description?: string
+  status?: ToastStatus
   icon?: ReactNode
 }

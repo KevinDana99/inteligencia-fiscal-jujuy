@@ -1,17 +1,21 @@
 'use client'
 
 import { useEffect } from 'react'
-import { toast } from '@/components/core/toasts'
 import {
-  AUTH_LOGIN_SUCCESS_TOAST_COOKIE,
-  AUTH_LOGIN_SUCCESS_TOAST_DESCRIPTION
-} from '@/lib/auth/login-success-toast'
+  TOAST_DASHBOARD_MESSAGES,
+  toast,
+  type ToastMessageType
+} from '@/components/core/toasts'
+import { AUTH_LOGIN_SUCCESS_TOAST_COOKIE } from '@/lib/auth/login-success-toast'
 import {
   buildExpiredClientCookie,
   hasClientCookie
 } from '../utils/authLoginSuccessToastCookie'
 
-export function useLoginSuccessToastBridge(displayName?: string | null) {
+export function useLoginSuccessToastBridge(
+  displayName?: string | null,
+  message: ToastMessageType = TOAST_DASHBOARD_MESSAGES.DASHBOARD_WELCOME_SUCCESS
+) {
   useEffect(() => {
     if (!hasClientCookie(document.cookie, AUTH_LOGIN_SUCCESS_TOAST_COOKIE)) {
       return
@@ -22,13 +26,10 @@ export function useLoginSuccessToastBridge(displayName?: string | null) {
       window.location.protocol === 'https:'
     )
 
-    const normalizedDisplayName = displayName?.trim()
+    const normalizedDisplayName = displayName?.trim() || 'Usuario'
 
-    toast.success({
-      title: normalizedDisplayName
-        ? `Hola, ${normalizedDisplayName}`
-        : 'Sesión iniciada',
-      description: AUTH_LOGIN_SUCCESS_TOAST_DESCRIPTION
+    toast.show(message, {
+      name: normalizedDisplayName
     })
-  }, [displayName])
+  }, [displayName, message])
 }

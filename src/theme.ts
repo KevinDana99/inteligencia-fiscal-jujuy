@@ -206,6 +206,9 @@ export const theme = createTheme({
     xl: '1.5rem',
     xxl: '2rem'
   },
+  shadows: {
+    xl: '0 8px 36px rgba(67,117,238,.14)'
+  },
   defaultRadius: 'xl',
   components: {
     Pagination: {

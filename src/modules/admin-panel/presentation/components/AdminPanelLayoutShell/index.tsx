@@ -3,7 +3,11 @@
 import { useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { useDisclosure } from '@mantine/hooks'
+import {
+  TOAST_ADMIN_MESSAGES
+} from '@/components/core/toasts'
 import type { IAuthSession } from '@/modules/auth/data/models/Auth'
+import { AuthLoginSuccessToastBridge } from '@/modules/auth/presentation/components/AuthLoginSuccessToastBridge'
 import type { IAdminAllowedDomains } from '../../../data/models/AdminPanel'
 import { useAdminPanelLayoutShell } from '../../hooks'
 import { AdminPanelActionModal } from '../AdminPanelModals/AdminPanelActionModal'
@@ -47,6 +51,11 @@ export function AdminPanelLayoutShell({
       initialAllowedDomains={initialAllowedDomains}
     >
       <div className={classes.page}>
+        <AuthLoginSuccessToastBridge
+          displayName={session.user.nombreUsuario}
+          message={TOAST_ADMIN_MESSAGES.ADMIN_PANEL_WELCOME_SUCCESS}
+        />
+
         <div className={classes.layout}>
           <AdminPanelNavbar {...navbar} onSidebarOpen={openSidebar} />
 
