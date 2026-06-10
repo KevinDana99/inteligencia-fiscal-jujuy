@@ -15,6 +15,7 @@ export function IntimationTemplateColumnsSection({
 }: IntimationTemplateColumnsSectionProps) {
   const {
     state,
+    errors,
     columnRows,
     openColumnPicker,
     fieldHandlers
@@ -53,6 +54,10 @@ export function IntimationTemplateColumnsSection({
         ))}
       </Stack>
 
+      {errors.columnas ? (
+        <Text className={classes.errorText}>{errors.columnas}</Text>
+      ) : null}
+
       <Button
         variant='default'
         className={classes.addColumnButton}
@@ -84,6 +89,7 @@ export function IntimationTemplateColumnsSection({
         <TextInput
           value={state.fechaCorte}
           onChange={fieldHandlers.handleCutoffDateChange}
+          error={errors.fechaCorte}
           classNames={{ input: classes.formInput }}
         />
       </div>

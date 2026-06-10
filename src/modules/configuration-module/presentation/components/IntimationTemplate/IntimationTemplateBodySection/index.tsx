@@ -12,7 +12,7 @@ type IntimationTemplateBodySectionProps = {
 export function IntimationTemplateBodySection({
   controller
 }: IntimationTemplateBodySectionProps) {
-  const { state, fieldHandlers } = controller
+  const { state, errors, fieldHandlers } = controller
 
   return (
     <Card className={classes.sectionCard} radius='lg' padding={0}>
@@ -27,6 +27,7 @@ export function IntimationTemplateBodySection({
           <TextInput
             value={state.saludo}
             onChange={fieldHandlers.handleGreetingChange}
+            error={errors.saludo}
             classNames={{ input: classes.formInput }}
           />
         </div>
@@ -38,6 +39,7 @@ export function IntimationTemplateBodySection({
           <Textarea
             value={state.cuerpo}
             onChange={fieldHandlers.handleBodyChange}
+            error={errors.cuerpo}
             classNames={{ input: classes.formInput }}
           />
         </div>

@@ -41,3 +41,10 @@
   border-color: var(--mantine-color-blue-5);
   background: var(--mantine-color-white);
 }
+
+.formInput[data-error],
+.formInput[data-error]:hover,
+.formInput[data-error]:focus,
+.formInput[data-error]:focus-visible {
+  border-color: var(--mantine-color-red-5);
+}

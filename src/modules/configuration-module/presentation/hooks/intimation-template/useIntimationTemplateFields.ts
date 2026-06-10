@@ -9,10 +9,17 @@ import type { IntimationTemplateState } from './useIntimationTemplate'
 
 type UseIntimationTemplateFieldsParams = {
   updateConfig: (newConfig: DeepPartial<ConfigurationType>) => void
+  clearError: (
+    field: keyof Pick<
+      IntimationTemplateState,
+      'asunto' | 'saludo' | 'cuerpo' | 'fechaCorte'
+    >
+  ) => void
 }
 
 export function useIntimationTemplateFields({
-  updateConfig
+  updateConfig,
+  clearError
 }: UseIntimationTemplateFieldsParams) {
   const updateField = useCallback(
     (field: keyof IntimationTemplateState, value: string) => {
@@ -49,24 +56,27 @@ export function useIntimationTemplateFields({
 
   const handleSubjectChange: ChangeEventHandler<HTMLInputElement> = useCallback(
     (event) => {
+      clearError('asunto')
       updateField('asunto', event.currentTarget.value)
     },
-    [updateField]
+    [clearError, updateField]
   )
 
   const handleGreetingChange: ChangeEventHandler<HTMLInputElement> =
     useCallback(
       (event) => {
+        clearError('saludo')
         updateField('saludo', event.currentTarget.value)
       },
-      [updateField]
+      [clearError, updateField]
     )
 
   const handleBodyChange: ChangeEventHandler<HTMLTextAreaElement> = useCallback(
     (event) => {
+      clearError('cuerpo')
       updateField('cuerpo', event.currentTarget.value)
     },
-    [updateField]
+    [clearError, updateField]
   )
 
   const handleInformationSourceChange: ChangeEventHandler<HTMLInputElement> =
@@ -80,9 +90,10 @@ export function useIntimationTemplateFields({
   const handleCutoffDateChange: ChangeEventHandler<HTMLInputElement> =
     useCallback(
       (event) => {
+        clearError('fechaCorte')
         updateField('fechaCorte', event.currentTarget.value)
       },
-      [updateField]
+      [clearError, updateField]
     )
 
   return {

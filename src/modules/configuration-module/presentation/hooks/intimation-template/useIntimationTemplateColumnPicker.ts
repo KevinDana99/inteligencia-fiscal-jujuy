@@ -16,12 +16,14 @@ type UseIntimationTemplateColumnPickerParams = {
   initialColumns: IntimationTemplateColumn[]
   currentColumns: IntimationTemplateColumn[]
   updateConfig: (newConfig: DeepPartial<ConfigurationType>) => void
+  clearColumnsError: () => void
 }
 
 export function useIntimationTemplateColumnPicker({
   initialColumns,
   currentColumns,
-  updateConfig
+  updateConfig,
+  clearColumnsError
 }: UseIntimationTemplateColumnPickerParams) {
   const [columnPickerDraft, setColumnPickerDraft] = useState<
     IntimationTemplateColumn[]
@@ -56,6 +58,7 @@ export function useIntimationTemplateColumnPicker({
   }, [resetDraftFromCurrentColumns, resetPickerSelection])
 
   const confirmColumnPicker = useCallback(() => {
+    clearColumnsError()
     updateConfig({
       intimacion: {
         columnas_seleccionadas: columnPickerDraft.map((column) => column.id)
@@ -64,7 +67,7 @@ export function useIntimationTemplateColumnPicker({
 
     setColumnPickerOpened(false)
     resetPickerSelection()
-  }, [columnPickerDraft, resetPickerSelection, updateConfig])
+  }, [clearColumnsError, columnPickerDraft, resetPickerSelection, updateConfig])
 
   const selectAvailableColumn = useCallback((optionId: string) => {
     setSelectedAvailableColumnId(optionId)

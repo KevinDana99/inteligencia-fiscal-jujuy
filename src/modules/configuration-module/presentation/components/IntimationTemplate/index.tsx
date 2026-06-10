@@ -27,6 +27,14 @@ export function IntimationTemplate({
   isConfirmPending,
   footerActions
 }: IntimationTemplateProps) {
+  const handleConfirm = () => {
+    if (!controller.validate()) {
+      return
+    }
+
+    onConfirm?.()
+  }
+
   return (
     <div className={classes.root}>
       <IntimationTemplateSubjectSection controller={controller} />
@@ -34,7 +42,7 @@ export function IntimationTemplate({
       <IntimationTemplateColumnsSection controller={controller} />
       <IntimationTemplateFooter
         footerActions={footerActions}
-        onConfirm={onConfirm}
+        onConfirm={handleConfirm}
         isConfirmPending={isConfirmPending}
         confirmLabel={confirmLabel}
         confirmButtonClassName={confirmButtonClassName}

@@ -16,6 +16,7 @@ type UseIntimationTemplateColumnsParams = {
   visibleColumns: IntimationTemplateColumn[]
   isProviderBacked: boolean
   updateConfig: (newConfig: DeepPartial<ConfigurationType>) => void
+  clearColumnsError: () => void
 }
 
 export type IntimationTemplateColumnRow = {
@@ -30,7 +31,8 @@ export type IntimationTemplateColumnRow = {
 export function useIntimationTemplateColumns({
   visibleColumns,
   isProviderBacked,
-  updateConfig
+  updateConfig,
+  clearColumnsError
 }: UseIntimationTemplateColumnsParams) {
   const updateColumn = useCallback(
     (columnId: string, value: string) => {
@@ -44,6 +46,7 @@ export function useIntimationTemplateColumns({
 
   const removeColumn = useCallback(
     (columnId: string) => {
+      clearColumnsError()
       updateConfig({
         intimacion: {
           columnas_seleccionadas: visibleColumns
@@ -52,7 +55,7 @@ export function useIntimationTemplateColumns({
         }
       })
     },
-    [updateConfig, visibleColumns]
+    [clearColumnsError, updateConfig, visibleColumns]
   )
 
   const columnRows = useMemo<IntimationTemplateColumnRow[]>(
