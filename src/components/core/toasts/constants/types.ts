@@ -8,7 +8,7 @@ export type ToastMessageType = {
 }
 
 export type ToastMessagesBySeverity = {
-  success?: ToastMessageType
-  danger?: ToastMessageType
-  info?: ToastMessageType
+  success?: Record<string, ToastMessageType>
+  danger?: Record<string, ToastMessageType>
+  info?: Record<string, ToastMessageType>
 }

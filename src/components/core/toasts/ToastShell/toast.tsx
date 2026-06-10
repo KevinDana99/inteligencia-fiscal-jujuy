@@ -15,10 +15,13 @@ function show(
 ) {
   const message = resolveToastMessage(msg, vars)
   const { id, status, title, description } = message
+
   return notifications.show({
     id,
-    position: TOAST_DEFAULT_POSITION,
-    autoClose: TOAST_DEFAULT_AUTO_CLOSE,
+    position: options?.position ? options.position : TOAST_DEFAULT_POSITION,
+    autoClose: options?.autoClose
+      ? options.autoClose
+      : TOAST_DEFAULT_AUTO_CLOSE,
     withCloseButton: true,
     allowClose: true,
     message: (
