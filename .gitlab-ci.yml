@@ -83,7 +83,7 @@ promover_k3s_infra_dev:
         template:
           spec:
             imagePullSecrets:
-              - name: gitlab-registry
+              - name: gitlab-registry-frontend
             containers:
               - name: web
                 image: ${IMAGE_TAG}
