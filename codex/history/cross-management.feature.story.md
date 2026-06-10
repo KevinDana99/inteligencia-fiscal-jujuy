@@ -1,5 +1,24 @@
 # Cross Management Feature Story
 
+## 2026-06-10 Ranking en preview de cruces
+
+- La pestaña secundaria de `/gestion-de-cruces/vista-previa-cruce/[crossId]` ahora se presenta como `Ranking`, con icono de barras y CTA de intimacion preservado.
+- `CrossPreviewHeaderCard` muestra `Lote` o `CUIT` segun el origen y agrega el separador visual de metadata del mockup.
+- `CrossPreviewSummarySection` formatea importes con `$`, destaca deuda/impuesto/diferencia y soporta filas descriptivas de resumen.
+- `CrossPreviewAnalysisSection` agrega columna de ranking, contador `Mostrando...`, footer alineado y valores monetarios destacados segun la referencia visual.
+- El mock `cross-1` se actualizo al caso Lote 623 / Regimen General / periodo 2022-2025 con tres contribuyentes relevantes.
+- El modal de filtros ahora recibe el tipo de columna para usar entrada de texto en CUIT/razon social y numerica en importes.
+- `CrossPreviewPlanSection` ahora usa el titulo `Planilla - {cruce}`, buscador junto al titulo, badge `CUITs · periodo`, footer con contador y oculta la fila de indicadores para coincidir con la referencia de planilla.
+- La planilla mock del Lote 623 queda reducida a las 15 columnas visibles y una fila 2023 de TARIFA NIEVES DOMINGA.
+
+### Validation
+
+- `bun x eslint src/modules/cross-management/data/sources/mock/MockCrossManagementSource.ts src/modules/cross-management/data/sources/mock/fixtures/crossItems.ts src/modules/cross-management/presentation/components/CrossFilterModal/index.tsx src/modules/cross-management/presentation/components/CrossFilterModal/useCrossFilterModal.ts src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewAnalysisHeaderCell.tsx src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewAnalysisRow.tsx src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewAnalysisSection.tsx src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewHeaderCard.tsx src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewPageContent.tsx src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewSummarySection.tsx src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewTopBar.tsx src/modules/cross-management/presentation/constants/crossPreviewLabels.ts src/modules/cross-management/presentation/hooks/cross-preview/useCrossPreviewResumenQuery.ts`
+- `bun x eslint src/modules/cross-management/data/sources/mock/fixtures/crossItems.ts src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewPlanSection.tsx src/modules/cross-management/presentation/hooks/cross-preview/useCrossPreviewPlanTableClassNames.ts src/modules/cross-management/presentation/constants/crossPreviewLabels.ts`
+- `bun x tsc --noEmit --pretty false`
+- `bun run test -- src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.test.ts --runInBand`
+- Browser visual check: bloqueado por `net::ERR_BLOCKED_BY_CLIENT` al abrir `localhost`/`127.0.0.1` en el navegador embebido; el server activo de `3000` recompilo los cambios.
+
 ## 2026-06-09 Ajuste responsive del modal de previsualizacion de intimacion
 
 - `IntimationExportModal` ahora limita su alto a `100dvh` con margen seguro y usa layout flex para mantener visibles encabezado, navegacion y footer.

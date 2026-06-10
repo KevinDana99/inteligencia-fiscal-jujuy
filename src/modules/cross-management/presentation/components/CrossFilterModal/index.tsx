@@ -8,7 +8,8 @@ import {
   Radio,
   Select,
   Stack,
-  Text
+  Text,
+  TextInput
 } from '@mantine/core'
 import { IconInfoCircle, IconX } from '@tabler/icons-react'
 import { useMemo } from 'react'
@@ -35,6 +36,7 @@ export function CrossFilterModal(props: ICrossFilterModalProps) {
     handleApply,
     handleClose
   } = useCrossFilterModal(props)
+  const isTextColumn = props.columnType === 'string'
   const operatorOptions = useMemo<
     Array<{ value: ICrossFilterOperator | ''; label: string }>
   >(
@@ -94,24 +96,15 @@ export function CrossFilterModal(props: ICrossFilterModalProps) {
               }}
               allowDeselect={false}
             />
-            <NumberInput
+            <CrossFilterValueInput
+              isTextColumn={isTextColumn}
               value={value.primary.value}
-              onChange={(nextValue) => setPrimaryValue(String(nextValue ?? ''))}
-              placeholder='0'
-              className={classes.fieldGrow}
-              classNames={{
-                input: classes.fieldInput,
-                controls: classes.numberControls,
-                control: classes.numberControl
-              }}
-              hideControls={false}
-              decimalScale={6}
-              allowNegative
-              allowDecimal
-              trimLeadingZeroesOnBlur={false}
+              onChange={setPrimaryValue}
             />
           </div>
-          <Text className={classes.exampleText}>Ejemplo: 1000, 25.5, -10</Text>
+          <Text className={classes.exampleText}>
+            {isTextColumn ? 'Ejemplo: 27-30606839-9, LOAYZA' : 'Ejemplo: 1000, 25.5, -10'}
+          </Text>
         </div>
 
         <div className={classes.section}>
@@ -183,24 +176,15 @@ export function CrossFilterModal(props: ICrossFilterModalProps) {
               }}
               allowDeselect={false}
             />
-            <NumberInput
+            <CrossFilterValueInput
+              isTextColumn={isTextColumn}
               value={value.secondary.value}
-              onChange={(nextValue) => setSecondaryValue(String(nextValue ?? ''))}
-              placeholder='0'
-              className={classes.fieldGrow}
-              classNames={{
-                input: classes.fieldInput,
-                controls: classes.numberControls,
-                control: classes.numberControl
-              }}
-              hideControls={false}
-              decimalScale={6}
-              allowNegative
-              allowDecimal
-              trimLeadingZeroesOnBlur={false}
+              onChange={setSecondaryValue}
             />
           </div>
-          <Text className={classes.exampleText}>Ejemplo: 1000, 25.5, -10</Text>
+          <Text className={classes.exampleText}>
+            {isTextColumn ? 'Ejemplo: 27-30606839-9, LOAYZA' : 'Ejemplo: 1000, 25.5, -10'}
+          </Text>
         </div>
 
         {props.error ? <Text className={classes.errorText}>{props.error}</Text> : null}
@@ -233,5 +217,46 @@ export function CrossFilterModal(props: ICrossFilterModalProps) {
         </div>
       </Stack>
     </Modal>
+  )
+}
+
+function CrossFilterValueInput({
+  isTextColumn,
+  onChange,
+  value
+}: {
+  isTextColumn: boolean
+  onChange: (value: string) => void
+  value: string
+}) {
+  if (isTextColumn) {
+    return (
+      <TextInput
+        value={value}
+        onChange={(event) => onChange(event.currentTarget.value)}
+        placeholder='Valor'
+        className={classes.fieldGrow}
+        classNames={{ input: classes.fieldInput }}
+      />
+    )
+  }
+
+  return (
+    <NumberInput
+      value={value}
+      onChange={(nextValue) => onChange(String(nextValue ?? ''))}
+      placeholder='0'
+      className={classes.fieldGrow}
+      classNames={{
+        input: classes.fieldInput,
+        controls: classes.numberControls,
+        control: classes.numberControl
+      }}
+      hideControls={false}
+      decimalScale={6}
+      allowNegative
+      allowDecimal
+      trimLeadingZeroesOnBlur={false}
+    />
   )
 }

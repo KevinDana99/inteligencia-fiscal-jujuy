@@ -62,6 +62,7 @@ export function CrossPreviewPageContent({ cross }: CrossPreviewPageContentProps)
         allowedOperators={preview.activeFilterColumn?.allowedOperators ?? []}
         columnKey={preview.activeFilterColumn?.key ?? null}
         columnLabel={preview.activeFilterColumn?.label ?? ''}
+        columnType={preview.activeFilterColumn?.type ?? 'numero'}
         error={preview.resumenError}
         initialValue={
           preview.activeFilterColumn

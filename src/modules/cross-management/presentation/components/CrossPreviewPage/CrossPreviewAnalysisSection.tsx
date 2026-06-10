@@ -51,6 +51,15 @@ export function CrossPreviewAnalysisSection({
   rows,
   statusByCuit
 }: CrossPreviewAnalysisSectionProps) {
+  const firstVisibleResult =
+    pagination.totalItems > 0
+      ? (pagination.page - 1) * pagination.itemsPerPage + 1
+      : 0
+  const lastVisibleResult = Math.min(
+    pagination.page * pagination.itemsPerPage,
+    pagination.totalItems
+  )
+
   return (
     <Card className={classes.tableCard} radius="lg" padding={0}>
       <div className={`${classes.tableToolbar} ${classes.tableToolbarTall}`}>
@@ -73,6 +82,11 @@ export function CrossPreviewAnalysisSection({
         <Table className={classes.analysisTable} withTableBorder={false} withColumnBorders={false}>
           <Table.Thead>
             <Table.Tr>
+              <Table.Th
+                className={`${classes.analysisHeaderCell} ${classes.analysisRankHeaderCell}`}
+              >
+                #
+              </Table.Th>
               {analysisColumns.map((column) =>
                 column.isFilterable ? (
                   <CrossPreviewAnalysisHeaderCell
@@ -81,7 +95,8 @@ export function CrossPreviewAnalysisSection({
                       allowedOperators: column.allowedOperators,
                       key: column.key,
                       label: column.label,
-                      title: column.label
+                      title: column.label,
+                      type: column.type
                     }}
                     columnFilters={columnFilters}
                     onOpenFilterModal={onOpenFilterModal}
@@ -103,18 +118,19 @@ export function CrossPreviewAnalysisSection({
           </Table.Thead>
           <Table.Tbody>
             {rows.length ? (
-              rows.map((row) => (
+              rows.map((row, index) => (
                 <CrossPreviewAnalysisRow
                   key={row.id}
                   columns={analysisColumns}
                   onRequestStatusChange={onRequestStatusChange}
+                  rank={(pagination.page - 1) * pagination.itemsPerPage + index + 1}
                   row={row}
                   status={statusByCuit[row.cuit] ?? row.status}
                 />
               ))
             ) : (
               <Table.Tr>
-                <Table.Td colSpan={Math.max(analysisColumns.length, 1)}>
+                <Table.Td colSpan={Math.max(analysisColumns.length + 1, 1)}>
                   <Text className={classes.emptyStateText}>
                     {CROSS_PREVIEW_SEARCH_EMPTY_MESSAGE}
                   </Text>
@@ -127,7 +143,11 @@ export function CrossPreviewAnalysisSection({
 
       {error ? <Text className={classes.tableErrorText}>{error}</Text> : null}
 
-      <div className={classes.tableFooter}>
+      <div className={`${classes.tableFooter} ${classes.analysisTableFooter}`}>
+        <Text className={classes.tableResultsText}>
+          Mostrando {firstVisibleResult}–{lastVisibleResult} de {pagination.totalItems}{' '}
+          resultados
+        </Text>
         <CrossPreviewPager
           current={pagination.page}
           disabled={isLoading}

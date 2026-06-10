@@ -43,11 +43,11 @@ export interface LegacyCrossPreviewMock extends ICrossManagementItem {
 export const crossItemsMock: ICrossManagementItems = [
   {
     id: 'cross-1',
-    name: 'Control de desvío de BI — Régimen CM',
+    name: 'Control de Desvío de BI – Régimen General',
     source: 'Lote',
-    sourceRef: 'ANOVA-622',
-    period: '2024',
-    cuitCount: 2,
+    sourceRef: '623',
+    period: '2022–2025',
+    cuitCount: 3,
     date: '27/04/2026'
   },
   {
@@ -113,6 +113,24 @@ const defaultPlanColumns = [
   'EST. FINAL'
 ]
 
+const regimeGeneralPlanColumns = [
+  'ID Periodo',
+  'CUIT',
+  'Razón Social',
+  'Año',
+  'Act. Excluida BI',
+  'Ing. Brutos (BI)',
+  'Suma de Mayor BI',
+  'Dif. A Favor DPR',
+  'Origen Dif.',
+  'Alícuota',
+  'Coeficiente',
+  'Impuesto',
+  'Créditos Pendientes',
+  'Saldo Última DDJJ',
+  'Deuda Neta'
+]
+
 export const crossPreviewMockById: Record<string, LegacyCrossPreviewMock> = {
   'cross-1': {
     ...crossItemsMock[0],
@@ -125,115 +143,79 @@ export const crossPreviewMockById: Record<string, LegacyCrossPreviewMock> = {
       { id: 'impuesto', label: 'Impuesto', tone: 'red' },
       { id: 'final', label: 'Final', tone: 'darkBlue' }
     ],
-    planColumns: defaultPlanColumns,
+    planColumns: regimeGeneralPlanColumns,
     planRows: [
       {
         id: 'cross-1-row-1',
-        cuit: '30-50401884-5',
-        businessName: 'VOLKSWAGEN ARGENTINA S.A.',
+        cuit: '27-13889915-8',
+        businessName: 'TARIFA NIEVES DOMINGA',
         cells: [
-          '305040188452024',
-          '305040188452025',
-          '30-50401884-5',
-          'VOLKSWAGEN ARGENTINA S.A.',
-          '$42.937.860.598',
-          '$42.937.860.598',
-          '$20.141.951.996',
-          '—',
-          '—',
-          '—',
-          '$42.937.860.598',
-          '$22.361.024.153',
-          '$20.576.836.445',
-          '12',
-          '2024',
-          '31/12/2024',
-          '$2.927.995.069.414',
-          '0.7600%',
-          '$556.230.000.000',
-          '0.2000%',
-          '1.4664%',
-          '0.4800%',
-          '0.8332%',
-          '$3.512.364.508.204',
-          '$29.266.065.257',
-          '$16.879.656.323',
-          '1.50%',
-          '$185.796.134',
-          '+$4.589.233',
-          '—',
-          '$185.814.166'
-        ]
-      },
-      {
-        id: 'cross-1-row-2',
-        cuit: '30-50168521-2',
-        businessName: 'CERÁMICA DEL NORTE S.A.',
-        cells: [
-          '305016852122024',
-          '305016852122025',
-          '30-50168521-2',
-          'CERÁMICA DEL NORTE S.A.',
-          '$1.109.054.107',
-          '$1.305.623.207',
-          '$1.366.863.071',
-          '—',
-          '—',
-          '—',
-          '$1.366.863.071',
-          '$55.803.248',
-          '$1.311.059.823',
-          '8',
-          '2024',
-          '31/08/2024',
-          '$11.158.844.393',
-          '0.5000%',
-          '$8.929.036.168',
-          '0.0000%',
-          '12.2491%',
-          '0.2500%',
-          '6.1246%',
-          '$13.970.733.232',
-          '$855.647.711',
-          '$32.767.157',
-          '1.50%',
-          '$12.343.208',
-          '—',
-          '$503.979',
-          '$12.343.208'
+          '271388991582023',
+          '27-13889915-8',
+          'TARIFA NIEVES DOMINGA',
+          '2023',
+          '$ 0',
+          '$ 147.323.261',
+          '$ 162.672.265',
+          '$ 15.349.005',
+          '1',
+          '2,5',
+          '1,0000',
+          '$ 383.725',
+          '$ 0',
+          '$ 0',
+          '$ 383.725'
         ]
       }
     ],
     summaryRows: [
       {
-        regime: 'CM',
-        declaredBase: '$ 16.912.423.480',
-        pretendedBase: '$ 0',
-        difference: '-$ 16.912.423.480',
-        tax: '-$ 253.686.352',
-        netDebt: '-$ 253.668.320'
+        regime: 'Contribuyentes Locales (SITI y SIR)',
+        declaredBase: '$ 8.031.040.235',
+        pretendedBase: '$ 16.488.089.714',
+        difference: '$ 8.457.049.480',
+        tax: '$ 376.910.462',
+        netDebt: '$ 363.755.378'
+      },
+      {
+        regime: 'Contribuyentes con riesgo fiscal alto categoría',
+        declaredBase: '—',
+        pretendedBase: '—',
+        difference: '—',
+        tax: '—',
+        netDebt: '—'
       }
     ],
     analysisRows: [
       {
-        cuit: '30-50401884-5',
-        businessName: 'VOLKSWAGEN ARGENTINA S.A.',
-        declaredBase: '$ 16.879.656.323',
-        pretendedBase: '$ 29.266.065.257',
-        difference: '$ 12.386.408.934',
-        tax: '$ 185.796.134',
-        netDebt: '$ 185.814.166',
+        cuit: '27-30606839-9',
+        businessName: 'LOAYZA LOPEZ NORA SILVIA',
+        declaredBase: '$ 6.773.257.728',
+        pretendedBase: '$ 13.841.229.628',
+        difference: '$ 7.067.971.900',
+        tax: '$ 318.058.735',
+        netDebt: '$ 309.959.038',
         status: 'relevante'
       },
       {
-        cuit: '30-50168521-2',
-        businessName: 'CERÁMICA DEL NORTE S.A.',
-        declaredBase: '$ 32.767.157',
-        pretendedBase: '$ 855.647.711',
-        difference: '$ 822.880.554',
-        tax: '$ 12.343.208',
-        netDebt: '$ 12.343.208',
-        status: 'estado'
+        cuit: '27-13889915-8',
+        businessName: 'TARIFA NIEVES DOMINGA',
+        declaredBase: '$ 1.226.296.007',
+        pretendedBase: '$ 2.407.579.984',
+        difference: '$ 1.181.283.978',
+        tax: '$ 52.850.799',
+        netDebt: '$ 48.041.621',
+        status: 'relevante'
+      },
+      {
+        cuit: '20-35555846-1',
+        businessName: 'TORREZ DANIEL FERNANDO',
+        declaredBase: '$ 31.486.500',
+        pretendedBase: '$ 239.280.102',
+        difference: '$ 207.793.602',
+        tax: '$ 6.000.928',
+        netDebt: '$ 5.754.719',
+        status: 'relevante'
       }
     ]
   },
