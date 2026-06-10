@@ -126,6 +126,13 @@ const DELETE_NOTE_ERROR: ToastMessageType = {
   description: 'El registro fue removido.'
 }
 
+const ADD_INTIMATION_SUCCESS: ToastMessageType = {
+  id: 'T-19',
+  status: 'Success',
+  title: 'Intimación generada',
+  description: 'La intimación fue generada correctamente.'
+}
+
 const UPDATE_CONFIGURATION_SUCCESS: ToastMessageType = {
   id: 'T-00',
   status: 'Success',
@@ -152,5 +159,6 @@ export const TOAST_DASHBOARD_MESSAGES = {
   ADD_NOTE_SUCCESS,
   UPDATE_NOTE_SUCCESS,
   DELETE_NOTE_ERROR,
-  UPDATE_CONFIGURATION_SUCCESS
+  UPDATE_CONFIGURATION_SUCCESS,
+  ADD_INTIMATION_SUCCESS
 }

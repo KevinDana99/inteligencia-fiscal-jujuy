@@ -1,56 +1,56 @@
 import type { ToastMessageType } from '../types'
 
 const ADMIN_PANEL_WELCOME_SUCCESS: ToastMessageType = {
-  id: 'T-19',
+  id: 'T-20',
   status: 'Success',
   title: 'Bienvenido',
   description: 'Tu validación fue verificada exitosamente.'
 }
 
 const CREATE_USER_SUCCESS: ToastMessageType = {
-  id: 'T-20',
+  id: 'T-21',
   status: 'Success',
   title: 'Usuario creado',
   description: '{name} {surname} fue agregado al sistema.'
 }
 
 const UPDATE_USER_SUCCESS: ToastMessageType = {
-  id: 'T-21',
+  id: 'T-22',
   status: 'Success',
   title: 'Usuario actualizado',
   description: '{name} {surname} fue modificado correctamente.'
 }
 
 const UPDATE_PASSWORD_SUCCESS: ToastMessageType = {
-  id: 'T-22',
+  id: 'T-23',
   status: 'Success',
   title: 'Contraseña actualizada',
   description: 'La contraseña fue cambiada correctamente.'
 }
 
 const ADD_DOMAIN_SUCCESS: ToastMessageType = {
-  id: 'T-23',
+  id: 'T-24',
   status: 'Success',
   title: 'Dominio agregado',
   description: '"{domain}" fue agregado a los dominios permitidos.'
 }
 
 const DELETE_USER_DANGER: ToastMessageType = {
-  id: 'T-24',
+  id: 'T-25',
   status: 'Danger',
   title: 'Usuario eliminado',
   description: '{name} {surname} fue eliminado del sistema.'
 }
 
 const DUPLICATE_DOMAIN_DANGER: ToastMessageType = {
-  id: 'T-25',
+  id: 'T-26',
   status: 'Danger',
   title: 'Dominio duplicado',
   description: 'Este dominio ya está en la lista.'
 }
 
 const EMAIL_NOT_ALLOWED_DANGER: ToastMessageType = {
-  id: 'T-26',
+  id: 'T-27',
   status: 'Danger',
   title: 'Email no permitido',
   description:
@@ -58,7 +58,7 @@ const EMAIL_NOT_ALLOWED_DANGER: ToastMessageType = {
 }
 
 const DELETE_DOMAIN_INFO: ToastMessageType = {
-  id: 'T-27',
+  id: 'T-28',
   status: 'Info',
   title: 'Dominio eliminado',
   description: '"{domain}" fue removido de los dominios permitidos.'
