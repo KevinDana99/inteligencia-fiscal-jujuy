@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { TOAST_DASHBOARD_MESSAGES, toast } from '@/components/core/toasts'
 
 export function useDashboardConfigurationSuccess() {
@@ -8,7 +8,15 @@ export function useDashboardConfigurationSuccess() {
     toast.show(TOAST_DASHBOARD_MESSAGES.UPDATE_CONFIGURATION_SUCCESS)
   }, [])
 
+  const [successOpened, setSuccessOpened] = useState(false)
+
+  const closeSuccess = useCallback(() => {
+    setSuccessOpened(false)
+  }, [])
+
   return {
+    successOpened,
+    closeSuccess,
     confirmChanges
   }
 }

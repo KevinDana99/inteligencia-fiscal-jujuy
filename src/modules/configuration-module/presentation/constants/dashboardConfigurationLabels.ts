@@ -2,7 +2,7 @@ export const DASHBOARD_CONFIGURATION_LABELS = {
   railItem: 'Documentos de salida',
   pageTitle: 'Personalizar documentos de salida',
   pageSubtitle:
-    'Editá la estructura de los documentos generados. Los cambios se aplican globalmente al confirmar.',
+    'Editá la estructura de los documentos generados. Los cambios se aplican globalmente.',
   tabs: {
     intimacion: 'Intimación',
     informe: 'Informe de análisis'
@@ -13,8 +13,7 @@ export const DASHBOARD_CONFIGURATION_LABELS = {
     titleSection: 'Título del informe',
     titleField: 'Texto del título',
     bodySection: 'Texto introductorio',
-    bodyField: 'Cuerpo del informe',
-    confirmButton: 'Confirmar cambios'
+    bodyField: 'Cuerpo del informe'
   },
   successModal: {
     title: 'Configuración actualizada',

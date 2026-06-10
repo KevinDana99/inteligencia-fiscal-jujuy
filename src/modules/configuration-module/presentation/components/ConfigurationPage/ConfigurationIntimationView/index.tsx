@@ -8,12 +8,11 @@ type ConfigurationIntimationViewProps =
 
 export function ConfigurationIntimationView({
   hidden,
-  controller,
-  onConfirm
+  controller
 }: ConfigurationIntimationViewProps) {
   return (
     <div hidden={hidden}>
-      <IntimationTemplate controller={controller} onConfirm={onConfirm} />
+      <IntimationTemplate controller={controller} />
     </div>
   )
 }

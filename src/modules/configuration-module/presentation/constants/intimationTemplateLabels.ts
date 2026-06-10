@@ -17,7 +17,6 @@ export const INTIMATION_TEMPLATE_LABELS = {
   },
   buttons: {
     addColumns: 'Elegir columnas de planilla',
-    confirmChanges: 'Confirmar cambios',
     cancel: 'Cancelar',
     accept: 'Aceptar',
     addSelectedColumn: 'Agregar columna visible',

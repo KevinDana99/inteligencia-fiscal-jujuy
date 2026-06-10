@@ -1,5 +1,17 @@
 # Configuration Module Feature Story
 
+## 2026-06-09 Remove confirm changes action
+
+- Se elimino el boton `Confirmar cambios` de la configuracion de intimacion y del formulario de informe de analisis.
+- `IntimationTemplateFooter` dejo de renderizar una accion por defecto; ahora solo aparece si recibe acciones personalizadas.
+- Se limpio el contrato `onConfirm` de las vistas de configuracion y se ajusto el copy del subtitulo para no referir a una confirmacion inexistente.
+
+### Validation
+
+- `bun x eslint src/modules/configuration-module/presentation/components/ConfigurationPage/ConfigurationReportForm/index.tsx src/modules/configuration-module/presentation/components/ConfigurationPage/ConfigurationReportView/index.tsx src/modules/configuration-module/presentation/components/ConfigurationPage/ConfigurationIntimationView/index.tsx src/modules/configuration-module/presentation/components/IntimationTemplate/index.tsx src/modules/configuration-module/presentation/components/IntimationTemplate/IntimationTemplateFooter/index.tsx src/modules/configuration-module/presentation/hooks/configuration-page/useConfigurationPage.ts src/modules/configuration-module/presentation/hooks/useDashboardConfiguration.ts src/modules/configuration-module/presentation/hooks/dashboard-configuration/useDashboardConfigurationSuccess.ts src/modules/configuration-module/presentation/hooks/intimation-template/index.ts src/modules/configuration-module/presentation/constants/dashboardConfigurationLabels.ts src/modules/configuration-module/presentation/constants/intimationTemplateLabels.ts`
+- `bun x tsc --noEmit --pretty false`
+- `git diff --check`
+
 ## 2026-06-09 Swagger configuration endpoint alignment
 
 - Se reviso Swagger local `http://localhost:5001/swagger/index.html`: configuracion solo expone `GET /api/configuracion/intimacion` y no publica `/api/configuracion/informe`.

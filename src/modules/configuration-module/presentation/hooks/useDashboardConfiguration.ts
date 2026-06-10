@@ -27,6 +27,6 @@ export function useDashboardConfiguration() {
     isIntimationTab: tabs.isIntimationTab,
     updateTab: tabs.updateTab,
     updateInforme: report.updateInforme,
-    confirmChanges: success.confirmChanges
+    closeSuccess: success.closeSuccess
   }
 }
