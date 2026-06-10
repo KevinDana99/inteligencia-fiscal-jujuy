@@ -10,14 +10,18 @@ type ConfigurationReportViewProps =
 export function ConfigurationReportView({
   hidden,
   informe,
-  onChange
+  errors,
+  onChange,
+  onConfirm
 }: ConfigurationReportViewProps) {
   return (
     <div hidden={hidden}>
       <ConfigurationInfoAlert />
       <ConfigurationReportForm
         informe={informe}
+        errors={errors}
         onChange={onChange}
+        onConfirm={onConfirm}
       />
     </div>
   )

@@ -23,10 +23,13 @@ export function useDashboardConfiguration() {
   return {
     state: tabs.state,
     informe: report.informe,
+    reportErrors: report.errors,
     activeTab: tabs.activeTab,
     isIntimationTab: tabs.isIntimationTab,
     updateTab: tabs.updateTab,
     updateInforme: report.updateInforme,
+    validateInforme: report.validateInforme,
+    confirmChanges: success.confirmChanges,
     closeSuccess: success.closeSuccess
   }
 }

@@ -28,8 +28,15 @@ export function useConfigurationPage() {
       report: {
         hidden: dashboardConfiguration.isIntimationTab,
         informe: dashboardConfiguration.informe,
+        errors: dashboardConfiguration.reportErrors,
         onChange: dashboardConfiguration.updateInforme,
-        onConfirm: dashboardConfiguration.confirmChanges
+        onConfirm: () => {
+          if (!dashboardConfiguration.validateInforme()) {
+            return
+          }
+
+          dashboardConfiguration.confirmChanges()
+        }
       }
     },
     successModal: {

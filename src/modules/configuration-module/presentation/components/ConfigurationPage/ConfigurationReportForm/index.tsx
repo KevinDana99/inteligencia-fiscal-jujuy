@@ -2,21 +2,27 @@
 
 import { Card, Text, Textarea, TextInput } from '@mantine/core'
 import type { ReportType } from '../../../../data/models/Configuration'
+import type { ConfigurationReportValidationErrors } from '../../../utils'
 import { DASHBOARD_CONFIGURATION_LABELS } from '../../../constants'
 import { useConfigurationReportForm } from '../../../hooks/configuration-page'
 import classes from './ConfigurationReportForm.module.css'
 
 type ConfigurationReportFormProps = {
   informe: ReportType
+  errors: ConfigurationReportValidationErrors
   onChange: (field: keyof ReportType, value: string) => void
+  onConfirm: () => void
 }
 
 export function ConfigurationReportForm({
   informe,
-  onChange
+  errors,
+  onChange,
+  onConfirm
 }: ConfigurationReportFormProps) {
   const { titleInput, bodyInput } = useConfigurationReportForm({
     informe,
+    errors,
     onChange
   })
 

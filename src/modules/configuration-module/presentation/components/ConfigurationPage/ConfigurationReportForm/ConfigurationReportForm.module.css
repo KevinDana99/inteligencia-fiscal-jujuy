@@ -48,6 +48,13 @@
   background: var(--mantine-color-white);
 }
 
+.formInput[data-error],
+.formInput[data-error]:hover,
+.formInput[data-error]:focus,
+.formInput[data-error]:focus-visible {
+  border-color: var(--mantine-color-red-5);
+}
+
 .formInput::placeholder {
   color: var(--mantine-color-gray-5);
 }
@@ -65,4 +72,30 @@ textarea.formInput {
 textarea.formInput:focus,
 textarea.formInput:focus-visible {
   border-color: var(--mantine-color-blue-5);
+}
+
+textarea.formInput[data-error],
+textarea.formInput[data-error]:hover,
+textarea.formInput[data-error]:focus,
+textarea.formInput[data-error]:focus-visible {
+  border-color: var(--mantine-color-red-5);
+}
+
+.footerActions {
+  margin: 0 0 4px;
+}
+
+.primaryButton {
+  height: 28px;
+  padding: 5px 11px;
+  background: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.primaryButton:hover,
+.primaryButton[data-hovered],
+.primaryButton[data-active] {
+  background: var(--mantine-color-blue-6);
 }
