@@ -64,7 +64,7 @@ const DELETE_DOMAIN_INFO: ToastMessageType = {
   description: '"{domain}" fue removido de los dominios permitidos.'
 }
 
-const TOAST_ADMIN_MESSAGES = {
+export const TOAST_ADMIN_MESSAGES = {
   ADMIN_PANEL_WELCOME_SUCCESS,
   CREATE_USER_SUCCESS,
   UPDATE_USER_SUCCESS,
@@ -75,4 +75,3 @@ const TOAST_ADMIN_MESSAGES = {
   EMAIL_NOT_ALLOWED_DANGER,
   DELETE_DOMAIN_INFO
 }
-export default TOAST_ADMIN_MESSAGES

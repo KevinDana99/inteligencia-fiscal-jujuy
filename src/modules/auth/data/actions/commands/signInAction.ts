@@ -9,6 +9,10 @@ import {
 import { AUTH_ROUTES } from '@/constants';
 import { setServerAuthCookies } from '@/lib/auth/cookies';
 import { AUTH_COOKIE_NAMES } from '@/lib/auth/constants';
+import {
+  AUTH_LOGIN_SUCCESS_TOAST_COOKIE,
+  AUTH_LOGIN_SUCCESS_TOAST_MAX_AGE
+} from '@/lib/auth/login-success-toast'
 import { getRedirectPathByUserType } from '@/lib/auth/proxy-session'
 import { createServerAuthSource } from '../../data-access';
 import type {
@@ -69,6 +73,11 @@ export async function signInAction(
     const serializedSession =
       mapIamSessionResponseToSerializedAuthSession(response)
     await setServerAuthCookies(serializedSession)
+    cookieStore.set(AUTH_LOGIN_SUCCESS_TOAST_COOKIE, '1', {
+      path: '/',
+      sameSite: 'lax',
+      maxAge: AUTH_LOGIN_SUCCESS_TOAST_MAX_AGE
+    })
     cookieStore.delete(AUTH_COOKIE_NAMES.postLoginRedirect)
     const fallbackRedirectTo = getRedirectPathByUserType(
       currentContext.tipoUsuario

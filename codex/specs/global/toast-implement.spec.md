@@ -1,5 +1,26 @@
 ## Toast Implement
 
+## Reglas
+
+- Se implementara cada toast usando `src/components/core/toasts/ToastShell/toast.tsx`;
+- Cada vez que se termine de implementar un toast se informara, se revisara y pasaremos al siguiente.
+- La implementacion se hara de la siguiente manera :
+
+````ts
+
+import TOAST_ADMIN_MESSAGES from '@/components/core/toasts/constants/AdminPanel/ToastMessages'
+    toast.show(TOAST_ADMIN_MESSAGES.ADMIN_PANEL_WELCOME_SUCCESS)
+
+// En caso de necesitar variables de usuario, dominio o algo dinamico se procedera a utilizar asi:
+
+import TOAST_ADMIN_MESSAGES from '@/components/core/toasts/constants/AdminPanel/ToastMessages'
+  toast.show(TOAST_ADMIN_MESSAGES.ADD_DOMAIN_SUCCESS, {
+      domain: '@pepit.com'
+    })
+
+ ```
+
+
 ## Dashboard
 
 ### Historias de usuario
@@ -39,3 +60,4 @@
 | **T-26** | Como administrador, al intentar agregar un dominio que ya existe, quiero ver un aviso de error indicando que el dominio ya está en la lista.                                                 |
 | **T-27** | Como administrador, al guardar un usuario con un email no permitido, quiero ver un aviso de error indicando que solo se aceptan emails con dominios institucionales.                         |
 | **T-28** | Como administrador, al eliminar un dominio de la lista de permitidos, quiero ver una confirmación de que el dominio fue removido.                                                            |
+````

@@ -1,14 +1,11 @@
 'use client'
 
 import { useCallback } from 'react'
-import { toast } from '@/components/core/toasts'
-import TOAST_ADMIN_MESSAGES from '@/components/core/toasts/constants/AdminPanel/ToastMessages'
+import { TOAST_DASHBOARD_MESSAGES, toast } from '@/components/core/toasts'
 
 export function useDashboardConfigurationSuccess() {
   const confirmChanges = useCallback(() => {
-    toast.show(TOAST_ADMIN_MESSAGES.ADD_DOMAIN_SUCCESS, {
-      domain: '@pepit.com'
-    })
+    toast.show(TOAST_DASHBOARD_MESSAGES.UPDATE_CONFIGURATION_SUCCESS)
   }, [])
 
   return {

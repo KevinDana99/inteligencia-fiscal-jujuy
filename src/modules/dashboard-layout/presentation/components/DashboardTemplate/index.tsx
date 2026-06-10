@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import type { IAuthSession } from '@/modules/auth/data/models/Auth';
+import { AuthLoginSuccessToastBridge } from '@/modules/auth/presentation/components/AuthLoginSuccessToastBridge';
 import type {
   DashboardSection,
   IDashboardNavItem
@@ -52,6 +53,10 @@ export function DashboardTemplate({
 
   return (
     <div className={classes.page}>
+      <AuthLoginSuccessToastBridge
+        displayName={session.user.nombreUsuario}
+      />
+
       <DashboardSidebar
         session={session}
         currentSection={currentSection}
