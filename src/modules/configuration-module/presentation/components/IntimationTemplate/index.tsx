@@ -2,7 +2,6 @@
 
 import type { ReactNode } from 'react'
 import type { IntimationTemplateController } from '../../hooks/intimation-template'
-import { INTIMATION_TEMPLATE_LABELS } from '../../constants'
 import { IntimationTemplateBodySection } from './IntimationTemplateBodySection'
 import { IntimationTemplateColumnPickerModal } from './IntimationTemplateColumnPickerModal'
 import { IntimationTemplateColumnsSection } from './IntimationTemplateColumnsSection'
@@ -12,17 +11,11 @@ import classes from './IntimationTemplate.module.css'
 
 type IntimationTemplateProps = {
   controller: IntimationTemplateController
-  confirmLabel?: string
-  confirmButtonClassName?: string
-  onConfirm?: () => void
   footerActions?: ReactNode
 }
 
 export function IntimationTemplate({
   controller,
-  confirmLabel = INTIMATION_TEMPLATE_LABELS.buttons.confirmChanges,
-  confirmButtonClassName,
-  onConfirm,
   footerActions
 }: IntimationTemplateProps) {
   return (
@@ -32,9 +25,6 @@ export function IntimationTemplate({
       <IntimationTemplateColumnsSection controller={controller} />
       <IntimationTemplateFooter
         footerActions={footerActions}
-        onConfirm={onConfirm}
-        confirmLabel={confirmLabel}
-        confirmButtonClassName={confirmButtonClassName}
       />
       <IntimationTemplateColumnPickerModal controller={controller} />
     </div>

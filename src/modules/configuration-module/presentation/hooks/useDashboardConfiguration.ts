@@ -28,7 +28,6 @@ export function useDashboardConfiguration() {
     successOpened: success.successOpened,
     updateTab: tabs.updateTab,
     updateInforme: report.updateInforme,
-    confirmChanges: success.confirmChanges,
     closeSuccess: success.closeSuccess
   }
 }

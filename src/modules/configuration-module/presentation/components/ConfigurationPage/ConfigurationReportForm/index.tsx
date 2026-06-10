@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Card, Group, Text, Textarea, TextInput } from '@mantine/core'
+import { Card, Text, Textarea, TextInput } from '@mantine/core'
 import type { ReportType } from '../../../../data/models/Configuration'
 import { DASHBOARD_CONFIGURATION_LABELS } from '../../../constants'
 import { useConfigurationReportForm } from '../../../hooks/configuration-page'
@@ -9,13 +9,11 @@ import classes from './ConfigurationReportForm.module.css'
 type ConfigurationReportFormProps = {
   informe: ReportType
   onChange: (field: keyof ReportType, value: string) => void
-  onConfirm: () => void
 }
 
 export function ConfigurationReportForm({
   informe,
-  onChange,
-  onConfirm
+  onChange
 }: ConfigurationReportFormProps) {
   const { titleInput, bodyInput } = useConfigurationReportForm({
     informe,
@@ -55,11 +53,6 @@ export function ConfigurationReportForm({
         </div>
       </Card>
 
-      <Group justify='flex-end' className={classes.footerActions}>
-        <Button className={classes.primaryButton} onClick={onConfirm}>
-          {DASHBOARD_CONFIGURATION_LABELS.report.confirmButton}
-        </Button>
-      </Group>
     </div>
   )
 }

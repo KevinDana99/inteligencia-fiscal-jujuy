@@ -15,14 +15,12 @@ export function useConfigurationPage() {
     content: {
       intimation: {
         hidden: !dashboardConfiguration.isIntimationTab,
-        controller: intimationTemplate,
-        onConfirm: dashboardConfiguration.confirmChanges
+        controller: intimationTemplate
       },
       report: {
         hidden: dashboardConfiguration.isIntimationTab,
         informe: dashboardConfiguration.informe,
-        onChange: dashboardConfiguration.updateInforme,
-        onConfirm: dashboardConfiguration.confirmChanges
+        onChange: dashboardConfiguration.updateInforme
       }
     },
     successModal: {
