@@ -1,29 +1,27 @@
-'use client'
-
 import { notifications } from '@mantine/notifications'
 import { ToastContent } from '../ToastContent/ToastContent'
 import classes from './ToastShell.module.css'
-import type { ToastSuccessOptions } from '../types'
+import type { ToastBaseOptions } from '../types'
 
 const TOAST_DEFAULT_AUTO_CLOSE = 4500
 const TOAST_DEFAULT_POSITION = 'bottom-right'
 
-function success({
+function show({
   id,
   title,
   description,
+  status,
   autoClose = TOAST_DEFAULT_AUTO_CLOSE,
-  position = TOAST_DEFAULT_POSITION,
-  icon
-}: ToastSuccessOptions): string {
+  position = TOAST_DEFAULT_POSITION
+}: ToastBaseOptions) {
   return notifications.show({
     id,
     position,
     autoClose,
-    withCloseButton: false,
+    withCloseButton: true,
     allowClose: true,
     message: (
-      <ToastContent title={title} description={description} icon={icon} />
+      <ToastContent title={title} description={description} status={status} />
     ),
     classNames: {
       root: classes.notificationRoot,
@@ -35,7 +33,7 @@ function success({
 }
 
 export const toast = {
-  success,
+  show,
   hide: notifications.hide,
   clean: notifications.clean
 } as const

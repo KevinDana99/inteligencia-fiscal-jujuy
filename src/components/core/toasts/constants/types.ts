@@ -1,4 +1,4 @@
-export type ToastStatus = 'Success' | 'Danger' | 'Error' | 'Info'
+export type ToastStatus = 'Success' | 'Danger' | 'Info'
 
 export type ToastMessageType = {
   id: string
@@ -8,7 +8,7 @@ export type ToastMessageType = {
 }
 
 export type ToastMessagesBySeverity = {
-  success?: Record<string, ToastMessageType>
-  error?: Record<string, ToastMessageType>
-  info?: Record<string, ToastMessageType>
+  success?: ToastMessageType
+  danger?: ToastMessageType
+  info?: ToastMessageType
 }

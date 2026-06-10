@@ -1,4 +1,7 @@
-.content {
+.content,
+.contentSuccess,
+.contentInfo,
+.contentDanger {
   position: relative;
   display: flex;
   width: 100%;
@@ -14,32 +17,47 @@
   box-shadow: 0 20px 40px rgba(15, 23, 42, 0.16);
 }
 
-.content::before {
+.contentSuccess::before {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   width: 4px;
-  background: #2f9e44;
   content: '';
+  background: var(--mantine-color-green-6);
 }
-
-.iconSlot {
-  display: flex;
+.contentInfo::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 4px;
+  content: '';
+  background: var(--mantine-color-cyan-6);
+}
+.contentDanger::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 4px;
+  content: '';
+  background: var(--mantine-color-red-5);
+}
+.iconSuccess {
   width: 18px;
   height: 18px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  align-self: flex-start;
-  margin-top: 1px;
-  color: #2f9e44;
+  color: var(--mantine-color-green-6);
 }
-
-.icon {
+.iconInfo {
   width: 18px;
   height: 18px;
-  color: #2f9e44;
+  color: var(--mantine-color-cyan-6);
+}
+.iconDanger {
+  width: 18px;
+  height: 18px;
+  color: var(--mantine-color-red-5);
 }
 
 .text {
@@ -79,7 +97,6 @@
     padding: 13px 16px;
   }
 
-  .iconSlot,
   .icon {
     width: 18px;
     height: 18px;

@@ -1,19 +1,14 @@
 'use client'
 
 import { useCallback } from 'react'
-import {
-  TOAST_DASHBOARD_CONFIGURATION,
-  toast
-} from '@/components/core/toasts'
+import { toast } from '@/components/core/toasts'
+import { TOAST_DASHBOARD_MESSAGES } from '@/components/core/toasts/constants/Dashboard/ToastMessages'
 
 export function useDashboardConfigurationSuccess() {
   const confirmChanges = useCallback(() => {
-    const message = TOAST_DASHBOARD_CONFIGURATION.success.update_configuration
+    const message = TOAST_DASHBOARD_MESSAGES.GENERATING_CROSSES_INFO
 
-    toast.success({
-      title: message.title,
-      description: message.description
-    })
+    toast.show(message)
   }, [])
 
   return {
