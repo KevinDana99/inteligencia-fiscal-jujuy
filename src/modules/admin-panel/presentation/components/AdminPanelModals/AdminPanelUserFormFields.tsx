@@ -10,13 +10,17 @@ import { AdminPanelUserPasswordVisibilityIcon } from './AdminPanelUserPasswordVi
 export function AdminPanelUserFormFields({
   roleOptions,
   defaultValues,
+  values,
   password,
   passwordStrength,
   passwordColor,
   isPending,
   emailError,
   confirmPasswordError,
+  onFirstNameChange,
+  onLastNameChange,
   onEmailChange,
+  onRoleChange,
   onPasswordChange,
   onConfirmPasswordChange
 }: AdminPanelUserFormFieldsProps) {
@@ -27,7 +31,9 @@ export function AdminPanelUserFormFields({
           <TextInput
             name='nombre'
             label={<AdminPanelUserFormLabel label='Nombre' required />}
-            defaultValue={defaultValues.firstName}
+            {...(values
+              ? { value: values.firstName, onChange: onFirstNameChange }
+              : { defaultValue: defaultValues.firstName })}
             disabled={isPending}
             classNames={ADMIN_PANEL_MODAL_INPUT_CLASSES}
           />
@@ -37,7 +43,9 @@ export function AdminPanelUserFormFields({
           <TextInput
             name='apellido'
             label={<AdminPanelUserFormLabel label='Apellido' required />}
-            defaultValue={defaultValues.lastName}
+            {...(values
+              ? { value: values.lastName, onChange: onLastNameChange }
+              : { defaultValue: defaultValues.lastName })}
             disabled={isPending}
             classNames={ADMIN_PANEL_MODAL_INPUT_CLASSES}
           />
@@ -51,10 +59,11 @@ export function AdminPanelUserFormFields({
           name='correo'
           label={<AdminPanelUserFormLabel label='Email' required />}
           placeholder='Ejemplo@gmail.com'
-          defaultValue={defaultValues.email}
+          {...(values
+            ? { value: values.email, onChange: onEmailChange }
+            : { defaultValue: defaultValues.email })}
           disabled={isPending}
           error={emailError}
-          onChange={onEmailChange}
           classNames={{
             ...ADMIN_PANEL_MODAL_INPUT_CLASSES,
             input: `${classes.modalInput} ${
@@ -71,7 +80,9 @@ export function AdminPanelUserFormFields({
           name='cargo'
           label={<AdminPanelUserFormLabel label='Cargo' required />}
           placeholder='Selecciona un cargo ...'
-          defaultValue={defaultValues.roleLabel}
+          {...(values
+            ? { value: values.roleLabel, onChange: onRoleChange }
+            : { defaultValue: defaultValues.roleLabel })}
           data={roleOptions}
           disabled={isPending}
           rightSection={<IconChevronDown size={18} stroke={1.8} />}
@@ -89,8 +100,10 @@ export function AdminPanelUserFormFields({
               required={password.required}
             />
           }
+          {...(values
+            ? { value: values.password, onChange: onPasswordChange }
+            : { onChange: onPasswordChange })}
           disabled={isPending}
-          onChange={onPasswordChange}
           visibilityToggleIcon={AdminPanelUserPasswordVisibilityIcon}
           classNames={ADMIN_PANEL_MODAL_INPUT_CLASSES}
         />
@@ -106,9 +119,11 @@ export function AdminPanelUserFormFields({
               required={password.confirmRequired}
             />
           }
+          {...(values
+            ? { value: values.confirmPassword, onChange: onConfirmPasswordChange }
+            : { onChange: onConfirmPasswordChange })}
           disabled={isPending}
           error={confirmPasswordError}
-          onChange={onConfirmPasswordChange}
           visibilityToggleIcon={AdminPanelUserPasswordVisibilityIcon}
           classNames={{
             ...ADMIN_PANEL_MODAL_INPUT_CLASSES,
@@ -138,15 +153,19 @@ export interface AdminPanelUserFormDefaultValues {
 interface AdminPanelUserFormFieldsProps {
   roleOptions: string[]
   defaultValues: AdminPanelUserFormDefaultValues
+  values?: AdminPanelUserFormValues
   password: AdminPanelUserFormPasswordConfig
   passwordStrength: number
   passwordColor: string
   isPending: boolean
   emailError: string | null
   confirmPasswordError: string | null
-  onEmailChange: () => void
+  onFirstNameChange?: ChangeEventHandler<HTMLInputElement>
+  onLastNameChange?: ChangeEventHandler<HTMLInputElement>
+  onEmailChange: ChangeEventHandler<HTMLInputElement>
+  onRoleChange?: (value: string | null) => void
   onPasswordChange: ChangeEventHandler<HTMLInputElement>
-  onConfirmPasswordChange: () => void
+  onConfirmPasswordChange: ChangeEventHandler<HTMLInputElement>
 }
 
 interface AdminPanelUserFormPasswordConfig {
@@ -156,4 +175,9 @@ interface AdminPanelUserFormPasswordConfig {
   confirmName: string
   confirmLabel: string
   confirmRequired: boolean
+}
+
+export interface AdminPanelUserFormValues extends AdminPanelUserFormDefaultValues {
+  password: string
+  confirmPassword: string
 }
