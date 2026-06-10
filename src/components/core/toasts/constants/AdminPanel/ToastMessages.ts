@@ -11,14 +11,14 @@ const CREATE_USER_SUCCESS: ToastMessageType = {
   id: 'T-20',
   status: 'Success',
   title: 'Usuario creado',
-  description: '[Nombre Apellido] fue agregado al sistema.'
+  description: '{name} {surname} fue agregado al sistema.'
 }
 
 const UPDATE_USER_SUCCESS: ToastMessageType = {
   id: 'T-21',
   status: 'Success',
   title: 'Usuario actualizado',
-  description: '[Nombre Apellido] fue modificado correctamente.'
+  description: '{name} {surname} fue modificado correctamente.'
 }
 
 const UPDATE_PASSWORD_SUCCESS: ToastMessageType = {
@@ -32,14 +32,14 @@ const ADD_DOMAIN_SUCCESS: ToastMessageType = {
   id: 'T-23',
   status: 'Success',
   title: 'Dominio agregado',
-  description: '"[dominio]" fue agregado a los dominios permitidos.'
+  description: '"{domain}" fue agregado a los dominios permitidos.'
 }
 
 const DELETE_USER_DANGER: ToastMessageType = {
   id: 'T-24',
   status: 'Danger',
   title: 'Usuario eliminado',
-  description: '[Nombre Apellido] fue eliminado del sistema.'
+  description: '{name} {surname} fue eliminado del sistema.'
 }
 
 const DUPLICATE_DOMAIN_DANGER: ToastMessageType = {
@@ -61,7 +61,7 @@ const DELETE_DOMAIN_INFO: ToastMessageType = {
   id: 'T-27',
   status: 'Info',
   title: 'Dominio eliminado',
-  description: '"[dominio]" fue removido de los dominios permitidos.'
+  description: '"{domain}" fue removido de los dominios permitidos.'
 }
 
 const TOAST_ADMIN_MESSAGES = {

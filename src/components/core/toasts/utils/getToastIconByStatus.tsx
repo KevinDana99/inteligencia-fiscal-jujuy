@@ -14,11 +14,17 @@ export function getToastIconByStatus(status: ToastStatus) {
           aria-hidden
           className={classes.iconDanger}
           stroke={1.8}
+          size={18}
         />
       )
     case 'Info':
       return (
-        <IconInfoCircle aria-hidden className={classes.iconInfo} stroke={1.8} />
+        <IconInfoCircle
+          aria-hidden
+          className={classes.iconInfo}
+          stroke={1.8}
+          size={18}
+        />
       )
     case 'Success':
     default:
@@ -27,6 +33,7 @@ export function getToastIconByStatus(status: ToastStatus) {
           aria-hidden
           className={classes.iconSuccess}
           stroke={1.8}
+          size={18}
         />
       )
   }

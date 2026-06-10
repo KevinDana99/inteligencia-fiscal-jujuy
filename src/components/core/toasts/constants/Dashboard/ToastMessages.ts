@@ -3,7 +3,7 @@ import type { ToastMessageType } from '../types'
 const DASHBOARD_WELCOME_SUCCESS: ToastMessageType = {
   id: 'T-01',
   status: 'Success',
-  title: 'Bienvenida, {nombre}',
+  title: 'Bienvenida, {name}',
   description: 'Tu validación fue verificada exitosamente.'
 }
 
@@ -18,7 +18,7 @@ const ADD_TO_BATCH_SUCCESS: ToastMessageType = {
   id: 'T-03',
   status: 'Success',
   title: 'Agregado al lote',
-  description: 'El CUIT fue marcado para el lote {nombre}.'
+  description: 'El CUIT fue marcado para el lote {name}.'
 }
 
 const LOADING_PROFILE_INFO: ToastMessageType = {

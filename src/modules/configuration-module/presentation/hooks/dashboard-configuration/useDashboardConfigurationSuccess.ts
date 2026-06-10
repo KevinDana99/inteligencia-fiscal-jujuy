@@ -2,13 +2,13 @@
 
 import { useCallback } from 'react'
 import { toast } from '@/components/core/toasts'
-import { TOAST_DASHBOARD_MESSAGES } from '@/components/core/toasts/constants/Dashboard/ToastMessages'
+import TOAST_ADMIN_MESSAGES from '@/components/core/toasts/constants/AdminPanel/ToastMessages'
 
 export function useDashboardConfigurationSuccess() {
   const confirmChanges = useCallback(() => {
-    const message = TOAST_DASHBOARD_MESSAGES.GENERATING_CROSSES_INFO
-
-    toast.show(message)
+    toast.show(TOAST_ADMIN_MESSAGES.ADD_DOMAIN_SUCCESS, {
+      domain: '@pepit.com'
+    })
   }, [])
 
   return {

@@ -45,18 +45,12 @@
   background: var(--mantine-color-red-5);
 }
 .iconSuccess {
-  width: 18px;
-  height: 18px;
   color: var(--mantine-color-green-6);
 }
 .iconInfo {
-  width: 18px;
-  height: 18px;
   color: var(--mantine-color-cyan-6);
 }
 .iconDanger {
-  width: 18px;
-  height: 18px;
   color: var(--mantine-color-red-5);
 }
 
