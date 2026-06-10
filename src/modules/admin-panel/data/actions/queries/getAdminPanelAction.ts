@@ -7,7 +7,7 @@ function mapUserToContractLog(user: IAdminPanelData['users'][number]) {
   const [nombre, ...apellidoParts] = user.fullName.split(' ');
 
   return {
-    usuarioId: user.id,
+    usuarioId: user.hasUsuarioId === false ? null : user.id,
     nombre: nombre ?? '',
     apellido: apellidoParts.join(' '),
     correo: user.email,

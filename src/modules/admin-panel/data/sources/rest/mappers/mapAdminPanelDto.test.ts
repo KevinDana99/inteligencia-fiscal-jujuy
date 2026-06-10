@@ -28,13 +28,74 @@ describe('mapAdminPanelDto', () => {
           email: 'carlos.lopez@inteligenciafiscal.local',
           roleLabel: 'Contador',
           isAdmin: false,
-          isDeleted: false
+          isDeleted: false,
+          hasUsuarioId: true
         }
       ]
     });
   });
 
-  it('maps the current backend list response with usuario/correo/cargo', () => {
+  it('maps full user responses with id fields', () => {
+    const result = mapAdminPanelDto({
+      resumen: {
+        cantidadUsuariosActivos: 1
+      },
+      usuarios: [
+        {
+          id: '019dbb8f-e390-724b-aaee-e13b1c356535',
+          nombre: 'Test',
+          apellido: 'User',
+          correo: 'test@example.com',
+          cargo: 'Analista',
+          activo: true,
+          esSuperAdministrador: false
+        }
+      ]
+    });
+
+    expect(result.users[0]).toEqual({
+      id: '019dbb8f-e390-724b-aaee-e13b1c356535',
+      fullName: 'Test User',
+      email: 'test@example.com',
+      roleLabel: 'Analista',
+      isAdmin: false,
+      isDeleted: false,
+      hasUsuarioId: true
+    });
+  });
+
+  it('maps the compact backend list response with id', () => {
+    const result = mapAdminPanelDto({
+      resumen: {
+        cantidadUsuariosActivos: 1
+      },
+      usuarios: [
+        {
+          id: '019dbb8f-e390-724b-aaee-e13b1c356533',
+          usuario: 'admin Administrador',
+          correo: 'admin@kamakia.dev',
+          cargo: 'SuperAdministrador'
+        }
+      ]
+    });
+
+    expect(result).toEqual({
+      activeUsersCount: 1,
+      users: [
+        {
+          id: '019dbb8f-e390-724b-aaee-e13b1c356533',
+          fullName: 'admin Administrador',
+          email: 'admin@kamakia.dev',
+          roleLabel: 'SuperAdministrador',
+          isAdmin: true,
+          isDeleted: false,
+          hasUsuarioId: true
+        }
+      ]
+    });
+  });
+
+  it('maps compact list responses without id as non actionable rows', () => {
     const result = mapAdminPanelDto({
       resumen: {
         cantidadUsuariosActivos: 1
@@ -48,18 +109,14 @@ describe('mapAdminPanelDto', () => {
       ]
     });
 
-    expect(result).toEqual({
-      activeUsersCount: 1,
-      users: [
-        {
-          id: 'admin@kamakia.dev',
-          fullName: 'admin Administrador',
-          email: 'admin@kamakia.dev',
-          roleLabel: 'SuperAdministrador',
-          isAdmin: true,
-          isDeleted: false
-        }
-      ]
+    expect(result.users[0]).toEqual({
+      id: 'admin@kamakia.dev',
+      fullName: 'admin Administrador',
+      email: 'admin@kamakia.dev',
+      roleLabel: 'SuperAdministrador',
+      isAdmin: true,
+      isDeleted: false,
+      hasUsuarioId: false
     });
   });
 });

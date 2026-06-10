@@ -61,24 +61,9 @@ export function useCreateAdminUserFormModal(
       surname: state.data?.apellido?.trim() || submittedUserRef.current.surname
     })
 
-    formRef.current?.reset()
-    setFormValues({
-      firstName: '',
-      lastName: '',
-      email: '',
-      roleLabel: roleOptions[0] ?? '',
-      password: '',
-      confirmPassword: ''
-    })
     onClose()
     router.refresh()
-  }, [
-    onClose,
-    roleOptions,
-    router,
-    state.data,
-    state.success
-  ])
+  }, [onClose, router, state.data, state.success])
 
   const handleFirstNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     const nextFirstName = event.currentTarget.value

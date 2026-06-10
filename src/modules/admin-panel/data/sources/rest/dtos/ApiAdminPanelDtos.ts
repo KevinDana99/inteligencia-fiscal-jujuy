@@ -1,5 +1,6 @@
 export type ApiAdminUserDto = {
-  usuarioId: string;
+  id?: string;
+  usuarioId?: string;
   nombre: string;
   apellido: string;
   correo: string;
@@ -11,6 +12,7 @@ export type ApiAdminUserDto = {
 export type ApiAdminListUserDto =
   | ApiAdminUserDto
   | {
+      id?: string;
       usuario: string;
       correo: string;
       cargo: string;

@@ -8,6 +8,7 @@ export async function updateAdminUserAction(
   formData: FormData
 ): Promise<IAdminPanelActionState<null>> {
   const userId = String(formData.get('usuarioId') ?? '').trim()
+  const endpoint = `/api/super-administrador/usuarios/${encodeURIComponent(userId)}`
   const nombre = String(formData.get('nombre') ?? '').trim()
   const apellido = String(formData.get('apellido') ?? '').trim()
   const correo = String(formData.get('correo') ?? '')
@@ -41,7 +42,7 @@ export async function updateAdminUserAction(
   })
 
   console.log({
-    endpoint: `/api/super-administrador/usuarios/${userId}`,
+    endpoint,
     action: 'updateAdminUserAction',
     METHOD: 'PATCH',
     REQUEST: requestPayload,

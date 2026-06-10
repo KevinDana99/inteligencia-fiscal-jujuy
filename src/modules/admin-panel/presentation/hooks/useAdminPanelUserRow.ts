@@ -29,7 +29,7 @@ export function useAdminPanelUserRow({
     roleBadgeRootClassName: user.isAdmin
       ? classes.roleBadgeAdmin
       : classes.roleBadge,
-    showActions: !user.isAdmin,
+    showActions: !user.isAdmin && user.hasUsuarioId !== false,
     handleEditUser,
     handleDeleteUser
   }
