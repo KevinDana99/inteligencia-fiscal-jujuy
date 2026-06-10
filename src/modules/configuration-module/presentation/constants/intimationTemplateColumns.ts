@@ -1,15 +1,15 @@
 export const INTIMATION_COLUMN_OPTIONS = [
   { id: 'anio', label: 'AÑO' },
   {
-    id: 'base_imponible_ingresos_brutos',
+    id: 'baseImponibleIngresosBrutos',
     label: 'Base Imponible Ingresos Brutos'
   },
   {
-    id: 'base_imponible_informada_por_terceros',
+    id: 'baseImponibleInformadaPorTerceros',
     label: 'Base Imponible Informada por Terceros (*)'
   },
   {
-    id: 'diferencia_de_base_imponible',
+    id: 'diferenciaBaseImponible',
     label: 'Diferencia de Base Imponible'
   },
   { id: 'fact_arca_fecha', label: 'Fact. ARCA (fecha)' },

@@ -2,17 +2,28 @@
 
 import { useCallback } from 'react'
 import { useIntimationTemplate } from '@/modules/configuration-module/presentation/components/IntimationTemplate/useIntimationTemplate'
+import type { ICrossPreviewPlanRow } from '../../../data/models/CrossManagement'
+import { useIntimationDocumentDownload } from '../intimation-export/useIntimationDocumentDownload'
 
 interface UseCrossPreviewModalsParams {
+  activePreviewIndex: number
+  contributors: ICrossPreviewPlanRow[]
   onConfirmReprocessingModal: () => void
   onOpenExportModal: () => void
 }
 
 export function useCrossPreviewModals({
+  activePreviewIndex,
+  contributors,
   onConfirmReprocessingModal,
   onOpenExportModal
 }: UseCrossPreviewModalsParams) {
   const intimationTemplate = useIntimationTemplate()
+  const documentDownload = useIntimationDocumentDownload({
+    activeIndex: activePreviewIndex,
+    contributors,
+    templateState: intimationTemplate.state
+  })
 
   const handleIntimationNext = useCallback(() => {
     onOpenExportModal()
@@ -23,6 +34,7 @@ export function useCrossPreviewModals({
   }, [onConfirmReprocessingModal])
 
   return {
+    ...documentDownload,
     handleConfirmReprocessing,
     handleIntimationNext,
     intimationTemplate

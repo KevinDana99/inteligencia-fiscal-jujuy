@@ -1,3 +1,4 @@
+export * from './commands/generateIntimationDocumentAction'
 export * from './queries/getCrossManagementAction'
 export * from './queries/getCrossPlanillaAction'
 export * from './queries/getCrossPreviewAction'

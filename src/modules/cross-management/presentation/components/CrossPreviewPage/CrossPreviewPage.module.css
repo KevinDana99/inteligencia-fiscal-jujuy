@@ -149,6 +149,14 @@
   margin-left: auto;
 }
 
+.headerMetaDivider {
+  width: 1px;
+  height: 32px;
+  align-self: center;
+  background: var(--mantine-color-blue-2);
+  margin-left: 4px;
+}
+
 .metaItem {
   min-width: auto;
   width: auto;
@@ -281,13 +289,20 @@
   flex-shrink: 0;
 }
 
+.planToolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
 .toolbarSearch {
   display: flex;
   align-items: center;
   align-self: center;
-  flex: 0 0 200px;
+  flex: 0 0 220px;
   margin: 0;
-  width: 200px;
+  width: 220px;
   height: 30px;
   max-width: 100%;
 }
@@ -381,10 +396,31 @@
   color: var(--mantine-color-gray-6);
 }
 
+.planTable th.tableHeaderCell {
+  border-bottom: 2px solid var(--mantine-color-blue-2);
+  background: var(--mantine-color-blue-0);
+  color: var(--mantine-color-blue-5);
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.planHeaderCellLeft {
+  text-align: left;
+}
+
+.planHeaderCellCenter {
+  text-align: center;
+}
+
 .planTable .tableHeaderCell:first-child,
 .summaryTable .tableHeaderCell:first-child,
 .analysisTable .tableHeaderCell:first-child {
   border-left: 2px solid var(--mantine-color-gray-3);
+}
+
+.planTable .tableHeaderCell:first-child {
+  border-left: 0;
 }
 
 .tableBodyCell {
@@ -509,6 +545,11 @@
   text-align: left;
 }
 
+.analysisRankHeaderCell {
+  width: 54px;
+  text-align: center;
+}
+
 .analysisTable th.analysisHeaderCell.analysisHeaderCellLeft {
   text-align: left;
 }
@@ -532,6 +573,10 @@
   color: var(--mantine-color-blue-6);
 }
 
+.analysisHeaderCellLeft .columnFilterButton {
+  justify-content: flex-start;
+}
+
 .summaryBodyCell {
   box-sizing: border-box;
   padding: 10px 14px;
@@ -550,6 +595,21 @@
   color: var(--mantine-color-red-6);
 }
 
+.summaryNoteRow {
+  background: var(--mantine-color-gray-0);
+}
+
+.summaryNoteCell {
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--mantine-color-gray-1);
+  padding: 10px 14px;
+  color: var(--mantine-color-gray-5);
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 600;
+  text-align: left;
+}
+
 .analysisBodyCell {
   box-sizing: border-box;
   border-bottom: 1px solid var(--mantine-color-gray-1);
@@ -564,10 +624,38 @@
 .analysisBodyCellMonospace {
   font-family: monospace;
   text-align: left;
+  color: var(--mantine-color-blue-5);
 }
 
 .analysisBodyCellLeft {
   text-align: left;
+}
+
+.analysisRankCell {
+  text-align: center;
+}
+
+.rankBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 20px;
+  border-radius: 999px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.rankBadgeFirst {
+  background: var(--mantine-color-yellow-2);
+  color: var(--mantine-color-yellow-9);
+}
+
+.rankBadgeDefault {
+  background: var(--mantine-color-gray-1);
+  color: var(--mantine-color-gray-6);
 }
 
 .analysisDangerCell {
@@ -615,29 +703,45 @@
   font-size: 12px;
 }
 
-.planIdCell {
-  background: var(--mantine-color-gray-0);
+.planTable td.tableBodyCell {
+  padding: 10px 12px;
+  color: var(--mantine-color-gray-9);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.planTable td.planIdCell {
   color: var(--mantine-color-gray-6);
   font-size: 13px;
   padding: 12px 14px;
+  text-align: left;
   vertical-align: middle;
 }
 
 .planTable td.planCuitCell {
-  background: var(--mantine-color-gray-0);
-  color: var(--mantine-color-gray-6);
+  color: var(--mantine-color-blue-5);
   font-family: monospace;
   font-size: 13px;
   padding: 12px 14px;
+  text-align: left;
   vertical-align: middle;
 }
 
 .planTable td.planBusinessNameCell {
-  min-width: 180px;
-  background: var(--mantine-color-gray-0);
-  color: var(--mantine-color-gray-6);
+  min-width: 210px;
+  color: var(--mantine-color-gray-9);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 800;
+  text-align: left;
+}
+
+.planTable td.planCenteredCell {
+  text-align: center;
+}
+
+.planTable td.planDangerCell {
+  color: var(--mantine-color-red-6);
 }
 
 .planTable th.planBiHeaderCell {
@@ -778,6 +882,28 @@
   border-top: 1px solid var(--mantine-color-gray-2);
 }
 
+.analysisTableFooter {
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 0;
+  padding: 10px 16px;
+}
+
+.tableFooterWithResults {
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 0;
+  padding: 10px 16px;
+}
+
+.tableResultsText {
+  color: var(--mantine-color-gray-5);
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .pager {
   display: flex;
   align-items: center;
@@ -902,6 +1028,10 @@
     justify-content: flex-start;
     margin-left: 0;
     gap: 14px;
+  }
+
+  .headerMetaDivider {
+    display: none;
   }
 }
 

@@ -1,4 +1,4 @@
-import { Card, Text } from '@mantine/core'
+import { Badge, Card, Text } from '@mantine/core'
 import type {
   ICrossDynamicColumn,
   ICrossPaginationData,
@@ -6,7 +6,6 @@ import type {
   ICrossPreviewPlanRow
 } from '../../../data/models/CrossManagement'
 import { CROSS_PREVIEW_PLAN_TABLE_TITLE } from '../../constants/crossPreviewLabels'
-import { CrossPreviewIndicators } from './CrossPreviewIndicators'
 import { CrossPreviewPager } from './CrossPreviewPager'
 import { CrossPreviewPlanTable } from './CrossPreviewPlanTable'
 import { CrossPreviewToolbarSearch } from './CrossPreviewToolbarSearch'
@@ -35,20 +34,32 @@ export function CrossPreviewPlanSection({
   planillaSearch,
   rows
 }: CrossPreviewPlanSectionProps) {
+  const firstVisibleResult =
+    pagination.totalItems > 0
+      ? (pagination.page - 1) * pagination.itemsPerPage + 1
+      : 0
+  const lastVisibleResult = Math.min(
+    pagination.page * pagination.itemsPerPage,
+    pagination.totalItems
+  )
+  const cuitLabel = cross.cuitCount === 1 ? 'CUIT' : 'CUITs'
+  const tableTitle = `${CROSS_PREVIEW_PLAN_TABLE_TITLE} — ${cross.name}`
+
   return (
     <div className={`${classes.contentStack} ${classes.planillaStack}`}>
-      <CrossPreviewIndicators indicators={cross.indicators} />
-
       <Card className={classes.tableCard} radius="lg" padding={0}>
         <div className={`${classes.tableToolbar} ${classes.tableToolbarTall}`}>
-          <Text className={classes.tableToolbarTitle}>
-            {CROSS_PREVIEW_PLAN_TABLE_TITLE}
-          </Text>
-          <CrossPreviewToolbarSearch
-            value={planillaSearch}
-            onSetSearchValue={onSetPlanillaSearch}
-            placeholder="Buscar CUIT o razón social..."
-          />
+          <div className={classes.planToolbarLeft}>
+            <Text className={classes.tableToolbarTitle}>{tableTitle}</Text>
+            <CrossPreviewToolbarSearch
+              value={planillaSearch}
+              onSetSearchValue={onSetPlanillaSearch}
+              placeholder="Buscar CUIT o razón social..."
+            />
+          </div>
+          <Badge className={classes.toolbarBadge} radius="xl">
+            {cross.cuitCount} {cuitLabel} · {cross.period}
+          </Badge>
         </div>
 
         <CrossPreviewPlanTable
@@ -59,7 +70,11 @@ export function CrossPreviewPlanSection({
 
         {error ? <Text className={classes.tableErrorText}>{error}</Text> : null}
 
-        <div className={classes.tableFooter}>
+        <div className={`${classes.tableFooter} ${classes.tableFooterWithResults}`}>
+          <Text className={classes.tableResultsText}>
+            Mostrando {firstVisibleResult}–{lastVisibleResult} de {pagination.totalItems}{' '}
+            resultado{pagination.totalItems === 1 ? '' : 's'}
+          </Text>
           <CrossPreviewPager
             current={pagination.page}
             disabled={isLoading}

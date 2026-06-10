@@ -1,5 +1,17 @@
 # Configuration Module Feature Story
 
+## 2026-06-09 Swagger configuration endpoint alignment
+
+- Se reviso Swagger local `http://localhost:5001/swagger/index.html`: configuracion solo expone `GET /api/configuracion/intimacion` y no publica `/api/configuracion/informe`.
+- `RestConfigurationSource` dejo de llamar `/api/configuracion/informe`; el informe usa fallback local hasta que exista contrato backend.
+- Los DTOs de plantilla de intimacion aceptan campos nullable/ausentes segun Swagger y la action dejo de imprimir logs con endpoints obsoletos.
+
+### Validation
+
+- `bun x tsc --noEmit --pretty false --incremental false`
+- `bun run lint` sin errores; persisten 4 warnings existentes en `unified-register`.
+- `git diff --check`
+
 ## 2026-06-06 Configuration page refactor
 
 - `ConfigurationPage` quedó como composición de header, tabs, contenido y modal; la orquestación vive en `useConfigurationPage`.

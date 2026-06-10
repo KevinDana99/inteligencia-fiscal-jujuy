@@ -40,10 +40,18 @@ export function CrossPreviewModals({
   pendingReprocessingRow
 }: CrossPreviewModalsProps) {
   const {
+    downloadDocx,
+    downloadError,
+    downloadPdf,
     handleConfirmReprocessing,
     handleIntimationNext,
-    intimationTemplate
+    intimationTemplate,
+    isDocxDownloading,
+    isDownloadDisabled,
+    isPdfDownloading
   } = useCrossPreviewModals({
+    activePreviewIndex,
+    contributors,
     onConfirmReprocessingModal,
     onOpenExportModal
   })
@@ -84,8 +92,12 @@ export function CrossPreviewModals({
         opened={exportModalOpened}
         onClose={onCloseExportModal}
         onBack={onCloseExportModal}
-        onDownloadPdf={noop}
-        onDownloadDocx={noop}
+        onDownloadPdf={downloadPdf}
+        onDownloadDocx={downloadDocx}
+        isPdfDownloading={isPdfDownloading}
+        isDocxDownloading={isDocxDownloading}
+        isDownloadDisabled={isDownloadDisabled}
+        downloadError={downloadError}
         contributors={contributors}
         activeIndex={activePreviewIndex}
         onPrevious={onGoToPreviousPreview}
@@ -104,5 +116,3 @@ export function CrossPreviewModals({
     </>
   )
 }
-
-function noop() {}

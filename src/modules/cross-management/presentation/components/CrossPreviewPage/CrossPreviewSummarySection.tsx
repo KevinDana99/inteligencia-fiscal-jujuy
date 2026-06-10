@@ -7,6 +7,16 @@ import type {
 import { CROSS_PREVIEW_SUMMARY_TAB_LABEL } from '../../constants/crossPreviewLabels'
 import classes from './CrossPreviewPage.module.css'
 
+const SUMMARY_MONEY_KEYS = new Set([
+  'bi910',
+  'ingresosBrutos',
+  'biPretendida',
+  'mayorBaseImponible',
+  'diferenciaAFavorDpr',
+  'impuesto',
+  'deudaNeta'
+])
+
 interface CrossPreviewSummarySectionProps {
   cross: ICrossPreviewData
   summaryBlocks: ICrossPreviewSummaryBlock[]
@@ -25,7 +35,7 @@ export function CrossPreviewSummarySection({
               {block.title || CROSS_PREVIEW_SUMMARY_TAB_LABEL}
             </Text>
             <Badge className={classes.toolbarBadge} radius="xl">
-              {cross.cuitCount} CUITs - {cross.source === 'Lote' ? 'RÉGIMEN CM' : 'PADRÓN'}
+              {cross.cuitCount} CUITs · {resolveCrossRegimeLabel(cross)}
             </Badge>
           </div>
 
@@ -69,6 +79,20 @@ function CrossPreviewSummaryRow({
   block: ICrossPreviewSummaryBlock
   row: ICrossPreviewSummaryRow
 }) {
+  const isNoteRow = isSummaryNoteRow(block, row)
+
+  if (isNoteRow) {
+    const note = row.values[block.columns[0]?.key ?? ''] ?? '-'
+
+    return (
+      <Table.Tr className={classes.summaryNoteRow}>
+        <Table.Td className={classes.summaryNoteCell} colSpan={block.columns.length}>
+          {note}
+        </Table.Td>
+      </Table.Tr>
+    )
+  }
+
   return (
     <Table.Tr>
       {block.columns.map((column, index) => (
@@ -76,11 +100,77 @@ function CrossPreviewSummaryRow({
           key={`${row.id}-${column.key}`}
           className={`${classes.summaryBodyCell} ${
             index === 0 ? classes.summaryBodyCellLeft : ''
+          } ${
+            isSummaryDangerColumn(column.key) ? classes.summaryDangerCell : ''
           }`}
         >
-          {row.values[column.key] ?? '-'}
+          {formatSummaryCellValue(column.key, row.values[column.key] ?? '-')}
         </Table.Td>
       ))}
     </Table.Tr>
   )
+}
+
+function resolveCrossRegimeLabel(cross: ICrossPreviewData) {
+  const normalizedName = cross.name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+
+  if (normalizedName.includes('regimen general')) {
+    return 'RÉGIMEN GENERAL'
+  }
+
+  if (normalizedName.includes('regimen cm')) {
+    return 'RÉGIMEN CM'
+  }
+
+  return cross.source === 'Lote' ? 'RÉGIMEN GENERAL' : 'PADRÓN'
+}
+
+function isSummaryNoteRow(
+  block: ICrossPreviewSummaryBlock,
+  row: ICrossPreviewSummaryRow
+) {
+  return block.columns
+    .slice(1)
+    .every((column) => (row.values[column.key] ?? '-') === '-')
+}
+
+function isSummaryDangerColumn(columnKey: string) {
+  return (
+    columnKey.toLowerCase().includes('diferencia') ||
+    columnKey.toLowerCase().includes('impuesto') ||
+    columnKey.toLowerCase().includes('deuda')
+  )
+}
+
+function formatSummaryCellValue(columnKey: string, value: string) {
+  if (!SUMMARY_MONEY_KEYS.has(columnKey)) {
+    return value
+  }
+
+  return formatMoneyValue(value)
+}
+
+function formatMoneyValue(value: string) {
+  const normalizedValue = value.trim()
+
+  if (!normalizedValue || normalizedValue === '-') {
+    return '-'
+  }
+
+  if (/^[+-]?\$/.test(normalizedValue)) {
+    return normalizedValue
+  }
+
+  if (normalizedValue.startsWith('-')) {
+    return `-$ ${normalizedValue.slice(1).trim()}`
+  }
+
+  if (normalizedValue.startsWith('+')) {
+    return `$ ${normalizedValue.slice(1).trim()}`
+  }
+
+  return `$ ${normalizedValue}`
 }

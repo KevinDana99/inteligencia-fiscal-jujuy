@@ -24,8 +24,15 @@ export function CrossPreviewAnalysisHeaderCell({
     onOpenFilterModal
   })
 
+  const isLeftAligned = column.key === 'cuit' || column.key === 'razonSocial'
+
   return (
-    <Table.Th key={column.key} className={classes.analysisHeaderCell}>
+    <Table.Th
+      key={column.key}
+      className={`${classes.analysisHeaderCell} ${
+        isLeftAligned ? classes.analysisHeaderCellLeft : ''
+      }`}
+    >
       <button
         type="button"
         className={className}

@@ -23,6 +23,7 @@ export type CrossFilterColumnConfig = {
   key: ICrossFilterColumnKey
   label: string
   title: string
+  type: ICrossDynamicColumn['type']
 }
 
 interface UseCrossPreviewResumenQueryParams {
@@ -60,7 +61,8 @@ export function useCrossPreviewResumenQuery({
           allowedOperators: column.allowedOperators,
           key: column.key,
           label: column.label,
-          title: column.label
+          title: column.label,
+          type: column.type
         })),
     [analysisColumns]
   )

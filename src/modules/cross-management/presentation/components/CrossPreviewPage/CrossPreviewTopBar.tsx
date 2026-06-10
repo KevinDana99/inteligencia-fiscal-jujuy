@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import { Button } from '@mantine/core'
 import {
+  IconChartBar,
   IconChevronLeft,
   IconFileText,
-  IconLayoutList,
   IconList
 } from '@tabler/icons-react'
 import {
@@ -61,7 +61,7 @@ export function CrossPreviewTopBar({
             }`}
             onClick={handleShowResumen}
           >
-            <IconLayoutList size={13} />
+            <IconChartBar size={13} />
             {CROSS_PREVIEW_SUMMARY_TAB_LABEL}
           </button>
         </div>

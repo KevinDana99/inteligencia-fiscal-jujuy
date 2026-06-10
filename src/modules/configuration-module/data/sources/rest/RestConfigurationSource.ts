@@ -1,46 +1,35 @@
 import { getJson, type ApiClientConfig } from '@/lib/api-client'
+import { CONFIGURATION_ENDPOINTS } from '../../constants/configurationEndpoints'
+import { DEFAULT_REPORT_CONFIGURATION } from '../../constants/configurationFallbacks'
 import type { IConfigurationSource } from '../../interfaces/ConfigurationSource'
 import type { ConfigurationType } from '../../models/Configuration'
-import type {
-  ApiIntimationConfigurationDto,
-  ApiReportConfigurationDto
-} from './dtos/ApiConfigurationDtos'
+import type { ApiIntimationConfigurationDto } from './dtos/ApiConfigurationDtos'
+
+function mapIntimationConfigurationDto(
+  dto: ApiIntimationConfigurationDto
+): ConfigurationType['intimacion'] {
+  return {
+    asunto: dto.asunto ?? '',
+    saludo: dto.saludo ?? '',
+    cuerpo: dto.cuerpo ?? '',
+    pie: dto.fechaCorte ?? dto.pie ?? '',
+    fuente_informacion: dto.fuenteInformacion ?? dto.fuente_informacion ?? null,
+    columnas_seleccionadas: dto.columnas_seleccionadas ?? []
+  }
+}
 
 export class RestConfigurationSource implements IConfigurationSource {
   constructor(private readonly config: ApiClientConfig) {}
 
   async getConfiguration(): Promise<ConfigurationType> {
-    console.log({
-      action: 'RestConfigurationSource.getConfiguration',
-      baseUrl: this.config.baseUrl ?? process.env.NEXT_PUBLIC_API_BASE_URL,
-      endpoints: [
-        '/api/configuracion/intimacion',
-        '/api/configuracion/informe'
-      ]
-    })
-
-    const [intimacion, informe] = await Promise.all([
-      getJson<ApiIntimationConfigurationDto>(
-        '/api/configuracion/intimacion',
-        this.config
-      ),
-      getJson<ApiReportConfigurationDto>(
-        '/api/configuracion/informe',
-        this.config
-      )
-    ])
-
-    console.log({
-      action: 'RestConfigurationSource.getConfiguration.response',
-      response: {
-        intimacion,
-        informe
-      }
-    })
+    const intimacion = await getJson<ApiIntimationConfigurationDto>(
+      CONFIGURATION_ENDPOINTS.intimation,
+      this.config
+    )
 
     return {
-      intimacion,
-      informe
+      intimacion: mapIntimationConfigurationDto(intimacion),
+      informe: DEFAULT_REPORT_CONFIGURATION
     }
   }
 }

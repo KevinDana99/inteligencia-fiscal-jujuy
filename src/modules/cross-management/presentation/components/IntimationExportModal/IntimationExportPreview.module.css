@@ -1,6 +1,10 @@
 .previewSurface {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
   padding: 24px 32px;
   background: #525659;
+  overscroll-behavior: contain;
 }
 
 .pageSheet {

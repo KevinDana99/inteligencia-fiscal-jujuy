@@ -8,6 +8,8 @@ interface CrossPreviewHeaderCardProps {
 }
 
 export function CrossPreviewHeaderCard({ cross }: CrossPreviewHeaderCardProps) {
+  const sourceLabel = cross.source === 'Lote' ? 'Lote' : 'CUIT'
+
   return (
     <Card className={classes.headerCard} radius="lg" padding={0}>
       <div className={classes.headerCardInner}>
@@ -20,7 +22,7 @@ export function CrossPreviewHeaderCard({ cross }: CrossPreviewHeaderCardProps) {
         </div>
 
         <div className={classes.headerMeta}>
-          <CrossPreviewHeaderMeta label="Lote / CUIT" value={cross.sourceRef} />
+          <CrossPreviewHeaderMeta label={sourceLabel} value={cross.sourceRef} />
           <CrossPreviewHeaderMeta label="Período" value={cross.period} />
           <CrossPreviewHeaderMeta label="Total CUITs" value={cross.cuitCount} />
           <CrossPreviewHeaderMeta
@@ -28,6 +30,7 @@ export function CrossPreviewHeaderCard({ cross }: CrossPreviewHeaderCardProps) {
             label="Relevantes"
             value={cross.relevantCountLabel}
           />
+          <div className={classes.headerMetaDivider} aria-hidden="true" />
         </div>
       </div>
     </Card>

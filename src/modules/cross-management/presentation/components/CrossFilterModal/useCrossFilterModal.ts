@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import type {
   ICrossColumnFilterState,
+  ICrossDynamicColumnType,
   ICrossFilterColumnKey,
   ICrossFilterConnector,
   ICrossFilterOperator
@@ -13,6 +14,7 @@ export interface ICrossFilterModalProps {
   allowedOperators: ICrossFilterOperator[]
   columnKey: ICrossFilterColumnKey | null
   columnLabel: string
+  columnType: ICrossDynamicColumnType
   initialValue: ICrossColumnFilterState | null
   isPending?: boolean
   error?: string | null

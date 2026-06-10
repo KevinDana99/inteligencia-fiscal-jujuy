@@ -170,9 +170,19 @@ export function mapCrossDynamicValuesRowDto(
 export function mapCrossPlanillaRowDto(
   dto: ApiCrossPlanillaRowDto
 ): ICrossPlanillaRow {
+  const rowWithAliases = dto as ApiCrossPlanillaRowDto & {
+    contribuyente_id?: string | null
+    taxpayerId?: string | null
+  }
+
   return {
     cuit: dto.cuit,
     businessName: dto.razonSocial,
+    taxpayerId:
+      dto.contribuyenteId ??
+      rowWithAliases.contribuyente_id ??
+      rowWithAliases.taxpayerId ??
+      null,
     ...mapCrossDynamicValuesRowDto(dto)
   }
 }

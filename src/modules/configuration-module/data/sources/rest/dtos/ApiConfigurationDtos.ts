@@ -1,13 +1,12 @@
 export type ApiIntimationConfigurationDto = {
-  asunto: string
-  saludo: string
-  cuerpo: string
-  pie: string
+  id?: string | null
+  tipoDocumento?: string | null
+  asunto?: string | null
+  saludo?: string | null
+  cuerpo?: string | null
+  pie?: string | null
+  fechaCorte?: string | null
+  fuenteInformacion?: string | null
   fuente_informacion?: string | null
-  columnas_seleccionadas: string[]
-}
-
-export type ApiReportConfigurationDto = {
-  titulo: string
-  cuerpo: string
+  columnas_seleccionadas?: string[] | null
 }

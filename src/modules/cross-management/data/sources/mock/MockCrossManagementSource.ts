@@ -9,6 +9,8 @@ import type {
   ICrossPlanillaRow,
   ICrossResumenData,
   ICrossResumenRequestParams,
+  IGenerateIntimationDocumentPayload,
+  IIntimationDocumentGeneratedSummary,
   ICrossResultsListData,
   ICrossResultsListParams
 } from '../../models/CrossManagement'
@@ -43,9 +45,19 @@ function parseMockNumber(value: string) {
     .replace(/[^\d,.-]/g, '')
     .replace(/\./g, '')
     .replace(',', '.')
+
+  if (!/\d/.test(normalized)) {
+    return null
+  }
+
   const parsed = Number(normalized)
 
   return Number.isFinite(parsed) ? parsed : null
+}
+
+function buildMockTaxpayerId(executionId: number, rowIndex: number) {
+  return `00000000-0000-4000-8000-${String(executionId)
+    .padStart(6, '0')}${String(rowIndex + 1).padStart(6, '0')}`
 }
 
 function matchesSearch(cuit: string, businessName: string, search?: string | null) {
@@ -62,6 +74,17 @@ function matchesSearch(cuit: string, businessName: string, search?: string | nul
 }
 
 export class MockCrossManagementSource implements ICrossManagementSource {
+  async generateIntimationDocument(
+    payload: IGenerateIntimationDocumentPayload
+  ): Promise<IIntimationDocumentGeneratedSummary> {
+    const documentId = `mock-${payload.contribuyente.id}-${payload.formato.toLowerCase()}`
+
+    return {
+      documentId,
+      downloadUrl: `/api/documentos/${documentId}/descargar`
+    }
+  }
+
   async listExecutions(
     params: ICrossManagementListParams = {}
   ): Promise<ICrossManagementListData> {
@@ -114,9 +137,10 @@ export class MockCrossManagementSource implements ICrossManagementSource {
     const filteredRows = preview.planRows.filter((row) =>
       matchesSearch(row.cuit, row.businessName, params.search)
     )
-    const rows: ICrossPlanillaRow[] = filteredRows.map((row) => ({
+    const rows: ICrossPlanillaRow[] = filteredRows.map((row, rowIndex) => ({
       cuit: row.cuit,
       businessName: row.businessName,
+      taxpayerId: buildMockTaxpayerId(executionId, rowIndex),
       texts: Object.fromEntries(
         columns.map((column, index) => [column.key, row.cells[index] ?? null])
       ),
@@ -142,12 +166,12 @@ export class MockCrossManagementSource implements ICrossManagementSource {
     const page = params.page ?? 1
     const itemsPerPage = params.itemsPerPage ?? 20
     const analysisColumns: ICrossDynamicColumn[] = [
-      { key: 'cuit', type: 'string', label: 'CUIT', isFilterable: false, allowedOperators: [] },
-      { key: 'razonSocial', type: 'string', label: 'RAZON SOCIAL', isFilterable: false, allowedOperators: [] },
+      { key: 'cuit', type: 'string', label: 'CUIT', isFilterable: true, allowedOperators: ['igualA', 'distintoDe'] },
+      { key: 'razonSocial', type: 'string', label: 'RAZÓN SOCIAL', isFilterable: true, allowedOperators: ['igualA', 'distintoDe'] },
       {
         key: 'bi910',
         type: 'numero',
-        label: 'B.I. 910',
+        label: 'BI INGRESOS BRUTOS',
         isFilterable: true,
         allowedOperators: ['mayorQue', 'mayorOIgualQue', 'menorQue', 'menorOIgualQue', 'igualA', 'distintoDe']
       },
@@ -175,7 +199,7 @@ export class MockCrossManagementSource implements ICrossManagementSource {
       {
         key: 'netoAPagar',
         type: 'numero',
-        label: 'NETO A PAGAR',
+        label: 'NETO A PAGAR ↓',
         isFilterable: true,
         allowedOperators: ['mayorQue', 'mayorOIgualQue', 'menorQue', 'menorOIgualQue', 'igualA', 'distintoDe']
       },
@@ -238,9 +262,9 @@ export class MockCrossManagementSource implements ICrossManagementSource {
                 key: 'resumen',
                 title: 'Resumen',
                 columns: [
-                  { key: 'regimen', type: 'string', label: 'REGIMEN', isFilterable: false, allowedOperators: [] },
-                  { key: 'bi910', type: 'numero', label: 'B.I. 910', isFilterable: false, allowedOperators: [] },
-                  { key: 'biPretendida', type: 'numero', label: 'B.I. PRETENDIDA', isFilterable: false, allowedOperators: [] },
+                  { key: 'regimen', type: 'string', label: 'CATEGORÍA', isFilterable: false, allowedOperators: [] },
+                  { key: 'bi910', type: 'numero', label: 'ING. BRUTOS', isFilterable: false, allowedOperators: [] },
+                  { key: 'biPretendida', type: 'numero', label: 'MAYOR BASE IMP.', isFilterable: false, allowedOperators: [] },
                   { key: 'diferenciaAFavorDpr', type: 'numero', label: 'DIF A FAVOR DPR', isFilterable: false, allowedOperators: [] },
                   { key: 'impuesto', type: 'numero', label: 'IMPUESTO', isFilterable: false, allowedOperators: [] },
                   { key: 'deudaNeta', type: 'numero', label: 'DEUDA NETA', isFilterable: false, allowedOperators: [] }

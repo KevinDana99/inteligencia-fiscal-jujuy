@@ -7,11 +7,13 @@ import {
   mapDynamicRowValue
 } from '../utils/crossPreviewDynamicValues'
 import { mapCrossColumnFiltersToResumenRequest } from '../utils/crossPreviewFilters'
+import { enrichCrossPlanillaRowsWithTaxpayerIds } from '../utils/enrichCrossPlanillaRowsWithTaxpayerIds'
 import type {
   ICrossAnalysisRow,
   ICrossColumnFilters,
   ICrossDynamicColumn,
-  ICrossPlanillaRow
+  ICrossPlanillaRow,
+  ICrossResultItem
 } from '../models/CrossManagement'
 
 const numberColumn: ICrossDynamicColumn = {
@@ -93,17 +95,57 @@ describe('cross preview dynamic contract mapping', () => {
         cuit: '30504018845',
         dates: {},
         metrics: { importe: 0 },
+        taxpayerId: '44292a56-7e66-48ac-84f0-5f35aa5ec46d',
         texts: {}
       }
     ]
 
     expect(mapPlanillaRowsToPreview(rows, columns)[0]).toMatchObject({
       cells: ['30-50401884-5', '0'],
+      id: '44292a56-7e66-48ac-84f0-5f35aa5ec46d',
+      taxpayerId: '44292a56-7e66-48ac-84f0-5f35aa5ec46d',
       values: {
         cuit: '30-50401884-5',
         importe: '0'
       }
     })
+  })
+
+  it('enriches planilla contributor ids from cross results by CUIT', () => {
+    const rows: ICrossPlanillaRow[] = [
+      {
+        businessName: 'Empresa SA',
+        cuit: '30-50401884-5',
+        dates: {},
+        metrics: {},
+        taxpayerId: null,
+        texts: {}
+      }
+    ]
+    const results: ICrossResultItem[] = [
+      {
+        calculationStatus: 'Calculado',
+        createdAt: '2026-06-09T00:00:00.000Z',
+        crossCode: 'CRUCE',
+        crossVersion: '1',
+        cuit: '30504018845',
+        dynamicDetail: {},
+        executionId: 1,
+        granularity: 'Anual',
+        id: '1',
+        metrics: {},
+        nonCalculableFields: [],
+        period: '2024',
+        periodFrom: '2024-01-01',
+        periodTo: '2024-12-31',
+        sources: [],
+        taxpayerId: '44292a56-7e66-48ac-84f0-5f35aa5ec46d'
+      }
+    ]
+
+    expect(enrichCrossPlanillaRowsWithTaxpayerIds(rows, results)[0]?.taxpayerId).toBe(
+      '44292a56-7e66-48ac-84f0-5f35aa5ec46d'
+    )
   })
 
   it('maps analysis rows and keeps estadoRelevancia outside dynamic dictionaries', () => {
