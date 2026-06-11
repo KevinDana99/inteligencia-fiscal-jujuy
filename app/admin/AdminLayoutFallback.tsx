@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Skeleton, Text } from '@mantine/core';
-import { AdminPanelHomeSectionLoader } from '@/modules/admin-panel/presentation/components/AdminPanelHomeSection';
+import { PageLoader } from '@/components/core/page-loader';
 import classes from '@/modules/admin-panel/presentation/styles/AdminPanel.module.css';
 
 const NAV_GROUPS = [
@@ -125,9 +125,22 @@ export default function AdminLayoutFallback() {
           </div>
         </aside>
 
-        <main className={classes.main}>
-          <div className={classes.content}>
-            <AdminPanelHomeSectionLoader />
+        <main
+          className={classes.main}
+          style={{
+            display: 'flex',
+            minHeight: 'calc(100vh - var(--admin-header-height))'
+          }}
+        >
+          <div
+            className={classes.content}
+            style={{
+              display: 'flex',
+              flex: 1,
+              minHeight: '100%'
+            }}
+          >
+            <PageLoader />
           </div>
         </main>
       </div>

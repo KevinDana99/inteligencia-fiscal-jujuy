@@ -1,9 +1,1 @@
-import { Center, Loader } from '@mantine/core';
-
-export function DashboardPageLoader() {
-  return (
-    <Center mih={360}>
-      <Loader color="blue" />
-    </Center>
-  );
-}
+export { PageLoader as DashboardPageLoader } from '@/components/core/page-loader'

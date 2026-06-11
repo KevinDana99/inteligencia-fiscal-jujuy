@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Skeleton } from '@mantine/core';
-import { DashboardPageLoader } from '@/modules/dashboard-layout/presentation/components/DashboardPageLoader';
+import { PageLoader } from '@/components/core/page-loader';
 import classes from '@/modules/dashboard-layout/presentation/components/DashboardLayoutShell/DashboardLayoutShell.module.css';
 
 const NAV_GROUPS = [
@@ -105,7 +105,7 @@ export default function PrivateLayoutFallback() {
 
       <main className={classes.main}>
         <div className={classes.content}>
-          <DashboardPageLoader />
+          <PageLoader />
         </div>
       </main>
     </div>
