@@ -1,6 +1,8 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import {
+  applySessionToRequestHeaders,
+  applySessionToResponse,
   clearAuthResponse,
   readProxyRequestSession,
   redirectToLogin,
@@ -19,10 +21,28 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const requestSession = readProxyRequestSession(request)
   const hadSessionCookies = Boolean(requestSession)
-  const response = NextResponse.next()
+  const requestHeaders = new Headers(request.headers)
+  let response = NextResponse.next({
+    request: {
+      headers: requestHeaders
+    }
+  })
 
-  let session = await refreshExpiredRequestSession(requestSession, response)
+  const refreshResult = await refreshExpiredRequestSession(requestSession)
+  let session = refreshResult.session
   let currentUserType: AuthUserType = null
+
+  if (session && refreshResult.refreshed) {
+    applySessionToRequestHeaders(requestHeaders, session)
+    response = applySessionToResponse(
+      NextResponse.next({
+        request: {
+          headers: requestHeaders
+        }
+      }),
+      session
+    )
+  }
 
   try {
     currentUserType = await resolveCurrentUserType(session)

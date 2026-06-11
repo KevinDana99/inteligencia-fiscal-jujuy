@@ -7,7 +7,12 @@ import {
 import { AUTH_COOKIE_NAMES, AUTH_HEADERS, AUTH_ROUTES, USER_ROLES } from './constants'
 import { refreshAuthSession } from './refresh-session'
 import {
+  AUTH_SESSION_EXPIRED_NOTICE_COOKIE,
+  AUTH_SESSION_EXPIRED_NOTICE_MAX_AGE
+} from './session-expired-notice'
+import {
   isSessionExpired,
+  isSessionExpiredOrWithinSkew,
   mapIamCurrentContextResponseToAuthUser
 } from './session-mapper'
 import { createServerAuthSource } from '@/modules/auth/data/data-access'
@@ -18,6 +23,11 @@ import type {
 
 export type AuthUserType = IAuthUser['tipoUsuario']
 
+export interface RefreshExpiredRequestSessionResult {
+  session: ISerializedAuthSession | null
+  refreshed: boolean
+}
+
 export function readProxyRequestSession(
   request: NextRequest
 ): ISerializedAuthSession | null {
@@ -26,6 +36,14 @@ export function readProxyRequestSession(
 
 export function clearAuthResponse(response: NextResponse): NextResponse {
   clearResponseAuthCookies(response)
+  return response
+}
+
+export function applySessionToResponse(
+  response: NextResponse,
+  session: ISerializedAuthSession
+): NextResponse {
+  setResponseAuthCookies(response, session)
   return response
 }
 
@@ -40,6 +58,12 @@ export function redirectToLogin(request: NextRequest): NextResponse {
     path: '/',
     maxAge: 60 * 5
   })
+  response.cookies.set(AUTH_SESSION_EXPIRED_NOTICE_COOKIE, '1', {
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: AUTH_SESSION_EXPIRED_NOTICE_MAX_AGE
+  })
   response.headers.set(AUTH_HEADERS.sessionExpired, 'true')
   return clearAuthResponse(response)
 }
@@ -48,22 +72,61 @@ export function getRedirectPathByUserType(userType: AuthUserType): string {
   return userType === USER_ROLES.ADMIN ? AUTH_ROUTES.admin : AUTH_ROUTES.home
 }
 
+function serializeRequestCookies(
+  requestHeaders: Headers,
+  session: ISerializedAuthSession
+) {
+  const cookiePairs = new Map<string, string>()
+  const currentCookieHeader = requestHeaders.get('cookie') ?? ''
+
+  for (const cookiePair of currentCookieHeader.split(';')) {
+    const [name, ...valueParts] = cookiePair.trim().split('=')
+
+    if (!name) {
+      continue
+    }
+
+    cookiePairs.set(name, valueParts.join('='))
+  }
+
+  cookiePairs.set(AUTH_COOKIE_NAMES.accessToken, session.accessToken)
+  cookiePairs.set(
+    AUTH_COOKIE_NAMES.accessTokenExpiresAt,
+    session.accessTokenExpiresAt
+  )
+  cookiePairs.set(AUTH_COOKIE_NAMES.refreshToken, session.refreshToken)
+  cookiePairs.set(
+    AUTH_COOKIE_NAMES.refreshTokenExpiresAt,
+    session.refreshTokenExpiresAt
+  )
+
+  return Array.from(cookiePairs.entries())
+    .map(([name, value]) => `${name}=${value}`)
+    .join('; ')
+}
+
+export function applySessionToRequestHeaders(
+  requestHeaders: Headers,
+  session: ISerializedAuthSession
+) {
+  requestHeaders.set('cookie', serializeRequestCookies(requestHeaders, session))
+}
+
 export async function refreshExpiredRequestSession(
-  session: ISerializedAuthSession | null,
-  response: NextResponse
-): Promise<ISerializedAuthSession | null> {
+  session: ISerializedAuthSession | null
+): Promise<RefreshExpiredRequestSessionResult> {
   if (
     !session?.accessToken ||
-    !isSessionExpired(session.accessTokenExpiresAt)
+    !isSessionExpiredOrWithinSkew(session.accessTokenExpiresAt)
   ) {
-    return session
+    return { session, refreshed: false }
   }
 
   if (
     !session.refreshToken ||
     isSessionExpired(session.refreshTokenExpiresAt)
   ) {
-    return null
+    return { session: null, refreshed: false }
   }
 
   const refreshedSession = await refreshAuthSession({
@@ -71,11 +134,10 @@ export async function refreshExpiredRequestSession(
   })
 
   if (!refreshedSession) {
-    return null
+    return { session: null, refreshed: false }
   }
 
-  setResponseAuthCookies(response, refreshedSession)
-  return refreshedSession
+  return { session: refreshedSession, refreshed: true }
 }
 
 export async function resolveCurrentUserType(

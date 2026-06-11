@@ -34,6 +34,8 @@ function LoginFormContent() {
     error,
     formRef,
     recoveryNoticeVisible,
+    sessionExpiredNoticeVisible,
+    sessionExpiredNoticeMessage,
     hasError,
     handleSubmitAttempt,
     handleRecoveryNotice,
@@ -130,6 +132,19 @@ function LoginFormContent() {
               className={classes.errorAlert}
             >
               {error}
+            </Alert>
+          ) : null}
+
+          {sessionExpiredNoticeVisible && !hasError ? (
+            <Alert
+              variant='light'
+              color='blue'
+              icon={
+                <IconInfoCircle className={classes.infoIcon} stroke={1.8} />
+              }
+              className={classes.infoAlert}
+            >
+              {sessionExpiredNoticeMessage}
             </Alert>
           ) : null}
 
