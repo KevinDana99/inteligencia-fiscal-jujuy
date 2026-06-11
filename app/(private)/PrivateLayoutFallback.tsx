@@ -4,9 +4,9 @@ import { DashboardPageLoader } from '@/modules/dashboard-layout/presentation/com
 import classes from '@/modules/dashboard-layout/presentation/components/DashboardLayoutShell/DashboardLayoutShell.module.css';
 
 const NAV_GROUPS = [
-  ['100%', '78%', '82%'],
-  ['74%'],
-  ['76%']
+  { labelWidth: 56, itemWidths: [132, 128, 122, 128] },
+  { labelWidth: 86, itemWidths: [86] },
+  { labelWidth: 96, itemWidths: [98] }
 ];
 
 export default function PrivateLayoutFallback() {
@@ -33,14 +33,21 @@ export default function PrivateLayoutFallback() {
           </div>
 
           <div className={classes.navRoot}>
-            {NAV_GROUPS.map((items, groupIndex) => (
+            {NAV_GROUPS.map((group, groupIndex) => (
               <Stack key={groupIndex} gap={4} className={classes.navGroup}>
                 <div className={classes.navGroupLabel}>
-                  <Skeleton height={8} width={groupIndex === 0 ? 64 : 82} radius="xl" />
+                  <Skeleton height={10} width={group.labelWidth} radius="xl" />
                 </div>
 
-                {items.map((width, itemIndex) => (
-                  <Skeleton key={`${groupIndex}-${itemIndex}`} height={36} width={width} radius="md" />
+                {group.itemWidths.map((itemWidth, itemIndex) => (
+                  <div
+                    key={`${groupIndex}-${itemIndex}`}
+                    className={classes.navItem}
+                    aria-hidden="true"
+                  >
+                    <Skeleton height={15} width={15} radius="sm" />
+                    <Skeleton height={12} width={itemWidth} radius="xl" />
+                  </div>
                 ))}
               </Stack>
             ))}
@@ -52,8 +59,8 @@ export default function PrivateLayoutFallback() {
             <Skeleton height={32} width={32} radius="xl" />
 
             <Stack gap={4} style={{ flex: 1 }}>
-              <Skeleton height={10} width="72%" radius="xl" />
-              <Skeleton height={8} width="44%" radius="xl" />
+              <Skeleton height={12} width={112} radius="xl" />
+              <Skeleton height={10} width={76} radius="xl" />
             </Stack>
           </div>
         </div>
