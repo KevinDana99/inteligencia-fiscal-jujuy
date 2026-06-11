@@ -1,4 +1,4 @@
-import { ApiClientError } from '@/lib/api-client';
+import { ApiClientError, fetchWithAuthRetry } from '@/lib/api-client';
 import type { ApiClientConfig } from '@/lib/api-client';
 import type { ApiUnifiedRegisterErrorResponseDto } from '../dtos/ApiUnifiedRegisterDtos';
 
@@ -19,22 +19,37 @@ export function buildUnifiedRegisterPaginationParams(
   return searchParams;
 }
 
-function buildUnifiedRegisterUrl(baseUrl: string | undefined, path: string) {
-  return `${baseUrl ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? ''}${path}`;
-}
-
-function buildUnifiedRegisterHeaders(token?: string) {
-  return {
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {})
-  };
+function buildUnifiedRegisterUrl(config: ApiClientConfig, path: string) {
+  return `${config.baseUrl ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? ''}${path}`;
 }
 
 async function parseUnifiedRegisterErrorResponse(
   response: Response
 ): Promise<ApiUnifiedRegisterErrorResponseDto | null> {
   try {
-    return (await response.json()) as ApiUnifiedRegisterErrorResponseDto;
+    const body = await response.text();
+
+    if (!body.trim()) {
+      return null;
+    }
+
+    return JSON.parse(body) as ApiUnifiedRegisterErrorResponseDto;
+  } catch {
+    return null;
+  }
+}
+
+async function parseUnifiedRegisterJsonResponse<TResponse>(
+  response: Response
+): Promise<TResponse | null> {
+  try {
+    const body = await response.text();
+
+    if (!body.trim()) {
+      return null;
+    }
+
+    return JSON.parse(body) as TResponse;
   } catch {
     return null;
   }
@@ -57,13 +72,18 @@ export async function requestUnifiedRegisterJson<TResponse, TBody = unknown>({
   body,
   method = 'GET',
   path,
+  refreshAccessToken,
   token
 }: UnifiedRegisterJsonRequestParams<TBody>): Promise<TResponse> {
-  const response = await fetch(buildUnifiedRegisterUrl(baseUrl, path), {
+  const config: ApiClientConfig = {
+    baseUrl,
+    refreshAccessToken,
+    token
+  };
+  const response = await fetchWithAuthRetry(buildUnifiedRegisterUrl(config, path), {
     method,
-    headers: buildUnifiedRegisterHeaders(token),
     ...(body === undefined ? {} : { body: JSON.stringify(body) })
-  });
+  }, config);
 
   if (!response.ok) {
     await throwUnifiedRegisterResponseError(response);
@@ -73,22 +93,14 @@ export async function requestUnifiedRegisterJson<TResponse, TBody = unknown>({
     return null as TResponse;
   }
 
-  return (await response.json()) as TResponse;
+  return (await parseUnifiedRegisterJsonResponse(response)) as TResponse;
 }
 
 export async function requestUnifiedRegisterVoid<TBody = unknown>(
   params: UnifiedRegisterJsonRequestParams<TBody>
 ): Promise<void> {
-  const response = await fetch(
-    buildUnifiedRegisterUrl(params.baseUrl, params.path),
-    {
-      method: params.method ?? 'DELETE',
-      headers: buildUnifiedRegisterHeaders(params.token),
-      ...(params.body === undefined ? {} : { body: JSON.stringify(params.body) })
-    }
-  );
-
-  if (!response.ok) {
-    await throwUnifiedRegisterResponseError(response);
-  }
+  await requestUnifiedRegisterJson<null, TBody>({
+    ...params,
+    method: params.method ?? 'DELETE'
+  });
 }

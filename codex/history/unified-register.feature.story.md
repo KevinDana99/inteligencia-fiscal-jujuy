@@ -112,3 +112,24 @@ Reviewed why `/vista-previa-padron/30501685212` could resolve as a 404: the rout
 ### Validation
 
 - `bun x eslint 'app/(private)/vista-previa-padron/[cuit]/page.tsx'`
+
+## REST Source Merge Conflict Repair - 2026-06-11
+
+### Summary
+
+Resolved merge conflicts in the `unified-register` data layer and aligned the active REST adapter with the authenticated API client configuration used by the rest of the frontend modules.
+
+### Main Changes
+
+- Removed conflict markers from `data-access.ts`, `RestUnifiedRegisterSource.ts`, and the unified-register constraint document.
+- Kept `createAuthenticatedApiClientConfig()` as the source of backend auth config so access-token refresh remains available.
+- Rebuilt `RestUnifiedRegisterSource` around the centralized route constants and REST utility helpers.
+- Confirmed the Swagger contract for contacts, alternate addresses, and notes uses `/api/contribuyentes/{contribuyenteId}/...`, `PATCH` for updates, and `Pagina` / `ItemsPagina` query params where pagination exists.
+- Updated `unifiedRegisterRestClient` to call `fetchWithAuthRetry` and to safely parse empty JSON responses.
+- Regenerated the tracked `tsconfig.tsbuildinfo` during `tsc` validation, removing stale conflict metadata from that generated file.
+
+### Validation
+
+- `bun x eslint src/modules/unified-register/data/data-access.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/utils/unifiedRegisterRestClient.ts`
+- `bun x tsc --noEmit --pretty false`
+- `bun run lint`
