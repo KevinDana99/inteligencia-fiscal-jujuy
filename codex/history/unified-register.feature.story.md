@@ -133,3 +133,26 @@ Resolved merge conflicts in the `unified-register` data layer and aligned the ac
 - `bun x eslint src/modules/unified-register/data/data-access.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/utils/unifiedRegisterRestClient.ts`
 - `bun x tsc --noEmit --pretty false`
 - `bun run lint`
+
+## Home Unified Padron Endpoint - 2026-06-11
+
+### Summary
+
+Applied `GET /api/procesos-informacion/padron/unificado` to the `/` Padrón Unificado screen.
+
+### Main Changes
+
+- Replaced the legacy list route `GET /api/contribuyentes` with the unified padron process endpoint.
+- Wired the Padrón Unificado search input to request page `1` with the endpoint `Busqueda` query parameter.
+- Kept pagination tied to the active search so page changes continue querying the backend instead of filtering locally.
+- Updated the mock source to support the same search parameter for local/mock mode.
+- Added a focused Jest test for REST URL construction and response mapping.
+
+### Validation
+
+- `bun x jest src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts --runInBand`
+- `bun x eslint src/modules/unified-register/data/actions/queries/getUnifiedRegisterListAction.ts src/modules/unified-register/data/interfaces/UnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/constants/unifiedRegisterApiRoutes.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts src/modules/unified-register/data/sources/mock/MockUnifiedRegisterSource.ts src/modules/unified-register/presentation/hooks/useUnifiedRegisterPage/index.ts src/modules/unified-register/presentation/hooks/useUnifiedRegisterPage/useUnifiedRegisterPagePagination.ts src/modules/unified-register/presentation/hooks/useUnifiedRegisterPage/useUnifiedRegisterPageSearch.ts`
+- `bun x tsc --noEmit --pretty false --incremental false`
+- `curl -I -sS http://127.0.0.1:3000/` returned `307` to `/login`, expected for the private route without a valid session.
+- `curl -I -sS 'http://127.0.0.1:5001/api/procesos-informacion/padron/unificado?Pagina=1&ItemsPagina=10'` returned `401`, confirming the protected backend endpoint exists.
+- `git diff --check`

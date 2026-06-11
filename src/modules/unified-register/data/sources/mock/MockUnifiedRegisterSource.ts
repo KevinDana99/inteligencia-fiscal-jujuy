@@ -11,6 +11,7 @@ import type {
   IUnifiedRegisterFinesListData,
   IUnifiedRegisterFinesListParams,
   IUnifiedRegisterHeaderRecord,
+  IUnifiedRegisterItem,
   IUnifiedRegisterInterventionOrdersListData,
   IUnifiedRegisterInterventionOrdersListParams,
   IUnifiedRegisterListData,
@@ -53,6 +54,23 @@ const UUID_PATTERN =
 
 function isUuid(value: string) {
   return UUID_PATTERN.test(value);
+}
+
+function normalizeListSearch(value: string | undefined) {
+  return value?.trim().toLocaleLowerCase('es-AR') ?? '';
+}
+
+function matchesListSearch(
+  item: IUnifiedRegisterItem,
+  normalizedSearch: string
+) {
+  if (!normalizedSearch) {
+    return true;
+  }
+
+  return [item.cuit, item.businessName].some((value) =>
+    value.toLocaleLowerCase('es-AR').includes(normalizedSearch)
+  );
 }
 
 function normalizeDireccion(value: string | null | undefined) {
@@ -558,7 +576,12 @@ function validateContactDuplicates(
 }
 
 export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
-  async listContributors(page = 1, itemsPerPage = 10): Promise<IUnifiedRegisterListData> {
+  async listContributors(
+    page = 1,
+    itemsPerPage = 10,
+    search?: string
+  ): Promise<IUnifiedRegisterListData> {
+    const normalizedSearch = normalizeListSearch(search);
     const items = unifiedRegisterDetailsFixture.map((item) => ({
       contribuyenteId: item.contribuyenteId,
       cuit: item.cuit,
@@ -567,7 +590,7 @@ export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
       regime: item.regime,
       status: item.status,
       riskLevel: item.riskLevel
-    }));
+    })).filter((item) => matchesListSearch(item, normalizedSearch));
 
     const totalPaginas = items.length ? Math.ceil(items.length / itemsPerPage) : 0;
     const start = (page - 1) * itemsPerPage;

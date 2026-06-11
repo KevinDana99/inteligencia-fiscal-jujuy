@@ -58,8 +58,19 @@ type RestRequestOptions<TBody = unknown> = {
 export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
   constructor(private readonly config: ApiClientConfig) {}
 
-  private buildPaginatedPath(path: string, page: number, itemsPerPage: number) {
+  private buildPaginatedPath(
+    path: string,
+    page: number,
+    itemsPerPage: number,
+    search?: string
+  ) {
     const params = buildUnifiedRegisterPaginationParams(page, itemsPerPage);
+    const normalizedSearch = search?.trim();
+
+    if (normalizedSearch) {
+      params.set('Busqueda', normalizedSearch);
+    }
+
     return `${path}?${params.toString()}`;
   }
 
@@ -76,13 +87,15 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
 
   async listContributors(
     page = 1,
-    itemsPerPage = 10
+    itemsPerPage = 10,
+    search?: string
   ): Promise<IUnifiedRegisterListData> {
     const dto = await this.requestJson<ApiUnifiedRegisterListResponseDto>(
       this.buildPaginatedPath(
         UNIFIED_REGISTER_API_ROUTES.contributors,
         page,
-        itemsPerPage
+        itemsPerPage,
+        search
       )
     );
 

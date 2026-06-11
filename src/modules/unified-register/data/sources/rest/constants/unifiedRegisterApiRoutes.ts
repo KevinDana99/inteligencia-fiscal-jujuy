@@ -1,5 +1,5 @@
 export const UNIFIED_REGISTER_API_ROUTES = {
-  contributors: '/api/contribuyentes',
+  contributors: '/api/procesos-informacion/padron/unificado',
   contributorHeader: (contribuyenteId: string) =>
     `/api/contribuyentes/${contribuyenteId}/cabecera`,
   mercurioFines: (contribuyenteId: string) =>

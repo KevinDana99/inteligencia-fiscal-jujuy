@@ -31,16 +31,31 @@ export function useUnifiedRegisterPagePagination({
   const [isPagePending, startPageTransition] = useTransition();
   const [pageError, setPageError] = useState<string | null>(null);
 
+  const applyPageData = useCallback(
+    (data: IUnifiedRegisterListData) => {
+      setItems(data.contribuyentes);
+      setActivePageState(data.pagina);
+      setTotalPages(data.totalPaginas);
+      setPageError(null);
+    },
+    [setItems]
+  );
+
+  const setPageErrorMessage = useCallback((message: string) => {
+    setPageError(message);
+  }, []);
+
   const resetActivePage = useCallback(() => {
     setActivePageState(1);
   }, []);
 
   const setActivePage = useCallback(
-    (page: number) => {
+    (page: number, search?: string) => {
       startPageTransition(async () => {
         const result = await getUnifiedRegisterListAction(
           page,
-          UNIFIED_REGISTER_PAGE_DEFAULT_ITEMS_PER_PAGE
+          UNIFIED_REGISTER_PAGE_DEFAULT_ITEMS_PER_PAGE,
+          search
         );
 
         if (!result.data) {
@@ -48,19 +63,18 @@ export function useUnifiedRegisterPagePagination({
           return;
         }
 
-        setItems(result.data.contribuyentes);
-        setActivePageState(result.data.pagina);
-        setTotalPages(result.data.totalPaginas);
-        setPageError(null);
+        applyPageData(result.data);
       });
     },
-    [setItems]
+    [applyPageData]
   );
 
   return {
     activePage,
     setActivePage,
     resetActivePage,
+    applyPageData,
+    setPageErrorMessage,
     totalPages,
     isPagePending,
     pageError
