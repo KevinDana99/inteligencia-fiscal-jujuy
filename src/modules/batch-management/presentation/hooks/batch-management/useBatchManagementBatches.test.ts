@@ -77,11 +77,7 @@ function createListResponse(batch: IBatchManagementItem): IBatchListData {
   }
 }
 
-function HookHarness({
-  onChange
-}: {
-  onChange: (value: HookValue) => void
-}) {
+function HookHarness({ onChange }: { onChange: (value: HookValue) => void }) {
   const value = useBatchManagementBatches()
 
   useLayoutEffect(() => {
@@ -150,5 +146,33 @@ describe('useBatchManagementBatches', () => {
     expect(latestValue?.expandedBatchId).toBe(CREATED_SUMMARY.id)
     expect(latestValue?.batches[0]?.cuits).toEqual(DETAIL_BATCH.cuits)
     expect(latestValue?.batches[0]?.cuits[0]?.businessName).toBe('ACME SA')
+  })
+
+  it('tracks the loading batch while selecting a batch', async () => {
+    let resolveDetail: (value: { data: IBatchManagementItem }) => void = () => {}
+    const detailPromise = new Promise<{ data: IBatchManagementItem }>((resolve) => {
+      resolveDetail = resolve
+    })
+
+    mockGetBatchDetailAction.mockReturnValue(detailPromise)
+
+    await act(async () => {
+      latestValue?.applyBatchListData(createListResponse(LIST_BATCH))
+    })
+
+    await act(async () => {
+      void latestValue?.toggleExpandedBatch(LIST_BATCH.id)
+    })
+
+    expect(latestValue?.expandedBatchId).toBe(LIST_BATCH.id)
+    expect(latestValue?.loadingBatchId).toBe(LIST_BATCH.id)
+
+    await act(async () => {
+      resolveDetail({ data: DETAIL_BATCH })
+      await detailPromise
+    })
+
+    expect(latestValue?.loadingBatchId).toBeNull()
+    expect(latestValue?.batches[0]?.cuits).toEqual(DETAIL_BATCH.cuits)
   })
 })

@@ -35,6 +35,7 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
     table: {
       batches: batches.batches,
       expandedBatchId: batches.expandedBatchId,
+      loadingBatchId: batches.loadingBatchId,
       onToggleBatch: batches.toggleExpandedBatch,
       ...cross
     },

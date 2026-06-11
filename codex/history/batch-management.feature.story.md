@@ -1,5 +1,17 @@
 # Batch Management Feature Story
 
+## 2026-06-11 Loader al seleccionar lote
+
+- Se agrego `loadingBatchId` al hook `useBatchManagementBatches` para representar la hidratacion del detalle del lote seleccionado.
+- La tabla de Gestion de Lotes muestra un `Loader` en la celda del chevron y en el panel expandido mientras se consulta el detalle con `getBatchDetailAction`.
+- Se agrego cobertura para validar que el lote seleccionado queda en loading durante la consulta y vuelve a `null` al resolver.
+
+### Validation
+
+- `bun x tsc --noEmit`
+- `bun x eslint src/modules/batch-management/presentation/components/BatchManagementTable src/modules/batch-management/presentation/hooks`
+- `bun x jest src/modules/batch-management/presentation/hooks --runInBand`
+
 ## 2026-06-06 Refactor de BatchManagementPage
 
 - `app/(private)/gestion-de-lotes/page.tsx` ahora delega la carga inicial a `BatchManagementModule`, dejando la ruta reducida a composición y manteniendo el layout de datos dentro del módulo.

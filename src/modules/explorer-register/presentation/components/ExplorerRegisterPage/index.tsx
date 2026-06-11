@@ -1,35 +1,42 @@
 'use client';
 
+import { Fragment, useMemo, useState } from 'react';
 import {
   ActionIcon,
   Button,
   Card,
   Group,
-  MultiSelect,
   Pagination,
+  Radio,
   Select,
   Stack,
-  Switch,
   Table,
-  TagsInput,
   Text,
   TextInput
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
-import { IconPlus, IconSearch, IconX } from '@tabler/icons-react';
+import {
+  IconArrowRight,
+  IconPlus,
+  IconSearch,
+  IconX
+} from '@tabler/icons-react';
+import { BatchManagementCreateModal } from '@/modules/batch-management/presentation/components/BatchManagementCreateModal';
 import { DashboardNavbarActionPortal } from '@/modules/dashboard-layout/presentation/contexts';
-import type {
-  IExplorerRegisterCatalog,
-  IExplorerRegisterFilter
-} from '../../../data/models/ExplorerRegister';
+import type { IExplorerRegisterCatalog } from '../../../data/models/ExplorerRegister';
 import {
   EXPLORER_REGISTER_ITEMS_PER_PAGE_OPTIONS,
   EXPLORER_REGISTER_SWITCH_ACTIVE_VALUE,
+  EXPLORER_REGISTER_SWITCH_INACTIVE_VALUE,
   EXPLORER_REGISTER_TEXTS
 } from '../../constants';
 import { useExplorerRegister } from '../../hooks/useExplorerRegister';
 import {
+  filterExplorerRegisterOptionData,
   formatExplorerRegisterCellValue,
+  getExplorerRegisterFilterOptionData,
+  getExplorerRegisterFilterTagParts,
+  type IExplorerRegisterFilterOptionData,
   resolveExplorerRegisterRowValue
 } from '../../utils';
 import classes from './ExplorerRegisterPage.module.css';
@@ -39,11 +46,134 @@ interface ExplorerRegisterPageProps {
   catalogError?: string;
 }
 
-function getFilterOptionData(filter: IExplorerRegisterFilter) {
-  return filter.allowedValues.map((value) => ({
-    value,
-    label: value
-  }));
+interface ExplorerRegisterMultiValueFieldProps {
+  disabled: boolean;
+  options: IExplorerRegisterFilterOptionData[];
+  values: string[];
+  onChange: (values: string[]) => void;
+}
+
+function ExplorerRegisterMultiValueField({
+  disabled,
+  options,
+  values,
+  onChange
+}: ExplorerRegisterMultiValueFieldProps) {
+  const [searchValue, setSearchValue] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const filteredOptions = useMemo(
+    () =>
+      filterExplorerRegisterOptionData(options, values, searchValue).slice(
+        0,
+        8
+      ),
+    [options, searchValue, values]
+  );
+  const optionLabels = useMemo(
+    () => new Map(options.map((option) => [option.value, option.label])),
+    [options]
+  );
+
+  const addValue = (value: string) => {
+    const nextValue = value.trim();
+
+    if (!nextValue || disabled || values.includes(nextValue)) {
+      return;
+    }
+
+    onChange([...values, nextValue]);
+    setSearchValue('');
+    setIsOpen(false);
+  };
+
+  const addSearchValue = () => {
+    if (filteredOptions.length > 0) {
+      addValue(filteredOptions[0].value);
+      return;
+    }
+
+    if (options.length === 0) {
+      addValue(searchValue);
+    }
+  };
+
+  const removeValue = (value: string) => {
+    onChange(values.filter((selectedValue) => selectedValue !== value));
+  };
+
+  return (
+    <div className={classes.multiValueField}>
+      <TextInput
+        value={searchValue}
+        disabled={disabled}
+        leftSection={<IconSearch size={13} />}
+        leftSectionWidth={30}
+        placeholder={EXPLORER_REGISTER_TEXTS.filterSearchPlaceholder}
+        className={`${classes.filterSelect} ${classes.filterSearchInput}`}
+        onFocus={() => setIsOpen(options.length > 0)}
+        onBlur={() => window.setTimeout(() => setIsOpen(false), 120)}
+        onChange={(event) => {
+          setSearchValue(event.currentTarget.value);
+          setIsOpen(options.length > 0);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            addSearchValue();
+          }
+        }}
+      />
+
+      {isOpen && filteredOptions.length > 0 ? (
+        <div className={classes.filterDropdown}>
+          {filteredOptions.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              className={classes.filterDropdownOption}
+              onMouseDown={(event) => {
+                event.preventDefault();
+                addValue(option.value);
+              }}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      {values.length > 0 ? (
+        <div className={classes.filterTags}>
+          {values.map((value) => {
+            const tagParts = getExplorerRegisterFilterTagParts(
+              value,
+              optionLabels.get(value)
+            );
+
+            return (
+              <span key={value} className={classes.filterTag}>
+                <span className={classes.filterTagCode}>{tagParts.code}</span>
+                {tagParts.detail ? (
+                  <span className={classes.filterTagDetail}>
+                    - {tagParts.detail}
+                  </span>
+                ) : null}
+                <button
+                  type="button"
+                  className={classes.filterTagRemove}
+                  disabled={disabled}
+                  onClick={() => removeValue(value)}
+                  aria-label={`Quitar ${value}`}
+                >
+                  <IconX size={12} />
+                </button>
+              </span>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 export function ExplorerRegisterPage({
@@ -70,13 +200,19 @@ export function ExplorerRegisterPage({
           radius="xl"
           leftSection={<IconPlus size={16} />}
           className={classes.navbarActionButton}
-          disabled={!controller.hasCatalog || controller.selectedCount === 0}
+          disabled={
+            !controller.hasCatalog ||
+            controller.batchCreateRowCount === 0 ||
+            controller.createBatchModal.isCreatePending
+          }
+          onClick={controller.openCreateBatchModal}
         >
           {EXPLORER_REGISTER_TEXTS.navbarAction}{' '}
-          {controller.selectedCount}{' '}
+          {controller.batchCreateRowCount}{' '}
           {EXPLORER_REGISTER_TEXTS.navbarActionSuffix}
         </Button>
       </DashboardNavbarActionPortal>
+      <BatchManagementCreateModal controller={controller.createBatchModal} />
 
       <div className={classes.page}>
         <div>
@@ -137,80 +273,122 @@ export function ExplorerRegisterPage({
             </div>
 
             <div className={classes.filtersGrid}>
-              {controller.activeFilters.map((filter) => {
+              {controller.activeFilters.map((filter, index) => {
                 const filterValue = controller.filterValues[filter.code] ?? [];
-                const filterOptions = getFilterOptionData(filter);
+                const filterOptions =
+                  getExplorerRegisterFilterOptionData(filter);
                 const disabled = !filter.available || controller.isPending;
+                const shouldRenderArrow =
+                  index < controller.activeFilters.length - 1 &&
+                  filter.inputType !== 'switch' &&
+                  controller.activeFilters[index + 1]?.inputType !== 'switch';
 
                 return (
-                  <div key={filter.code} className={classes.filterField}>
-                    {filter.inputType === 'switch' ? (
-                      <Switch
-                        label={filter.name}
-                        checked={filterValue.includes(
-                          EXPLORER_REGISTER_SWITCH_ACTIVE_VALUE
-                        )}
-                        disabled={disabled}
-                        onChange={(event) =>
-                          controller.updateSwitchFilterValue(
-                            filter.code,
-                            event.currentTarget.checked
-                          )
-                        }
-                      />
-                    ) : (
-                      <>
-                        <Text className={classes.filterLabel}>
-                          {filter.name}
+                  <Fragment key={filter.code}>
+                    <div className={classes.filterField}>
+                      {filter.inputType === 'switch' ? (
+                        <div className={classes.switchField}>
+                          <Text className={classes.filterLabel}>
+                            {filter.name}
+                          </Text>
+                          <Radio.Group
+                            value={
+                              filterValue.includes(
+                                EXPLORER_REGISTER_SWITCH_ACTIVE_VALUE
+                              )
+                                ? EXPLORER_REGISTER_SWITCH_ACTIVE_VALUE
+                                : EXPLORER_REGISTER_SWITCH_INACTIVE_VALUE
+                            }
+                            onChange={(value) =>
+                              controller.updateSwitchFilterValue(
+                                filter.code,
+                                value === EXPLORER_REGISTER_SWITCH_ACTIVE_VALUE
+                              )
+                            }
+                          >
+                            <Group className={classes.switchOptions} gap="xs">
+                              <Radio
+                                value={EXPLORER_REGISTER_SWITCH_ACTIVE_VALUE}
+                                label={EXPLORER_REGISTER_TEXTS.switchOn}
+                                color="blue"
+                                size="xs"
+                                disabled={disabled}
+                              />
+                              <Radio
+                                value={EXPLORER_REGISTER_SWITCH_INACTIVE_VALUE}
+                                label={EXPLORER_REGISTER_TEXTS.switchOff}
+                                color="blue"
+                                size="xs"
+                                disabled={disabled}
+                              />
+                              <Button
+                                variant="subtle"
+                                size="compact-xs"
+                                className={classes.switchClearButton}
+                                disabled={disabled}
+                                onClick={() =>
+                                  controller.updateSwitchFilterValue(
+                                    filter.code,
+                                    false
+                                  )
+                                }
+                              >
+                                {EXPLORER_REGISTER_TEXTS.clearFilter}
+                              </Button>
+                            </Group>
+                          </Radio.Group>
+                        </div>
+                      ) : (
+                        <>
+                          <Text className={classes.filterLabel}>
+                            {filter.name}
+                          </Text>
+                          {filter.inputType === 'texto' ? (
+                            <TextInput
+                              value={filterValue[0] ?? ''}
+                              disabled={disabled}
+                              leftSection={<IconSearch size={13} />}
+                              leftSectionWidth={30}
+                              placeholder={
+                                EXPLORER_REGISTER_TEXTS.filterSearchPlaceholder
+                              }
+                              className={classes.filterSelect}
+                              onChange={(event) =>
+                                controller.updateTextFilterValue(
+                                  filter.code,
+                                  event.currentTarget.value
+                                )
+                              }
+                            />
+                          ) : (
+                            <ExplorerRegisterMultiValueField
+                              values={filterValue}
+                              options={filterOptions}
+                              disabled={disabled}
+                              onChange={(values) =>
+                                controller.updateFilterValues(
+                                  filter.code,
+                                  values
+                                )
+                              }
+                            />
+                          )}
+                        </>
+                      )}
+                      {!filter.available && filter.unavailableReason ? (
+                        <Text className={classes.filterHint}>
+                          {filter.unavailableReason}
                         </Text>
-                        {filter.inputType === 'texto' ? (
-                          <TextInput
-                            value={filterValue[0] ?? ''}
-                            disabled={disabled}
-                            className={classes.filterSelect}
-                            onChange={(event) =>
-                              controller.updateTextFilterValue(
-                                filter.code,
-                                event.currentTarget.value
-                              )
-                            }
-                          />
-                        ) : filterOptions.length > 0 ? (
-                          <MultiSelect
-                            value={filterValue}
-                            data={filterOptions}
-                            disabled={disabled}
-                            searchable
-                            clearable
-                            className={classes.filterSelect}
-                            onChange={(values) =>
-                              controller.updateFilterValues(
-                                filter.code,
-                                values
-                              )
-                            }
-                          />
-                        ) : (
-                          <TagsInput
-                            value={filterValue}
-                            disabled={disabled}
-                            className={classes.filterSelect}
-                            onChange={(values) =>
-                              controller.updateFilterValues(
-                                filter.code,
-                                values
-                              )
-                            }
-                          />
-                        )}
-                      </>
-                    )}
-                    {!filter.available && filter.unavailableReason ? (
-                      <Text className={classes.filterHint}>
-                        {filter.unavailableReason}
-                      </Text>
+                      ) : null}
+                    </div>
+                    {shouldRenderArrow ? (
+                      <IconArrowRight
+                        size={22}
+                        stroke={2.3}
+                        className={classes.filterArrow}
+                      />
                     ) : null}
-                  </div>
+                  </Fragment>
                 );
               })}
 
@@ -227,6 +405,11 @@ export function ExplorerRegisterPage({
                     onChange={(value) =>
                       controller.updateTemporalRange('startDate', value ?? '')
                     }
+                  />
+                  <IconArrowRight
+                    size={22}
+                    stroke={2.3}
+                    className={classes.filterArrow}
                   />
                   <DatePickerInput
                     label={EXPLORER_REGISTER_TEXTS.temporalEnd}

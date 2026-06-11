@@ -15,6 +15,11 @@ export function useBatchManagementLoadedCuits() {
   const [loadedCuits, setLoadedCuits] = useState<IBatchLoadedCuitRow[]>([])
   const [loadedCuitsSearchValue, setLoadedCuitsSearchValue] = useState('')
 
+  function replaceLoadedCuits(rows: IBatchLoadedCuitRow[] = []) {
+    setLoadedCuits(rows)
+    setLoadedCuitsSearchValue('')
+  }
+
   function resetLoadedCuits() {
     setLoadedCuits([])
     setLoadedCuitsSearchValue('')
@@ -60,6 +65,7 @@ export function useBatchManagementLoadedCuits() {
       loadedCuitsSearchValue
     ),
     setLoadedCuitsSearchValue,
+    replaceLoadedCuits,
     resetLoadedCuits,
     addManualCuits,
     removeLoadedCuit,

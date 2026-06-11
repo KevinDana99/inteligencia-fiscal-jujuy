@@ -23,6 +23,7 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
   )
   const [totalBatches, setTotalBatches] = useState(initialBatchData?.totalItems ?? 0)
   const [expandedBatchId, setExpandedBatchId] = useState<string | null>(null)
+  const [loadingBatchId, setLoadingBatchId] = useState<string | null>(null)
 
   async function hydrateBatchDetail(batchId: string) {
     const result = await getBatchDetailAction(batchId)
@@ -51,7 +52,13 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
       return
     }
 
-    await hydrateBatchDetail(batchId)
+    setLoadingBatchId(batchId)
+
+    try {
+      await hydrateBatchDetail(batchId)
+    } finally {
+      setLoadingBatchId((current) => (current === batchId ? null : current))
+    }
   }
 
   async function handleBatchCreated(
@@ -96,6 +103,7 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
     batches,
     totalBatches,
     expandedBatchId,
+    loadingBatchId,
     applyBatchListData,
     toggleExpandedBatch,
     handleBatchCreated

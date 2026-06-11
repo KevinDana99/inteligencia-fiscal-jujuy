@@ -32,8 +32,9 @@ export function useBatchManagementCreate({
     importPreview.resetImportPreview()
   }
 
-  function openCreateModal() {
+  function openCreateModal(initialLoadedCuits: IBatchLoadedCuitRow[] = []) {
     resetCreateFlow()
+    loadedCuits.replaceLoadedCuits(initialLoadedCuits)
     createForm.openCreateModal()
   }
 
