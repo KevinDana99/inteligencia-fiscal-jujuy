@@ -5,12 +5,12 @@ stages:
 
 workflow:
   rules:
-    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
     - when: never
 
 default:
   tags:
-    - rentas-if-k3s-dev
+    - rentas-if-k3s-prod
   before_script:
     - set -euo pipefail
     - export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
@@ -20,8 +20,8 @@ variables:
   REGISTRY_HOST: gitlab.local.internal:5050
   REGISTRY_IMAGE: gitlab.local.internal:5050/if-rentas/frontend
   K3S_INFRA_REPO: gitlab.kamakia.io/if-rentas/k3s-infra.git
-  K3S_INFRA_BRANCH: develop
-  FRONTEND_PATCH_FILE: overlays/dev/if/patches/frontend-dev-image.yaml
+  K3S_INFRA_BRANCH: main
+  FRONTEND_PATCH_FILE: overlays/prod/if/patches/frontend-prod-image.yaml
 
 validar_frontend:
   stage: validar
@@ -40,7 +40,7 @@ construir_imagen:
   interruptible: true
   script:
     - export IMAGE_TAG="$REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
-    - export IMAGE_LATEST="$REGISTRY_IMAGE:develop-latest"
+    - export IMAGE_LATEST="$REGISTRY_IMAGE:prod-latest"
     - sudo -n podman login "$REGISTRY_HOST" -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
     - >
       sudo -n podman build --pull=missing
@@ -50,11 +50,12 @@ construir_imagen:
     - sudo -n podman push "$IMAGE_TAG"
     - sudo -n podman push "$IMAGE_LATEST"
 
-promover_k3s_infra_dev:
+promover_k3s_infra_prod:
   stage: promover
   needs:
     - construir_imagen
-  resource_group: rentas-if-k3s-infra-dev
+  resource_group: rentas-if-k3s-infra-prod
+  when: manual
   script:
     - |
       set -euo pipefail
@@ -97,5 +98,5 @@ promover_k3s_infra_dev:
       fi
 
       git add "$FRONTEND_PATCH_FILE"
-      git commit -m "chore dev actualiza imagen frontend a ${CI_COMMIT_SHORT_SHA}"
+      git commit -m "chore prod actualiza imagen frontend a ${CI_COMMIT_SHORT_SHA}"
       git push origin HEAD:"$K3S_INFRA_BRANCH"
