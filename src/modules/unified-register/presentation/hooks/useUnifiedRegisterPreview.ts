@@ -1,6 +1,9 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
+import { TOAST_DASHBOARD_MESSAGES, toast } from '@/components/core/toasts';
+import { markReprocessingAction } from '@/modules/reprocessing/data/actions';
+import type { IReprocessingMarkPayload } from '@/modules/reprocessing/data/models/Reprocessing';
 import {
   createAlternateAddressAction,
   createContactAction,
@@ -94,6 +97,7 @@ export function useUnifiedRegisterPreview(
     initialInterventionOrdersData?.totalItems ?? item.interventionOrders.length
   );
   const [interventionOrdersError, setInterventionOrdersError] = useState<string | null>(null);
+  const [reprocessingActionError, setReprocessingActionError] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editKind, setEditKind] = useState<EditKind>(null);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
@@ -249,10 +253,37 @@ export function useUnifiedRegisterPreview(
     return true;
   };
 
-  const openHeaderModal = (modal: HeaderModal) => setActiveHeaderModal(modal);
+  const openHeaderModal = (modal: HeaderModal) => {
+    if (modal === 'reprocessing') {
+      setReprocessingActionError(null);
+    }
+
+    setActiveHeaderModal(modal);
+  };
+
   const closeHeaderModal = () => {
     setActiveHeaderModal(null);
     setBatchSearch('');
+    setReprocessingActionError(null);
+  };
+
+  const confirmReprocessing = async (payload: IReprocessingMarkPayload) => {
+    setReprocessingActionError(null);
+
+    const result = await markReprocessingAction({
+      contribuyenteId: payload.contribuyenteId,
+      description: payload.description?.trim() || null
+    });
+
+    if (!result.success) {
+      const errorMessage =
+        result.error ?? 'No fue posible marcar el CUIT en reproceso.';
+
+      setReprocessingActionError(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    toast.show(TOAST_DASHBOARD_MESSAGES.SEND_REPROCESSING_ERROR);
   };
 
   const selectLotOption = (lot: IUnifiedRegisterBatchOption) => {
@@ -645,6 +676,7 @@ export function useUnifiedRegisterPreview(
     interventionOrdersTotalPages,
     interventionOrdersTotalItems,
     interventionOrdersError,
+    reprocessingActionError,
     batchSearch,
     filteredLotOptions,
     activeSourceTableId,
@@ -675,6 +707,7 @@ export function useUnifiedRegisterPreview(
     setContactField,
     openHeaderModal,
     closeHeaderModal,
+    confirmReprocessing,
     selectLotOption,
     closeLotConfirmModal,
     openCreateModal,

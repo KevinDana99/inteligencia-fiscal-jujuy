@@ -1,5 +1,18 @@
 # Batch Management Feature Story
 
+## 2026-06-11 Fix apertura de Nuevo Lote
+
+- Se corrigio la apertura del modal desde el boton `Nuevo Lote` para que el `MouseEvent` de React no llegue como `initialLoadedCuits`.
+- `useBatchManagement` expone ahora un handler sin argumentos para el header, y `BatchManagementNavbarAction` invoca explicitamente el callback.
+- Se agrego una defensa runtime en el estado/filtro de CUITs cargados para que `filteredLoadedCuits` siempre resuelva como array.
+- Se agrego cobertura de regresion para `filterLoadedBatchCuits` cuando recibe una entrada no array.
+
+### Validation
+
+- `bun run test -- src/modules/batch-management/presentation/utils/batchManagementLoadedCuits.test.ts`
+- `bun x eslint src/modules/batch-management/presentation/hooks/useBatchManagement.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementLoadedCuits.ts src/modules/batch-management/presentation/utils/batchManagementLoadedCuits.ts src/modules/batch-management/presentation/utils/batchManagementLoadedCuits.test.ts src/modules/batch-management/presentation/components/BatchManagementPage/BatchManagementNavbarAction/index.tsx`
+- `bun run test -- src/modules/batch-management`
+
 ## 2026-06-11 Paginador de lotes
 
 - Se agrego un footer de paginacion a la tabla de `Gestion de Lotes` con rango visible, selector de filas por pagina y `Pagination` de Mantine.

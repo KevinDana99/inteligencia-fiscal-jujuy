@@ -23,6 +23,7 @@ import {
   IconFileText,
   IconListDetails,
 } from '@tabler/icons-react';
+import { SendToReprocessingModal } from '@/modules/reprocessing/presentation/components';
 import type {
   IUnifiedRegisterAddress,
   IUnifiedRegisterContact,
@@ -35,6 +36,9 @@ import type {
   IUnifiedRegisterNote,
   IUnifiedRegisterNotesListData
 } from '../../../data/models/UnifiedRegister';
+import { InformeGenerationModal } from '../InformeGenerationModal';
+import { InformePreviewModal } from '../InformePreviewModal';
+import { useInformeGeneration } from '../../hooks/useInformeGeneration';
 import { useUnifiedRegisterPreview } from '../../hooks/useUnifiedRegisterPreview';
 import classes from './UnifiedRegisterPreviewPage.module.css';
 
@@ -229,6 +233,7 @@ export function UnifiedRegisterPreviewPage({
     interventionOrdersTotalPages,
     interventionOrdersTotalItems,
     interventionOrdersError,
+    reprocessingActionError,
     batchSearch,
     filteredLotOptions,
     selectedLotOption,
@@ -258,6 +263,7 @@ export function UnifiedRegisterPreviewPage({
     setContactField,
     openHeaderModal,
     closeHeaderModal,
+    confirmReprocessing,
     selectLotOption,
     closeLotConfirmModal,
     openCreateModal,
@@ -284,6 +290,7 @@ export function UnifiedRegisterPreviewPage({
     initialMercurioData,
     initialInterventionOrdersData
   );
+  const informeGeneration = useInformeGeneration(item);
 
   const isEditingNote = editKind === 'note';
   const isEditingContact = editKind === 'contact';
@@ -339,6 +346,10 @@ export function UnifiedRegisterPreviewPage({
         : deleteKind === 'note'
           ? '¿Estás seguro que querés eliminar esta nota?'
           : '';
+  const closeInformeFlow = () => {
+    informeGeneration.resetFlow();
+    closeHeaderModal();
+  };
 
   return (
     <div className={classes.page}>
@@ -912,32 +923,15 @@ export function UnifiedRegisterPreviewPage({
         </div>
       </div>
 
-      <Modal
+      <SendToReprocessingModal
         opened={activeHeaderModal === 'reprocessing'}
         onClose={closeHeaderModal}
-        title="Marcar reproceso"
-        centered
-        zIndex={900}
-        classNames={{
-          overlay: classes.modalOverlay,
-          inner: classes.modalInner,
-          content: classes.modalContent,
-          header: classes.modalHeader,
-          body: classes.modalBody,
-          title: classes.modalTitle
-        }}
-      >
-        <Stack gap="sm">
-          <Text className={classes.modalText}>
-            Esta iteración solo implementa la apertura visual del modal de reproceso.
-          </Text>
-          <Group justify="flex-end">
-            <Button radius="xl" className={classes.staticButton} onClick={closeHeaderModal}>
-              Cerrar
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
+        contribuyenteId={item.contribuyenteId}
+        cuit={item.cuit}
+        razonSocial={item.businessName}
+        error={reprocessingActionError}
+        onConfirm={confirmReprocessing}
+      />
 
       <Modal
         opened={activeHeaderModal === 'crosses'}
@@ -978,32 +972,17 @@ export function UnifiedRegisterPreviewPage({
         </Stack>
       </Modal>
 
-      <Modal
-        opened={activeHeaderModal === 'report'}
-        onClose={closeHeaderModal}
-        title="Generar informe"
-        centered
-        zIndex={900}
-        classNames={{
-          overlay: classes.modalOverlay,
-          inner: classes.modalInner,
-          content: classes.modalContent,
-          header: classes.modalHeader,
-          body: classes.modalBody,
-          title: classes.modalTitle
-        }}
-      >
-        <Stack gap="sm">
-          <Text className={classes.modalText}>
-            Este modal queda mock hasta tener el flujo reutilizable final del proyecto.
-          </Text>
-          <Group justify="flex-end">
-            <Button radius="xl" className={classes.staticButton} onClick={closeHeaderModal}>
-              Cerrar
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
+      <InformeGenerationModal
+        opened={activeHeaderModal === 'report' && informeGeneration.step === 'form'}
+        report={informeGeneration}
+        onClose={closeInformeFlow}
+      />
+
+      <InformePreviewModal
+        opened={activeHeaderModal === 'report' && informeGeneration.step === 'preview'}
+        report={informeGeneration}
+        onClose={closeInformeFlow}
+      />
 
       <Modal
         opened={Boolean(selectedLotOption)}

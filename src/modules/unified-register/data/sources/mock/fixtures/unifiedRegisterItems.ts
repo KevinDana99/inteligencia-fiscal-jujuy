@@ -14,6 +14,15 @@ export const unifiedRegisterItemsFixture: IUnifiedRegisterItems = [
     riskLevel: 'A'
   },
   {
+    contribuyenteId: '9651b151-a51e-4ac9-914a-854230fbaa0a',
+    cuit: '30501685212',
+    businessName: 'CERAMICA DEL NORTE S.A.',
+    activity: 'Fabricacion de materiales ceramicos',
+    regime: 'Convenio Multilateral',
+    status: 'Activo',
+    riskLevel: 'A'
+  },
+  {
     contribuyenteId: '94f4d83f-c0f0-4478-afd2-511ff0a6051b',
     cuit: '30-70712345-6',
     businessName: 'DISTRIBUIDORA NORTE ANDINO S.A.',
@@ -63,13 +72,14 @@ export const unifiedRegisterItemsFixture: IUnifiedRegisterItems = [
 function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]): IUnifiedRegisterDetail {
   const alternateAddressIdByContribuyenteId: Record<string, string> = {
     '62495ad7-e17d-4edc-9400-5fef2d2a1012': 'd9d4eb81-52bf-4ea8-8d22-25a3be161d40',
+    '9651b151-a51e-4ac9-914a-854230fbaa0a': '49a1e806-2554-4d88-9d08-4ea2c7ac7758',
     '94f4d83f-c0f0-4478-afd2-511ff0a6051b': '71fb3981-3e16-4225-a96a-77ab6208443a',
     '96ea57a4-4ab0-4ce2-b14c-29dd75d89c8f': 'bfd7bb93-c8e1-4fcb-8bab-c207f1dfc70f',
     'ed3cb5ff-7398-4ff8-b8c7-af5111c1ca78': '697cd36d-dc4d-48f4-ae5f-eac993bd3191',
     '24eaef63-c447-4f17-ab6e-f554dad883ad': '8ebef6ea-4919-4135-b7ba-03e4576b20e9'
   };
 
-  return {
+  const detail: IUnifiedRegisterDetail = {
     ...item,
     startedAt: '01/06/2005',
     jurisdiction: 'Jujuy (J.910)',
@@ -308,6 +318,161 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
         cuitCount: 31
       }
     ]
+  };
+
+  if (item.contribuyenteId !== '9651b151-a51e-4ac9-914a-854230fbaa0a') {
+    return detail;
+  }
+
+  return {
+    ...detail,
+    startedAt: '10/02/2012',
+    jurisdiction: 'Jujuy (J.910)',
+    fiscalAddress: 'Ruta 66 Km 4, Perico, Jujuy',
+    commercialAddress: 'Ruta 66 Km 4, Parque Industrial Perico',
+    alternateAddress: 'San Martin 420, Perico',
+    controlLotsLabel: '2 lotes',
+    secondaryActivity: 'Comercio mayorista de materiales para construccion',
+    widgets: [
+      {
+        id: 'declared-bi',
+        label: 'BI Declarada',
+        value: '$8.420 M',
+        tone: 'blue',
+        badgeLabel: 'Convenio multilateral'
+      },
+      {
+        id: 'declared-taxes',
+        label: 'Impuestos declarados',
+        value: '$126.380 K',
+        tone: 'blue',
+        subtitle: 'Ultimos 12 meses'
+      },
+      {
+        id: 'debt',
+        label: 'Deuda',
+        value: '$14.800 K',
+        tone: 'red',
+        subtitle: 'Ultimos 12 meses'
+      },
+      {
+        id: 'returns',
+        label: 'Declaraciones juradas',
+        value: '',
+        tone: 'green',
+        splitValue: {
+          primaryValue: '11',
+          primaryLabel: 'Presentadas',
+          secondaryValue: '1',
+          secondaryLabel: 'No presentadas'
+        }
+      }
+    ],
+    activities: [
+      {
+        id: 'primary',
+        type: 'Primaria',
+        label: item.activity,
+        tag: 'Principal',
+        tagTone: 'blue'
+      },
+      {
+        id: 'secondary',
+        type: 'Secundaria',
+        label: 'Comercio mayorista de materiales para construccion',
+        tag: 'Secundaria',
+        tagTone: 'violet'
+      }
+    ],
+    fines: [
+      {
+        id: 'MER-2026-014',
+        issuedAt: '18/04/2026',
+        description: 'Mercaderia con documentacion incompleta',
+        amount: '$140.000',
+        status: 'En gestión'
+      },
+      {
+        id: 'MER-2025-221',
+        issuedAt: '03/11/2025',
+        description: 'Diferencia en remito de transporte',
+        amount: '$85.000',
+        status: 'Impaga'
+      },
+      {
+        id: 'MER-2025-118',
+        issuedAt: '12/06/2025',
+        description: 'Control de ruta regularizado',
+        amount: '$52.000',
+        status: 'Pagada'
+      }
+    ],
+    interventionOrders: [
+      {
+        id: 'OI-2026-0098',
+        period: '2024 - 2025',
+        reason: 'Cruce ARCA contra BI declarada',
+        amount: '$126.380.000',
+        status: 'En curso'
+      },
+      {
+        id: 'OI-2023-0412',
+        period: '2022 - 2023',
+        reason: 'Control de actividad industrial',
+        amount: '$14.800.000',
+        status: 'Cerrada'
+      }
+    ],
+    addresses: [
+      {
+        id: alternateAddressIdByContribuyenteId[item.contribuyenteId],
+        label: 'Alternativo',
+        address: 'San Martin 420, Perico'
+      }
+    ],
+    contacts: [
+      { id: 'phone', label: 'Telefono', value: '+54 388 491-2040' },
+      { id: 'mail', label: 'Mail', value: 'administracion@ceramicanorte.com.ar' },
+      { id: 'legal', label: 'Representante legal', value: 'Laura Benitez' },
+      { id: 'accountant', label: 'Contador', value: 'Estudio Salvatierra' }
+    ],
+    notes: [
+      {
+        id: 'note-1',
+        text: 'Pendiente validar diferencia de base imponible declarada.',
+        createdAt: '28/05/2026'
+      },
+      {
+        id: 'note-2',
+        text: 'Contribuyente incorporado al lote de control por riesgo A.',
+        createdAt: '20/05/2026'
+      }
+    ],
+    sourceTables: detail.sourceTables.map((table) => {
+      if (table.id === 'iibb') {
+        return {
+          ...table,
+          rows: [
+            ['2026-01', '$43.000.000', '$43.000.000', '$31.000.000', '10/02/2026', 'Alta', '✓ Validado'],
+            ['2026-02', '$47.500.000', '$47.500.000', '$34.000.000', '09/03/2026', 'Alta', '✓ Validado'],
+            ['2026-03', '$52.000.000', '$52.000.000', '$36.000.000', '10/04/2026', 'Media', 'Revisar']
+          ]
+        };
+      }
+
+      if (table.id === 'arca') {
+        return {
+          ...table,
+          rows: [
+            ['2026-01', '$58.000.000', '$43.000.000', '+$15.000.000', '11/02/2026', 'Diferencia'],
+            ['2026-02', '$63.000.000', '$47.500.000', '+$15.500.000', '11/03/2026', 'Diferencia'],
+            ['2026-03', '$69.000.000', '$52.000.000', '+$17.000.000', '11/04/2026', 'Diferencia']
+          ]
+        };
+      }
+
+      return table;
+    })
   };
 }
 

@@ -22,7 +22,7 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
 
   return {
     navbarAction: {
-      onOpenCreateModal: create.openCreateModal
+      onOpenCreateModal: () => create.openCreateModal()
     },
     searchBar: {
       searchValue: search.searchValue,
