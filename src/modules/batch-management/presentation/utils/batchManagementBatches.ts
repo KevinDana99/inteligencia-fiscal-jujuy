@@ -35,7 +35,10 @@ export function applyBatchDetailToList(
 export function mapBatchListDataForPresentation(batchListData: IBatchListData) {
   return {
     batches: batchListData.batches.map(mapBatchForPresentation),
-    totalBatches: batchListData.totalItems
+    page: batchListData.page,
+    itemsPerPage: batchListData.itemsPerPage,
+    totalBatches: batchListData.totalItems,
+    totalPages: batchListData.totalPages
   }
 }
 
@@ -85,6 +88,25 @@ export function getBatchListCountLabel(
   totalBatches: number
 ) {
   return `${visibleBatchesCount} de ${totalBatches} lotes`
+}
+
+export function getBatchListRangeLabel(
+  page: number,
+  itemsPerPage: number,
+  visibleBatchesCount: number,
+  totalBatches: number
+) {
+  if (totalBatches === 0 || visibleBatchesCount === 0) {
+    return 'Mostrando 0 de 0 lotes'
+  }
+
+  const firstVisibleBatch = (page - 1) * itemsPerPage + 1
+  const lastVisibleBatch = Math.min(
+    firstVisibleBatch + visibleBatchesCount - 1,
+    totalBatches
+  )
+
+  return `Mostrando ${firstVisibleBatch}-${lastVisibleBatch} de ${totalBatches} lotes`
 }
 
 export function getLoadedCuitsCountLabel(
