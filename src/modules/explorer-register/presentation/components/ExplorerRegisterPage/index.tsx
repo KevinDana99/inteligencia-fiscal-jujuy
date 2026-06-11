@@ -4,48 +4,63 @@ import {
   ActionIcon,
   Button,
   Card,
+  Group,
+  MultiSelect,
+  Pagination,
   Select,
   Stack,
+  Switch,
   Table,
-  Text
+  TagsInput,
+  Text,
+  TextInput
 } from '@mantine/core';
+import { DatePickerInput } from '@mantine/dates';
 import { IconPlus, IconSearch, IconX } from '@tabler/icons-react';
 import { DashboardNavbarActionPortal } from '@/modules/dashboard-layout/presentation/contexts';
-import type { ExplorerRegisterPillKey } from '../../../data/models/ExplorerRegister';
+import type {
+  IExplorerRegisterCatalog,
+  IExplorerRegisterFilter
+} from '../../../data/models/ExplorerRegister';
+import {
+  EXPLORER_REGISTER_ITEMS_PER_PAGE_OPTIONS,
+  EXPLORER_REGISTER_SWITCH_ACTIVE_VALUE,
+  EXPLORER_REGISTER_TEXTS
+} from '../../constants';
 import { useExplorerRegister } from '../../hooks/useExplorerRegister';
+import {
+  formatExplorerRegisterCellValue,
+  resolveExplorerRegisterRowValue
+} from '../../utils';
 import classes from './ExplorerRegisterPage.module.css';
 
-const PILL_LABEL_BY_KEY: Record<ExplorerRegisterPillKey, string> = {
-  rubro: 'Rubro',
-  actividad: 'Actividad',
-  tipo: 'Tipo Contribuyente',
-  domicilio: 'Domicilio',
-  localidad: 'Localidad',
-  provincia: 'Provincia',
-  riesgo: 'Matriz de riesgo',
-  control: 'Sistema de Control',
-  mercurio: 'Mercurio (Ruta)',
-  trufa: 'Trufa (Operativos)',
-  agente: 'Agente',
-  retenido: 'Sujeto Retenido',
-  convenio: 'Convenio Jurisdicción'
-};
+interface ExplorerRegisterPageProps {
+  catalog: IExplorerRegisterCatalog | null;
+  catalogError?: string;
+}
 
-export function ExplorerRegisterPage() {
-  const {
-    pills,
-    activePills,
-    togglePill,
-    filters,
-    updateFilter,
-    clearFilters,
-    search,
-    hasSearched,
-    visibleResults,
-    visibleFilterOptions,
-    deselectResult,
-    explorerSelectedCount
-  } = useExplorerRegister();
+function getFilterOptionData(filter: IExplorerRegisterFilter) {
+  return filter.allowedValues.map((value) => ({
+    value,
+    label: value
+  }));
+}
+
+export function ExplorerRegisterPage({
+  catalog,
+  catalogError
+}: ExplorerRegisterPageProps) {
+  const controller = useExplorerRegister(catalog);
+  const displayedError =
+    catalogError ??
+    controller.searchError ??
+    (controller.searchStatus === 409
+      ? EXPLORER_REGISTER_TEXTS.sourceUnavailable
+      : null);
+  const result = controller.result;
+  const resultColumns = result?.columns ?? [];
+  const currentPage = result?.page ?? 1;
+  const totalPages = result?.totalPages ?? 0;
 
   return (
     <>
@@ -55,31 +70,37 @@ export function ExplorerRegisterPage() {
           radius="xl"
           leftSection={<IconPlus size={16} />}
           className={classes.navbarActionButton}
+          disabled={!controller.hasCatalog || controller.selectedCount === 0}
         >
-          Crear lote con {explorerSelectedCount} resultados
+          {EXPLORER_REGISTER_TEXTS.navbarAction}{' '}
+          {controller.selectedCount}{' '}
+          {EXPLORER_REGISTER_TEXTS.navbarActionSuffix}
         </Button>
       </DashboardNavbarActionPortal>
 
       <div className={classes.page}>
         <div>
           <Text className={classes.sectionLabel}>
-            Columnas y filtros disponibles
+            {EXPLORER_REGISTER_TEXTS.columnsTitle}
           </Text>
           <div className={classes.pillsRow}>
-            {pills.map((pill) => {
-              const isActive = activePills.includes(pill.key);
+            {controller.columnPills.map((column) => {
+              const isActive = controller.selectedColumnCodes.includes(
+                column.code
+              );
 
               return (
                 <Button
-                  key={pill.key}
+                  key={column.code}
                   variant="default"
                   radius="xl"
                   className={`${classes.pillButton} ${
                     isActive ? classes.pillButtonActive : ''
                   }`}
-                  onClick={() => togglePill(pill.key)}
+                  disabled={!controller.hasCatalog}
+                  onClick={() => controller.toggleColumn(column.code)}
                 >
-                  {pill.label}
+                  {column.name}
                 </Button>
               );
             })}
@@ -89,116 +110,230 @@ export function ExplorerRegisterPage() {
         <Card className={classes.filtersCard} radius="lg" padding="lg">
           <Stack gap="md">
             <div className={classes.filtersHeader}>
-              <Text className={classes.filtersTitle}>Configurar filtros</Text>
+              <Text className={classes.filtersTitle}>
+                {EXPLORER_REGISTER_TEXTS.filtersTitle}
+              </Text>
               <div className={classes.filtersActions}>
                 <Button
                   variant="default"
                   radius="xl"
                   className={classes.clearButton}
-                  onClick={clearFilters}
+                  disabled={!controller.hasCatalog || controller.isPending}
+                  onClick={controller.clearFilters}
                 >
-                  Limpiar filtros
+                  {EXPLORER_REGISTER_TEXTS.clearFilters}
                 </Button>
                 <Button
                   radius="xl"
                   leftSection={<IconSearch size={13} />}
                   className={classes.searchButton}
-                  onClick={search}
+                  disabled={!controller.hasCatalog}
+                  loading={controller.isPending}
+                  onClick={controller.search}
                 >
-                  Buscar
+                  {EXPLORER_REGISTER_TEXTS.search}
                 </Button>
               </div>
             </div>
 
             <div className={classes.filtersGrid}>
-              {activePills.map((pill) => (
-                <div
-                  key={pill}
-                  className={`${classes.filterField} ${
-                    pill === 'actividad' || pill === 'domicilio'
-                      ? classes.filterFieldWide
-                      : ''
-                  }`}
-                >
-                  <Text className={classes.filterLabel}>
-                    {PILL_LABEL_BY_KEY[pill]}
-                  </Text>
-                  <Select
-                    value={filters[pill]}
-                    onChange={(value) => updateFilter(pill, value)}
-                    data={[
-                      { value: '', label: 'Todas las opciones' },
-                      ...(visibleFilterOptions.get(pill) ?? []).map((option) => ({
-                        value: option,
-                        label: option
-                      }))
-                    ]}
-                    className={classes.filterSelect}
+              {controller.activeFilters.map((filter) => {
+                const filterValue = controller.filterValues[filter.code] ?? [];
+                const filterOptions = getFilterOptionData(filter);
+                const disabled = !filter.available || controller.isPending;
+
+                return (
+                  <div key={filter.code} className={classes.filterField}>
+                    {filter.inputType === 'switch' ? (
+                      <Switch
+                        label={filter.name}
+                        checked={filterValue.includes(
+                          EXPLORER_REGISTER_SWITCH_ACTIVE_VALUE
+                        )}
+                        disabled={disabled}
+                        onChange={(event) =>
+                          controller.updateSwitchFilterValue(
+                            filter.code,
+                            event.currentTarget.checked
+                          )
+                        }
+                      />
+                    ) : (
+                      <>
+                        <Text className={classes.filterLabel}>
+                          {filter.name}
+                        </Text>
+                        {filter.inputType === 'texto' ? (
+                          <TextInput
+                            value={filterValue[0] ?? ''}
+                            disabled={disabled}
+                            className={classes.filterSelect}
+                            onChange={(event) =>
+                              controller.updateTextFilterValue(
+                                filter.code,
+                                event.currentTarget.value
+                              )
+                            }
+                          />
+                        ) : filterOptions.length > 0 ? (
+                          <MultiSelect
+                            value={filterValue}
+                            data={filterOptions}
+                            disabled={disabled}
+                            searchable
+                            clearable
+                            className={classes.filterSelect}
+                            onChange={(values) =>
+                              controller.updateFilterValues(
+                                filter.code,
+                                values
+                              )
+                            }
+                          />
+                        ) : (
+                          <TagsInput
+                            value={filterValue}
+                            disabled={disabled}
+                            className={classes.filterSelect}
+                            onChange={(values) =>
+                              controller.updateFilterValues(
+                                filter.code,
+                                values
+                              )
+                            }
+                          />
+                        )}
+                      </>
+                    )}
+                    {!filter.available && filter.unavailableReason ? (
+                      <Text className={classes.filterHint}>
+                        {filter.unavailableReason}
+                      </Text>
+                    ) : null}
+                  </div>
+                );
+              })}
+
+              {controller.hasActiveTemporalFilters ? (
+                <>
+                  <DatePickerInput
+                    label={EXPLORER_REGISTER_TEXTS.temporalStart}
+                    placeholder={EXPLORER_REGISTER_TEXTS.temporalStart}
+                    value={controller.temporalRange.startDate || null}
+                    clearable
+                    disabled={controller.isPending}
+                    valueFormat="YYYY-MM-DD"
+                    className={`${classes.filterSelect} ${classes.datePickerInput}`}
+                    onChange={(value) =>
+                      controller.updateTemporalRange('startDate', value ?? '')
+                    }
                   />
-                </div>
-              ))}
+                  <DatePickerInput
+                    label={EXPLORER_REGISTER_TEXTS.temporalEnd}
+                    placeholder={EXPLORER_REGISTER_TEXTS.temporalEnd}
+                    value={controller.temporalRange.endDate || null}
+                    clearable
+                    disabled={controller.isPending}
+                    valueFormat="YYYY-MM-DD"
+                    className={`${classes.filterSelect} ${classes.datePickerInput}`}
+                    onChange={(value) =>
+                      controller.updateTemporalRange('endDate', value ?? '')
+                    }
+                  />
+                </>
+              ) : null}
             </div>
           </Stack>
         </Card>
 
-      {hasSearched ? (
-        visibleResults.length > 0 ? (
+        {displayedError ? (
+          <Card className={classes.errorCard} padding="md" radius="lg">
+            <Text className={classes.errorText}>{displayedError}</Text>
+          </Card>
+        ) : null}
+
+        {controller.hasSearched && result && controller.visibleRows.length > 0 ? (
           <div className={classes.tableWrap}>
             <Table withColumnBorders={false} className={classes.table}>
               <Table.Thead className={classes.thead}>
                 <Table.Tr>
                   <Table.Th className={`${classes.th} ${classes.xHeader}`} />
-                  <Table.Th className={classes.th}>CUIT</Table.Th>
-                  <Table.Th className={classes.th}>Nombre / Razón Social</Table.Th>
-                  {activePills.map((pill) => (
-                    <Table.Th key={pill} className={classes.th}>
-                      {PILL_LABEL_BY_KEY[pill]}
+                  {resultColumns.map((column) => (
+                    <Table.Th key={column.code} className={classes.th}>
+                      {column.name}
                     </Table.Th>
                   ))}
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
-                {visibleResults.map((item) => (
-                  <Table.Tr key={item.id}>
+                {controller.visibleRows.map((row) => (
+                  <Table.Tr key={row.cuit}>
                     <Table.Td className={classes.td}>
                       <ActionIcon
                         variant="subtle"
                         radius="xl"
                         className={classes.removeButton}
-                        onClick={() => deselectResult(item.id)}
-                        aria-label={`Deseleccionar ${item.businessName}`}
+                        onClick={() => controller.deselectRow(row.cuit)}
+                        aria-label={`Deseleccionar ${row.businessName}`}
                       >
                         <IconX size={16} />
                       </ActionIcon>
                     </Table.Td>
-                    <Table.Td className={classes.td}>{item.cuit}</Table.Td>
-                    <Table.Td className={`${classes.td} ${classes.businessName}`}>
-                      {item.businessName}
-                    </Table.Td>
-                    {activePills.map((pill) => (
-                      <Table.Td key={pill} className={classes.td}>
-                        {item[pill]}
+                    {resultColumns.map((column) => (
+                      <Table.Td key={column.code} className={classes.td}>
+                        {formatExplorerRegisterCellValue(
+                          resolveExplorerRegisterRowValue(row, column)
+                        )}
                       </Table.Td>
                     ))}
                   </Table.Tr>
                 ))}
               </Table.Tbody>
             </Table>
+            <Group justify="space-between" className={classes.paginationBar}>
+              <Text className={classes.paginationText}>
+                {EXPLORER_REGISTER_TEXTS.totalResults}: {result.totalItems}
+              </Text>
+              <Group gap="sm">
+                <Select
+                  aria-label={EXPLORER_REGISTER_TEXTS.pageSize}
+                  value={String(controller.itemsPerPage)}
+                  data={EXPLORER_REGISTER_ITEMS_PER_PAGE_OPTIONS.map(
+                    (option) => ({
+                      value: String(option),
+                      label: String(option)
+                    })
+                  )}
+                  className={classes.pageSizeSelect}
+                  disabled={controller.isPending}
+                  onChange={(value) =>
+                    controller.changeItemsPerPage(Number(value ?? 20))
+                  }
+                />
+                <Pagination
+                  value={currentPage}
+                  total={Math.max(totalPages, 1)}
+                  disabled={controller.isPending || totalPages <= 1}
+                  onChange={controller.changePage}
+                />
+              </Group>
+            </Group>
           </div>
+        ) : controller.hasSearched ? (
+          <Card className={classes.fallbackCard} padding="xl" radius="lg">
+            <Text className={classes.fallbackText}>
+              {EXPLORER_REGISTER_TEXTS.emptyFallback}
+            </Text>
+          </Card>
         ) : (
           <Card className={classes.fallbackCard} padding="xl" radius="lg">
             <Text className={classes.fallbackText}>
-              No se encontro coincidencias para la busqueda realizada
+              {controller.hasCatalog
+                ? EXPLORER_REGISTER_TEXTS.initialFallback
+                : EXPLORER_REGISTER_TEXTS.catalogFallback}
             </Text>
           </Card>
-        )
-      ) : (
-        <Card className={classes.fallbackCard} padding="xl" radius="lg">
-          <Text className={classes.fallbackText}>
-            Seleccioná columnas/filtros arriba y presioná Buscar para poblar el cuadro.
-          </Text>
-        </Card>
-      )}
+        )}
       </div>
     </>
   );

@@ -111,6 +111,7 @@
 
 .filterField {
   min-width: 160px;
+  max-width: 260px;
 }
 
 .filterFieldWide {
@@ -122,6 +123,16 @@
   color: var(--mantine-color-gray-7);
   font-size: 12px;
   font-weight: 500;
+}
+
+.filterHint {
+  margin-top: 4px;
+  color: var(--mantine-color-gray-5);
+  font-size: 11px;
+}
+
+.datePickerInput {
+  min-width: 260px;
 }
 
 .filterSelect :global(.mantine-Input-input) {
@@ -166,11 +177,12 @@
   border: 1px solid var(--mantine-color-gray-2);
   border-radius: 12px;
   background: var(--mantine-color-white);
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .table {
   --table-border-color: var(--mantine-color-gray-2);
+  min-width: max-content;
 }
 
 .thead {
@@ -217,8 +229,34 @@
   background: var(--mantine-color-white);
 }
 
+.errorCard {
+  border: 1px solid var(--mantine-color-red-2);
+  background: var(--mantine-color-red-0);
+}
+
+.errorText {
+  color: var(--mantine-color-red-8);
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .fallbackText {
   color: var(--mantine-color-gray-6);
   font-size: 14px;
   text-align: center;
+}
+
+.paginationBar {
+  border-top: 1px solid var(--mantine-color-gray-2);
+  padding: 12px 14px;
+}
+
+.paginationText {
+  color: var(--mantine-color-gray-6);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pageSizeSelect {
+  width: 88px;
 }
