@@ -1,5 +1,7 @@
 import type { IBatchManagementSource } from '../../interfaces/BatchManagementSource';
 import type {
+  IBatchCrossExecutionPayload,
+  IBatchCrossExecutionSummary,
   IBatchCreatePayload,
   IBatchCreatedSummary,
   IBatchListData,
@@ -97,8 +99,13 @@ export class MockBatchManagementSource implements IBatchManagementSource {
             batch.batchNumber === normalizedSearch
         )
       : batchManagementMock;
+    const page = params.page ?? 1;
+    const itemsPerPage = params.itemsPerPage ?? 20;
+    const totalPages = Math.ceil(items.length / itemsPerPage);
+    const start = (page - 1) * itemsPerPage;
+    const paginatedItems = totalPages === 0 ? [] : items.slice(start, start + itemsPerPage);
 
-    const requestUrl = `/api/lotes?pagina=${params.page ?? 1}&itemsPagina=${params.itemsPerPage ?? 20}${
+    const requestUrl = `/api/lotes?pagina=${page}&itemsPagina=${itemsPerPage}${
       params.search?.trim() ? `&busqueda=${encodeURIComponent(params.search.trim())}` : ''
     }`;
 
@@ -110,16 +117,16 @@ export class MockBatchManagementSource implements IBatchManagementSource {
           METHOD: 'GET',
           REQUEST_RAW: {
             busqueda: params.search ?? null,
-            pagina: params.page ?? 1,
-            itemsPagina: params.itemsPerPage ?? 20,
+            pagina: page,
+            itemsPagina: itemsPerPage,
             requestUrl
           },
           RESPONSE_RAW: {
-            pagina: 1,
-            itemsPagina: 20,
+            pagina: page,
+            itemsPagina: itemsPerPage,
             totalItems: items.length,
-            totalPaginas: 1,
-            lotes: items.map(toRawListItem)
+            totalPaginas: totalPages,
+            lotes: paginatedItems.map(toRawListItem)
           }
         },
         null,
@@ -128,11 +135,11 @@ export class MockBatchManagementSource implements IBatchManagementSource {
     );
 
     return {
-      page: 1,
-      itemsPerPage: 20,
+      page,
+      itemsPerPage,
       totalItems: items.length,
-      totalPages: 1,
-      batches: items
+      totalPages,
+      batches: paginatedItems
     };
   }
 
@@ -389,6 +396,54 @@ export class MockBatchManagementSource implements IBatchManagementSource {
             regimen: response.regime,
             cantidadCuits: response.cuitCount,
             fechaGeneracion: response.createdAt
+          }
+        },
+        null,
+        2
+      )
+    );
+
+    return response;
+  }
+
+  async executeBatchCross(
+    payload: IBatchCrossExecutionPayload
+  ): Promise<IBatchCrossExecutionSummary> {
+    const response: IBatchCrossExecutionSummary = {
+      executionId: Date.now(),
+      crossCode: payload.crossCode,
+      crossVersion: payload.crossVersion,
+      status: 'pendiente',
+      idempotencyKey: `mock-${payload.crossCode}-${payload.batchId}`,
+      requestedAt: new Date().toISOString()
+    };
+
+    console.log(
+      JSON.stringify(
+        {
+          endpoint: '/api/procesos-informacion/cruces/{codigoCruce}/ejecuciones',
+          action: 'MockBatchManagementSource.executeBatchCross',
+          METHOD: 'POST',
+          REQUEST_RAW: {
+            codigoCruce: payload.crossCode,
+            requestUrl: `/api/procesos-informacion/cruces/${payload.crossCode}/ejecuciones`,
+            body: {
+              versionCruce: payload.crossVersion,
+              tipoOrigen: 'por_lote',
+              loteId: payload.batchId,
+              contribuyenteId: null,
+              periodoInicio: payload.periodFrom,
+              periodoFin: payload.periodTo,
+              parametros: payload.parameters ?? {}
+            }
+          },
+          RESPONSE_RAW: {
+            ejecucionId: response.executionId,
+            codigoCruce: response.crossCode,
+            versionCruce: response.crossVersion,
+            estado: response.status,
+            claveIdempotencia: response.idempotencyKey,
+            fechaSolicitud: response.requestedAt
           }
         },
         null,

@@ -1,0 +1,29 @@
+'use client'
+
+import type { BatchManagementTableController } from '../../hooks/useBatchManagement'
+
+export function useBatchManagementTable(controller: BatchManagementTableController) {
+  return {
+    isEmpty: !controller.batches.length,
+    rows: controller.batches.map((batch) => ({
+      id: batch.id,
+      batch,
+      isExpanded: controller.expandedBatchId === batch.id,
+      isLoading: controller.loadingBatchId === batch.id,
+      onToggle: () => controller.onToggleBatch(batch.id),
+      crossMenu: {
+        batchId: batch.id,
+        filters: controller.getBatchCrossFilters(batch.id),
+        validationMessage: controller.getBatchCrossValidationMessage(batch.id),
+        executionError: controller.getBatchCrossExecutionError(batch.id),
+        canConfirm: controller.canConfirmBatchCrossFilters(batch.id),
+        isExecuting: controller.isBatchCrossExecutionPending(batch.id),
+        onSectionToggle: controller.toggleBatchCrossSection,
+        onYearChange: controller.setBatchCrossYear,
+        onMonthChange: controller.setBatchCrossMonth,
+        onCrossTypeToggle: controller.toggleBatchCrossType,
+        onConfirm: controller.confirmBatchCrossFilters
+      }
+    }))
+  }
+}

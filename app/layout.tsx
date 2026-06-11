@@ -1,4 +1,6 @@
 import '@mantine/core/styles.css'
+import '@mantine/dates/styles.css'
+import '@mantine/notifications/styles.css'
 import './globals.css'
 import type { Metadata } from 'next'
 import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core'
@@ -44,6 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang='es' {...mantineHtmlProps} className={dmSans.variable}>
       <head>
         <ColorSchemeScript defaultColorScheme='light' />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body suppressHydrationWarning>
         <Providers>{children}</Providers>

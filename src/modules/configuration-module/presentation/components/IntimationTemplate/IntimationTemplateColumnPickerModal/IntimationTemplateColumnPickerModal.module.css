@@ -1,0 +1,74 @@
+.modalOverlay {
+  background: rgb(15 23 42 / 0.45);
+  backdrop-filter: blur(3px);
+}
+
+.columnModalContent {
+  width: 620px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 16px;
+  background: var(--mantine-color-white);
+  box-shadow: 0 22px 48px rgb(15 23 42 / 0.18);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+}
+
+.columnModalBody {
+  padding: 20px 24px;
+  flex: 1;
+  overflow: auto;
+}
+
+.modalTitleWrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.modalTitle {
+  color: var(--mantine-color-gray-9);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.modalSubtitle {
+  margin-top: 3px;
+  color: var(--mantine-color-gray-5);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.modalClose {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: var(--mantine-color-gray-1);
+  color: var(--mantine-color-gray-5);
+}
+
+.columnPickerGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  height: 320px;
+}
+
+@media (max-width: 1280px) {
+  .columnPickerGrid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+}

@@ -1,4 +1,5 @@
 import { Suspense, type ReactNode } from 'react';
+import PrivateLayoutFallback from './PrivateLayoutFallback';
 import PrivateLayoutGate from './PrivateLayoutGate';
 
 export default function PrivateLayout({
@@ -7,7 +8,7 @@ export default function PrivateLayout({
   children: ReactNode;
 }) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<PrivateLayoutFallback />}>
       <PrivateLayoutGate>{children}</PrivateLayoutGate>
     </Suspense>
   );

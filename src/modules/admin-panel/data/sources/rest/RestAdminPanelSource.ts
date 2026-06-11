@@ -1,4 +1,4 @@
-import type { ApiClientConfig } from '@/lib/api-client';
+import { fetchWithAuthRetry, type ApiClientConfig } from '@/lib/api-client';
 import type { IAdminPanelSource } from '../../interfaces/AdminPanelSource';
 import type {
   IAdminAllowedDomains,
@@ -51,6 +51,30 @@ async function parseJsonResponse<T>(response: Response): Promise<T | null> {
   }
 }
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function normalizeUsuarioId(userId: string) {
+  return userId.trim();
+}
+
+function isValidUsuarioId(userId: string) {
+  return UUID_PATTERN.test(userId);
+}
+
+function buildAdminUserPath(userId: string) {
+  return `/api/super-administrador/usuarios/${encodeURIComponent(userId)}`;
+}
+
+function buildInvalidUsuarioIdResult(): IAdminPanelCommandResult {
+  return {
+    success: false,
+    error: 'El usuarioId debe ser un UUID valido.',
+    code: 'super_administrador.usuarios.usuario_id_invalido',
+    status: 400
+  };
+}
+
 function getErrorMessage(error: ApiErrorResponseDto | null, fallback: string) {
   if (error?.mensaje?.trim()) {
     return error.mensaje;
@@ -85,8 +109,19 @@ export class RestAdminPanelSource implements IAdminPanelSource {
     };
   }
 
+  private fetch(path: string, init: RequestInit) {
+    return fetchWithAuthRetry(
+      this.buildUrl(path),
+      {
+        ...init,
+        headers: init.headers ?? this.buildHeaders()
+      },
+      this.config
+    );
+  }
+
   async getAdminPanelData(): Promise<IAdminPanelData> {
-    const response = await fetch(this.buildUrl('/api/super-administrador/usuarios'), {
+    const response = await this.fetch('/api/super-administrador/usuarios', {
       method: 'GET',
       headers: this.buildHeaders()
     });
@@ -101,8 +136,14 @@ export class RestAdminPanelSource implements IAdminPanelSource {
   }
 
   async getAdminUser(userId: string): Promise<IAdminPanelUser> {
-    const response = await fetch(
-      this.buildUrl(`/api/super-administrador/usuarios/${userId}`),
+    const normalizedUsuarioId = normalizeUsuarioId(userId);
+
+    if (!isValidUsuarioId(normalizedUsuarioId)) {
+      throw new Error('El usuarioId debe ser un UUID valido.');
+    }
+
+    const response = await this.fetch(
+      buildAdminUserPath(normalizedUsuarioId),
       {
         method: 'GET',
         headers: this.buildHeaders()
@@ -119,8 +160,8 @@ export class RestAdminPanelSource implements IAdminPanelSource {
   }
 
   async getAllowedDomains(): Promise<IAdminAllowedDomains> {
-    const response = await fetch(
-      this.buildUrl('/api/super-administrador/dominios-permitidos'),
+    const response = await this.fetch(
+      '/api/super-administrador/dominios-permitidos',
       {
         method: 'GET',
         headers: this.buildHeaders()
@@ -148,7 +189,7 @@ export class RestAdminPanelSource implements IAdminPanelSource {
       confirmarContrasena: params.confirmPassword
     };
 
-    const response = await fetch(this.buildUrl('/api/super-administrador/usuarios'), {
+    const response = await this.fetch('/api/super-administrador/usuarios', {
       method: 'POST',
       headers: this.buildHeaders(),
       body: JSON.stringify(payload)
@@ -181,6 +222,12 @@ export class RestAdminPanelSource implements IAdminPanelSource {
   async updateAdminUser(
     params: IAdminPanelUpdateUserInput
   ): Promise<IAdminPanelCommandResult> {
+    const normalizedUsuarioId = normalizeUsuarioId(params.id);
+
+    if (!isValidUsuarioId(normalizedUsuarioId)) {
+      return buildInvalidUsuarioIdResult();
+    }
+
     const normalizedNewPassword = params.newPassword?.trim() ?? '';
     const normalizedConfirmPassword = params.confirmPassword?.trim() ?? '';
     const shouldUpdatePassword = normalizedNewPassword.length > 0;
@@ -196,8 +243,8 @@ export class RestAdminPanelSource implements IAdminPanelSource {
         : null
     };
 
-    const response = await fetch(
-      this.buildUrl(`/api/super-administrador/usuarios/${params.id}`),
+    const response = await this.fetch(
+      buildAdminUserPath(normalizedUsuarioId),
       {
         method: 'PATCH',
         headers: this.buildHeaders(),
@@ -219,8 +266,14 @@ export class RestAdminPanelSource implements IAdminPanelSource {
   }
 
   async deleteAdminUser(userId: string): Promise<IAdminPanelCommandResult> {
-    const response = await fetch(
-      this.buildUrl(`/api/super-administrador/usuarios/${userId}`),
+    const normalizedUsuarioId = normalizeUsuarioId(userId);
+
+    if (!isValidUsuarioId(normalizedUsuarioId)) {
+      return buildInvalidUsuarioIdResult();
+    }
+
+    const response = await this.fetch(
+      buildAdminUserPath(normalizedUsuarioId),
       {
         method: 'DELETE',
         headers: this.buildHeaders()
@@ -241,8 +294,8 @@ export class RestAdminPanelSource implements IAdminPanelSource {
   }
 
   async addAllowedDomain(domain: string): Promise<IAdminPanelCommandResult> {
-    const response = await fetch(
-      this.buildUrl('/api/super-administrador/dominios-permitidos'),
+    const response = await this.fetch(
+      '/api/super-administrador/dominios-permitidos',
       {
         method: 'POST',
         headers: this.buildHeaders(),
@@ -266,8 +319,8 @@ export class RestAdminPanelSource implements IAdminPanelSource {
   }
 
   async deleteAllowedDomain(domainId: number): Promise<IAdminPanelCommandResult> {
-    const response = await fetch(
-      this.buildUrl(`/api/super-administrador/dominios-permitidos/${domainId}`),
+    const response = await this.fetch(
+      `/api/super-administrador/dominios-permitidos/${domainId}`,
       {
         method: 'DELETE',
         headers: this.buildHeaders()

@@ -1,65 +1,71 @@
 import type { Route } from 'next'
+import {
+  DASHBOARD_NAV_GROUPS,
+  DASHBOARD_NAV_ICONS,
+  DASHBOARD_NAV_LABELS,
+  DASHBOARD_ROUTES,
+  DASHBOARD_SECTIONS
+} from '../../constants'
 
 export type DashboardSection =
-  | 'padron-unificado'
-  | 'explorar-padron'
-  | 'gestion-de-lotes'
-  | 'gestion-de-cruces'
-  | 'reproceso'
-  | 'settings'
+  (typeof DASHBOARD_SECTIONS)[keyof typeof DASHBOARD_SECTIONS]
 
-export type DashboardNavGroup = 'analisis' | 'seguimiento' | 'personalizacion'
+export type DashboardNavGroup =
+  (typeof DASHBOARD_NAV_GROUPS)[keyof typeof DASHBOARD_NAV_GROUPS]
+
+export type DashboardNavIcon =
+  (typeof DASHBOARD_NAV_ICONS)[keyof typeof DASHBOARD_NAV_ICONS]
 
 export interface IDashboardNavItem {
   section: DashboardSection
   label: string
   href: Route
   group: DashboardNavGroup
-  icon: 'search' | 'grid' | 'activity' | 'clock' | 'settings' | 'sliders'
+  icon: DashboardNavIcon
 }
 
 export const DASHBOARD_NAV_ITEMS: IDashboardNavItem[] = [
   {
-    section: 'padron-unificado',
-    label: 'Padrón Unificado',
-    href: '/',
-    group: 'analisis',
-    icon: 'search'
+    section: DASHBOARD_SECTIONS.PADRON_UNIFICADO,
+    label: DASHBOARD_NAV_LABELS.PADRON_UNIFICADO,
+    href: DASHBOARD_ROUTES.PADRON_UNIFICADO,
+    group: DASHBOARD_NAV_GROUPS.ANALYSIS,
+    icon: DASHBOARD_NAV_ICONS.SEARCH
   },
   {
-    section: 'explorar-padron',
-    label: 'Explorar Padrón',
-    href: '/explorar-padron' as Route,
-    group: 'analisis',
-    icon: 'sliders'
+    section: DASHBOARD_SECTIONS.EXPLORAR_PADRON,
+    label: DASHBOARD_NAV_LABELS.EXPLORAR_PADRON,
+    href: DASHBOARD_ROUTES.EXPLORAR_PADRON,
+    group: DASHBOARD_NAV_GROUPS.ANALYSIS,
+    icon: DASHBOARD_NAV_ICONS.SLIDERS
   },
   {
-    section: 'gestion-de-lotes',
-    label: 'Gestión de Lotes',
-    href: '/gestion-de-lotes',
-    group: 'analisis',
-    icon: 'grid'
+    section: DASHBOARD_SECTIONS.GESTION_DE_LOTES,
+    label: DASHBOARD_NAV_LABELS.GESTION_DE_LOTES,
+    href: DASHBOARD_ROUTES.GESTION_DE_LOTES,
+    group: DASHBOARD_NAV_GROUPS.ANALYSIS,
+    icon: DASHBOARD_NAV_ICONS.GRID
   },
   {
-    section: 'gestion-de-cruces',
-    label: 'Gestión de Cruces',
-    href: '/gestion-de-cruces',
-    group: 'analisis',
-    icon: 'activity'
+    section: DASHBOARD_SECTIONS.GESTION_DE_CRUCES,
+    label: DASHBOARD_NAV_LABELS.GESTION_DE_CRUCES,
+    href: DASHBOARD_ROUTES.GESTION_DE_CRUCES,
+    group: DASHBOARD_NAV_GROUPS.ANALYSIS,
+    icon: DASHBOARD_NAV_ICONS.ACTIVITY
   },
   {
-    section: 'reproceso',
-    label: 'Reproceso',
-    href: '/reproceso',
-    group: 'seguimiento',
-    icon: 'clock'
+    section: DASHBOARD_SECTIONS.REPROCESO,
+    label: DASHBOARD_NAV_LABELS.REPROCESO,
+    href: DASHBOARD_ROUTES.REPROCESO,
+    group: DASHBOARD_NAV_GROUPS.TRACKING,
+    icon: DASHBOARD_NAV_ICONS.CLOCK
   },
   {
-    section: 'settings',
-    label: 'Configuración',
-    href: '/configuracion',
-    group: 'personalizacion',
-    icon: 'settings'
+    section: DASHBOARD_SECTIONS.SETTINGS,
+    label: DASHBOARD_NAV_LABELS.SETTINGS,
+    href: DASHBOARD_ROUTES.SETTINGS,
+    group: DASHBOARD_NAV_GROUPS.CUSTOMIZATION,
+    icon: DASHBOARD_NAV_ICONS.SETTINGS
   }
 ]
 
@@ -71,25 +77,25 @@ export function getDashboardSectionFromPathname(
   }
 
   switch (pathname) {
-    case '/explorar-padron':
-      return 'explorar-padron'
-    case '/gestion-de-lotes':
-      return 'gestion-de-lotes'
-    case '/gestion-de-cruces':
-      return 'gestion-de-cruces'
-    case '/reproceso':
-      return 'reproceso'
-    case '/configuracion':
-      return 'settings'
-    case '/':
+    case DASHBOARD_ROUTES.EXPLORAR_PADRON:
+      return DASHBOARD_SECTIONS.EXPLORAR_PADRON
+    case DASHBOARD_ROUTES.GESTION_DE_LOTES:
+      return DASHBOARD_SECTIONS.GESTION_DE_LOTES
+    case DASHBOARD_ROUTES.GESTION_DE_CRUCES:
+      return DASHBOARD_SECTIONS.GESTION_DE_CRUCES
+    case DASHBOARD_ROUTES.REPROCESO:
+      return DASHBOARD_SECTIONS.REPROCESO
+    case DASHBOARD_ROUTES.SETTINGS:
+      return DASHBOARD_SECTIONS.SETTINGS
+    case DASHBOARD_ROUTES.PADRON_UNIFICADO:
     default:
-      return 'padron-unificado'
+      return DASHBOARD_SECTIONS.PADRON_UNIFICADO
   }
 }
 
 export function getDashboardSectionLabel(section: DashboardSection): string {
   return (
     DASHBOARD_NAV_ITEMS.find((item) => item.section === section)?.label ??
-    'Padrón Unificado'
+    DASHBOARD_NAV_LABELS.PADRON_UNIFICADO
   )
 }

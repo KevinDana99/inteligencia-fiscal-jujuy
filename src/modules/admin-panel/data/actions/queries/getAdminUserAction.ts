@@ -20,16 +20,17 @@ function mapUserToContractLog(user: IAdminPanelUser) {
 export async function getAdminUserAction(
   userId: string
 ): Promise<IModuleQueryResult<IAdminPanelUser>> {
-  const endpoint = `/api/super-administrador/usuarios/${userId}`;
+  const normalizedUserId = userId.trim();
+  const endpoint = `/api/super-administrador/usuarios/${encodeURIComponent(normalizedUserId)}`;
   const action = 'getAdminUserAction';
   const METHOD = 'GET';
   const REQUEST = {
-    usuarioId: userId
+    usuarioId: normalizedUserId
   };
 
   try {
     const source = await createServerAdminPanelSource();
-    const data = await source.getAdminUser(userId);
+    const data = await source.getAdminUser(normalizedUserId);
 
     console.log({
       endpoint,

@@ -2,32 +2,43 @@
 
 import type { ReactNode } from 'react'
 import type { IAuthSession } from '@/modules/auth/data/models/Auth'
-import { DashboardNavbarActionProvider } from '../../contexts/DashboardNavbarActionContext'
+import type { ConfigurationType } from '@/modules/configuration-module/types'
+import { ConfigProvider } from '@/modules/configuration-module/presentation/contexts'
+import {
+  DashboardNavbarActionProvider
+} from '../../contexts'
 import { DashboardTemplate } from '../DashboardTemplate'
 import { useDashboardLayoutShell } from '../../hooks'
+import { DASHBOARD_NAV_GROUPS } from '../../../constants'
+
+interface DashboardLayoutShellProps {
+  session: IAuthSession;
+  initialConfig: ConfigurationType;
+  children: ReactNode;
+}
 
 export function DashboardLayoutShell({
   session,
+  initialConfig,
   children
-}: {
-  session: IAuthSession
-  children: ReactNode
-}) {
+}: DashboardLayoutShellProps) {
   const { currentSection, currentSectionLabel, navGroups } =
     useDashboardLayoutShell()
 
   return (
-    <DashboardNavbarActionProvider key={currentSection}>
-      <DashboardTemplate
-        session={session}
-        currentSection={currentSection}
-        currentSectionLabel={currentSectionLabel}
-        analisisItems={navGroups.analisis}
-        seguimientoItems={navGroups.seguimiento}
-        personalizacionItems={navGroups.personalizacion}
-      >
-        {children}
-      </DashboardTemplate>
-    </DashboardNavbarActionProvider>
+    <ConfigProvider initialConfig={initialConfig}>
+      <DashboardNavbarActionProvider key={currentSection}>
+        <DashboardTemplate
+          session={session}
+          currentSection={currentSection}
+          currentSectionLabel={currentSectionLabel}
+          analisisItems={navGroups[DASHBOARD_NAV_GROUPS.ANALYSIS]}
+          seguimientoItems={navGroups[DASHBOARD_NAV_GROUPS.TRACKING]}
+          personalizacionItems={navGroups[DASHBOARD_NAV_GROUPS.CUSTOMIZATION]}
+        >
+          {children}
+        </DashboardTemplate>
+      </DashboardNavbarActionProvider>
+    </ConfigProvider>
   )
 }

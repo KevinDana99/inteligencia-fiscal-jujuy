@@ -1,0 +1,17 @@
+.notificationRoot {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.notificationBody,
+.notificationMessage {
+  width: 100%;
+  margin: 0;
+}
+
+.notificationCloseButton {
+  display: none;
+}

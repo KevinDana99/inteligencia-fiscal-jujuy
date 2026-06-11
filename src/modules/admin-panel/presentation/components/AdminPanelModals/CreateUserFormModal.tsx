@@ -23,8 +23,12 @@ function CreateUserFormModal({
     confirmPasswordError,
     error,
     formAction,
+    formValues,
     defaultValues,
+    handleFirstNameChange,
+    handleLastNameChange,
     handleEmailChange,
+    handleRoleChange,
     handleConfirmPasswordChange,
     handleSubmitCapture,
     handlePasswordChange
@@ -45,13 +49,17 @@ function CreateUserFormModal({
         <AdminPanelUserFormFields
           roleOptions={roleOptions}
           defaultValues={defaultValues}
+          values={formValues}
           password={ADMIN_PANEL_CREATE_USER_PASSWORD_CONFIG}
           passwordStrength={passwordStrength}
           passwordColor={passwordColor}
           isPending={isPending}
           emailError={emailError}
           confirmPasswordError={confirmPasswordError}
+          onFirstNameChange={handleFirstNameChange}
+          onLastNameChange={handleLastNameChange}
           onEmailChange={handleEmailChange}
+          onRoleChange={handleRoleChange}
           onPasswordChange={handlePasswordChange}
           onConfirmPasswordChange={handleConfirmPasswordChange}
         />

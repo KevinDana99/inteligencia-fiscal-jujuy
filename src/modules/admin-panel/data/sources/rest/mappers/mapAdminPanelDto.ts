@@ -18,28 +18,46 @@ function normalizeRoleLabel(value: string) {
     .replace(/[\s_-]/g, '');
 }
 
+function getRequiredUsuarioId(usuarioId: string | undefined) {
+  const normalizedUsuarioId = usuarioId?.trim();
+
+  if (!normalizedUsuarioId) {
+    throw new Error('La respuesta de usuarios no incluyo usuarioId.');
+  }
+
+  return normalizedUsuarioId;
+}
+
+function getOptionalUsuarioId(usuarioId: string | undefined) {
+  return usuarioId?.trim() || null;
+}
+
 export function mapAdminUserDto(dto: ApiAdminUserDto): IAdminPanelUser {
   return {
-    id: dto.usuarioId,
+    id: getRequiredUsuarioId(dto.usuarioId ?? dto.id),
     fullName: `${dto.nombre} ${dto.apellido}`.trim(),
     email: dto.correo,
     roleLabel: dto.cargo,
     isAdmin: dto.esSuperAdministrador,
-    isDeleted: !dto.activo
+    isDeleted: !dto.activo,
+    hasUsuarioId: true
   };
 }
 
 function mapAdminListUserDto(dto: ApiAdminListUserDto): IAdminPanelUser {
   if ('usuario' in dto) {
+    const usuarioId = getOptionalUsuarioId(dto.usuarioId ?? dto.id);
+
     return {
-      id: dto.usuarioId ?? dto.correo,
+      id: usuarioId ?? dto.correo,
       fullName: dto.usuario.trim(),
       email: dto.correo,
       roleLabel: dto.cargo,
       isAdmin:
         dto.esSuperAdministrador ??
         normalizeRoleLabel(dto.cargo) === 'superadministrador',
-      isDeleted: typeof dto.activo === 'boolean' ? !dto.activo : false
+      isDeleted: typeof dto.activo === 'boolean' ? !dto.activo : false,
+      hasUsuarioId: Boolean(usuarioId)
     };
   }
 

@@ -1,0 +1,53 @@
+.topFieldRow {
+  align-items: flex-start;
+}
+
+.fieldGroup {
+  width: 100%;
+}
+
+.fieldLabel {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--mantine-color-gray-9);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.required {
+  color: var(--mantine-color-red-6);
+}
+
+.fieldInput,
+.fieldSelectInput {
+  height: 46px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 10px;
+  padding: 0 16px;
+  color: var(--mantine-color-gray-7);
+  font-size: 14px;
+  background: var(--mantine-color-white);
+}
+
+.fieldSelectDropdown {
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 10px;
+  background: var(--mantine-color-white);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+.fieldSelectOptions {
+  background: var(--mantine-color-white);
+}
+
+.fieldSelectOption {
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+}
+
+.fieldSelectOption:hover,
+.fieldSelectOption[data-hovered],
+.fieldSelectOption[data-checked] {
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-9);
+}

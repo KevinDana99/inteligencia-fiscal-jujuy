@@ -3,6 +3,7 @@ import { RestAdminPanelSource } from '../../../data/sources/rest/RestAdminPanelS
 describe('updateAdminUserAction contract', () => {
   const originalFetch = globalThis.fetch;
   const fetchMock = jest.fn<Promise<Response>, Parameters<typeof fetch>>();
+  const usuarioId = '019dbb8f-e390-724b-aaee-e13b1c356532';
 
   beforeEach(() => {
     fetchMock.mockReset();
@@ -25,7 +26,7 @@ describe('updateAdminUserAction contract', () => {
     });
 
     const result = await source.updateAdminUser({
-      id: 'carlos-gomez',
+      id: usuarioId,
       firstName: 'Carlos',
       lastName: 'Actualizado',
       email: 'carlos.lopez@inteligenciafiscal.local',
@@ -34,7 +35,7 @@ describe('updateAdminUserAction contract', () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://localhost:3000/api/super-administrador/usuarios/carlos-gomez',
+      `http://localhost:3000/api/super-administrador/usuarios/${usuarioId}`,
       {
         method: 'PATCH',
         headers: {

@@ -5,6 +5,7 @@ import {
   getNotesAction,
   getUnifiedRegisterHeaderAction,
   getUnifiedRegisterInterventionOrdersAction,
+  getUnifiedRegisterListAction,
   getUnifiedRegisterMercurioAction
 } from '@/modules/unified-register/data/actions';
 import { mapAlternateAddressRecordToViewModel } from '@/modules/unified-register/data/mappers/mapAlternateAddress';
@@ -15,6 +16,60 @@ import { UnifiedRegisterPreviewPage } from '@/modules/unified-register/presentat
 import { unifiedRegisterDetailsFixture } from '@/modules/unified-register/data/sources/mock/fixtures/unifiedRegisterItems';
 
 const unifiedRegisterDetailTemplate = unifiedRegisterDetailsFixture[0];
+const CONTRIBUTOR_LOOKUP_PAGE_SIZE = 50;
+
+function normalizeCuit(value: string) {
+  return value.replace(/\D/g, '');
+}
+
+function isSameCuit(candidate: string, target: string) {
+  const normalizedCandidate = normalizeCuit(candidate);
+  const normalizedTarget = normalizeCuit(target);
+
+  return candidate === target || normalizedCandidate === normalizedTarget;
+}
+
+async function findContribuyenteIdByCuit(cuit: string) {
+  const firstPageResult = await getUnifiedRegisterListAction(
+    1,
+    CONTRIBUTOR_LOOKUP_PAGE_SIZE
+  );
+  const firstPage = firstPageResult.data;
+
+  if (!firstPage) {
+    return null;
+  }
+
+  const firstPageMatch = firstPage.contribuyentes.find((entry) =>
+    isSameCuit(entry.cuit, cuit)
+  );
+
+  if (firstPageMatch) {
+    return firstPageMatch.contribuyenteId;
+  }
+
+  for (let page = 2; page <= firstPage.totalPaginas; page += 1) {
+    const pageResult = await getUnifiedRegisterListAction(
+      page,
+      CONTRIBUTOR_LOOKUP_PAGE_SIZE
+    );
+    const pageData = pageResult.data;
+
+    if (!pageData) {
+      continue;
+    }
+
+    const match = pageData.contribuyentes.find((entry) =>
+      isSameCuit(entry.cuit, cuit)
+    );
+
+    if (match) {
+      return match.contribuyenteId;
+    }
+  }
+
+  return null;
+}
 
 function buildUnifiedRegisterDetailFallback(
   contribuyenteId: string,
@@ -38,9 +93,12 @@ export default async function UnifiedRegisterPreviewRoute({
   const { id } = await searchParams;
   const decodedCuit = decodeURIComponent(cuit);
   const fixtureItem = unifiedRegisterDetailsFixture.find((entry) =>
-    id ? entry.contribuyenteId === id : entry.cuit === decodedCuit
+    id ? entry.contribuyenteId === id : isSameCuit(entry.cuit, decodedCuit)
   );
-  const contribuyenteId = id ?? fixtureItem?.contribuyenteId;
+  const contribuyenteId =
+    id ??
+    fixtureItem?.contribuyenteId ??
+    (await findContribuyenteIdByCuit(decodedCuit));
 
   if (!contribuyenteId) {
     notFound();

@@ -1,0 +1,36 @@
+.modalContent {
+  width: 480px;
+  max-width: 95vw;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--mantine-color-white);
+}
+
+.modalOverlay {
+  background: rgb(15 23 42 / 0.35);
+}
+
+.modalHeader {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.modalBody {
+  padding: 18px 24px 0;
+  background: var(--mantine-color-white);
+}
+
+.modalCloseButton {
+  color: var(--mantine-color-gray-5);
+}
+
+.modalCloseButton:hover,
+.modalCloseButton:focus,
+.modalCloseButton[data-hovered],
+.modalCloseButton[data-active] {
+  background: transparent;
+  color: var(--mantine-color-gray-7);
+}

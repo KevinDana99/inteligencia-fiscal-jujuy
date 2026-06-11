@@ -1,4 +1,4 @@
-import type { UserRole } from '@/lib/auth/constants'
+import type { UserRole } from '@/constants'
 
 export interface IAuthUser {
   autenticado: boolean;

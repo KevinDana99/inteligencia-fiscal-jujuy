@@ -1,3 +1,7 @@
+export { AUTH_ROUTES } from '@/constants/navigation'
+export { USER_ROLES } from '@/constants/roles'
+export type { UserRole } from '@/constants/roles'
+
 export const AUTH_COOKIE_NAMES = {
   accessToken: 'auth-access-token',
   accessTokenExpiresAt: 'auth-access-token-expires-at',
@@ -6,22 +10,9 @@ export const AUTH_COOKIE_NAMES = {
   postLoginRedirect: 'auth-post-login-redirect'
 } as const
 
-export const AUTH_ROUTES = {
-  login: '/login',
-  home: '/',
-  admin: '/admin'
-} as const
-
 export const AUTH_HEADERS = {
   sessionExpired: 'x-auth-session-expired'
 } as const
-
-export const USER_ROLES = {
-  ADMIN: 'SuperAdministrador',
-  FISCAL_ANALYST: 'ANALISTA_FISCAL'
-} as const
-
-export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES]
 
 export const AUTH_MOCK_USERS = {
   admin: {
@@ -38,4 +29,4 @@ export const AUTH_MOCK_USERS = {
   }
 } as const
 
-export const AUTH_REFRESH_SAFETY_WINDOW_MS = 5_000
+export const AUTH_REFRESH_SKEW_MS = 60_000

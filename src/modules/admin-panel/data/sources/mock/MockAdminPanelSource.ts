@@ -115,21 +115,15 @@ function setAdminAllowedDomainsMockStore(
   globalThis.__adminAllowedDomainsMockStore__ = nextStore
 }
 
-function buildMockUserId(params: {
-  firstName: string
-  lastName: string
-  email: string
-}) {
-  const fullNameSlug = `${params.firstName.trim().toLowerCase()}-${params.lastName.trim().toLowerCase()}`
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-  const emailSlug = params.email
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '')
-    .slice(-8)
+function buildMockUserId() {
+  if (globalThis.crypto?.randomUUID) {
+    return globalThis.crypto.randomUUID()
+  }
 
-  return `${fullNameSlug}-${emailSlug || Date.now().toString(36)}`
+  return `00000000-0000-4000-8000-${Date.now()
+    .toString(16)
+    .padStart(12, '0')
+    .slice(-12)}`
 }
 
 export class MockAdminPanelSource implements IAdminPanelSource {
@@ -176,11 +170,7 @@ export class MockAdminPanelSource implements IAdminPanelSource {
     }
 
     const nextUser: MockAdminPanelUserRecord = {
-      id: buildMockUserId({
-        firstName: params.firstName,
-        lastName: params.lastName,
-        email: normalizedEmail
-      }),
+      id: buildMockUserId(),
       firstName: params.firstName.trim(),
       lastName: params.lastName.trim(),
       email: normalizedEmail,

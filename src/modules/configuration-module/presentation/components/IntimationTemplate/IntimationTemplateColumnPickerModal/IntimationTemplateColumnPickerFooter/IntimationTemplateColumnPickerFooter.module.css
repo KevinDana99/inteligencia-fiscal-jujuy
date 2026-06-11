@@ -1,0 +1,32 @@
+.columnPickerFooter {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--mantine-color-gray-2);
+}
+
+.modalCancelButton {
+  height: 36px;
+  min-width: 116px;
+  border: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+}
+
+.modalCancelButton:hover,
+.modalCancelButton:focus,
+.modalCancelButton:focus-visible,
+.modalCancelButton[data-hovered],
+.modalCancelButton[data-active] {
+  border-color: var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+}
+
+.primaryButton {
+  height: 28px;
+  padding: 5px 11px;
+  background: var(--mantine-color-blue-5);
+  color: var(--mantine-color-white);
+  font-size: 12px;
+  line-height: 1;
+}

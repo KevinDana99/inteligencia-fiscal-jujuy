@@ -1,0 +1,4 @@
+export const DASHBOARD_CONFIGURATION_TABS = ['intimacion', 'informe'] as const
+
+export const DEFAULT_DASHBOARD_CONFIGURATION_TAB =
+  DASHBOARD_CONFIGURATION_TABS[0]

@@ -9,6 +9,10 @@ export default function AdminLayoutFallback() {
       <div className={classes.layout}>
         <header className={classes.header}>
           <div className={classes.headerInner}>
+            <div className={classes.mobileMenuButton} aria-hidden='true'>
+              <Skeleton height={28} width={28} radius='md' />
+            </div>
+
             <div className={classes.brand}>
               <div className={classes.brandMark}>
                 <Image

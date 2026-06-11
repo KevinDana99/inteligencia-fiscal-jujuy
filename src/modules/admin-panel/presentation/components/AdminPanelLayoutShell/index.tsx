@@ -1,7 +1,13 @@
 'use client'
 
+import { useEffect } from 'react'
 import type { ReactNode } from 'react'
+import { useDisclosure } from '@mantine/hooks'
+import {
+  TOAST_ADMIN_MESSAGES
+} from '@/components/core/toasts'
 import type { IAuthSession } from '@/modules/auth/data/models/Auth'
+import { AuthLoginSuccessToastBridge } from '@/modules/auth/presentation/components/AuthLoginSuccessToastBridge'
 import type { IAdminAllowedDomains } from '../../../data/models/AdminPanel'
 import { useAdminPanelLayoutShell } from '../../hooks'
 import { AdminPanelActionModal } from '../AdminPanelModals/AdminPanelActionModal'
@@ -20,6 +26,24 @@ export function AdminPanelLayoutShell({
       session,
       initialAllowedDomains
     })
+  const [
+    isSidebarOpen,
+    { close: closeSidebar, open: openSidebar }
+  ] = useDisclosure(false)
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeSidebar()
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+
+    return () => {
+      window.removeEventListener('keydown', handleEscape)
+    }
+  }, [closeSidebar])
 
   return (
     <AdminPanelProviders
@@ -27,12 +51,34 @@ export function AdminPanelLayoutShell({
       initialAllowedDomains={initialAllowedDomains}
     >
       <div className={classes.page}>
+        <AuthLoginSuccessToastBridge
+          displayName={session.user.nombreUsuario}
+          message={TOAST_ADMIN_MESSAGES.ADMIN_PANEL_WELCOME_SUCCESS}
+        />
+
         <div className={classes.layout}>
-          <AdminPanelNavbar {...navbar} />
+          <AdminPanelNavbar {...navbar} onSidebarOpen={openSidebar} />
 
-          <AdminPanelSidebar currentSection={currentSection} />
+          <AdminPanelSidebar
+            currentSection={currentSection}
+            isMobileOpen={isSidebarOpen}
+            onNavigate={closeSidebar}
+          />
 
-          <main className={classes.main}>
+          <button
+            type='button'
+            aria-label='Cerrar navegación'
+            className={`${classes.sidebarOverlay} ${
+              isSidebarOpen ? classes.sidebarOverlayVisible : ''
+            }`}
+            onClick={closeSidebar}
+          />
+
+          <main
+            className={`${classes.main} ${
+              isSidebarOpen ? classes.mainMobileSidebarOpen : ''
+            }`}
+          >
             <div className={classes.content}>{children}</div>
           </main>
 

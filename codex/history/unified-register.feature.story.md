@@ -95,3 +95,20 @@ Connected `/vista-previa-padron/[cuit]` to the contributor detail backend endpoi
 - Browser verification at `http://localhost:3000/vista-previa-padron/30-12345678-1?id=06b815b5-b68b-41b9-be4c-10a7cb566c01` displayed the backend demo address, contact fields, and note.
 - `bun x eslint 'app/(private)/vista-previa-padron/[cuit]/page.tsx' 'src/modules/unified-register/data/models/UnifiedRegister.ts' 'src/modules/unified-register/data/mappers/mapContact.ts' 'src/modules/unified-register/presentation/hooks/useUnifiedRegisterPreview.ts' 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/index.tsx' 'src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.ts' 'src/modules/unified-register/data/sources/rest/constants/unifiedRegisterApiRoutes.ts' 'src/modules/unified-register/data/sources/rest/dtos/ApiUnifiedRegisterDtos.ts' 'src/modules/unified-register/data/sources/rest/mappers/unifiedRegisterMappers.ts'`
 - `bun x tsc --noEmit`
+
+## Preview Direct CUIT Lookup Fix - 2026-06-11
+
+### Summary
+
+Reviewed why `/vista-previa-padron/30501685212` could resolve as a 404: the route name exposed a `cuit` param, but the page only had enough data to load detail endpoints when a `contribuyenteId` came in the `id` query param.
+
+### Main Changes
+
+- Normalized CUIT comparisons so direct URLs work with or without hyphens.
+- Kept the existing `?id=` path as the primary navigation flow from the unified register card list.
+- Added a fallback lookup through the unified register listing to resolve `CUIT -> contribuyenteId` before calling `notFound()`.
+- Preserved `notFound()` when the CUIT is absent from the current unified register data source.
+
+### Validation
+
+- `bun x eslint 'app/(private)/vista-previa-padron/[cuit]/page.tsx'`

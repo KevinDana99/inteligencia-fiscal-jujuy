@@ -1,5 +1,5 @@
 import BatchManagementModule from '@/modules/batch-management'
 
-export default function GestionDeLotesPage() {
+export default async function GestionDeLotesPage() {
   return <BatchManagementModule />
 }

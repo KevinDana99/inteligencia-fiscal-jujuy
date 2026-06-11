@@ -1,14 +1,16 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import {
+  applySessionToRequestHeaders,
+  applySessionToResponse,
   clearAuthResponse,
-  getRedirectPathByUserType,
   readProxyRequestSession,
   redirectToLogin,
   refreshExpiredRequestSession,
   resolveCurrentUserType
 } from '@/lib/auth/proxy-session'
-import { AUTH_ROUTES, USER_ROLES } from '@/lib/auth/constants'
+import { AUTH_ROUTES, USER_ROLES } from '@/constants'
+import { getProtectedRouteRedirect, isLoginRoute } from '@/lib/auth/route-access'
 import type { AuthUserType } from '@/lib/auth/proxy-session'
 
 function redirectTo(request: NextRequest, path: string) {
@@ -19,10 +21,28 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const requestSession = readProxyRequestSession(request)
   const hadSessionCookies = Boolean(requestSession)
-  const response = NextResponse.next()
+  const requestHeaders = new Headers(request.headers)
+  let response = NextResponse.next({
+    request: {
+      headers: requestHeaders
+    }
+  })
 
-  let session = await refreshExpiredRequestSession(requestSession, response)
+  const refreshResult = await refreshExpiredRequestSession(requestSession)
+  let session = refreshResult.session
   let currentUserType: AuthUserType = null
+
+  if (session && refreshResult.refreshed) {
+    applySessionToRequestHeaders(requestHeaders, session)
+    response = applySessionToResponse(
+      NextResponse.next({
+        request: {
+          headers: requestHeaders
+        }
+      }),
+      session
+    )
+  }
 
   try {
     currentUserType = await resolveCurrentUserType(session)
@@ -31,9 +51,14 @@ export async function proxy(request: NextRequest) {
     currentUserType = null
   }
 
-  if (pathname === AUTH_ROUTES.login) {
+  if (isLoginRoute(pathname)) {
     if (session?.accessToken && currentUserType) {
-      return redirectTo(request, getRedirectPathByUserType(currentUserType))
+      return redirectTo(
+        request,
+        currentUserType === USER_ROLES.ADMIN
+          ? AUTH_ROUTES.admin
+          : AUTH_ROUTES.home
+      )
     }
 
     if (hadSessionCookies) {
@@ -47,8 +72,13 @@ export async function proxy(request: NextRequest) {
     return redirectToLogin(request)
   }
 
-  if (pathname === AUTH_ROUTES.admin && currentUserType !== USER_ROLES.ADMIN) {
-    return redirectTo(request, AUTH_ROUTES.home)
+  const protectedRouteRedirect = getProtectedRouteRedirect(
+    pathname,
+    currentUserType
+  )
+
+  if (protectedRouteRedirect) {
+    return redirectTo(request, protectedRouteRedirect)
   }
 
   return response

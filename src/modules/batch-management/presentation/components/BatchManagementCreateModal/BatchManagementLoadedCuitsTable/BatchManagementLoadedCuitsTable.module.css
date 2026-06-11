@@ -1,0 +1,81 @@
+.cuitTableContainer {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 200px;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 10px;
+  background: var(--mantine-color-white);
+}
+
+.cuitTable :global(table) {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cuitTable :global(thead) {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--mantine-color-gray-0);
+}
+
+.cuitTable th {
+  padding: 8px 12px;
+  color: var(--mantine-color-gray-5);
+  font-size: 11px;
+  font-weight: 700;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+}
+
+.cuitTable th:last-child,
+.cuitTable td:last-child {
+  width: 40px;
+}
+
+.cuitTable td {
+  padding: 10px 12px;
+  color: var(--mantine-color-gray-7);
+  font-size: 13px;
+  border-bottom: 1px solid var(--mantine-color-gray-1);
+}
+
+.cuitTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.tableMonoText {
+  font-family:
+    'SFMono-Regular',
+    Consolas,
+    'Liberation Mono',
+    Menlo,
+    monospace;
+  color: var(--mantine-color-gray-9);
+}
+
+.removeColumn {
+  text-align: right;
+}
+
+.removeButton {
+  color: var(--mantine-color-red-6);
+}
+
+.removeButton:hover,
+.removeButton:focus,
+.removeButton[data-hovered],
+.removeButton[data-active] {
+  background: rgba(250, 82, 82, 0.08);
+  color: var(--mantine-color-red-6);
+}
+
+.emptyTableCell {
+  padding: 24px;
+  color: var(--mantine-color-gray-5);
+  font-size: 13px;
+  font-style: italic;
+  text-align: center;
+}

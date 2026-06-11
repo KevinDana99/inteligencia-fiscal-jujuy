@@ -65,3 +65,30 @@ Implemented the initial `admin-panel` module as the administrative feature entry
 
 - `bun x tsc --noEmit`
 - `bun run lint` queda sin errores; mantiene 4 warnings existentes en `unified-register`.
+
+## 2026-06-06 Admin mobile sidebar drawer
+
+- Se cambió la navegación mobile de admin para que use un drawer lateral en lugar de apilar el sidebar debajo del navbar.
+- El navbar admin ahora incluye un botón menú visible solo en mobile.
+- El drawer admin incorpora logo, título, botón de cierre, overlay, cierre por Escape/click externo y cierre al navegar.
+- El contenido principal se atenúa y desplaza levemente cuando el drawer está abierto.
+- El fallback de carga admin muestra el skeleton del botón menú en mobile.
+
+### Validation
+
+- `bun x tsc --noEmit --incremental false`
+- `bun x eslint 'app/admin/AdminLayoutFallback.tsx' 'src/modules/admin-panel/presentation/components/AdminPanelLayoutShell/index.tsx' 'src/modules/admin-panel/presentation/components/AdminPanelNavbar/index.tsx' 'src/modules/admin-panel/presentation/components/AdminPanelSidebar/index.tsx'`
+
+## 2026-06-10 Admin user delete usuarioId contract
+
+- Se verificó en Swagger local que `DELETE /api/super-administrador/usuarios/{usuarioId}` espera `usuarioId` con formato `uuid`, no correo.
+- El mapper REST toma el `id` del listado real como UUID accionable para `GET|PATCH|DELETE /api/super-administrador/usuarios/{usuarioId}`.
+- `GET|PATCH|DELETE /api/super-administrador/usuarios/{usuarioId}` normalizan, validan y codifican el `usuarioId` antes de construir el path.
+- El modo mock y los tests de contrato quedaron alineados con UUIDs para evitar que slugs o emails vuelvan a propagarse como ids accionables.
+- El modal de creación dejó de limpiar estado dentro de un `useEffect`; el remount existente por `key` conserva el formulario fresco al reabrir y satisface React Compiler.
+
+### Validation
+
+- `bun run test -- src/modules/admin-panel`
+- `bun run lint` queda sin errores; mantiene 4 warnings existentes en `unified-register`.
+- `bun run build`

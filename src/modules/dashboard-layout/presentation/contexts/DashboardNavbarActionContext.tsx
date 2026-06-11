@@ -8,33 +8,58 @@ import {
   useState,
   type ReactNode
 } from 'react';
+import { createPortal } from 'react-dom';
 
 interface IDashboardNavbarActionContext {
   explorerSelectedCount: number;
   setExplorerSelectedCount: (count: number) => void;
   resetExplorerSelectedCount: () => void;
+  navbarActionTarget: HTMLDivElement | null;
+  registerNavbarActionTarget: (target: HTMLDivElement | null) => void;
+}
+
+interface DashboardNavbarActionProviderProps {
+  children: ReactNode;
+}
+
+interface DashboardNavbarActionPortalProps {
+  children: ReactNode;
 }
 
 const DashboardNavbarActionContext = createContext<IDashboardNavbarActionContext | null>(null);
 
 export function DashboardNavbarActionProvider({
   children
-}: {
-  children: ReactNode;
-}) {
+}: DashboardNavbarActionProviderProps) {
   const [explorerSelectedCount, setExplorerSelectedCount] = useState(0);
+  const [navbarActionTarget, setNavbarActionTarget] =
+    useState<HTMLDivElement | null>(null);
 
   const resetExplorerSelectedCount = useCallback(() => {
     setExplorerSelectedCount(0);
   }, []);
 
+  const registerNavbarActionTarget = useCallback(
+    (target: HTMLDivElement | null) => {
+      setNavbarActionTarget(target);
+    },
+    []
+  );
+
   const value = useMemo(
     () => ({
       explorerSelectedCount,
       setExplorerSelectedCount,
-      resetExplorerSelectedCount
+      resetExplorerSelectedCount,
+      navbarActionTarget,
+      registerNavbarActionTarget
     }),
-    [explorerSelectedCount, resetExplorerSelectedCount]
+    [
+      explorerSelectedCount,
+      navbarActionTarget,
+      registerNavbarActionTarget,
+      resetExplorerSelectedCount
+    ]
   );
 
   return (
@@ -54,4 +79,16 @@ export function useDashboardNavbarActionContext() {
   }
 
   return context;
+}
+
+export function DashboardNavbarActionPortal({
+  children
+}: DashboardNavbarActionPortalProps) {
+  const { navbarActionTarget } = useDashboardNavbarActionContext();
+
+  if (!navbarActionTarget) {
+    return null;
+  }
+
+  return createPortal(children, navbarActionTarget);
 }

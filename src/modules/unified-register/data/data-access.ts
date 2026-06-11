@@ -1,9 +1,13 @@
+<<<<<<< HEAD
 import { ApiClientError, type ApiClientConfig } from '@/lib/api-client';
 import { getServerAuthSession } from '@/lib/auth/get-server-session';
 import {
   UNIFIED_REGISTER_AUTH_ERROR,
   UNIFIED_REGISTER_DATA_SOURCE_ENV
 } from './constants/unifiedRegisterDataSource';
+=======
+import { createAuthenticatedApiClientConfig } from '@/lib/auth/create-authenticated-api-client-config';
+>>>>>>> develop
 import type { IUnifiedRegisterSource } from './interfaces/UnifiedRegisterSource';
 import { MockUnifiedRegisterSource } from './sources/mock/MockUnifiedRegisterSource';
 import { RestUnifiedRegisterSource } from './sources/rest/RestUnifiedRegisterSource';
@@ -17,6 +21,7 @@ export async function createServerUnifiedRegisterSource(): Promise<IUnifiedRegis
     return new MockUnifiedRegisterSource();
   }
 
+<<<<<<< HEAD
   const session = await getServerAuthSession();
 
   if (!session?.accessToken) {
@@ -35,6 +40,9 @@ export async function createServerUnifiedRegisterSource(): Promise<IUnifiedRegis
     baseUrl: process.env[UNIFIED_REGISTER_DATA_SOURCE_ENV.apiBaseUrl],
     token: session?.accessToken
   };
+=======
+  const config = await createAuthenticatedApiClientConfig();
+>>>>>>> develop
 
   return new RestUnifiedRegisterSource(config);
 }

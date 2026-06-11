@@ -23,6 +23,13 @@ export function useDeleteAdminPanelUser({
       return false
     }
 
+    if (selectedUser.hasUsuarioId === false) {
+      setActionError(
+        'No fue posible eliminar el usuario porque el listado no incluye usuarioId.'
+      )
+      return false
+    }
+
     setActionError(null)
     setIsActionPending(true)
 

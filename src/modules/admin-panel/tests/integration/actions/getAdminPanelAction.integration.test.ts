@@ -32,7 +32,7 @@ describe('getAdminPanelAction', () => {
       }))
     )
     expect(result.data?.users[0]).toEqual({
-      id: 'admin',
+      id: '019dbb8f-e390-724b-aaee-e13b1c356530',
       fullName: 'Administrador',
       email: 'admin@plantilla.local',
       roleLabel: 'Administrador',

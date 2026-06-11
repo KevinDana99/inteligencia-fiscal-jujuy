@@ -1,0 +1,68 @@
+.crossSection {
+  border-bottom: 1px solid var(--mantine-color-gray-1);
+}
+
+.crossSectionToggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 16px;
+  border: 0;
+  background: var(--mantine-color-gray-0);
+  cursor: pointer;
+}
+
+.monthlySectionToggle:hover,
+.monthlySectionToggle:focus {
+  background: #eff6ff;
+}
+
+.annualSectionToggle:hover,
+.annualSectionToggle:focus {
+  background: #f0fdf4;
+}
+
+.crossSectionLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.crossSectionTitle {
+  color: var(--mantine-color-gray-7);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.monthlyPill,
+.annualPill {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.monthlyPill {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.annualPill {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.crossSectionChevron {
+  color: var(--mantine-color-gray-5);
+  transition: transform 0.2s;
+}
+
+.crossSectionChevronOpen {
+  transform: rotate(180deg);
+}
+
+.crossSectionBody {
+  padding: 10px 16px;
+}

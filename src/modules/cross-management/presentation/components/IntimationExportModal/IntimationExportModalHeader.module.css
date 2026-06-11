@@ -1,0 +1,165 @@
+.topBar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 8px 18px;
+  background: #0d1729;
+  border-radius: 12px 12px 0 0;
+}
+
+.topBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topBarTitle {
+  color: var(--mantine-color-white);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.countBadge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: rgb(78 96 124 / 0.72);
+  padding: 3px 9px;
+  color: var(--mantine-color-gray-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.closeButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.12);
+  color: var(--mantine-color-white);
+}
+
+.closeButton:hover,
+.closeButton[data-hovered],
+.closeButton[data-active] {
+  background: rgb(255 255 255 / 0.2);
+}
+
+.paginationBar {
+  display: grid;
+  flex-shrink: 0;
+  align-items: center;
+  grid-template-columns: 52px minmax(0, 1fr) 52px;
+  min-height: 58px;
+  padding: 8px 18px;
+  background: #1f3d63;
+}
+
+.pageButton {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  justify-self: center;
+  background: rgb(255 255 255 / 0.12);
+  color: var(--mantine-color-white);
+}
+
+.pageButton:hover,
+.pageButton[data-hovered],
+.pageButton[data-active] {
+  background: rgb(255 255 255 / 0.18);
+}
+
+.pageButton:disabled,
+.pageButton[data-disabled] {
+  opacity: 0.3;
+}
+
+.contributorNavContent {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.contributorNavName {
+  color: var(--mantine-color-white);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.contributorNavMeta {
+  color: var(--mantine-color-gray-3);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.metaDivider {
+  color: rgb(255 255 255 / 0.45);
+}
+
+.contributorBar {
+  flex-shrink: 0;
+  padding: 7px 18px;
+  background: #1e3a5f;
+}
+
+.contributorName {
+  color: var(--mantine-color-blue-3);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.contributorCuit {
+  margin-left: 10px;
+  color: var(--mantine-color-gray-5);
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .topBar {
+    padding: 8px 12px;
+  }
+
+  .topBarLeft {
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .topBarTitle {
+    overflow: hidden;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .countBadge {
+    font-size: 12px;
+  }
+
+  .paginationBar {
+    grid-template-columns: 40px minmax(0, 1fr) 40px;
+    min-height: 58px;
+    padding: 8px 12px;
+  }
+
+  .pageButton {
+    width: 32px;
+    height: 32px;
+  }
+
+  .contributorNavName {
+    font-size: 12px;
+  }
+
+  .contributorNavMeta {
+    font-size: 12px;
+  }
+}

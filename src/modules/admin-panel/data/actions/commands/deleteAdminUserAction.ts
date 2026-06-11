@@ -7,15 +7,17 @@ import type { IAdminPanelCommandResult } from '../../models/AdminPanel';
 export async function deleteAdminUserAction(
   userId: string
 ): Promise<IAdminPanelCommandResult> {
+  const normalizedUserId = userId.trim();
+  const endpoint = `/api/super-administrador/usuarios/${encodeURIComponent(normalizedUserId)}`;
   const requestPayload = {
-    usuarioId: userId
+    usuarioId: normalizedUserId
   };
 
   const source = await createServerAdminPanelSource();
-  const result = await source.deleteAdminUser(userId);
+  const result = await source.deleteAdminUser(normalizedUserId);
 
   console.log({
-    endpoint: `/api/super-administrador/usuarios/${userId}`,
+    endpoint,
     action: 'deleteAdminUserAction',
     METHOD: 'DELETE',
     REQUEST: requestPayload,

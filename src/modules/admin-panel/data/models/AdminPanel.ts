@@ -7,6 +7,7 @@ export interface IAdminPanelUser {
   roleLabel: string;
   isAdmin?: boolean;
   isDeleted?: boolean;
+  hasUsuarioId?: boolean;
 }
 
 export interface IAdminPanelMetrics {
