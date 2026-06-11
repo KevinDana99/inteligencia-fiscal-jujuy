@@ -29,13 +29,14 @@ export function useConfigurationPage() {
         hidden: dashboardConfiguration.isIntimationTab,
         informe: dashboardConfiguration.informe,
         errors: dashboardConfiguration.reportErrors,
+        isConfirmPending: dashboardConfiguration.isReportSavePending,
         onChange: dashboardConfiguration.updateInforme,
         onConfirm: () => {
           if (!dashboardConfiguration.validateInforme()) {
             return
           }
 
-          dashboardConfiguration.confirmChanges()
+          dashboardConfiguration.saveReportConfiguration()
         }
       }
     },

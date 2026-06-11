@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, Text, Textarea, TextInput } from '@mantine/core'
+import { Button, Card, Group, Text, Textarea, TextInput } from '@mantine/core'
 import type { ReportType } from '../../../../data/models/Configuration'
 import type { ConfigurationReportValidationErrors } from '../../../utils'
 import { DASHBOARD_CONFIGURATION_LABELS } from '../../../constants'
@@ -10,6 +10,7 @@ import classes from './ConfigurationReportForm.module.css'
 type ConfigurationReportFormProps = {
   informe: ReportType
   errors: ConfigurationReportValidationErrors
+  isConfirmPending?: boolean
   onChange: (field: keyof ReportType, value: string) => void
   onConfirm: () => void
 }
@@ -17,6 +18,7 @@ type ConfigurationReportFormProps = {
 export function ConfigurationReportForm({
   informe,
   errors,
+  isConfirmPending,
   onChange,
   onConfirm
 }: ConfigurationReportFormProps) {
@@ -59,6 +61,15 @@ export function ConfigurationReportForm({
         </div>
       </Card>
 
+      <Group justify='flex-end' className={classes.footerActions}>
+        <Button
+          className={classes.primaryButton}
+          onClick={onConfirm}
+          loading={isConfirmPending}
+        >
+          {DASHBOARD_CONFIGURATION_LABELS.report.confirmButton}
+        </Button>
+      </Group>
     </div>
   )
 }

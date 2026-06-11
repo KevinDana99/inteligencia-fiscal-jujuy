@@ -11,6 +11,7 @@ export function ConfigurationReportView({
   hidden,
   informe,
   errors,
+  isConfirmPending,
   onChange,
   onConfirm
 }: ConfigurationReportViewProps) {
@@ -20,6 +21,7 @@ export function ConfigurationReportView({
       <ConfigurationReportForm
         informe={informe}
         errors={errors}
+        isConfirmPending={isConfirmPending}
         onChange={onChange}
         onConfirm={onConfirm}
       />

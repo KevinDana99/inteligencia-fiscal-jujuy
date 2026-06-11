@@ -21,6 +21,7 @@ export const DEFAULT_INTIMATION: IntimationType = {
 }
 
 export const DEFAULT_REPORT: ReportType = {
+  id: null,
   titulo: 'INFORME DE INVESTIGACIÓN',
   cuerpo:
     'Se eleva para su conocimiento y consideración, informe sobre la situación fiscal del contribuyente abajo descripto, solicitando el cargo al Dpto. Inspecciones y Verificaciones, conforme a los fundamentos, datos y periodos fiscales que se indican a continuación:'
