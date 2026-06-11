@@ -1,7 +1,18 @@
 import Image from 'next/image';
-import { Skeleton, Stack, Text } from '@mantine/core';
+import { Skeleton, Text } from '@mantine/core';
 import { AdminPanelHomeSectionLoader } from '@/modules/admin-panel/presentation/components/AdminPanelHomeSection';
 import classes from '@/modules/admin-panel/presentation/styles/AdminPanel.module.css';
+
+const NAV_GROUPS = [
+  {
+    labelWidth: null,
+    itemWidths: [56]
+  },
+  {
+    labelWidth: 96,
+    itemWidths: [98]
+  }
+];
 
 export default function AdminLayoutFallback() {
   return (
@@ -39,11 +50,78 @@ export default function AdminLayoutFallback() {
 
         <aside className={classes.sidebar}>
           <div className={classes.sidebarInner}>
-            <Stack gap={8}>
-              <Skeleton height={36} radius="md" />
-              <Skeleton height={10} width={108} mt={12} radius="xl" />
-              <Skeleton height={36} radius="md" />
-            </Stack>
+            <nav className={classes.navList} aria-hidden='true'>
+              {NAV_GROUPS.map((group, groupIndex) =>
+                group.labelWidth ? (
+                  <div key={groupIndex} className={classes.navGroup}>
+                    <span
+                      className={classes.navGroupLabel}
+                      style={{
+                        display: 'block',
+                        minHeight: 26,
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      <Skeleton
+                        height={10}
+                        width={group.labelWidth}
+                        radius='xl'
+                      />
+                    </span>
+
+                    {group.itemWidths.map((itemWidth, itemIndex) => (
+                      <div
+                        key={`${groupIndex}-${itemIndex}`}
+                        className={classes.navItem}
+                        style={{
+                          minHeight: 37,
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 'var(--mantine-spacing-sm)',
+                            height: 20
+                          }}
+                        >
+                          <Skeleton height={18} width={18} radius='sm' />
+                          <Skeleton
+                            height={12}
+                            width={itemWidth}
+                            radius='xl'
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  group.itemWidths.map((itemWidth, itemIndex) => (
+                    <div
+                      key={`${groupIndex}-${itemIndex}`}
+                      className={classes.navItem}
+                      style={{
+                        minHeight: 37,
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 'var(--mantine-spacing-sm)',
+                          height: 20
+                        }}
+                      >
+                        <Skeleton height={18} width={18} radius='sm' />
+                        <Skeleton height={12} width={itemWidth} radius='xl' />
+                      </div>
+                    </div>
+                  ))
+                )
+              )}
+            </nav>
           </div>
         </aside>
 
