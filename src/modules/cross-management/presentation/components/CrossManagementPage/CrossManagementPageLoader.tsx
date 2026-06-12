@@ -1,1 +1,1 @@
-export { PageLoader as CrossManagementPageLoader } from '@/components/core/page-loader'
+export { PageLoader as CrossManagementPageLoader } from '@/components/core/PageLoader'

@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Skeleton, Text } from '@mantine/core';
-import { PageLoader } from '@/components/core/page-loader';
+import { PageLoader } from '@/components/core/PageLoader';
 import classes from '@/modules/admin-panel/presentation/styles/AdminPanel.module.css';
 
 const NAV_GROUPS = [

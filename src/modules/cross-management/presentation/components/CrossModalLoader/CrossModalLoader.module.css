@@ -1,0 +1,45 @@
+.overlay {
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.content {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  border-radius: 14px;
+}
+
+.body {
+  padding: 36px 40px;
+}
+
+.shell {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.spinner {
+  width: 56px;
+  height: 56px;
+  animation: spin 1.2s linear infinite;
+}
+
+.message {
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

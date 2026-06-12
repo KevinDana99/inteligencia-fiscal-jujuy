@@ -15,6 +15,7 @@ import {
   Textarea,
   TextInput
 } from '@mantine/core';
+import { CrossModalLoader } from '@/modules/cross-management/presentation/components/CrossModalLoader';
 import {
   IconChevronDown,
   IconChevronLeft,
@@ -932,44 +933,7 @@ export function UnifiedRegisterPreviewPage({
         </Stack>
       </Modal>
 
-      <Modal
-        opened={activeHeaderModal === 'crosses'}
-        onClose={closeHeaderModal}
-        title="Cruces a realizar"
-        size="lg"
-        centered
-        zIndex={900}
-        classNames={{
-          overlay: classes.modalOverlay,
-          inner: classes.modalInner,
-          content: classes.modalContent,
-          header: classes.modalHeader,
-          body: classes.modalBody,
-          title: classes.modalTitle
-        }}
-      >
-        <Stack gap="md">
-          <Text className={classes.modalText}>
-            Panel mock de cruces. La conexión con la lógica final se hará en otra iteración.
-          </Text>
-          <Card className={classes.modalMockCard} padding="md" radius="md">
-            <Stack gap="xs">
-              <Text fw={600}>Mensuales</Text>
-              <Text size="sm" c="dimmed">
-                Control de desvío de BI, créditos, SAF y agentes.
-              </Text>
-            </Stack>
-          </Card>
-          <Card className={classes.modalMockCard} padding="md" radius="md">
-            <Stack gap="xs">
-              <Text fw={600}>Anuales</Text>
-              <Text size="sm" c="dimmed">
-                Régimen CM, BI declarada, no inscriptos y bases presuntivas.
-              </Text>
-            </Stack>
-          </Card>
-        </Stack>
-      </Modal>
+      <CrossModalLoader opened={activeHeaderModal === 'crosses'} />
 
       <Modal
         opened={activeHeaderModal === 'report'}

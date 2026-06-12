@@ -1,5 +1,6 @@
-import { Center, Loader, Modal, Stack, Text } from '@mantine/core'
-import classes from './loaderPage.module.css'
+import { Center, Modal, Stack, Text } from '@mantine/core'
+import Image from 'next/image'
+import classes from './PageLoader.module.css'
 
 type PageLoaderProps = {
   message?: string
@@ -16,7 +17,14 @@ export function PageLoader({
   return (
     <Center className={classes.pageLoaderRoot}>
       <div className={classes.loaderContainer}>
-        <Loader color='blue' />
+        <Image
+          src='/assets/branding/cross-modal-loader.svg'
+          alt=''
+          width={56}
+          height={56}
+          className={classes.spinner}
+          aria-hidden='true'
+        />
         <Text size='sm' fw={500} c='#475569' ta='center'>
           {message}
         </Text>
@@ -41,7 +49,14 @@ export function LoadingModal({
       radius={12}
     >
       <Stack align='center' gap='md' py='md'>
-        <Loader color='blue' size='md' />
+        <Image
+          src='/assets/branding/cross-modal-loader.svg'
+          alt=''
+          width={56}
+          height={56}
+          className={classes.spinner}
+          aria-hidden='true'
+        />
 
         <Text size='sm' fw={500} c='#475569' ta='center'>
           {message}

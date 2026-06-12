@@ -1,1 +1,1 @@
-export { PageLoader as CrossPreviewPageLoader } from '@/components/core/page-loader'
+export { PageLoader as CrossPreviewPageLoader } from '@/components/core/PageLoader'

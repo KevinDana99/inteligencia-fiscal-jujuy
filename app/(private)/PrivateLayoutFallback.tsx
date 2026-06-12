@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Skeleton } from '@mantine/core';
-import { PageLoader } from '@/components/core/page-loader';
+import { PageLoader } from '@/components/core/PageLoader';
 import classes from '@/modules/dashboard-layout/presentation/components/DashboardLayoutShell/DashboardLayoutShell.module.css';
 
 const NAV_GROUPS = [
