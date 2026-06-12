@@ -1,6 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
+import { INTIMATION_TEMPLATE_LABELS } from '../../constants'
 import type { IntimationTemplateController } from '../../hooks/intimation-template'
 import { IntimationTemplateBodySection } from './IntimationTemplateBodySection'
 import { IntimationTemplateColumnPickerModal } from './IntimationTemplateColumnPickerModal'
@@ -11,11 +12,19 @@ import classes from './IntimationTemplate.module.css'
 
 type IntimationTemplateProps = {
   controller: IntimationTemplateController
+  confirmLabel?: string
+  confirmButtonClassName?: string
+  onConfirm?: () => void
+  isConfirmPending?: boolean
   footerActions?: ReactNode
 }
 
 export function IntimationTemplate({
   controller,
+  confirmLabel = INTIMATION_TEMPLATE_LABELS.buttons.confirmChanges,
+  confirmButtonClassName,
+  onConfirm,
+  isConfirmPending,
   footerActions
 }: IntimationTemplateProps) {
   return (
@@ -25,6 +34,10 @@ export function IntimationTemplate({
       <IntimationTemplateColumnsSection controller={controller} />
       <IntimationTemplateFooter
         footerActions={footerActions}
+        onConfirm={onConfirm}
+        isConfirmPending={isConfirmPending}
+        confirmLabel={confirmLabel}
+        confirmButtonClassName={confirmButtonClassName}
       />
       <IntimationTemplateColumnPickerModal controller={controller} />
     </div>

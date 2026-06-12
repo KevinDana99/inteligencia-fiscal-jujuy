@@ -1,4 +1,5 @@
 export type IntimationType = {
+  id?: string | null
   asunto: string
   saludo: string
   cuerpo: string

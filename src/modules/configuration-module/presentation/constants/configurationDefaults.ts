@@ -5,6 +5,7 @@ import type {
 } from '../../data/models/Configuration'
 
 export const DEFAULT_INTIMATION: IntimationType = {
+  id: null,
   asunto: 'PRESUNTA DIFERENCIA DE BASE IMPONIBLE',
   saludo: 'Señor Contribuyente:',
   cuerpo:

@@ -1,18 +1,28 @@
 'use client'
 
+import type { IntimationTemplateController } from '../../../hooks/intimation-template'
 import { IntimationTemplate } from '../../IntimationTemplate'
-import type { ConfigurationPageController } from '../../../hooks/configuration-page'
 
-type ConfigurationIntimationViewProps =
-  ConfigurationPageController['content']['intimation']
+type ConfigurationIntimationViewProps = {
+  hidden: boolean
+  controller: IntimationTemplateController
+  onConfirm?: () => void
+  isConfirmPending?: boolean
+}
 
 export function ConfigurationIntimationView({
   hidden,
-  controller
+  controller,
+  onConfirm,
+  isConfirmPending
 }: ConfigurationIntimationViewProps) {
   return (
     <div hidden={hidden}>
-      <IntimationTemplate controller={controller} />
+      <IntimationTemplate
+        controller={controller}
+        onConfirm={onConfirm}
+        isConfirmPending={isConfirmPending}
+      />
     </div>
   )
 }

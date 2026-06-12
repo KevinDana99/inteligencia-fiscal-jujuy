@@ -1,4 +1,8 @@
-import { getJson, type ApiClientConfig } from '@/lib/api-client'
+import {
+  getJson,
+  putJson,
+  type ApiClientConfig
+} from '@/lib/api-client'
 import { CONFIGURATION_ENDPOINTS } from '../../constants/configurationEndpoints'
 import { DEFAULT_REPORT_CONFIGURATION } from '../../constants/configurationFallbacks'
 import type { IConfigurationSource } from '../../interfaces/ConfigurationSource'
@@ -9,6 +13,7 @@ function mapIntimationConfigurationDto(
   dto: ApiIntimationConfigurationDto
 ): ConfigurationType['intimacion'] {
   return {
+    id: dto.id ?? null,
     asunto: dto.asunto ?? '',
     saludo: dto.saludo ?? '',
     cuerpo: dto.cuerpo ?? '',
@@ -31,5 +36,23 @@ export class RestConfigurationSource implements IConfigurationSource {
       intimacion: mapIntimationConfigurationDto(intimacion),
       informe: DEFAULT_REPORT_CONFIGURATION
     }
+  }
+
+  async updateIntimationConfiguration(
+    plantillaId: string,
+    configuration: ConfigurationType['intimacion']
+  ): Promise<void> {
+    await putJson<void, Omit<ApiIntimationConfigurationDto, 'id' | 'tipoDocumento'>>(
+      CONFIGURATION_ENDPOINTS.intimationById(plantillaId),
+      {
+        asunto: configuration.asunto,
+        saludo: configuration.saludo,
+        cuerpo: configuration.cuerpo,
+        fuenteInformacion: configuration.fuente_informacion ?? null,
+        fechaCorte: configuration.pie,
+        columnas_seleccionadas: configuration.columnas_seleccionadas
+      },
+      this.config
+    )
   }
 }

@@ -23,7 +23,7 @@ export class ApiClientError extends Error {
   }
 }
 
-type ApiRequestMethod = 'GET' | 'POST' | 'DELETE';
+type ApiRequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 function buildRequestHeaders(
   config?: ApiClientConfig,
@@ -211,6 +211,18 @@ export async function postJson<TResponse, TBody>(
   init?: ApiRequestInit
 ): Promise<TResponse> {
   return request<TResponse>('POST', path, config, {
+    ...init,
+    body: JSON.stringify(body)
+  });
+}
+
+export async function putJson<TResponse, TBody>(
+  path: string,
+  body: TBody,
+  config?: ApiClientConfig,
+  init?: ApiRequestInit
+): Promise<TResponse> {
+  return request<TResponse>('PUT', path, config, {
     ...init,
     body: JSON.stringify(body)
   });

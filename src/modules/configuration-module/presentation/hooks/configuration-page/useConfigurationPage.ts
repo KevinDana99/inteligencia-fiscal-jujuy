@@ -1,11 +1,17 @@
 'use client'
 
 import { useDashboardConfiguration } from '../useDashboardConfiguration'
-import { useIntimationTemplate } from '../intimation-template'
+import {
+  useIntimationTemplate,
+  useSaveIntimationConfiguration
+} from '../intimation-template'
 
 export function useConfigurationPage() {
-  const intimationTemplate = useIntimationTemplate()
   const dashboardConfiguration = useDashboardConfiguration()
+  const intimationTemplate = useIntimationTemplate()
+  const intimationSave = useSaveIntimationConfiguration({
+    onSuccess: dashboardConfiguration.confirmChanges
+  })
 
   return {
     tabs: {
@@ -15,13 +21,20 @@ export function useConfigurationPage() {
     content: {
       intimation: {
         hidden: !dashboardConfiguration.isIntimationTab,
-        controller: intimationTemplate
+        controller: intimationTemplate,
+        onConfirm: intimationSave.saveIntimationConfiguration,
+        isConfirmPending: intimationSave.isSavePending
       },
       report: {
         hidden: dashboardConfiguration.isIntimationTab,
         informe: dashboardConfiguration.informe,
-        onChange: dashboardConfiguration.updateInforme
+        onChange: dashboardConfiguration.updateInforme,
+        onConfirm: dashboardConfiguration.confirmChanges
       }
+    },
+    successModal: {
+      opened: dashboardConfiguration.successOpened,
+      onClose: dashboardConfiguration.closeSuccess
     }
   }
 }
