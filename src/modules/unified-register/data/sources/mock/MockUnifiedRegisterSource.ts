@@ -639,7 +639,7 @@ export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
       impuestosDeclarados:
         item.widgets.find((entry) => entry.id === 'declared-taxes')?.value ?? '',
       deuda: item.widgets.find((entry) => entry.id === 'debt')?.value ?? '',
-      declaraionesJuradas: {
+      declaracionesJuradas: {
         presentadas: Number(item.widgets.find((entry) => entry.id === 'returns')?.splitValue?.primaryValue ?? 0),
         noPresentadas: Number(item.widgets.find((entry) => entry.id === 'returns')?.splitValue?.secondaryValue ?? 0)
       },
@@ -660,7 +660,7 @@ export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
     }
 
     const page = params.pagina ?? 1;
-    const itemsPerPage = params.itemsPagina ?? 3;
+    const itemsPerPage = params.itemsPagina ?? 20;
     const totalItems = item.fines.length;
     const totalPaginas = totalItems ? Math.ceil(totalItems / itemsPerPage) : 0;
     const start = (page - 1) * itemsPerPage;
@@ -693,7 +693,7 @@ export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
     }
 
     const page = params.pagina ?? 1;
-    const itemsPerPage = params.itemsPagina ?? 3;
+    const itemsPerPage = params.itemsPagina ?? 20;
     const totalItems = item.interventionOrders.length;
     const totalPaginas = totalItems ? Math.ceil(totalItems / itemsPerPage) : 0;
     const start = (page - 1) * itemsPerPage;

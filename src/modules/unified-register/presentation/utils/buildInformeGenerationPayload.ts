@@ -35,7 +35,9 @@ export function buildInformeContributorData(
 ): IInformeContributorData {
   const actividadesDeclaradas = item.activities.length
     ? item.activities.map((activity) => activity.label)
-    : [item.activity];
+    : item.activity
+      ? [item.activity]
+      : [];
 
   return {
     razonSocial: item.businessName,
@@ -43,7 +45,7 @@ export function buildInformeContributorData(
     domicilioFiscal: item.fiscalAddress || item.alternateAddress,
     domicilioFiscalElectronico: true,
     emailInformado: getContactValue(item, 'mail'),
-    riesgoFiscal: item.riskLevel,
+    riesgoFiscal: item.riskLevel ?? '',
     actividadesDeclaradas
   };
 }

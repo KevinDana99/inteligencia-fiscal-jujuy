@@ -55,20 +55,44 @@ export function mapContactDto(
   };
 }
 
-function mapContributorType(value: string): IUnifiedRegisterItem['regime'] {
-  if (value === 'Convenio Multilateral') {
+function mapContributorType(
+  value: string | null
+): IUnifiedRegisterItem['regime'] | null {
+  const normalizedValue = value?.trim();
+
+  if (!normalizedValue) {
+    return null;
+  }
+
+  const normalizedKey = normalizedValue
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase();
+
+  if (
+    normalizedKey === 'CONVENIO' ||
+    normalizedKey === 'CONVENIO_MULTILATERAL' ||
+    normalizedKey === 'CONVENIO MULTILATERAL'
+  ) {
     return 'Convenio Multilateral';
   }
 
-  if (value === 'Régimen General') {
+  if (
+    normalizedKey === 'REGIMEN_GENERAL' ||
+    normalizedKey === 'REGIMEN GENERAL'
+  ) {
     return 'Régimen General';
   }
 
-  if (value === 'No inscripto') {
+  if (normalizedKey === 'NO_INSCRIPTO' || normalizedKey === 'NO INSCRIPTO') {
     return 'No inscripto';
   }
 
-  return 'Regimen Local';
+  if (normalizedKey === 'REGIMEN_LOCAL' || normalizedKey === 'REGIMEN LOCAL') {
+    return 'Regimen Local';
+  }
+
+  return normalizedValue as IUnifiedRegisterItem['regime'];
 }
 
 export function mapListItemDto(
@@ -79,7 +103,7 @@ export function mapListItemDto(
     cuit: dto.cuit,
     businessName: dto.razonSocial,
     activity: dto.actividad,
-    regime: mapContributorType(dto.tipoContribuyente),
+    regime: mapContributorType(dto.tipoContribuyente) ?? 'No inscripto',
     status: dto.activo ? 'Activo' : 'Inactivo',
     riskLevel: dto.riesgo
   };
@@ -101,7 +125,11 @@ export function mapHeaderDto(
     biDeclarada: dto.biDeclarada,
     impuestosDeclarados: dto.impuestosDeclarados,
     deuda: dto.deuda,
-    declaraionesJuradas: dto.declaraionesJuradas,
+    declaracionesJuradas:
+      dto.declaracionesJuradas ?? dto.declaraionesJuradas ?? {
+        presentadas: 0,
+        noPresentadas: 0
+      },
     riesgo: dto.riesgo
   };
 }

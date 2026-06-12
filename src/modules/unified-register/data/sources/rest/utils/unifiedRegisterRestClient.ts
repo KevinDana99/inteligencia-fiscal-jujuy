@@ -1,5 +1,6 @@
 import { ApiClientError, fetchWithAuthRetry } from '@/lib/api-client';
 import type { ApiClientConfig } from '@/lib/api-client';
+import { UNIFIED_REGISTER_PAGINATION_QUERY_PARAMS } from '../constants/unifiedRegisterPagination';
 import type { ApiUnifiedRegisterErrorResponseDto } from '../dtos/ApiUnifiedRegisterDtos';
 
 type UnifiedRegisterJsonRequestParams<TBody = unknown> = ApiClientConfig & {
@@ -8,13 +9,20 @@ type UnifiedRegisterJsonRequestParams<TBody = unknown> = ApiClientConfig & {
   path: string;
 };
 
+export type UnifiedRegisterPaginationQueryParamNames = {
+  itemsPerPage: string;
+  page: string;
+};
+
 export function buildUnifiedRegisterPaginationParams(
   page: number,
-  itemsPerPage: number
+  itemsPerPage: number,
+  parameterNames: UnifiedRegisterPaginationQueryParamNames =
+    UNIFIED_REGISTER_PAGINATION_QUERY_PARAMS
 ) {
   const searchParams = new URLSearchParams();
-  searchParams.set('Pagina', String(page));
-  searchParams.set('ItemsPagina', String(itemsPerPage));
+  searchParams.set(parameterNames.page, String(page));
+  searchParams.set(parameterNames.itemsPerPage, String(itemsPerPage));
 
   return searchParams;
 }

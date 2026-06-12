@@ -1,11 +1,14 @@
+const UNIFIED_REGISTER_PADRON_BASE_ROUTE =
+  '/api/procesos-informacion/padron/unificado';
+
 export const UNIFIED_REGISTER_API_ROUTES = {
-  contributors: '/api/procesos-informacion/padron/unificado',
+  contributors: UNIFIED_REGISTER_PADRON_BASE_ROUTE,
   contributorHeader: (contribuyenteId: string) =>
-    `/api/contribuyentes/${contribuyenteId}/cabecera`,
+    `${UNIFIED_REGISTER_PADRON_BASE_ROUTE}/${contribuyenteId}/encabezado`,
   mercurioFines: (contribuyenteId: string) =>
-    `/api/contribuyentes/${contribuyenteId}/multas-mercurio`,
+    `${UNIFIED_REGISTER_PADRON_BASE_ROUTE}/${contribuyenteId}/mercurio`,
   interventionOrders: (contribuyenteId: string) =>
-    `/api/contribuyentes/${contribuyenteId}/ordenes-intervencion`,
+    `${UNIFIED_REGISTER_PADRON_BASE_ROUTE}/${contribuyenteId}/ordenes-intervencion`,
   alternateAddresses: (contribuyenteId: string) =>
     `/api/contribuyentes/${contribuyenteId}/domicilios-alternativos`,
   alternateAddress: (

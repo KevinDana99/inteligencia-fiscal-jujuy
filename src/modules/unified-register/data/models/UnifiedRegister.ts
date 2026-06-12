@@ -1,4 +1,4 @@
-export type UnifiedRegisterRiskLevel = 'A' | 'B' | 'C';
+export type UnifiedRegisterRiskLevel = 'A' | 'B' | 'C' | 'D';
 export type UnifiedRegisterContributorType =
   | 'Convenio Multilateral'
   | 'Régimen General'
@@ -10,9 +10,9 @@ export interface IUnifiedRegisterItem {
   cuit: string;
   businessName: string;
   activity: string;
-  regime: UnifiedRegisterContributorType;
+  regime: UnifiedRegisterContributorType | null;
   status: 'Activo' | 'Inactivo';
-  riskLevel: UnifiedRegisterRiskLevel;
+  riskLevel: UnifiedRegisterRiskLevel | null;
 }
 
 export type IUnifiedRegisterItems = IUnifiedRegisterItem[];
@@ -136,19 +136,19 @@ export interface IUnifiedRegisterNotesListData {
 }
 
 export interface IUnifiedRegisterFine {
-  id: string;
-  issuedAt: string;
-  description: string;
-  amount: string;
-  status: 'Impaga' | 'Pagada' | 'En gestión';
+  id: string | null;
+  issuedAt: string | null;
+  description: string | null;
+  amount: string | null;
+  status: string | null;
 }
 
 export interface IUnifiedRegisterInterventionOrder {
-  id: string;
-  period: string;
-  reason: string;
-  amount: string;
-  status: 'En curso' | 'Cerrada';
+  id: string | null;
+  period: string | null;
+  reason: string | null;
+  amount: string | null;
+  status: string | null;
 }
 
 export interface IUnifiedRegisterTax {
@@ -201,8 +201,8 @@ export interface IUnifiedRegisterDetail extends IUnifiedRegisterItem {
 }
 
 export interface IUnifiedRegisterHeaderActivity {
-  nombre: string;
-  numero: string;
+  nombre: string | null;
+  numero: string | null;
 }
 
 export interface IUnifiedRegisterHeaderAlternateAddress {
@@ -212,26 +212,26 @@ export interface IUnifiedRegisterHeaderAlternateAddress {
 
 export interface IUnifiedRegisterHeaderRecord {
   cuit: string;
-  razonSocial: string;
+  razonSocial: string | null;
   activo: boolean;
-  tipoContribuyente: UnifiedRegisterContributorType;
+  tipoContribuyente: UnifiedRegisterContributorType | null;
   cantidadLotes: number;
-  actividadPrimaria: IUnifiedRegisterHeaderActivity;
-  actividadSecundaria: IUnifiedRegisterHeaderActivity;
-  inicioActividad: string;
+  actividadPrimaria: IUnifiedRegisterHeaderActivity | null;
+  actividadSecundaria: IUnifiedRegisterHeaderActivity | null;
+  inicioActividad: string | null;
   domicilios: {
-    fiscal: string;
-    comercial: string;
-    alternativo: IUnifiedRegisterHeaderAlternateAddress[];
+    fiscal: string | null;
+    comercial?: string | null;
+    alternativo?: IUnifiedRegisterHeaderAlternateAddress[] | null;
   };
-  biDeclarada: string;
-  impuestosDeclarados: string;
-  deuda: string;
-  declaraionesJuradas: {
+  biDeclarada: string | null;
+  impuestosDeclarados: string | null;
+  deuda: string | null;
+  declaracionesJuradas: {
     presentadas: number;
     noPresentadas: number;
   };
-  riesgo: UnifiedRegisterRiskLevel;
+  riesgo: UnifiedRegisterRiskLevel | null;
 }
 
 export interface IUnifiedRegisterFinesListParams {
@@ -240,11 +240,11 @@ export interface IUnifiedRegisterFinesListParams {
 }
 
 export interface IUnifiedRegisterFineRecord {
-  numero: string;
-  fecha: string;
+  numero: string | null;
+  fecha: string | null;
   descripcion: string | null;
-  monto: string;
-  estado: IUnifiedRegisterFine['status'];
+  monto: string | null;
+  estado: string | null;
 }
 
 export interface IUnifiedRegisterFinesListData {
@@ -261,11 +261,11 @@ export interface IUnifiedRegisterInterventionOrdersListParams {
 }
 
 export interface IUnifiedRegisterInterventionOrderRecord {
-  numero: string;
-  periodo: string;
-  motivo: string;
-  monto: string;
-  estado: IUnifiedRegisterInterventionOrder['status'];
+  numero: string | null;
+  periodo: string | null;
+  motivo: string | null;
+  monto: string | null;
+  estado: string | null;
 }
 
 export interface IUnifiedRegisterInterventionOrdersListData {

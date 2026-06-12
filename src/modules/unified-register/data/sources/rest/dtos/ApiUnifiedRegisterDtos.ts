@@ -11,7 +11,7 @@ export interface ApiUnifiedRegisterListItemDto {
   actividad: string;
   tipoContribuyente: string;
   activo: boolean;
-  riesgo: 'A' | 'B' | 'C';
+  riesgo: 'A' | 'B' | 'C' | 'D';
 }
 
 export interface ApiUnifiedRegisterListResponseDto {
@@ -22,8 +22,8 @@ export interface ApiUnifiedRegisterListResponseDto {
 }
 
 export interface ApiUnifiedRegisterHeaderActivityDto {
-  nombre: string;
-  numero: string;
+  nombre: string | null;
+  numero: string | null;
 }
 
 export interface ApiUnifiedRegisterHeaderAlternateAddressDto {
@@ -33,34 +33,38 @@ export interface ApiUnifiedRegisterHeaderAlternateAddressDto {
 
 export interface ApiUnifiedRegisterHeaderResponseDto {
   cuit: string;
-  razonSocial: string;
+  razonSocial: string | null;
   activo: boolean;
-  tipoContribuyente: string;
+  tipoContribuyente: string | null;
   cantidadLotes: number;
-  actividadPrimaria: ApiUnifiedRegisterHeaderActivityDto;
-  actividadSecundaria: ApiUnifiedRegisterHeaderActivityDto;
-  inicioActividad: string;
+  actividadPrimaria: ApiUnifiedRegisterHeaderActivityDto | null;
+  actividadSecundaria: ApiUnifiedRegisterHeaderActivityDto | null;
+  inicioActividad: string | null;
   domicilios: {
-    fiscal: string;
-    comercial: string;
-    alternativo: ApiUnifiedRegisterHeaderAlternateAddressDto[];
+    fiscal: string | null;
+    comercial?: string | null;
+    alternativo?: ApiUnifiedRegisterHeaderAlternateAddressDto[] | null;
   };
-  biDeclarada: string;
-  impuestosDeclarados: string;
-  deuda: string;
-  declaraionesJuradas: {
+  biDeclarada: string | null;
+  impuestosDeclarados: string | null;
+  deuda: string | null;
+  declaracionesJuradas: {
     presentadas: number;
     noPresentadas: number;
   };
-  riesgo: 'A' | 'B' | 'C';
+  declaraionesJuradas?: {
+    presentadas: number;
+    noPresentadas: number;
+  };
+  riesgo: 'A' | 'B' | 'C' | 'D' | null;
 }
 
 export interface ApiUnifiedRegisterFineResponseDto {
-  numero: string;
-  fecha: string;
+  numero: string | null;
+  fecha: string | null;
   descripcion: string | null;
-  monto: string;
-  estado: 'Impaga' | 'Pagada' | 'En gestión';
+  monto: string | null;
+  estado: string | null;
 }
 
 export interface ApiUnifiedRegisterFinesListResponseDto {
@@ -72,11 +76,11 @@ export interface ApiUnifiedRegisterFinesListResponseDto {
 }
 
 export interface ApiUnifiedRegisterInterventionOrderResponseDto {
-  numero: string;
-  periodo: string;
-  motivo: string;
-  monto: string;
-  estado: 'En curso' | 'Cerrada';
+  numero: string | null;
+  periodo: string | null;
+  motivo: string | null;
+  monto: string | null;
+  estado: string | null;
 }
 
 export interface ApiUnifiedRegisterInterventionOrdersListResponseDto {

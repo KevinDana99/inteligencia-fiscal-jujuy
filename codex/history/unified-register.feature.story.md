@@ -156,3 +156,30 @@ Applied `GET /api/procesos-informacion/padron/unificado` to the `/` Padrón Unif
 - `curl -I -sS http://127.0.0.1:3000/` returned `307` to `/login`, expected for the private route without a valid session.
 - `curl -I -sS 'http://127.0.0.1:5001/api/procesos-informacion/padron/unificado?Pagina=1&ItemsPagina=10'` returned `401`, confirming the protected backend endpoint exists.
 - `git diff --check`
+
+## Unified Padron Detail Endpoints - 2026-06-12
+
+### Summary
+
+Connected the contributor detail preview to the Padron Unificado detail contract for header, Mercurio fines, and intervention orders.
+
+### Main Changes
+
+- Replaced the legacy detail routes with:
+  - `GET /api/procesos-informacion/padron/unificado/{contribuyenteId}/encabezado`
+  - `GET /api/procesos-informacion/padron/unificado/{contribuyenteId}/mercurio`
+  - `GET /api/procesos-informacion/padron/unificado/{contribuyenteId}/ordenes-intervencion`
+- Added detail pagination constants and lowercase query parameter support for `pagina` and `itemsPagina`.
+- Updated REST DTOs and domain models to preserve nullable fields from the backend contract.
+- Corrected `declaracionesJuradas` naming while keeping mapper compatibility with the old misspelled field.
+- Added data and presentation utilities for applying header data and mapping paginated detail records.
+- Split Mercurio and intervention-order pagination into dedicated hooks so `useUnifiedRegisterPreview` remains an orchestrator.
+- Updated detail UI rendering to handle `null` cells and risk level `D` without inventing replacement values.
+
+### Validation
+
+- `bun x jest src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts --runInBand`
+- `bun x tsc --noEmit --pretty false --incremental false`
+- `bun x eslint 'app/(private)/vista-previa-padron/[cuit]/page.tsx' src/modules/unified-register/data/models/UnifiedRegister.ts src/modules/unified-register/data/utils/unifiedRegisterDetail.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/constants/unifiedRegisterApiRoutes.ts src/modules/unified-register/data/sources/rest/constants/unifiedRegisterPagination.ts src/modules/unified-register/data/sources/rest/dtos/ApiUnifiedRegisterDtos.ts src/modules/unified-register/data/sources/rest/mappers/unifiedRegisterMappers.ts src/modules/unified-register/data/sources/rest/utils/unifiedRegisterRestClient.ts src/modules/unified-register/data/sources/mock/MockUnifiedRegisterSource.ts src/modules/unified-register/presentation/constants/unifiedRegisterDetail.ts src/modules/unified-register/presentation/utils/unifiedRegisterDetailRecords.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts src/modules/unified-register/presentation/hooks/useUnifiedRegisterPreview.ts src/modules/unified-register/presentation/hooks/useUnifiedRegisterMercurio.ts src/modules/unified-register/presentation/hooks/useUnifiedRegisterInterventionOrders.ts src/modules/unified-register/presentation/components/UnifiedRegisterCard/index.tsx src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/index.tsx`
+- `git diff --check`
+- Dev server started at `http://localhost:3000`; unauthenticated `/vista-previa-padron/30-12345678-1?id=06b815b5-b68b-41b9-be4c-10a7cb566c01` redirects to `/login`, and `/login` responds `200 OK`.

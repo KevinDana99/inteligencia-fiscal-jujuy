@@ -20,6 +20,11 @@ import type {
   IUnifiedRegisterNotesListParams
 } from '../../models/UnifiedRegister';
 import { UNIFIED_REGISTER_API_ROUTES } from './constants/unifiedRegisterApiRoutes';
+import {
+  UNIFIED_REGISTER_DETAIL_PAGINATION,
+  UNIFIED_REGISTER_DETAIL_PAGINATION_QUERY_PARAMS,
+  UNIFIED_REGISTER_PAGINATION_QUERY_PARAMS
+} from './constants/unifiedRegisterPagination';
 import type {
   ApiUnifiedRegisterAlternateAddressListResponseDto,
   ApiUnifiedRegisterAlternateAddressRequestDto,
@@ -46,6 +51,7 @@ import {
 } from './mappers/unifiedRegisterMappers';
 import {
   buildUnifiedRegisterPaginationParams,
+  type UnifiedRegisterPaginationQueryParamNames,
   requestUnifiedRegisterJson,
   requestUnifiedRegisterVoid
 } from './utils/unifiedRegisterRestClient';
@@ -62,13 +68,19 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
     path: string,
     page: number,
     itemsPerPage: number,
-    search?: string
+    search?: string,
+    parameterNames: UnifiedRegisterPaginationQueryParamNames =
+      UNIFIED_REGISTER_PAGINATION_QUERY_PARAMS
   ) {
-    const params = buildUnifiedRegisterPaginationParams(page, itemsPerPage);
+    const params = buildUnifiedRegisterPaginationParams(
+      page,
+      itemsPerPage,
+      parameterNames
+    );
     const normalizedSearch = search?.trim();
 
     if (normalizedSearch) {
-      params.set('Busqueda', normalizedSearch);
+      params.set(UNIFIED_REGISTER_PAGINATION_QUERY_PARAMS.search, normalizedSearch);
     }
 
     return `${path}?${params.toString()}`;
@@ -124,8 +136,11 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
     const dto = await this.requestJson<ApiUnifiedRegisterFinesListResponseDto>(
       this.buildPaginatedPath(
         UNIFIED_REGISTER_API_ROUTES.mercurioFines(contribuyenteId),
-        params.pagina ?? 1,
-        params.itemsPagina ?? 3
+        params.pagina ?? UNIFIED_REGISTER_DETAIL_PAGINATION.defaultPage,
+        params.itemsPagina ??
+          UNIFIED_REGISTER_DETAIL_PAGINATION.defaultItemsPerPage,
+        undefined,
+        UNIFIED_REGISTER_DETAIL_PAGINATION_QUERY_PARAMS
       )
     );
 
@@ -146,8 +161,11 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
       await this.requestJson<ApiUnifiedRegisterInterventionOrdersListResponseDto>(
         this.buildPaginatedPath(
           UNIFIED_REGISTER_API_ROUTES.interventionOrders(contribuyenteId),
-          params.pagina ?? 1,
-          params.itemsPagina ?? 3
+          params.pagina ?? UNIFIED_REGISTER_DETAIL_PAGINATION.defaultPage,
+          params.itemsPagina ??
+            UNIFIED_REGISTER_DETAIL_PAGINATION.defaultItemsPerPage,
+          undefined,
+          UNIFIED_REGISTER_DETAIL_PAGINATION_QUERY_PARAMS
         )
       );
 

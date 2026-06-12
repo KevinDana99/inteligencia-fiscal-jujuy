@@ -34,49 +34,55 @@ import type {
   IUnifiedRegisterInterventionOrdersListData,
   IUnifiedRegisterInterventionOrder,
   IUnifiedRegisterNote,
-  IUnifiedRegisterNotesListData
+  IUnifiedRegisterNotesListData,
+  UnifiedRegisterRiskLevel
 } from '../../../data/models/UnifiedRegister';
 import { InformeGenerationModal } from '../InformeGenerationModal';
 import { InformePreviewModal } from '../InformePreviewModal';
 import { useInformeGeneration } from '../../hooks/useInformeGeneration';
 import { useUnifiedRegisterPreview } from '../../hooks/useUnifiedRegisterPreview';
+import {
+  formatNullableDetailCell,
+  getNullableRecordKey
+} from '../../utils/unifiedRegisterDetailRecords';
 import classes from './UnifiedRegisterPreviewPage.module.css';
 
 const RISK_CLASS_BY_LEVEL = {
   A: classes.riskA,
   B: classes.riskB,
-  C: classes.riskC
-} as const;
+  C: classes.riskC,
+  D: classes.riskD
+} as const satisfies Record<UnifiedRegisterRiskLevel, string>;
 
-const FINE_STATUS_CLASS = {
+const FINE_STATUS_CLASS: Record<string, string> = {
   Impaga: classes.badgeCritical,
   Pagada: classes.badgePositive,
   'En gestión': classes.badgeWarning
 } as const;
 
-const FINE_AMOUNT_CLASS = {
+const FINE_AMOUNT_CLASS: Record<string, string> = {
   Impaga: classes.amountCritical,
   Pagada: classes.amountPositive,
   'En gestión': classes.amountWarning
 } as const;
 
-const FINE_AMOUNT_COLOR = {
+const FINE_AMOUNT_COLOR: Record<string, string> = {
   Impaga: '#dc2626',
   Pagada: '#059669',
   'En gestión': '#d97706'
 } as const;
 
-const ORDER_STATUS_CLASS = {
+const ORDER_STATUS_CLASS: Record<string, string> = {
   'En curso': classes.badgeWarning,
   Cerrada: classes.badgePositive
 } as const;
 
-const ORDER_AMOUNT_CLASS = {
+const ORDER_AMOUNT_CLASS: Record<string, string> = {
   'En curso': classes.amountWarning,
   Cerrada: classes.amountPositive
 } as const;
 
-const ORDER_AMOUNT_COLOR = {
+const ORDER_AMOUNT_COLOR: Record<string, string> = {
   'En curso': '#d97706',
   Cerrada: '#059669'
 } as const;
@@ -92,6 +98,17 @@ const SOURCE_STATUS_CLASS: Record<string, string> = {
   Pagado: classes.badgeNeutral,
   Pendiente: classes.badgeCritical
 } as const;
+
+function getRiskClass(riskLevel: UnifiedRegisterRiskLevel | null) {
+  return riskLevel ? RISK_CLASS_BY_LEVEL[riskLevel] : classes.riskEmpty;
+}
+
+function getStatusClass(
+  statusClassByValue: Record<string, string>,
+  status: string | null
+) {
+  return status ? statusClassByValue[status] : undefined;
+}
 
 function Pager({
   current,
@@ -369,7 +386,11 @@ export function UnifiedRegisterPreviewPage({
                 <span className={classes.statusDot} />
                 {item.status}
               </span>
-              <span className={`${classes.pill} ${classes.regimeText}`}>{item.regime}</span>
+              {item.regime ? (
+                <span className={`${classes.pill} ${classes.regimeText}`}>
+                  {item.regime}
+                </span>
+              ) : null}
               <span className={`${classes.pill} ${classes.controlPill}`}>
                 Control IF: {item.controlLotsLabel}
               </span>
@@ -401,8 +422,10 @@ export function UnifiedRegisterPreviewPage({
             </div>
           </div>
 
-          <div className={`${classes.riskBox} ${RISK_CLASS_BY_LEVEL[item.riskLevel]}`}>
-            <Text className={classes.riskLevel}>{item.riskLevel}</Text>
+          <div className={`${classes.riskBox} ${getRiskClass(item.riskLevel)}`}>
+            <Text className={classes.riskLevel}>
+              {formatNullableDetailCell(item.riskLevel)}
+            </Text>
             <Text className={classes.riskLabel}>Riesgo</Text>
           </div>
         </div>
@@ -752,25 +775,40 @@ export function UnifiedRegisterPreviewPage({
             title="Multas Mercurio"
             badgeLabel={`${finesTotalItems} registros`}
             columns={['N°', 'Fecha', 'Descripción', 'Monto', 'Estado']}
-            rows={fines.map((fine: IUnifiedRegisterFine) => (
-              <Table.Tr key={fine.id}>
-                <Table.Td className={classes.mutedCodeCell}>{fine.id}</Table.Td>
-                <Table.Td className={classes.mutedCell}>{fine.issuedAt}</Table.Td>
-                <Table.Td className={classes.descriptionCell}>{fine.description}</Table.Td>
+            rows={fines.map((fine: IUnifiedRegisterFine, index) => (
+              <Table.Tr key={getNullableRecordKey(fine.id, 'fine', index)}>
+                <Table.Td className={classes.mutedCodeCell}>
+                  {formatNullableDetailCell(fine.id)}
+                </Table.Td>
+                <Table.Td className={classes.mutedCell}>
+                  {formatNullableDetailCell(fine.issuedAt)}
+                </Table.Td>
+                <Table.Td className={classes.descriptionCell}>
+                  {formatNullableDetailCell(fine.description)}
+                </Table.Td>
                 <Table.Td
-                  className={`${classes.amountCell} ${FINE_AMOUNT_CLASS[fine.status]}`}
-                  style={{ color: FINE_AMOUNT_COLOR[fine.status] }}
+                  className={`${classes.amountCell} ${
+                    getStatusClass(FINE_AMOUNT_CLASS, fine.status) ?? ''
+                  }`}
+                  style={{
+                    color: fine.status ? FINE_AMOUNT_COLOR[fine.status] : undefined
+                  }}
                 >
-                  {fine.amount}
+                  {formatNullableDetailCell(fine.amount)}
                 </Table.Td>
                 <Table.Td className={classes.statusCell}>
-                  <Badge
-                    radius="xl"
-                    className={`${FINE_STATUS_CLASS[fine.status]} ${classes.statusBadge}`}
-                    classNames={{ label: classes.statusBadgeLabel }}
-                  >
-                    {fine.status}
-                  </Badge>
+                  {fine.status ? (
+                    <Badge
+                      radius="xl"
+                      className={`${
+                        getStatusClass(FINE_STATUS_CLASS, fine.status) ??
+                        classes.badgeNeutral
+                      } ${classes.statusBadge}`}
+                      classNames={{ label: classes.statusBadgeLabel }}
+                    >
+                      {fine.status}
+                    </Badge>
+                  ) : null}
                 </Table.Td>
               </Table.Tr>
             ))}
@@ -794,27 +832,40 @@ export function UnifiedRegisterPreviewPage({
             title="Órdenes de Intervención"
             badgeLabel={`${interventionOrdersTotalItems} registros`}
             columns={['N° OI', 'Período', 'Motivo', 'Monto', 'Estado']}
-            rows={interventionOrders.map((order: IUnifiedRegisterInterventionOrder) => (
-              <Table.Tr key={order.id}>
+            rows={interventionOrders.map((order: IUnifiedRegisterInterventionOrder, index) => (
+              <Table.Tr key={getNullableRecordKey(order.id, 'order', index)}>
                 <Table.Td className={classes.orderCodeCellCell}>
-                  <span className={classes.orderCodeCell}>{order.id}</span>
+                  <span className={classes.orderCodeCell}>
+                    {formatNullableDetailCell(order.id)}
+                  </span>
                 </Table.Td>
-                <Table.Td className={classes.mutedCell}>{order.period}</Table.Td>
-                <Table.Td>{order.reason}</Table.Td>
+                <Table.Td className={classes.mutedCell}>
+                  {formatNullableDetailCell(order.period)}
+                </Table.Td>
+                <Table.Td>{formatNullableDetailCell(order.reason)}</Table.Td>
                 <Table.Td
-                  className={`${classes.amountCell} ${ORDER_AMOUNT_CLASS[order.status]}`}
-                  style={{ color: ORDER_AMOUNT_COLOR[order.status] }}
+                  className={`${classes.amountCell} ${
+                    getStatusClass(ORDER_AMOUNT_CLASS, order.status) ?? ''
+                  }`}
+                  style={{
+                    color: order.status ? ORDER_AMOUNT_COLOR[order.status] : undefined
+                  }}
                 >
-                  {order.amount}
+                  {formatNullableDetailCell(order.amount)}
                 </Table.Td>
                 <Table.Td className={classes.statusCell}>
-                  <Badge
-                    radius="xl"
-                    className={`${ORDER_STATUS_CLASS[order.status]} ${classes.statusBadge}`}
-                    classNames={{ label: classes.statusBadgeLabel }}
-                  >
-                    {order.status}
-                  </Badge>
+                  {order.status ? (
+                    <Badge
+                      radius="xl"
+                      className={`${
+                        getStatusClass(ORDER_STATUS_CLASS, order.status) ??
+                        classes.badgeNeutral
+                      } ${classes.statusBadge}`}
+                      classNames={{ label: classes.statusBadgeLabel }}
+                    >
+                      {order.status}
+                    </Badge>
+                  ) : null}
                 </Table.Td>
               </Table.Tr>
             ))}
