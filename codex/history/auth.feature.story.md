@@ -101,3 +101,13 @@ Verified successfully with:
 - `app/(private)/PrivateLayoutGate.tsx` dejó de aceptar cualquier sesión autenticada y ahora exige una sesión apta para el dashboard privado común.
 - Se agregó `src/lib/auth/route-access.ts` con pruebas unitarias para blindar la matriz de redirecciones y evitar regresiones en navegación.
 - Se relajó el guard server-side del dashboard privado para que replique la misma regla del `proxy`: solo expulsa a admins, evitando bucles cuando el backend devuelve variantes no-admin de `tipoUsuario`.
+
+## 2026-06-11 Renovación resiliente de sesión expirada
+
+- Se agregó refresh proactivo con margen de 60 segundos antes del vencimiento del access token.
+- `getServerAuthSession({ forceRefresh: true })` centraliza renovación, persistencia de cookies, recomposición de `contexto-actual` y limpieza ante sesión inválida.
+- `proxy.ts` propaga cookies renovadas al response y al request interno para que el render server-side del mismo request use la sesión fresca.
+- `src/lib/api-client.ts` reintenta una sola vez ante `401` usando `refreshAccessToken`, y los data sources protegidos comparten `createAuthenticatedApiClientConfig`.
+- Los sources REST con `fetch` directo y la descarga local de documentos quedaron cubiertos por `fetchWithAuthRetry`.
+- `/login` muestra una notificación segura y efímera cuando el usuario fue redirigido porque la sesión expiró.
+- Validado con `bun run test`, `bunx tsc --noEmit`, `bun run lint` y `bun run build`.

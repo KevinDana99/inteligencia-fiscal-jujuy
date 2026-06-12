@@ -4,35 +4,58 @@ import { refreshAuthSession } from './refresh-session';
 import {
   composeAuthSession,
   isSessionExpired,
+  isSessionExpiredOrWithinSkew,
   mapIamCurrentContextResponseToAuthUser
 } from './session-mapper';
 import { createServerAuthSource } from '@/modules/auth/data/data-access';
-import type { IAuthSession } from '@/modules/auth/data/models/Auth';
+import type {
+  IAuthSession,
+  ISerializedAuthSession
+} from '@/modules/auth/data/models/Auth';
 
-export async function getServerAuthSession(): Promise<IAuthSession | null> {
+export interface GetServerAuthSessionOptions {
+  forceRefresh?: boolean;
+}
+
+async function refreshSerializedAuthSession(
+  session: ISerializedAuthSession
+): Promise<ISerializedAuthSession | null> {
+  if (!session.refreshToken || isSessionExpired(session.refreshTokenExpiresAt)) {
+    await clearServerAuthCookies();
+    return null;
+  }
+
+  const refreshedSession = await refreshAuthSession({
+    refrescarToken: session.refreshToken
+  });
+
+  if (!refreshedSession) {
+    await clearServerAuthCookies();
+    return null;
+  }
+
+  await setServerAuthCookies(refreshedSession);
+  return refreshedSession;
+}
+
+export async function getServerAuthSession(
+  options: GetServerAuthSessionOptions = {}
+): Promise<IAuthSession | null> {
   let session = await readServerAuthSession();
 
   if (!session?.accessToken) {
     return null;
   }
 
-  if (isSessionExpired(session.accessTokenExpiresAt)) {
-    if (!session.refreshToken || isSessionExpired(session.refreshTokenExpiresAt)) {
-      await clearServerAuthCookies();
+  if (
+    options.forceRefresh ||
+    isSessionExpiredOrWithinSkew(session.accessTokenExpiresAt)
+  ) {
+    session = await refreshSerializedAuthSession(session);
+
+    if (!session) {
       return null;
     }
-
-    const refreshedSession = await refreshAuthSession({
-      refrescarToken: session.refreshToken
-    });
-
-    if (!refreshedSession) {
-      await clearServerAuthCookies();
-      return null;
-    }
-
-    session = refreshedSession;
-    await setServerAuthCookies(session);
   }
 
   try {

@@ -3,6 +3,13 @@ import type { NextRequest, NextResponse } from 'next/server';
 import { AUTH_COOKIE_NAMES } from './constants';
 import type { ISerializedAuthSession } from '@/modules/auth/data/models/Auth';
 
+const AUTH_SESSION_COOKIE_NAMES = [
+  AUTH_COOKIE_NAMES.accessToken,
+  AUTH_COOKIE_NAMES.accessTokenExpiresAt,
+  AUTH_COOKIE_NAMES.refreshToken,
+  AUTH_COOKIE_NAMES.refreshTokenExpiresAt
+] as const;
+
 function buildSerializedSession(
   requestCookies: Pick<NextRequest['cookies'], 'get'> | Awaited<ReturnType<typeof cookies>>
 ): ISerializedAuthSession | null {
@@ -73,7 +80,7 @@ function clearAuthCookies(
     | Pick<Awaited<ReturnType<typeof cookies>>, 'delete'>
     | Pick<NextResponse['cookies'], 'delete'>
 ) {
-  for (const cookieName of Object.values(AUTH_COOKIE_NAMES)) {
+  for (const cookieName of AUTH_SESSION_COOKIE_NAMES) {
     cookieStore.delete({
       name: cookieName,
       path: '/'

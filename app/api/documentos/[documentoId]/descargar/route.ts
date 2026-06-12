@@ -6,6 +6,8 @@ import {
   INTIMATION_DOCUMENT_FORMATS
 } from '@/modules/cross-management/data/constants/intimationDocumentContracts'
 import type { IIntimationDocumentFormat } from '@/modules/cross-management/data/models/CrossManagement'
+import { fetchWithAuthRetry } from '@/lib/api-client'
+import { createAuthenticatedApiClientConfig } from '@/lib/auth/create-authenticated-api-client-config'
 import { getServerAuthSession } from '@/lib/auth/get-server-session'
 
 type DownloadRouteContext = {
@@ -150,6 +152,7 @@ export async function GET(
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? ''
+  const apiConfig = await createAuthenticatedApiClientConfig({ baseUrl })
   const endpoint = INTIMATION_DOCUMENT_API_ENDPOINTS.download(
     encodeURIComponent(documentoId),
     format
@@ -163,12 +166,16 @@ export async function GET(
     format
   })
 
-  const response = await fetch(`${baseUrl}${endpoint}`, {
-    cache: 'no-store',
-    headers: {
-      Authorization: `Bearer ${session.accessToken}`
-    }
-  })
+  const response = await fetchWithAuthRetry(
+    `${baseUrl}${endpoint}`,
+    {
+      cache: 'no-store',
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`
+      }
+    },
+    apiConfig
+  )
 
   if (!response.ok) {
     const errorData = await parseDownloadError(response)

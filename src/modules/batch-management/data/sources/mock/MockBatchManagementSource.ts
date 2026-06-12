@@ -99,8 +99,13 @@ export class MockBatchManagementSource implements IBatchManagementSource {
             batch.batchNumber === normalizedSearch
         )
       : batchManagementMock;
+    const page = params.page ?? 1;
+    const itemsPerPage = params.itemsPerPage ?? 20;
+    const totalPages = Math.ceil(items.length / itemsPerPage);
+    const start = (page - 1) * itemsPerPage;
+    const paginatedItems = totalPages === 0 ? [] : items.slice(start, start + itemsPerPage);
 
-    const requestUrl = `/api/lotes?pagina=${params.page ?? 1}&itemsPagina=${params.itemsPerPage ?? 20}${
+    const requestUrl = `/api/lotes?pagina=${page}&itemsPagina=${itemsPerPage}${
       params.search?.trim() ? `&busqueda=${encodeURIComponent(params.search.trim())}` : ''
     }`;
 
@@ -112,16 +117,16 @@ export class MockBatchManagementSource implements IBatchManagementSource {
           METHOD: 'GET',
           REQUEST_RAW: {
             busqueda: params.search ?? null,
-            pagina: params.page ?? 1,
-            itemsPagina: params.itemsPerPage ?? 20,
+            pagina: page,
+            itemsPagina: itemsPerPage,
             requestUrl
           },
           RESPONSE_RAW: {
-            pagina: 1,
-            itemsPagina: 20,
+            pagina: page,
+            itemsPagina: itemsPerPage,
             totalItems: items.length,
-            totalPaginas: 1,
-            lotes: items.map(toRawListItem)
+            totalPaginas: totalPages,
+            lotes: paginatedItems.map(toRawListItem)
           }
         },
         null,
@@ -130,11 +135,11 @@ export class MockBatchManagementSource implements IBatchManagementSource {
     );
 
     return {
-      page: 1,
-      itemsPerPage: 20,
+      page,
+      itemsPerPage,
       totalItems: items.length,
-      totalPages: 1,
-      batches: items
+      totalPages,
+      batches: paginatedItems
     };
   }
 

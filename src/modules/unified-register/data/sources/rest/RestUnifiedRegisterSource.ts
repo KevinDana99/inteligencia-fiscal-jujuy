@@ -1,4 +1,8 @@
-import { ApiClientError, type ApiClientConfig } from '@/lib/api-client';
+import {
+  ApiClientError,
+  fetchWithAuthRetry,
+  type ApiClientConfig
+} from '@/lib/api-client';
 import type { IUnifiedRegisterSource } from '../../interfaces/UnifiedRegisterSource';
 import type {
   IUnifiedRegisterAlternateAddressInput,
@@ -159,6 +163,17 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
     };
   }
 
+  private fetch(path: string, init: RequestInit) {
+    return fetchWithAuthRetry(
+      this.buildUrl(path),
+      {
+        ...init,
+        headers: init.headers ?? this.buildHeaders()
+      },
+      this.config
+    );
+  }
+
   private async throwResponseError(response: Response): Promise<never> {
     const error = await parseErrorResponse(response);
 
@@ -174,8 +189,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
     searchParams.set('pagina', String(page));
     searchParams.set('itemsPagina', String(itemsPerPage));
 
-    const response = await fetch(
-      this.buildUrl(`/api/contribuyentes?${searchParams.toString()}`),
+    const response = await this.fetch(
+      `/api/contribuyentes?${searchParams.toString()}`,
       {
         method: 'GET',
         headers: this.buildHeaders()
@@ -197,8 +212,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
   }
 
   async getContributorHeader(contribuyenteId: string): Promise<IUnifiedRegisterHeaderRecord> {
-    const response = await fetch(
-      this.buildUrl(`/api/contribuyentes/${contribuyenteId}/cabecera`),
+    const response = await this.fetch(
+      `/api/contribuyentes/${contribuyenteId}/cabecera`,
       {
         method: 'GET',
         headers: this.buildHeaders()
@@ -221,10 +236,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
     searchParams.set('pagina', String(params.pagina ?? 1));
     searchParams.set('itemsPagina', String(params.itemsPagina ?? 3));
 
-    const response = await fetch(
-      this.buildUrl(
-        `/api/contribuyentes/${contribuyenteId}/multas-mercurio?${searchParams.toString()}`
-      ),
+    const response = await this.fetch(
+      `/api/contribuyentes/${contribuyenteId}/multas-mercurio?${searchParams.toString()}`,
       {
         method: 'GET',
         headers: this.buildHeaders()
@@ -253,10 +266,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
     searchParams.set('pagina', String(params.pagina ?? 1));
     searchParams.set('itemsPagina', String(params.itemsPagina ?? 3));
 
-    const response = await fetch(
-      this.buildUrl(
-        `/api/contribuyentes/${contribuyenteId}/ordenes-intervencion?${searchParams.toString()}`
-      ),
+    const response = await this.fetch(
+      `/api/contribuyentes/${contribuyenteId}/ordenes-intervencion?${searchParams.toString()}`,
       {
         method: 'GET',
         headers: this.buildHeaders()
@@ -281,8 +292,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
   async listAlternateAddresses(
     contribuyenteId: string
   ): Promise<IUnifiedRegisterAlternateAddressListData> {
-    const response = await fetch(
-      this.buildUrl(`/api/contribuyentes/${contribuyenteId}/domicilios-alternativos`),
+    const response = await this.fetch(
+      `/api/contribuyentes/${contribuyenteId}/domicilios-alternativos`,
       {
         method: 'GET',
         headers: this.buildHeaders()
@@ -308,8 +319,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
       direccion: payload.direccion ?? null
     };
 
-    const response = await fetch(
-      this.buildUrl(`/api/contribuyentes/${contribuyenteId}/domicilios-alternativos`),
+    const response = await this.fetch(
+      `/api/contribuyentes/${contribuyenteId}/domicilios-alternativos`,
       {
         method: 'POST',
         headers: this.buildHeaders(),
@@ -334,10 +345,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
       direccion: payload.direccion ?? null
     };
 
-    const response = await fetch(
-      this.buildUrl(
-        `/api/contribuyentes/${contribuyenteId}/domicilios-alternativos/${domicilioAlternativoId}`
-      ),
+    const response = await this.fetch(
+      `/api/contribuyentes/${contribuyenteId}/domicilios-alternativos/${domicilioAlternativoId}`,
       {
         method: 'PATCH',
         headers: this.buildHeaders(),
@@ -357,10 +366,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
     contribuyenteId: string,
     domicilioAlternativoId: string
   ): Promise<void> {
-    const response = await fetch(
-      this.buildUrl(
-        `/api/contribuyentes/${contribuyenteId}/domicilios-alternativos/${domicilioAlternativoId}`
-      ),
+    const response = await this.fetch(
+      `/api/contribuyentes/${contribuyenteId}/domicilios-alternativos/${domicilioAlternativoId}`,
       {
         method: 'DELETE',
         headers: this.buildHeaders()
@@ -380,10 +387,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
     searchParams.set('pagina', String(params.pagina ?? 1));
     searchParams.set('itemsPagina', String(params.itemsPagina ?? 5));
 
-    const response = await fetch(
-      this.buildUrl(
-        `/api/contribuyentes/${contribuyenteId}/notas?${searchParams.toString()}`
-      ),
+    const response = await this.fetch(
+      `/api/contribuyentes/${contribuyenteId}/notas?${searchParams.toString()}`,
       {
         method: 'GET',
         headers: this.buildHeaders()
@@ -412,8 +417,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
       descripcion: payload.descripcion
     };
 
-    const response = await fetch(
-      this.buildUrl(`/api/contribuyentes/${contribuyenteId}/notas`),
+    const response = await this.fetch(
+      `/api/contribuyentes/${contribuyenteId}/notas`,
       {
         method: 'POST',
         headers: this.buildHeaders(),
@@ -438,8 +443,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
       descripcion: payload.descripcion
     };
 
-    const response = await fetch(
-      this.buildUrl(`/api/contribuyentes/${contribuyenteId}/notas/${notaId}`),
+    const response = await this.fetch(
+      `/api/contribuyentes/${contribuyenteId}/notas/${notaId}`,
       {
         method: 'PATCH',
         headers: this.buildHeaders(),
@@ -456,8 +461,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
   }
 
   async deleteNote(contribuyenteId: string, notaId: string): Promise<void> {
-    const response = await fetch(
-      this.buildUrl(`/api/contribuyentes/${contribuyenteId}/notas/${notaId}`),
+    const response = await this.fetch(
+      `/api/contribuyentes/${contribuyenteId}/notas/${notaId}`,
       {
         method: 'DELETE',
         headers: this.buildHeaders()
@@ -477,10 +482,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
     searchParams.set('pagina', String(params.pagina ?? 1));
     searchParams.set('itemsPagina', String(params.itemsPagina ?? 1));
 
-    const response = await fetch(
-      this.buildUrl(
-        `/api/contribuyentes/${contribuyenteId}/contactos?${searchParams.toString()}`
-      ),
+    const response = await this.fetch(
+      `/api/contribuyentes/${contribuyenteId}/contactos?${searchParams.toString()}`,
       {
         method: 'GET',
         headers: this.buildHeaders()
@@ -507,8 +510,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
   ): Promise<IUnifiedRegisterContactRecord> {
     const body: ApiUnifiedRegisterContactRequestDto = payload;
 
-    const response = await fetch(
-      this.buildUrl(`/api/contribuyentes/${contribuyenteId}/contactos`),
+    const response = await this.fetch(
+      `/api/contribuyentes/${contribuyenteId}/contactos`,
       {
         method: 'POST',
         headers: this.buildHeaders(),
@@ -531,8 +534,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
   ): Promise<IUnifiedRegisterContactRecord> {
     const body: ApiUnifiedRegisterContactRequestDto = payload;
 
-    const response = await fetch(
-      this.buildUrl(`/api/contribuyentes/${contribuyenteId}/contactos/${contactoId}`),
+    const response = await this.fetch(
+      `/api/contribuyentes/${contribuyenteId}/contactos/${contactoId}`,
       {
         method: 'PATCH',
         headers: this.buildHeaders(),
@@ -549,8 +552,8 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
   }
 
   async deleteContact(contribuyenteId: string, contactoId: string): Promise<void> {
-    const response = await fetch(
-      this.buildUrl(`/api/contribuyentes/${contribuyenteId}/contactos/${contactoId}`),
+    const response = await this.fetch(
+      `/api/contribuyentes/${contribuyenteId}/contactos/${contactoId}`,
       {
         method: 'DELETE',
         headers: this.buildHeaders()

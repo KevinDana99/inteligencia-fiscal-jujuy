@@ -13,6 +13,7 @@ import {
   AUTH_LOGIN_SUCCESS_TOAST_COOKIE,
   AUTH_LOGIN_SUCCESS_TOAST_MAX_AGE
 } from '@/lib/auth/login-success-toast'
+import { AUTH_SESSION_EXPIRED_NOTICE_COOKIE } from '@/lib/auth/session-expired-notice'
 import { getRedirectPathByUserType } from '@/lib/auth/proxy-session'
 import { createServerAuthSource } from '../../data-access';
 import type {
@@ -79,6 +80,7 @@ export async function signInAction(
       maxAge: AUTH_LOGIN_SUCCESS_TOAST_MAX_AGE
     })
     cookieStore.delete(AUTH_COOKIE_NAMES.postLoginRedirect)
+    cookieStore.delete(AUTH_SESSION_EXPIRED_NOTICE_COOKIE)
     const fallbackRedirectTo = getRedirectPathByUserType(
       currentContext.tipoUsuario
     )

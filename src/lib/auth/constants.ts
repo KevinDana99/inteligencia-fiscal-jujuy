@@ -29,4 +29,4 @@ export const AUTH_MOCK_USERS = {
   }
 } as const
 
-export const AUTH_REFRESH_SAFETY_WINDOW_MS = 5_000
+export const AUTH_REFRESH_SKEW_MS = 60_000

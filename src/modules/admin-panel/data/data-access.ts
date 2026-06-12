@@ -1,5 +1,4 @@
-import type { ApiClientConfig } from '@/lib/api-client';
-import { getServerAuthSession } from '@/lib/auth/get-server-session';
+import { createAuthenticatedApiClientConfig } from '@/lib/auth/create-authenticated-api-client-config';
 import type { IAdminPanelSource } from './interfaces/AdminPanelSource';
 import { isMockAdminPanelEnabled } from './is-mock-admin-panel-enabled';
 import { MockAdminPanelSource } from './sources/mock/MockAdminPanelSource';
@@ -10,12 +9,7 @@ export async function createServerAdminPanelSource(): Promise<IAdminPanelSource>
     return new MockAdminPanelSource();
   }
 
-  const session = await getServerAuthSession();
-
-  const config: ApiClientConfig = {
-    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
-    token: session?.accessToken
-  };
+  const config = await createAuthenticatedApiClientConfig();
 
   return new RestAdminPanelSource(config);
 }

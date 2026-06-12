@@ -138,3 +138,38 @@
 .emptyStateIcon {
   color: var(--mantine-color-gray-5);
 }
+
+.tableFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid var(--mantine-color-gray-2);
+  padding: 12px 14px;
+}
+
+.tableResultsText {
+  color: var(--mantine-color-gray-6);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.paginationControls {
+  flex-shrink: 0;
+}
+
+.pageSizeSelect {
+  width: 88px;
+}
+
+@media (max-width: 768px) {
+  .tableFooter {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .paginationControls {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
