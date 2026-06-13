@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useMemo, useState, useTransition } from 'react';
-import { TOAST_DASHBOARD_MESSAGES, toast } from '@/components/core/toasts';
-import { markReprocessingAction } from '@/modules/reprocessing/data/actions';
-import type { IReprocessingMarkPayload } from '@/modules/reprocessing/data/models/Reprocessing';
+import { useMemo, useState, useTransition } from "react";
+import { TOAST_DASHBOARD_MESSAGES, toast } from "@/components/core/toasts";
+import { markReprocessingAction } from "@/modules/reprocessing/data/actions";
+import type { IReprocessingMarkPayload } from "@/modules/reprocessing/data/models/Reprocessing";
 import {
   createAlternateAddressAction,
   createContactAction,
@@ -15,11 +15,11 @@ import {
   getNotesAction,
   updateContactAction,
   updateNoteAction,
-  updateAlternateAddressAction
-} from '../../data/actions';
-import { mapAlternateAddressRecordToViewModel } from '../../data/mappers/mapAlternateAddress';
-import { mapContactRecordToViewModel } from '../../data/mappers/mapContact';
-import { mapNoteRecordToViewModel } from '../../data/mappers/mapNote';
+  updateAlternateAddressAction,
+} from "../../data/actions";
+import { mapAlternateAddressRecordToViewModel } from "../../data/mappers/mapAlternateAddress";
+import { mapContactRecordToViewModel } from "../../data/mappers/mapContact";
+import { mapNoteRecordToViewModel } from "../../data/mappers/mapNote";
 import type {
   IUnifiedRegisterAddress,
   IUnifiedRegisterBatchOption,
@@ -30,16 +30,19 @@ import type {
   IUnifiedRegisterInterventionOrdersListData,
   IUnifiedRegisterNote,
   IUnifiedRegisterNotesListData,
-  IUnifiedRegisterSourceTable
-} from '../../data/models/UnifiedRegister';
-import { useUnifiedRegisterInterventionOrders } from './useUnifiedRegisterInterventionOrders';
-import { useUnifiedRegisterMercurio } from './useUnifiedRegisterMercurio';
+  IUnifiedRegisterSourceTable,
+} from "../../data/models/UnifiedRegister";
+import { useUnifiedRegisterInterventionOrders } from "./useUnifiedRegisterInterventionOrders";
+import { useUnifiedRegisterMercurio } from "./useUnifiedRegisterMercurio";
 
-type HeaderModal = null | 'reprocessing' | 'crosses' | 'report' | 'batch';
-type EditKind = null | 'address' | 'contact' | 'note';
-type DeleteKind = null | 'address' | 'contact' | 'note';
+type HeaderModal = null | "reprocessing" | "crosses" | "report" | "batch";
+type EditKind = null | "address" | "contact" | "note";
+type DeleteKind = null | "address" | "contact" | "note";
 
-type EditableItem = IUnifiedRegisterAddress | IUnifiedRegisterContact | IUnifiedRegisterNote;
+type EditableItem =
+  | IUnifiedRegisterAddress
+  | IUnifiedRegisterContact
+  | IUnifiedRegisterNote;
 type ContactForm = {
   phone: string;
   mail: string;
@@ -48,10 +51,10 @@ type ContactForm = {
 };
 
 const EMPTY_CONTACT_FORM: ContactForm = {
-  phone: '',
-  mail: '',
-  legal: '',
-  accountant: ''
+  phone: "",
+  mail: "",
+  legal: "",
+  accountant: "",
 };
 
 export function useUnifiedRegisterPreview(
@@ -62,49 +65,65 @@ export function useUnifiedRegisterPreview(
   initialInterventionOrdersData: IUnifiedRegisterInterventionOrdersListData | null
 ) {
   const [activeHeaderModal, setActiveHeaderModal] = useState<HeaderModal>(null);
-  const [batchSearch, setBatchSearch] = useState('');
+  const [batchSearch, setBatchSearch] = useState("");
   const [addresses, setAddresses] = useState(item.addresses);
-  const [addressActionError, setAddressActionError] = useState<string | null>(null);
+  const [addressActionError, setAddressActionError] = useState<string | null>(
+    null
+  );
   const [contacts, setContacts] = useState(item.contacts);
-  const [contactActionError, setContactActionError] = useState<string | null>(null);
-  const [contactsCurrentPage, setContactsCurrentPage] = useState(initialContactsData?.pagina ?? 1);
+  const [contactActionError, setContactActionError] = useState<string | null>(
+    null
+  );
+  const [contactsCurrentPage, setContactsCurrentPage] = useState(
+    initialContactsData?.pagina ?? 1
+  );
   const [contactsTotalPages, setContactsTotalPages] = useState(
     initialContactsData?.totalPaginas ?? 0
   );
   const [notes, setNotes] = useState(item.notes);
   const [noteActionError, setNoteActionError] = useState<string | null>(null);
-  const [notesCurrentPage, setNotesCurrentPage] = useState(initialNotesData?.pagina ?? 1);
-  const [notesTotalPages, setNotesTotalPages] = useState(initialNotesData?.totalPaginas ?? 0);
-  const [reprocessingActionError, setReprocessingActionError] = useState<string | null>(null);
+  const [notesCurrentPage, setNotesCurrentPage] = useState(
+    initialNotesData?.pagina ?? 1
+  );
+  const [notesTotalPages, setNotesTotalPages] = useState(
+    initialNotesData?.totalPaginas ?? 0
+  );
+  const [reprocessingActionError, setReprocessingActionError] = useState<
+    string | null
+  >(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editKind, setEditKind] = useState<EditKind>(null);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [formValue, setFormValue] = useState<string | null>(null);
-  const [contactForm, setContactForm] = useState<ContactForm>(EMPTY_CONTACT_FORM);
+  const [contactForm, setContactForm] =
+    useState<ContactForm>(EMPTY_CONTACT_FORM);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteKind, setDeleteKind] = useState<DeleteKind>(null);
   const [deletingItemId, setDeletingItemId] = useState<string | null>(null);
-  const [selectedLotOption, setSelectedLotOption] = useState<IUnifiedRegisterBatchOption | null>(null);
+  const [selectedLotOption, setSelectedLotOption] =
+    useState<IUnifiedRegisterBatchOption | null>(null);
   const [activeSourceTableId, setActiveSourceTableId] =
-    useState<IUnifiedRegisterSourceTable['id']>('inm');
+    useState<IUnifiedRegisterSourceTable["id"]>("inm");
   const [activeNoteIndex, setActiveNoteIndex] = useState(0);
   const [isAddressSavePending, startAddressSaveTransition] = useTransition();
-  const [isAddressDeletePending, startAddressDeleteTransition] = useTransition();
+  const [isAddressDeletePending, startAddressDeleteTransition] =
+    useTransition();
   const [isContactsPagePending, startContactsPageTransition] = useTransition();
   const [isContactSavePending, startContactSaveTransition] = useTransition();
-  const [isContactDeletePending, startContactDeleteTransition] = useTransition();
+  const [isContactDeletePending, startContactDeleteTransition] =
+    useTransition();
   const [isNotesPagePending, startNotesPageTransition] = useTransition();
   const [isNoteSavePending, startNoteSaveTransition] = useTransition();
   const [isNoteDeletePending, startNoteDeleteTransition] = useTransition();
   const mercurio = useUnifiedRegisterMercurio({
     contribuyenteId: item.contribuyenteId,
     initialData: initialMercurioData,
-    initialFines: item.fines
+    initialFines: item.fines,
   });
   const interventionOrdersList = useUnifiedRegisterInterventionOrders({
     contribuyenteId: item.contribuyenteId,
     initialData: initialInterventionOrdersData,
-    initialInterventionOrders: item.interventionOrders
+    initialInterventionOrders: item.interventionOrders,
   });
 
   const filteredLotOptions = useMemo(() => {
@@ -123,7 +142,8 @@ export function useUnifiedRegisterPreview(
   }, [batchSearch, item.lotOptions]);
 
   const activeSourceTable =
-    item.sourceTables.find((table) => table.id === activeSourceTableId) ?? item.sourceTables[0];
+    item.sourceTables.find((table) => table.id === activeSourceTableId) ??
+    item.sourceTables[0];
 
   const activeNote = notes[activeNoteIndex] ?? null;
 
@@ -136,11 +156,13 @@ export function useUnifiedRegisterPreview(
   const refreshContacts = async (page: number) => {
     const result = await getContactsAction(item.contribuyenteId, {
       pagina: page,
-      itemsPagina: 1
+      itemsPagina: 1,
     });
 
     if (!result.data) {
-      setContactActionError(result.error ?? 'No fue posible listar los contactos.');
+      setContactActionError(
+        result.error ?? "No fue posible listar los contactos."
+      );
       return false;
     }
 
@@ -159,11 +181,11 @@ export function useUnifiedRegisterPreview(
   const refreshNotes = async (page: number) => {
     const result = await getNotesAction(item.contribuyenteId, {
       pagina: page,
-      itemsPagina: 1
+      itemsPagina: 1,
     });
 
     if (!result.data) {
-      setNoteActionError(result.error ?? 'No fue posible listar las notas.');
+      setNoteActionError(result.error ?? "No fue posible listar las notas.");
       return false;
     }
 
@@ -173,7 +195,7 @@ export function useUnifiedRegisterPreview(
   };
 
   const openHeaderModal = (modal: HeaderModal) => {
-    if (modal === 'reprocessing') {
+    if (modal === "reprocessing") {
       setReprocessingActionError(null);
     }
 
@@ -182,7 +204,7 @@ export function useUnifiedRegisterPreview(
 
   const closeHeaderModal = () => {
     setActiveHeaderModal(null);
-    setBatchSearch('');
+    setBatchSearch("");
     setReprocessingActionError(null);
   };
 
@@ -191,12 +213,12 @@ export function useUnifiedRegisterPreview(
 
     const result = await markReprocessingAction({
       contribuyenteId: payload.contribuyenteId,
-      description: payload.description?.trim() || null
+      description: payload.description?.trim() || null,
     });
 
     if (!result.success) {
       const errorMessage =
-        result.error ?? 'No fue posible marcar el CUIT en reproceso.';
+        result.error ?? "No fue posible marcar el CUIT en reproceso.";
 
       setReprocessingActionError(errorMessage);
       throw new Error(errorMessage);
@@ -208,7 +230,7 @@ export function useUnifiedRegisterPreview(
   const selectLotOption = (lot: IUnifiedRegisterBatchOption) => {
     setSelectedLotOption(lot);
     setActiveHeaderModal(null);
-    setBatchSearch('');
+    setBatchSearch("");
   };
 
   const closeLotConfirmModal = () => {
@@ -223,34 +245,42 @@ export function useUnifiedRegisterPreview(
     setAddressActionError(null);
     setContactActionError(null);
     setNoteActionError(null);
-    setContactForm(kind === 'contact' ? EMPTY_CONTACT_FORM : EMPTY_CONTACT_FORM);
+    setContactForm(
+      kind === "contact" ? EMPTY_CONTACT_FORM : EMPTY_CONTACT_FORM
+    );
   };
 
-  const openEditModal = (kind: Exclude<EditKind, null>, itemToEdit: EditableItem) => {
+  const openEditModal = (
+    kind: Exclude<EditKind, null>,
+    itemToEdit: EditableItem
+  ) => {
     setIsEditModalOpen(true);
     setEditKind(kind);
     setEditingItemId(
-      kind === 'contact'
+      kind === "contact"
         ? (itemToEdit as IUnifiedRegisterContact).recordId ?? itemToEdit.id
         : itemToEdit.id
     );
     setAddressActionError(null);
     setContactActionError(null);
     setNoteActionError(null);
-    if (kind === 'contact') {
+    if (kind === "contact") {
       setContactForm({
-        phone: contacts.find((entry) => entry.id === 'phone')?.value ?? '',
-        mail: contacts.find((entry) => entry.id === 'mail')?.value ?? '',
-        legal: contacts.find((entry) => entry.id === 'legal')?.value ?? '',
-        accountant: contacts.find((entry) => entry.id === 'accountant')?.value ?? ''
+        phone: contacts.find((entry) => entry.id === "phone")?.value ?? "",
+        mail: contacts.find((entry) => entry.id === "mail")?.value ?? "",
+        legal: contacts.find((entry) => entry.id === "legal")?.value ?? "",
+        accountant:
+          contacts.find((entry) => entry.id === "accountant")?.value ?? "",
       });
       return;
     }
-    if ('text' in itemToEdit) {
+    if ("text" in itemToEdit) {
       setFormValue(itemToEdit.text);
       return;
     }
-    setFormValue('address' in itemToEdit ? itemToEdit.address : itemToEdit.value);
+    setFormValue(
+      "address" in itemToEdit ? itemToEdit.address : itemToEdit.value
+    );
   };
 
   const closeEditModal = () => {
@@ -273,26 +303,30 @@ export function useUnifiedRegisterPreview(
       return;
     }
 
-    if (editKind !== 'contact' && !formValue?.trim()) {
+    if (editKind !== "contact" && !formValue?.trim()) {
       return;
     }
 
-    if (editKind === 'address') {
-      const normalizedDireccion = formValue?.trim() ?? '';
+    if (editKind === "address") {
+      const normalizedDireccion = formValue?.trim() ?? "";
       setAddressActionError(null);
 
       startAddressSaveTransition(async () => {
         const result = editingItemId
-          ? await updateAlternateAddressAction(item.contribuyenteId, editingItemId, {
-              direccion: normalizedDireccion
-            })
+          ? await updateAlternateAddressAction(
+              item.contribuyenteId,
+              editingItemId,
+              {
+                direccion: normalizedDireccion,
+              }
+            )
           : await createAlternateAddressAction(item.contribuyenteId, {
-              direccion: normalizedDireccion
+              direccion: normalizedDireccion,
             });
 
         if (!result.success || !result.data) {
           setAddressActionError(
-            result.error ?? 'No fue posible guardar el domicilio alternativo.'
+            result.error ?? "No fue posible guardar el domicilio alternativo."
           );
           return;
         }
@@ -307,13 +341,19 @@ export function useUnifiedRegisterPreview(
             : [...current, nextAddress]
         );
 
+        if (editingItemId) {
+          toast.show(TOAST_DASHBOARD_MESSAGES.UPDATE_ADDRESS_SUCCESS);
+        } else {
+          toast.show(TOAST_DASHBOARD_MESSAGES.ADD_ADDRESS_SUCCESS);
+        }
+
         resetEditModal();
       });
 
       return;
     }
 
-    if (editKind === 'contact') {
+    if (editKind === "contact") {
       setContactActionError(null);
 
       startContactSaveTransition(async () => {
@@ -321,20 +361,33 @@ export function useUnifiedRegisterPreview(
           telefono: contactForm.phone,
           correo: contactForm.mail,
           nombreRepresentanteLegal: contactForm.legal,
-          nombreContador: contactForm.accountant
+          nombreContador: contactForm.accountant,
         };
 
         const result = editingItemId
-          ? await updateContactAction(item.contribuyenteId, editingItemId, payload)
+          ? await updateContactAction(
+              item.contribuyenteId,
+              editingItemId,
+              payload
+            )
           : await createContactAction(item.contribuyenteId, payload);
 
         if (!result.success) {
-          setContactActionError(result.error ?? 'No fue posible guardar el contacto.');
+          setContactActionError(
+            result.error ?? "No fue posible guardar el contacto."
+          );
           return;
         }
 
-        const refreshed = await refreshContacts(editingItemId ? contactsCurrentPage : 1);
+        const refreshed = await refreshContacts(
+          editingItemId ? contactsCurrentPage : 1
+        );
 
+        if (editingItemId) {
+          toast.show(TOAST_DASHBOARD_MESSAGES.UPDATE_CONTACT_SUCCESS);
+        } else {
+          toast.show(TOAST_DASHBOARD_MESSAGES.ADD_CONTACT_SUCCESS);
+        }
         if (refreshed) {
           resetEditModal();
         }
@@ -343,26 +396,33 @@ export function useUnifiedRegisterPreview(
       return;
     }
 
-    if (editKind === 'note') {
-      const nextNoteText = formValue?.trim() ?? '';
+    if (editKind === "note") {
+      const nextNoteText = formValue?.trim() ?? "";
       setNoteActionError(null);
 
       startNoteSaveTransition(async () => {
         const result = editingItemId
           ? await updateNoteAction(item.contribuyenteId, editingItemId, {
-              descripcion: nextNoteText
+              descripcion: nextNoteText,
             })
           : await createNoteAction(item.contribuyenteId, {
-              descripcion: nextNoteText
+              descripcion: nextNoteText,
             });
 
         if (!result.success) {
-          setNoteActionError(result.error ?? 'No fue posible guardar la nota.');
+          setNoteActionError(result.error ?? "No fue posible guardar la nota.");
           return;
         }
 
-        const refreshed = await refreshNotes(editingItemId ? notesCurrentPage : 1);
+        const refreshed = await refreshNotes(
+          editingItemId ? notesCurrentPage : 1
+        );
 
+        if (editingItemId) {
+          toast.show(TOAST_DASHBOARD_MESSAGES.UPDATE_NOTE_SUCCESS);
+        } else {
+          toast.show(TOAST_DASHBOARD_MESSAGES.ADD_NOTE_SUCCESS);
+        }
         if (refreshed) {
           resetEditModal();
         }
@@ -403,7 +463,9 @@ export function useUnifiedRegisterPreview(
   const removeNote = (noteId: string) => {
     setNotes((current) => {
       const next = current.filter((entry) => entry.id !== noteId);
-      setActiveNoteIndex((index) => Math.max(0, Math.min(index, next.length - 1)));
+      setActiveNoteIndex((index) =>
+        Math.max(0, Math.min(index, next.length - 1))
+      );
       return next;
     });
   };
@@ -453,7 +515,7 @@ export function useUnifiedRegisterPreview(
       return;
     }
 
-    if (deleteKind === 'address') {
+    if (deleteKind === "address") {
       setAddressActionError(null);
 
       startAddressDeleteTransition(async () => {
@@ -464,7 +526,7 @@ export function useUnifiedRegisterPreview(
 
         if (!result.success) {
           setAddressActionError(
-            result.error ?? 'No fue posible eliminar el domicilio alternativo.'
+            result.error ?? "No fue posible eliminar el domicilio alternativo."
           );
           return;
         }
@@ -472,13 +534,14 @@ export function useUnifiedRegisterPreview(
         setAddresses((current) =>
           current.filter((entry) => entry.id !== deletingItemId)
         );
+        toast.show(TOAST_DASHBOARD_MESSAGES.DELETE_ADDRESS_ERROR);
         resetDeleteModal();
       });
 
       return;
     }
 
-    if (deleteKind === 'contact') {
+    if (deleteKind === "contact") {
       setContactActionError(null);
 
       startContactDeleteTransition(async () => {
@@ -487,15 +550,21 @@ export function useUnifiedRegisterPreview(
             ? contactsCurrentPage - 1
             : contactsCurrentPage;
 
-        const result = await deleteContactAction(item.contribuyenteId, deletingItemId);
+        const result = await deleteContactAction(
+          item.contribuyenteId,
+          deletingItemId
+        );
 
         if (!result.success) {
-          setContactActionError(result.error ?? 'No fue posible eliminar el contacto.');
+          setContactActionError(
+            result.error ?? "No fue posible eliminar el contacto."
+          );
           return;
         }
 
         const refreshed = await refreshContacts(targetPage);
 
+        toast.show(TOAST_DASHBOARD_MESSAGES.DELETE_CONTACT_ERROR);
         if (refreshed) {
           resetDeleteModal();
         }
@@ -504,7 +573,7 @@ export function useUnifiedRegisterPreview(
       return;
     }
 
-    if (deleteKind === 'note') {
+    if (deleteKind === "note") {
       setNoteActionError(null);
 
       startNoteDeleteTransition(async () => {
@@ -513,15 +582,18 @@ export function useUnifiedRegisterPreview(
             ? notesCurrentPage - 1
             : notesCurrentPage;
 
-        const result = await deleteNoteAction(item.contribuyenteId, deletingItemId);
+        const result = await deleteNoteAction(
+          item.contribuyenteId,
+          deletingItemId
+        );
 
         if (!result.success) {
-          setNoteActionError(result.error ?? 'No fue posible borrar la nota.');
+          setNoteActionError(result.error ?? "No fue posible borrar la nota.");
           return;
         }
 
         const refreshed = await refreshNotes(targetPage);
-
+        toast.show(TOAST_DASHBOARD_MESSAGES.DELETE_NOTE_ERROR);
         if (refreshed) {
           resetDeleteModal();
         }
@@ -605,8 +677,7 @@ export function useUnifiedRegisterPreview(
     goToNextNote,
     goToPreviousFinePage: mercurio.goToPreviousPage,
     goToNextFinePage: mercurio.goToNextPage,
-    goToPreviousInterventionOrderPage:
-      interventionOrdersList.goToPreviousPage,
-    goToNextInterventionOrderPage: interventionOrdersList.goToNextPage
+    goToPreviousInterventionOrderPage: interventionOrdersList.goToPreviousPage,
+    goToNextInterventionOrderPage: interventionOrdersList.goToNextPage,
   };
 }
