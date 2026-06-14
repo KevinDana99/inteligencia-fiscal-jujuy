@@ -1,11 +1,11 @@
-import type { ApiClientConfig } from '@/lib/api-client';
-import { getServerAuthSession } from '@/lib/auth/get-server-session';
+import { createAuthenticatedApiClientConfig } from '@/lib/auth/create-authenticated-api-client-config';
+import { UNIFIED_REGISTER_DATA_SOURCE_ENV } from './constants/unifiedRegisterDataSource';
 import type { IUnifiedRegisterSource } from './interfaces/UnifiedRegisterSource';
 import { MockUnifiedRegisterSource } from './sources/mock/MockUnifiedRegisterSource';
 import { RestUnifiedRegisterSource } from './sources/rest/RestUnifiedRegisterSource';
 
 const isMockEnabled = (): boolean => {
-  return process.env.NEXT_PUBLIC_USE_MOCK_UNIFIED_REGISTER !== 'false';
+  return process.env[UNIFIED_REGISTER_DATA_SOURCE_ENV.useMock] === 'true';
 };
 
 export async function createServerUnifiedRegisterSource(): Promise<IUnifiedRegisterSource> {
@@ -13,12 +13,7 @@ export async function createServerUnifiedRegisterSource(): Promise<IUnifiedRegis
     return new MockUnifiedRegisterSource();
   }
 
-  const session = await getServerAuthSession();
-
-  const config: ApiClientConfig = {
-    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
-    token: session?.accessToken
-  };
+  const config = await createAuthenticatedApiClientConfig();
 
   return new RestUnifiedRegisterSource(config);
 }

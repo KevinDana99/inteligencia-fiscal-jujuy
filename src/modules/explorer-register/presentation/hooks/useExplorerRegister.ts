@@ -2,6 +2,7 @@
 
 import type { IExplorerRegisterCatalog } from '../../data/models/ExplorerRegister';
 import {
+  useExplorerRegisterBatchCreation,
   useExplorerRegisterCatalog,
   useExplorerRegisterForm,
   useExplorerRegisterSearch,
@@ -22,6 +23,9 @@ export function useExplorerRegister(
     temporalRange: form.temporalRange
   });
   const selectionState = selection.getSelectionState(search.data);
+  const batchCreation = useExplorerRegisterBatchCreation(
+    selectionState.visibleRows
+  );
 
   function resetSearchAndSelection() {
     search.resetSearch();
@@ -60,6 +64,7 @@ export function useExplorerRegister(
 
   return {
     activeFilters: form.activeFilters,
+    batchCreateRowCount: batchCreation.loadedBatchRowsCount,
     catalog: catalogController.catalog,
     changeItemsPerPage: search.changeItemsPerPage,
     changePage: search.changePage,
@@ -71,6 +76,8 @@ export function useExplorerRegister(
     hasSearched: search.hasSearched,
     itemsPerPage: search.itemsPerPage,
     isPending: search.isPending,
+    createBatchModal: batchCreation.createModal,
+    openCreateBatchModal: batchCreation.openCreateBatchModal,
     result: search.data,
     search: search.search,
     searchError: search.error,

@@ -1,7 +1,7 @@
 'use client'
 
 import { Fragment } from 'react'
-import { Table } from '@mantine/core'
+import { Loader, Table } from '@mantine/core'
 import { IconChevronRight } from '@tabler/icons-react'
 import { BatchManagementBatchDetail } from '../BatchManagementBatchDetail'
 import { BatchManagementCrossMenu } from '../BatchManagementCrossMenu'
@@ -19,11 +19,15 @@ export function BatchManagementTableRow({ row }: BatchManagementTableRowProps) {
         onClick={row.onToggle}
       >
         <Table.Td className={classes.chevronCell}>
-          <span
-            className={`${classes.chevron} ${row.isExpanded ? classes.chevronOpen : ''}`}
-          >
-            <IconChevronRight size={13} />
-          </span>
+          {row.isLoading ? (
+            <Loader size={13} className={classes.rowLoader} />
+          ) : (
+            <span
+              className={`${classes.chevron} ${row.isExpanded ? classes.chevronOpen : ''}`}
+            >
+              <IconChevronRight size={13} />
+            </span>
+          )}
         </Table.Td>
         <Table.Td className={`${classes.batchCell} ${classes.batchNumber}`}>
           {row.batch.batchNumber}
@@ -47,7 +51,13 @@ export function BatchManagementTableRow({ row }: BatchManagementTableRowProps) {
       {row.isExpanded ? (
         <Table.Tr>
           <Table.Td colSpan={7} className={classes.detailCell}>
-            <BatchManagementBatchDetail batch={row.batch} />
+            {row.isLoading ? (
+              <div className={classes.detailLoader}>
+                <Loader size="sm" />
+              </div>
+            ) : (
+              <BatchManagementBatchDetail batch={row.batch} />
+            )}
           </Table.Td>
         </Table.Tr>
       ) : null}

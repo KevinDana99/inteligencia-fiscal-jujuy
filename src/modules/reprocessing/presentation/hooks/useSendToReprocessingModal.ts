@@ -9,6 +9,7 @@ export interface ISendToReprocessingModalProps {
   contribuyenteId: string
   cuit: string
   razonSocial: string
+  error?: string | null
   onClose: () => void
   onConfirm?: (payload: IReprocessingMarkPayload) => void | Promise<void>
 }
@@ -51,10 +52,12 @@ export function useSendToReprocessingModal({
     try {
       await onConfirm({
         contribuyenteId,
-        description: description || null
+        description: description.trim() || null
       })
       resetState()
       onClose()
+    } catch {
+      // The parent owns the visible error state and keeps the modal open.
     } finally {
       setIsSubmitting(false)
     }

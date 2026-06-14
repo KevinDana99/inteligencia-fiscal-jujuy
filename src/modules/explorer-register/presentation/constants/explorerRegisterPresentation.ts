@@ -6,6 +6,7 @@ export const EXPLORER_REGISTER_DEFAULT_COLUMN_CODES = [
 export const EXPLORER_REGISTER_ITEMS_PER_PAGE_OPTIONS = [20, 50, 100, 200];
 
 export const EXPLORER_REGISTER_SWITCH_ACTIVE_VALUE = 'SI';
+export const EXPLORER_REGISTER_SWITCH_INACTIVE_VALUE = 'NO';
 
 export const EMPTY_EXPLORER_REGISTER_CATALOG: IExplorerRegisterCatalog = {
   fixedColumns: [],
@@ -19,7 +20,11 @@ export const EXPLORER_REGISTER_TEXTS = {
   columnsTitle: 'Columnas y filtros disponibles',
   filtersTitle: 'Configurar filtros',
   clearFilters: 'Limpiar filtros',
+  clearFilter: 'Limpiar',
   search: 'Buscar',
+  filterSearchPlaceholder: 'Buscar más...',
+  switchOn: 'Sí',
+  switchOff: 'No',
   allOptions: 'Todas las opciones',
   temporalStart: 'Fecha inicio',
   temporalEnd: 'Fecha fin',

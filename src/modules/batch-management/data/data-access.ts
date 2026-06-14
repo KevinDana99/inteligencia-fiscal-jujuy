@@ -1,5 +1,4 @@
-import type { ApiClientConfig } from '@/lib/api-client';
-import { getServerAuthSession } from '@/lib/auth/get-server-session';
+import { createAuthenticatedApiClientConfig } from '@/lib/auth/create-authenticated-api-client-config';
 import type { IBatchManagementSource } from './interfaces/BatchManagementSource';
 import { MockBatchManagementSource } from './sources/mock/MockBatchManagementSource';
 import { RestBatchManagementSource } from './sources/rest/RestBatchManagementSource';
@@ -15,11 +14,9 @@ export async function createServerBatchManagementSource(): Promise<IBatchManagem
     return new MockBatchManagementSource();
   }
 
-  const session = await getServerAuthSession();
-  const config: ApiClientConfig = {
-    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? FALLBACK_API_BASE_URL,
-    token: session?.accessToken
-  };
+  const config = await createAuthenticatedApiClientConfig({
+    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? FALLBACK_API_BASE_URL
+  });
 
   return new RestBatchManagementSource(config);
 }

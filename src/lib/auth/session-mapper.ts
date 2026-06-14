@@ -5,6 +5,7 @@ import type {
   IIamSessionResponse,
   ISerializedAuthSession
 } from '@/modules/auth/data/models/Auth';
+import { AUTH_REFRESH_SKEW_MS } from './constants';
 
 export function mapIamSessionResponseToSerializedAuthSession(
   response: IIamSessionResponse
@@ -51,4 +52,15 @@ export function isSessionExpired(isoDate?: string | null): boolean {
   }
 
   return Date.parse(isoDate) <= Date.now();
+}
+
+export function isSessionExpiredOrWithinSkew(
+  isoDate?: string | null,
+  skewMs = AUTH_REFRESH_SKEW_MS
+): boolean {
+  if (!isoDate) {
+    return true;
+  }
+
+  return Date.parse(isoDate) - skewMs <= Date.now();
 }

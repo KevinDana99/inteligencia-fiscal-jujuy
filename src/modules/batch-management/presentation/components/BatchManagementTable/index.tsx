@@ -1,7 +1,8 @@
 'use client'
 
-import { Table } from '@mantine/core'
+import { Group, Pagination, Select, Table, Text } from '@mantine/core'
 import type { BatchManagementTableController } from '../../hooks/useBatchManagement'
+import { BATCH_MANAGEMENT_ITEMS_PER_PAGE_OPTIONS } from '../../constants'
 import { BatchManagementTableEmptyState } from './BatchManagementTableEmptyState'
 import { BatchManagementTableRow } from './BatchManagementTableRow'
 import { useBatchManagementTable } from './useBatchManagementTable'
@@ -40,6 +41,33 @@ export function BatchManagementTable({ controller }: BatchManagementTableProps) 
           ))}
         </Table.Tbody>
       </Table>
+      <div className={classes.tableFooter}>
+        <Text className={classes.tableResultsText}>{controller.rangeLabel}</Text>
+        <Group gap="sm" className={classes.paginationControls}>
+          <Select
+            aria-label="Filas por pagina"
+            value={String(controller.itemsPerPage)}
+            data={BATCH_MANAGEMENT_ITEMS_PER_PAGE_OPTIONS.map((option) => ({
+              value: String(option),
+              label: String(option)
+            }))}
+            className={classes.pageSizeSelect}
+            disabled={controller.isPending}
+            onChange={(value) => {
+              if (value) {
+                controller.onItemsPerPageChange(Number(value))
+              }
+            }}
+          />
+          <Pagination
+            value={controller.page}
+            total={Math.max(controller.totalPages, 1)}
+            disabled={controller.isPending || controller.totalPages <= 1}
+            onChange={controller.onPageChange}
+            aria-label="Paginacion de lotes"
+          />
+        </Group>
+      </div>
     </div>
   )
 }

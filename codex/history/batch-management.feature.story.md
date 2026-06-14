@@ -1,5 +1,44 @@
 # Batch Management Feature Story
 
+## 2026-06-11 Fix apertura de Nuevo Lote
+
+- Se corrigio la apertura del modal desde el boton `Nuevo Lote` para que el `MouseEvent` de React no llegue como `initialLoadedCuits`.
+- `useBatchManagement` expone ahora un handler sin argumentos para el header, y `BatchManagementNavbarAction` invoca explicitamente el callback.
+- Se agrego una defensa runtime en el estado/filtro de CUITs cargados para que `filteredLoadedCuits` siempre resuelva como array.
+- Se agrego cobertura de regresion para `filterLoadedBatchCuits` cuando recibe una entrada no array.
+
+### Validation
+
+- `bun run test -- src/modules/batch-management/presentation/utils/batchManagementLoadedCuits.test.ts`
+- `bun x eslint src/modules/batch-management/presentation/hooks/useBatchManagement.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementLoadedCuits.ts src/modules/batch-management/presentation/utils/batchManagementLoadedCuits.ts src/modules/batch-management/presentation/utils/batchManagementLoadedCuits.test.ts src/modules/batch-management/presentation/components/BatchManagementPage/BatchManagementNavbarAction/index.tsx`
+- `bun run test -- src/modules/batch-management`
+
+## 2026-06-11 Paginador de lotes
+
+- Se agrego un footer de paginacion a la tabla de `Gestion de Lotes` con rango visible, selector de filas por pagina y `Pagination` de Mantine.
+- `useBatchManagementBatches` conserva ahora `page`, `itemsPerPage`, `totalBatches` y `totalPages` del contrato de `/api/lotes`.
+- `useBatchManagementSearch` reutiliza la busqueda activa al cambiar de pagina o de cantidad de filas, reiniciando a pagina 1 cuando cambia el page size.
+- El mock de `BatchManagementSource` respeta `page` e `itemsPerPage` para mantener comportamiento equivalente en desarrollo local.
+
+### Validation
+
+- `bun x eslint src/modules/batch-management/presentation/constants/batchManagementPage.ts src/modules/batch-management/presentation/utils/batchManagementBatches.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementBatches.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementSearch.ts src/modules/batch-management/presentation/hooks/useBatchManagement.ts src/modules/batch-management/presentation/components/BatchManagementTable/index.tsx src/modules/batch-management/data/sources/mock/MockBatchManagementSource.ts`
+- `bun x tsc --noEmit`
+- `bun x jest src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementBatches.test.ts --runInBand`
+- `curl -I -s --max-time 2 http://localhost:3000/gestion-de-lotes` respondio `307 /login`, esperado para la ruta privada sin sesion.
+
+## 2026-06-11 Loader al seleccionar lote
+
+- Se agrego `loadingBatchId` al hook `useBatchManagementBatches` para representar la hidratacion del detalle del lote seleccionado.
+- La tabla de Gestion de Lotes muestra un `Loader` en la celda del chevron y en el panel expandido mientras se consulta el detalle con `getBatchDetailAction`.
+- Se agrego cobertura para validar que el lote seleccionado queda en loading durante la consulta y vuelve a `null` al resolver.
+
+### Validation
+
+- `bun x tsc --noEmit`
+- `bun x eslint src/modules/batch-management/presentation/components/BatchManagementTable src/modules/batch-management/presentation/hooks`
+- `bun x jest src/modules/batch-management/presentation/hooks --runInBand`
+
 ## 2026-06-06 Refactor de BatchManagementPage
 
 - `app/(private)/gestion-de-lotes/page.tsx` ahora delega la carga inicial a `BatchManagementModule`, dejando la ruta reducida a composición y manteniendo el layout de datos dentro del módulo.

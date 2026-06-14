@@ -1,7 +1,7 @@
 'use client'
 
 import type { IBatchListData } from '../../data/models/BatchManagement'
-import { getBatchListCountLabel } from '../utils'
+import { getBatchListCountLabel, getBatchListRangeLabel } from '../utils'
 import {
   useBatchManagementBatches,
   useBatchManagementCreate,
@@ -12,6 +12,7 @@ import {
 export function useBatchManagement(initialBatchData?: IBatchListData | null) {
   const batches = useBatchManagementBatches(initialBatchData)
   const search = useBatchManagementSearch({
+    itemsPerPage: batches.itemsPerPage,
     onBatchListDataChange: batches.applyBatchListData
   })
   const create = useBatchManagementCreate({
@@ -21,7 +22,7 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
 
   return {
     navbarAction: {
-      onOpenCreateModal: create.openCreateModal
+      onOpenCreateModal: () => create.openCreateModal()
     },
     searchBar: {
       searchValue: search.searchValue,
@@ -34,8 +35,22 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
     },
     table: {
       batches: batches.batches,
+      page: batches.page,
+      itemsPerPage: batches.itemsPerPage,
+      totalBatches: batches.totalBatches,
+      totalPages: batches.totalPages,
+      isPending: search.isSearchPending,
+      rangeLabel: getBatchListRangeLabel(
+        batches.page,
+        batches.itemsPerPage,
+        batches.batches.length,
+        batches.totalBatches
+      ),
       expandedBatchId: batches.expandedBatchId,
+      loadingBatchId: batches.loadingBatchId,
       onToggleBatch: batches.toggleExpandedBatch,
+      onPageChange: search.changePage,
+      onItemsPerPageChange: search.changeItemsPerPage,
       ...cross
     },
     createModal: {

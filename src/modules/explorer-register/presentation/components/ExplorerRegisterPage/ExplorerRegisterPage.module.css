@@ -17,6 +17,18 @@
   background: var(--mantine-color-blue-6);
 }
 
+.navbarActionButton:disabled,
+.navbarActionButton[data-disabled] {
+  background: var(--mantine-color-gray-2);
+  color: var(--mantine-color-gray-5);
+  cursor: not-allowed;
+}
+
+.navbarActionButton:disabled:hover,
+.navbarActionButton[data-disabled]:hover {
+  background: var(--mantine-color-gray-2);
+}
+
 .sectionLabel {
   margin-bottom: 10px;
   color: var(--mantine-color-gray-5);
@@ -55,6 +67,9 @@
 }
 
 .filtersCard {
+  position: relative;
+  z-index: 5;
+  overflow: visible;
   border: 1px solid var(--mantine-color-gray-2);
   background: var(--mantine-color-white);
 }
@@ -105,13 +120,17 @@
 .filtersGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  align-items: flex-end;
+  gap: 16px 14px;
+  align-items: flex-start;
+  overflow: visible;
 }
 
 .filterField {
-  min-width: 160px;
+  position: relative;
+  flex: 0 1 220px;
+  min-width: 220px;
   max-width: 260px;
+  overflow: visible;
 }
 
 .filterFieldWide {
@@ -122,7 +141,7 @@
   margin-bottom: 5px;
   color: var(--mantine-color-gray-7);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .filterHint {
@@ -132,22 +151,46 @@
 }
 
 .datePickerInput {
-  min-width: 260px;
+  flex: 0 0 220px;
+  min-width: 220px;
+  max-width: 220px;
 }
 
 .filterSelect :global(.mantine-Input-input) {
-  min-width: 160px;
+  min-width: 0;
+  height: 34px;
+  min-height: 34px;
   border-color: var(--mantine-color-gray-2);
+  border-radius: 8px;
   background: var(--mantine-color-white);
   color: var(--mantine-color-gray-7);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.filterSelect :global(.mantine-Input-input::placeholder) {
+  color: var(--mantine-color-gray-5);
+  font-weight: 400;
+}
+
+.filterSelect :global(.mantine-InputWrapper-label) {
+  margin-bottom: 5px;
+  color: var(--mantine-color-gray-7);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.filterSelect :global(.mantine-Input-section) {
+  color: #8da0bc;
 }
 
 .filterSelect :global(.mantine-Input-input:hover),
 .filterSelect :global(.mantine-Input-input:focus),
 .filterSelect :global(.mantine-Input-input:focus-visible),
 .filterSelect :global(.mantine-Input-input[data-expanded]) {
-  border-color: var(--mantine-color-gray-2);
+  border-color: #a9caff;
   background: var(--mantine-color-white);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.08);
 }
 
 .filterSelect :global(.mantine-Combobox-dropdown),
@@ -173,7 +216,153 @@
   color: var(--mantine-color-gray-9);
 }
 
+.multiValueField {
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+}
+
+.multiValueField:focus-within {
+  z-index: 60;
+}
+
+.filterSearchInput {
+  width: 100%;
+}
+
+.filterDropdown {
+  position: absolute;
+  top: 38px;
+  right: 0;
+  left: 0;
+  z-index: 80;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 8px;
+  background: var(--mantine-color-white);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.filterDropdownOption {
+  width: 100%;
+  border: 0;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 7px 10px;
+  text-align: left;
+}
+
+.filterDropdownOption:hover,
+.filterDropdownOption:focus-visible {
+  background: var(--mantine-color-blue-0);
+  color: var(--mantine-color-gray-9);
+  outline: none;
+}
+
+.filterTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.filterTag {
+  display: inline-flex;
+  max-width: 100%;
+  min-height: 26px;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #9fc2ff;
+  border-radius: 8px;
+  background: #eef5ff;
+  color: var(--mantine-color-blue-5);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 4px 6px 4px 8px;
+}
+
+.filterTagCode {
+  flex: 0 0 auto;
+}
+
+.filterTagDetail {
+  min-width: 0;
+  max-width: 120px;
+  overflow: hidden;
+  color: var(--mantine-color-gray-6);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filterTagRemove {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mantine-color-blue-5);
+  cursor: pointer;
+  padding: 0;
+}
+
+.filterTagRemove:hover {
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.filterArrow {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  margin-top: 25px;
+  color: var(--mantine-color-gray-8);
+}
+
+.switchField {
+  min-height: 60px;
+}
+
+.switchOptions {
+  min-height: 34px;
+  align-items: center;
+  gap: 10px;
+}
+
+.switchOptions :global(.mantine-Radio-label) {
+  color: var(--mantine-color-gray-8);
+  font-size: 12px;
+  font-weight: 500;
+  padding-left: 6px;
+}
+
+.switchClearButton {
+  height: 22px;
+  color: var(--mantine-color-gray-6);
+  font-size: 12px;
+  font-weight: 500;
+  padding-inline: 4px;
+  text-decoration: underline;
+}
+
+.switchClearButton:hover {
+  background: transparent;
+  color: var(--mantine-color-blue-5);
+}
+
+.switchClearButton:disabled {
+  background: transparent;
+}
+
 .tableWrap {
+  position: relative;
+  z-index: 1;
   border: 1px solid var(--mantine-color-gray-2);
   border-radius: 12px;
   background: var(--mantine-color-white);
@@ -225,6 +414,8 @@
 }
 
 .fallbackCard {
+  position: relative;
+  z-index: 1;
   border: 1px dashed var(--mantine-color-gray-3);
   background: var(--mantine-color-white);
 }
@@ -259,4 +450,22 @@
 
 .pageSizeSelect {
   width: 88px;
+}
+
+@media (max-width: 768px) {
+  .filtersHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .filterField,
+  .datePickerInput {
+    flex-basis: 100%;
+    max-width: none;
+    width: 100%;
+  }
+
+  .filterArrow {
+    display: none;
+  }
 }

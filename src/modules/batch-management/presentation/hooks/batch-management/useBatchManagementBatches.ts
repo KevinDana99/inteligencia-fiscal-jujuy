@@ -21,8 +21,14 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
   const [batches, setBatches] = useState<IBatchManagementItems>(() =>
     getInitialBatches(initialBatchData)
   )
+  const [page, setPage] = useState(initialBatchData?.page ?? 1)
+  const [itemsPerPage, setItemsPerPage] = useState(
+    initialBatchData?.itemsPerPage ?? DEFAULT_BATCH_MANAGEMENT_LIST_QUERY.itemsPerPage ?? 20
+  )
   const [totalBatches, setTotalBatches] = useState(initialBatchData?.totalItems ?? 0)
+  const [totalPages, setTotalPages] = useState(initialBatchData?.totalPages ?? 1)
   const [expandedBatchId, setExpandedBatchId] = useState<string | null>(null)
+  const [loadingBatchId, setLoadingBatchId] = useState<string | null>(null)
 
   async function hydrateBatchDetail(batchId: string) {
     const result = await getBatchDetailAction(batchId)
@@ -39,7 +45,11 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
     const presentationData = mapBatchListDataForPresentation(batchListData)
 
     setBatches(presentationData.batches)
+    setPage(presentationData.page)
+    setItemsPerPage(presentationData.itemsPerPage)
     setTotalBatches(presentationData.totalBatches)
+    setTotalPages(presentationData.totalPages)
+    setExpandedBatchId(null)
   }
 
   async function toggleExpandedBatch(batchId: string) {
@@ -51,7 +61,13 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
       return
     }
 
-    await hydrateBatchDetail(batchId)
+    setLoadingBatchId(batchId)
+
+    try {
+      await hydrateBatchDetail(batchId)
+    } finally {
+      setLoadingBatchId((current) => (current === batchId ? null : current))
+    }
   }
 
   async function handleBatchCreated(
@@ -69,7 +85,10 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
 
       if (createdBatch) {
         setBatches(refreshedBatches)
+        setPage(refreshedResult.data.page)
+        setItemsPerPage(refreshedResult.data.itemsPerPage)
         setTotalBatches(refreshedResult.data.totalItems)
+        setTotalPages(refreshedResult.data.totalPages)
         setExpandedBatchId(createdBatch.id)
         await hydrateBatchDetail(createdBatch.id)
         return
@@ -78,7 +97,10 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
       const fallbackCreatedBatch = buildFallbackCreatedBatch(createdSummary, parsedCuits)
 
       setBatches(prependCreatedBatch(refreshedBatches, fallbackCreatedBatch))
+      setPage(refreshedResult.data.page)
+      setItemsPerPage(refreshedResult.data.itemsPerPage)
       setTotalBatches(Math.max(refreshedResult.data.totalItems, refreshedBatches.length + 1))
+      setTotalPages(refreshedResult.data.totalPages)
       setExpandedBatchId(fallbackCreatedBatch.id)
       await hydrateBatchDetail(fallbackCreatedBatch.id)
       return
@@ -94,8 +116,12 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
 
   return {
     batches,
+    page,
+    itemsPerPage,
     totalBatches,
+    totalPages,
     expandedBatchId,
+    loadingBatchId,
     applyBatchListData,
     toggleExpandedBatch,
     handleBatchCreated

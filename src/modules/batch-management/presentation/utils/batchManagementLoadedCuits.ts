@@ -18,13 +18,14 @@ export function filterLoadedBatchCuits(
   loadedCuits: IBatchLoadedCuitRow[],
   searchValue: string
 ) {
+  const safeLoadedCuits = Array.isArray(loadedCuits) ? loadedCuits : []
   const normalizedSearch = searchValue.trim().toLowerCase()
 
   if (!normalizedSearch) {
-    return loadedCuits
+    return safeLoadedCuits
   }
 
-  return loadedCuits.filter((row) => {
+  return safeLoadedCuits.filter((row) => {
     const cuitValue = row.cuit.toLowerCase()
     const businessName = row.businessName?.toLowerCase() ?? ''
 

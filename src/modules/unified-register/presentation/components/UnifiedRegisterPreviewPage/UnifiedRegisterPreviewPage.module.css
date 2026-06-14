@@ -209,6 +209,26 @@
   color: #059669;
 }
 
+.riskD {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.riskD .riskLevel,
+.riskD .riskLabel {
+  color: #2563eb;
+}
+
+.riskEmpty {
+  background: var(--mantine-color-gray-0);
+  border-color: var(--mantine-color-gray-2);
+}
+
+.riskEmpty .riskLevel,
+.riskEmpty .riskLabel {
+  color: var(--mantine-color-gray-5);
+}
+
 .headerActions {
   display: flex;
   align-items: center;

@@ -1,6 +1,9 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
+import { TOAST_DASHBOARD_MESSAGES, toast } from '@/components/core/toasts';
+import { markReprocessingAction } from '@/modules/reprocessing/data/actions';
+import type { IReprocessingMarkPayload } from '@/modules/reprocessing/data/models/Reprocessing';
 import {
   createAlternateAddressAction,
   createContactAction,
@@ -10,8 +13,6 @@ import {
   deleteNoteAction,
   getContactsAction,
   getNotesAction,
-  getUnifiedRegisterInterventionOrdersAction,
-  getUnifiedRegisterMercurioAction,
   updateContactAction,
   updateNoteAction,
   updateAlternateAddressAction
@@ -31,6 +32,8 @@ import type {
   IUnifiedRegisterNotesListData,
   IUnifiedRegisterSourceTable
 } from '../../data/models/UnifiedRegister';
+import { useUnifiedRegisterInterventionOrders } from './useUnifiedRegisterInterventionOrders';
+import { useUnifiedRegisterMercurio } from './useUnifiedRegisterMercurio';
 
 type HeaderModal = null | 'reprocessing' | 'crosses' | 'report' | 'batch';
 type EditKind = null | 'address' | 'contact' | 'note';
@@ -50,10 +53,6 @@ const EMPTY_CONTACT_FORM: ContactForm = {
   legal: '',
   accountant: ''
 };
-
-function createId(prefix: string) {
-  return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
-}
 
 export function useUnifiedRegisterPreview(
   item: IUnifiedRegisterDetail,
@@ -76,28 +75,7 @@ export function useUnifiedRegisterPreview(
   const [noteActionError, setNoteActionError] = useState<string | null>(null);
   const [notesCurrentPage, setNotesCurrentPage] = useState(initialNotesData?.pagina ?? 1);
   const [notesTotalPages, setNotesTotalPages] = useState(initialNotesData?.totalPaginas ?? 0);
-  const [fines, setFines] = useState(item.fines);
-  const [finesCurrentPage, setFinesCurrentPage] = useState(
-    initialMercurioData?.pagina ?? 1
-  );
-  const [finesTotalPages, setFinesTotalPages] = useState(
-    initialMercurioData?.totalPaginas ?? 0
-  );
-  const [finesTotalItems, setFinesTotalItems] = useState(
-    initialMercurioData?.totalItems ?? item.fines.length
-  );
-  const [fineActionError, setFineActionError] = useState<string | null>(null);
-  const [interventionOrders, setInterventionOrders] = useState(item.interventionOrders);
-  const [interventionOrdersCurrentPage, setInterventionOrdersCurrentPage] = useState(
-    initialInterventionOrdersData?.pagina ?? 1
-  );
-  const [interventionOrdersTotalPages, setInterventionOrdersTotalPages] = useState(
-    initialInterventionOrdersData?.totalPaginas ?? 0
-  );
-  const [interventionOrdersTotalItems, setInterventionOrdersTotalItems] = useState(
-    initialInterventionOrdersData?.totalItems ?? item.interventionOrders.length
-  );
-  const [interventionOrdersError, setInterventionOrdersError] = useState<string | null>(null);
+  const [reprocessingActionError, setReprocessingActionError] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editKind, setEditKind] = useState<EditKind>(null);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
@@ -116,11 +94,18 @@ export function useUnifiedRegisterPreview(
   const [isContactSavePending, startContactSaveTransition] = useTransition();
   const [isContactDeletePending, startContactDeleteTransition] = useTransition();
   const [isNotesPagePending, startNotesPageTransition] = useTransition();
-  const [isFinesPagePending, startFinesPageTransition] = useTransition();
-  const [isInterventionOrdersPagePending, startInterventionOrdersPageTransition] =
-    useTransition();
   const [isNoteSavePending, startNoteSaveTransition] = useTransition();
   const [isNoteDeletePending, startNoteDeleteTransition] = useTransition();
+  const mercurio = useUnifiedRegisterMercurio({
+    contribuyenteId: item.contribuyenteId,
+    initialData: initialMercurioData,
+    initialFines: item.fines
+  });
+  const interventionOrdersList = useUnifiedRegisterInterventionOrders({
+    contribuyenteId: item.contribuyenteId,
+    initialData: initialInterventionOrdersData,
+    initialInterventionOrders: item.interventionOrders
+  });
 
   const filteredLotOptions = useMemo(() => {
     const normalizedSearch = batchSearch.trim().toLowerCase();
@@ -187,76 +172,37 @@ export function useUnifiedRegisterPreview(
     return true;
   };
 
-  const applyFinesListData = (data: IUnifiedRegisterFinesListData) => {
-    setFines(
-      data.multas.map((fine) => ({
-        id: fine.numero,
-        issuedAt: fine.fecha,
-        description: fine.descripcion ?? '-',
-        amount: fine.monto,
-        status: fine.estado
-      }))
-    );
-    setFinesCurrentPage(data.pagina);
-    setFinesTotalPages(data.totalPaginas);
-    setFinesTotalItems(data.totalItems);
-  };
-
-  const refreshFines = async (page: number) => {
-    const result = await getUnifiedRegisterMercurioAction(item.contribuyenteId, {
-      pagina: page,
-      itemsPagina: 3
-    });
-
-    if (!result.data) {
-      setFineActionError(result.error ?? 'No fue posible listar las multas Mercurio.');
-      return false;
+  const openHeaderModal = (modal: HeaderModal) => {
+    if (modal === 'reprocessing') {
+      setReprocessingActionError(null);
     }
 
-    applyFinesListData(result.data);
-    setFineActionError(null);
-    return true;
+    setActiveHeaderModal(modal);
   };
 
-  const applyInterventionOrdersListData = (
-    data: IUnifiedRegisterInterventionOrdersListData
-  ) => {
-    setInterventionOrders(
-      data.ordenes.map((order) => ({
-        id: order.numero,
-        period: order.periodo,
-        reason: order.motivo,
-        amount: order.monto,
-        status: order.estado
-      }))
-    );
-    setInterventionOrdersCurrentPage(data.pagina);
-    setInterventionOrdersTotalPages(data.totalPaginas);
-    setInterventionOrdersTotalItems(data.totalItems);
-  };
-
-  const refreshInterventionOrders = async (page: number) => {
-    const result = await getUnifiedRegisterInterventionOrdersAction(item.contribuyenteId, {
-      pagina: page,
-      itemsPagina: 3
-    });
-
-    if (!result.data) {
-      setInterventionOrdersError(
-        result.error ?? 'No fue posible listar las órdenes de intervención.'
-      );
-      return false;
-    }
-
-    applyInterventionOrdersListData(result.data);
-    setInterventionOrdersError(null);
-    return true;
-  };
-
-  const openHeaderModal = (modal: HeaderModal) => setActiveHeaderModal(modal);
   const closeHeaderModal = () => {
     setActiveHeaderModal(null);
     setBatchSearch('');
+    setReprocessingActionError(null);
+  };
+
+  const confirmReprocessing = async (payload: IReprocessingMarkPayload) => {
+    setReprocessingActionError(null);
+
+    const result = await markReprocessingAction({
+      contribuyenteId: payload.contribuyenteId,
+      description: payload.description?.trim() || null
+    });
+
+    if (!result.success) {
+      const errorMessage =
+        result.error ?? 'No fue posible marcar el CUIT en reproceso.';
+
+      setReprocessingActionError(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    toast.show(TOAST_DASHBOARD_MESSAGES.SEND_REPROCESSING_ERROR);
   };
 
   const selectLotOption = (lot: IUnifiedRegisterBatchOption) => {
@@ -283,7 +229,11 @@ export function useUnifiedRegisterPreview(
   const openEditModal = (kind: Exclude<EditKind, null>, itemToEdit: EditableItem) => {
     setIsEditModalOpen(true);
     setEditKind(kind);
-    setEditingItemId(itemToEdit.id);
+    setEditingItemId(
+      kind === 'contact'
+        ? (itemToEdit as IUnifiedRegisterContact).recordId ?? itemToEdit.id
+        : itemToEdit.id
+    );
     setAddressActionError(null);
     setContactActionError(null);
     setNoteActionError(null);
@@ -478,43 +428,23 @@ export function useUnifiedRegisterPreview(
     });
   };
 
-  const goToPreviousFinePage = () => {
-    if (finesCurrentPage <= 1) {
+  const goToPreviousContactPage = () => {
+    if (contactsCurrentPage <= 1) {
       return;
     }
 
-    startFinesPageTransition(async () => {
-      await refreshFines(finesCurrentPage - 1);
+    startContactsPageTransition(async () => {
+      await refreshContacts(contactsCurrentPage - 1);
     });
   };
 
-  const goToNextFinePage = () => {
-    if (finesCurrentPage >= finesTotalPages) {
+  const goToNextContactPage = () => {
+    if (contactsCurrentPage >= contactsTotalPages) {
       return;
     }
 
-    startFinesPageTransition(async () => {
-      await refreshFines(finesCurrentPage + 1);
-    });
-  };
-
-  const goToPreviousInterventionOrderPage = () => {
-    if (interventionOrdersCurrentPage <= 1) {
-      return;
-    }
-
-    startInterventionOrdersPageTransition(async () => {
-      await refreshInterventionOrders(interventionOrdersCurrentPage - 1);
-    });
-  };
-
-  const goToNextInterventionOrderPage = () => {
-    if (interventionOrdersCurrentPage >= interventionOrdersTotalPages) {
-      return;
-    }
-
-    startInterventionOrdersPageTransition(async () => {
-      await refreshInterventionOrders(interventionOrdersCurrentPage + 1);
+    startContactsPageTransition(async () => {
+      await refreshContacts(contactsCurrentPage + 1);
     });
   };
 
@@ -615,16 +545,17 @@ export function useUnifiedRegisterPreview(
     noteActionError,
     notesCurrentPage,
     notesTotalPages,
-    fines,
-    finesCurrentPage,
-    finesTotalPages,
-    finesTotalItems,
-    fineActionError,
-    interventionOrders,
-    interventionOrdersCurrentPage,
-    interventionOrdersTotalPages,
-    interventionOrdersTotalItems,
-    interventionOrdersError,
+    fines: mercurio.fines,
+    finesCurrentPage: mercurio.currentPage,
+    finesTotalPages: mercurio.totalPages,
+    finesTotalItems: mercurio.totalItems,
+    fineActionError: mercurio.error,
+    interventionOrders: interventionOrdersList.interventionOrders,
+    interventionOrdersCurrentPage: interventionOrdersList.currentPage,
+    interventionOrdersTotalPages: interventionOrdersList.totalPages,
+    interventionOrdersTotalItems: interventionOrdersList.totalItems,
+    interventionOrdersError: interventionOrdersList.error,
+    reprocessingActionError,
     batchSearch,
     filteredLotOptions,
     activeSourceTableId,
@@ -642,8 +573,8 @@ export function useUnifiedRegisterPreview(
     isContactSavePending,
     isContactDeletePending,
     isNotesPagePending,
-    isFinesPagePending,
-    isInterventionOrdersPagePending,
+    isFinesPagePending: mercurio.isPagePending,
+    isInterventionOrdersPagePending: interventionOrdersList.isPagePending,
     isNoteSavePending,
     isNoteDeletePending,
     formValue,
@@ -655,6 +586,7 @@ export function useUnifiedRegisterPreview(
     setContactField,
     openHeaderModal,
     closeHeaderModal,
+    confirmReprocessing,
     selectLotOption,
     closeLotConfirmModal,
     openCreateModal,
@@ -667,11 +599,14 @@ export function useUnifiedRegisterPreview(
     resetDeleteModal,
     confirmDeleteModal,
     removeNote,
+    goToPreviousContactPage,
+    goToNextContactPage,
     goToPreviousNote,
     goToNextNote,
-    goToPreviousFinePage,
-    goToNextFinePage,
-    goToPreviousInterventionOrderPage,
-    goToNextInterventionOrderPage
+    goToPreviousFinePage: mercurio.goToPreviousPage,
+    goToNextFinePage: mercurio.goToNextPage,
+    goToPreviousInterventionOrderPage:
+      interventionOrdersList.goToPreviousPage,
+    goToNextInterventionOrderPage: interventionOrdersList.goToNextPage
   };
 }

@@ -9,11 +9,12 @@ import { resolveUnifiedRegisterActionError } from '../shared/resolveUnifiedRegis
 
 export async function getUnifiedRegisterListAction(
   page = 1,
-  itemsPerPage = 10
+  itemsPerPage = 10,
+  search?: string
 ): Promise<IUnifiedRegisterQueryResult<IUnifiedRegisterListData>> {
   try {
     const source = await createServerUnifiedRegisterSource();
-    const data = await source.listContributors(page, itemsPerPage);
+    const data = await source.listContributors(page, itemsPerPage, search);
 
     return { data };
   } catch (error) {

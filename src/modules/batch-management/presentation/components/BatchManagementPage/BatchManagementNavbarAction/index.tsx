@@ -21,7 +21,7 @@ export function BatchManagementNavbarAction({
         radius="xl"
         leftSection={<IconPlus size={14} />}
         className={classes.createButton}
-        onClick={onOpenCreateModal}
+        onClick={() => onOpenCreateModal()}
       >
         Nuevo Lote
       </Button>

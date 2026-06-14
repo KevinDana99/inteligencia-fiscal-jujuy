@@ -11,6 +11,7 @@ export function mapContactRecordToViewModel(
   if (record.telefono) {
     contacts.push({
       id: 'phone',
+      recordId: record.id,
       label: 'Teléfono',
       value: record.telefono
     });
@@ -19,6 +20,7 @@ export function mapContactRecordToViewModel(
   if (record.correo) {
     contacts.push({
       id: 'mail',
+      recordId: record.id,
       label: 'Mail',
       value: record.correo
     });
@@ -27,6 +29,7 @@ export function mapContactRecordToViewModel(
   if (record.nombreRepresentanteLegal) {
     contacts.push({
       id: 'legal',
+      recordId: record.id,
       label: 'Representante legal',
       value: record.nombreRepresentanteLegal
     });
@@ -35,6 +38,7 @@ export function mapContactRecordToViewModel(
   if (record.nombreContador) {
     contacts.push({
       id: 'accountant',
+      recordId: record.id,
       label: 'Contador',
       value: record.nombreContador
     });

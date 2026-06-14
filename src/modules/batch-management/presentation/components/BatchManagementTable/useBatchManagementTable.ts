@@ -9,6 +9,7 @@ export function useBatchManagementTable(controller: BatchManagementTableControll
       id: batch.id,
       batch,
       isExpanded: controller.expandedBatchId === batch.id,
+      isLoading: controller.loadingBatchId === batch.id,
       onToggle: () => controller.onToggleBatch(batch.id),
       crossMenu: {
         batchId: batch.id,
