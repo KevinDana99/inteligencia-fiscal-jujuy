@@ -183,3 +183,60 @@ Connected the contributor detail preview to the Padron Unificado detail contract
 - `bun x eslint 'app/(private)/vista-previa-padron/[cuit]/page.tsx' src/modules/unified-register/data/models/UnifiedRegister.ts src/modules/unified-register/data/utils/unifiedRegisterDetail.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/constants/unifiedRegisterApiRoutes.ts src/modules/unified-register/data/sources/rest/constants/unifiedRegisterPagination.ts src/modules/unified-register/data/sources/rest/dtos/ApiUnifiedRegisterDtos.ts src/modules/unified-register/data/sources/rest/mappers/unifiedRegisterMappers.ts src/modules/unified-register/data/sources/rest/utils/unifiedRegisterRestClient.ts src/modules/unified-register/data/sources/mock/MockUnifiedRegisterSource.ts src/modules/unified-register/presentation/constants/unifiedRegisterDetail.ts src/modules/unified-register/presentation/utils/unifiedRegisterDetailRecords.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts src/modules/unified-register/presentation/hooks/useUnifiedRegisterPreview.ts src/modules/unified-register/presentation/hooks/useUnifiedRegisterMercurio.ts src/modules/unified-register/presentation/hooks/useUnifiedRegisterInterventionOrders.ts src/modules/unified-register/presentation/components/UnifiedRegisterCard/index.tsx src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/index.tsx`
 - `git diff --check`
 - Dev server started at `http://localhost:3000`; unauthenticated `/vista-previa-padron/30-12345678-1?id=06b815b5-b68b-41b9-be4c-10a7cb566c01` redirects to `/login`, and `/login` responds `200 OK`.
+
+## Unified Padron Header Swagger Alignment - 2026-06-13
+
+### Summary
+
+Reviewed the local Swagger contract and a live authenticated response for `GET /api/procesos-informacion/padron/unificado/{contribuyenteId}/encabezado`.
+
+### Main Changes
+
+- Confirmed Swagger exposes the header route under `ControladorProcesosInformacion`.
+- Confirmed the live backend response can return `tipoContribuyente: "LOCAL"` and `actividadSecundaria: null`.
+- Updated contributor type mapping so backend code `LOCAL` maps to the frontend domain label `Regimen Local`.
+- Added REST adapter coverage for `LOCAL` in the unified padron list mapping.
+
+### Validation
+
+- `bun x jest src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts --runInBand`
+- `bun x tsc --noEmit --pretty false --incremental false`
+- `bun x eslint src/modules/unified-register/data/sources/rest/mappers/unifiedRegisterMappers.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts`
+
+## Unified Padron Mercurio Swagger Alignment - 2026-06-13
+
+### Summary
+
+Reviewed the local Swagger contract and a live authenticated response for `GET /api/procesos-informacion/padron/unificado/{contribuyenteId}/mercurio`.
+
+### Main Changes
+
+- Confirmed Swagger exposes Mercurio under `ControladorProcesosInformacion`.
+- Confirmed the live backend response shape is `{ pagina, itemsPagina, totalItems, totalPaginas, multas }`.
+- Aligned detail pagination query params with Swagger: `Pagina` and `ItemsPagina`.
+- Updated REST adapter tests so Mercurio asserts the exact Swagger URL format.
+
+### Validation
+
+- `bun x jest src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts --runInBand`
+- `bun x tsc --noEmit --pretty false --incremental false`
+- `bun x eslint src/modules/unified-register/data/sources/rest/constants/unifiedRegisterPagination.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts`
+
+## Unified Padron Intervention Orders Swagger Alignment - 2026-06-13
+
+### Summary
+
+Reviewed the local Swagger contract and live authenticated responses for `GET /api/procesos-informacion/padron/unificado/{contribuyenteId}/ordenes-intervencion`.
+
+### Main Changes
+
+- Confirmed Swagger exposes intervention orders under `ControladorProcesosInformacion`.
+- Confirmed the live backend response shape is `{ pagina, itemsPagina, totalItems, totalPaginas, ordenes }`.
+- Confirmed the endpoint accepts `Pagina` and `ItemsPagina`, matching the shared detail pagination constants.
+- Added REST adapter coverage for the empty orders response using default pagination.
+
+### Validation
+
+- `bun x jest src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts --runInBand`
+- `bun x tsc --noEmit --pretty false --incremental false`
+- `bun x eslint src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts src/modules/unified-register/presentation/hooks/useUnifiedRegisterInterventionOrders.ts`
