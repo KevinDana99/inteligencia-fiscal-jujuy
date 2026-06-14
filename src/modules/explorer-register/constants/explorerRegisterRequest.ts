@@ -1,7 +1,5 @@
 import type { IExplorerRegisterExplorePayload } from '../data/models/ExplorerRegister';
 
-export const EXPLORER_REGISTER_API_BASE_URL_FALLBACK = 'https://localhost:5001';
-
 export const EXPLORER_REGISTER_API_ENDPOINTS = {
   catalog:
     '/api/procesos-informacion/padron/exploraciones/catalogo-filtros',
