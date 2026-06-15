@@ -6,6 +6,7 @@ import {
 } from './cookies'
 import { AUTH_COOKIE_NAMES, AUTH_HEADERS, AUTH_ROUTES, USER_ROLES } from './constants'
 import { refreshAuthSession } from './refresh-session'
+import { isPostLoginRedirectPath } from './route-access'
 import {
   AUTH_SESSION_EXPIRED_NOTICE_COOKIE,
   AUTH_SESSION_EXPIRED_NOTICE_MAX_AGE
@@ -51,13 +52,17 @@ export function redirectToLogin(request: NextRequest): NextResponse {
   const loginUrl = new URL(AUTH_ROUTES.login, request.url)
   const nextPath = `${request.nextUrl.pathname}${request.nextUrl.search}`
   const response = NextResponse.redirect(loginUrl)
-  response.cookies.set(AUTH_COOKIE_NAMES.postLoginRedirect, nextPath, {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-    maxAge: 60 * 5
-  })
+
+  if (isPostLoginRedirectPath(nextPath)) {
+    response.cookies.set(AUTH_COOKIE_NAMES.postLoginRedirect, nextPath, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 60 * 5
+    })
+  }
+
   response.cookies.set(AUTH_SESSION_EXPIRED_NOTICE_COOKIE, '1', {
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',

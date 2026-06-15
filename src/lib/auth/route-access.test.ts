@@ -7,6 +7,7 @@ import {
 import {
   getProtectedRouteRedirect,
   isAdminRoute,
+  isPostLoginRedirectPath,
   isPrivateDashboardRoute
 } from './route-access';
 
@@ -66,5 +67,22 @@ describe('route-access', () => {
         'FISCAL' as unknown as (typeof USER_ROLES)[keyof typeof USER_ROLES]
       )
     ).toBeNull();
+  });
+
+  it('accepts private app paths as post-login redirect targets', () => {
+    expect(isPostLoginRedirectPath(PRIVATE_DASHBOARD_ROUTES.batchManagement)).toBe(true);
+    expect(isPostLoginRedirectPath('/vista-previa-padron/30-12345678-1?id=abc')).toBe(true);
+    expect(isPostLoginRedirectPath(ADMIN_PANEL_ROUTES.settings)).toBe(true);
+  });
+
+  it('rejects login, external, and browser internal post-login redirects', () => {
+    expect(isPostLoginRedirectPath(AUTH_ROUTES.login)).toBe(false);
+    expect(isPostLoginRedirectPath(`${AUTH_ROUTES.login}?mode=admin`)).toBe(false);
+    expect(isPostLoginRedirectPath('//example.com')).toBe(false);
+    expect(
+      isPostLoginRedirectPath(
+        '/.well-known/appspecific/com.chrome.devtools.json'
+      )
+    ).toBe(false);
   });
 });
