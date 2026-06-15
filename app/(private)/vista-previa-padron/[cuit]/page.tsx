@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { getReprocessingAction } from '@/modules/reprocessing/data/actions';
 import {
   getAlternateAddressesAction,
   getContactsAction,
@@ -13,6 +14,11 @@ import { mapContactRecordToViewModel } from '@/modules/unified-register/data/map
 import { mapNoteRecordToViewModel } from '@/modules/unified-register/data/mappers/mapNote';
 import type { IUnifiedRegisterDetail } from '@/modules/unified-register/data/models/UnifiedRegister';
 import { applyUnifiedRegisterHeaderToDetail } from '@/modules/unified-register/data/utils/unifiedRegisterDetail';
+import {
+  findContributorByCuit,
+  isSameCuit,
+  resolvePreviewContribuyenteId
+} from '@/modules/unified-register/data/utils/resolveUnifiedRegisterPreviewContributor';
 import { UnifiedRegisterPreviewPage } from '@/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage';
 import { UNIFIED_REGISTER_DETAIL_TABLE_ITEMS_PER_PAGE } from '@/modules/unified-register/presentation/constants/unifiedRegisterDetail';
 import {
@@ -24,18 +30,7 @@ import { unifiedRegisterDetailsFixture } from '@/modules/unified-register/data/s
 const unifiedRegisterDetailTemplate = unifiedRegisterDetailsFixture[0];
 const CONTRIBUTOR_LOOKUP_PAGE_SIZE = 50;
 
-function normalizeCuit(value: string) {
-  return value.replace(/\D/g, '');
-}
-
-function isSameCuit(candidate: string, target: string) {
-  const normalizedCandidate = normalizeCuit(candidate);
-  const normalizedTarget = normalizeCuit(target);
-
-  return candidate === target || normalizedCandidate === normalizedTarget;
-}
-
-async function findContribuyenteIdByCuit(cuit: string) {
+async function findContribuyenteByCuit(cuit: string) {
   const firstPageResult = await getUnifiedRegisterListAction(
     1,
     CONTRIBUTOR_LOOKUP_PAGE_SIZE
@@ -51,7 +46,7 @@ async function findContribuyenteIdByCuit(cuit: string) {
   );
 
   if (firstPageMatch) {
-    return firstPageMatch.contribuyenteId;
+    return firstPageMatch;
   }
 
   for (let page = 2; page <= firstPage.totalPaginas; page += 1) {
@@ -70,7 +65,7 @@ async function findContribuyenteIdByCuit(cuit: string) {
     );
 
     if (match) {
-      return match.contribuyenteId;
+      return match;
     }
   }
 
@@ -98,13 +93,19 @@ export default async function UnifiedRegisterPreviewRoute({
   const { cuit } = await params;
   const { id } = await searchParams;
   const decodedCuit = decodeURIComponent(cuit);
-  const fixtureItem = unifiedRegisterDetailsFixture.find((entry) =>
-    id ? entry.contribuyenteId === id : isSameCuit(entry.cuit, decodedCuit)
+  const fixtureItem = findContributorByCuit(
+    unifiedRegisterDetailsFixture,
+    decodedCuit
   );
-  const contribuyenteId =
-    id ??
-    fixtureItem?.contribuyenteId ??
-    (await findContribuyenteIdByCuit(decodedCuit));
+  const backendListItem = fixtureItem
+    ? null
+    : await findContribuyenteByCuit(decodedCuit);
+  const cuitMatchedContribuyenteId =
+    fixtureItem?.contribuyenteId ?? backendListItem?.contribuyenteId ?? null;
+  const contribuyenteId = resolvePreviewContribuyenteId({
+    cuitMatchedContribuyenteId,
+    routeContribuyenteId: id
+  });
 
   if (!contribuyenteId) {
     notFound();
@@ -119,7 +120,8 @@ export default async function UnifiedRegisterPreviewRoute({
     notesResult,
     contactsResult,
     mercurioResult,
-    interventionOrdersResult
+    interventionOrdersResult,
+    reprocessingResult
   ] = await Promise.all([
     getUnifiedRegisterHeaderAction(contribuyenteId),
     getAlternateAddressesAction(contribuyenteId),
@@ -138,11 +140,24 @@ export default async function UnifiedRegisterPreviewRoute({
     getUnifiedRegisterInterventionOrdersAction(contribuyenteId, {
       pagina: 1,
       itemsPagina: UNIFIED_REGISTER_DETAIL_TABLE_ITEMS_PER_PAGE
+    }),
+    getReprocessingAction({
+      search: decodedCuit,
+      page: 1,
+      itemsPerPage: 10
     })
   ]);
 
   const header = headerResult.data;
   const hasBackendHeader = Boolean(header);
+
+  if (
+    !cuitMatchedContribuyenteId &&
+    header &&
+    !isSameCuit(header.cuit, decodedCuit)
+  ) {
+    notFound();
+  }
 
   if (!fixtureItem && !header) {
     notFound();
@@ -171,10 +186,18 @@ export default async function UnifiedRegisterPreviewRoute({
         mapInterventionOrderRecordToViewModel
       ) ?? (hasBackendHeader ? [] : item.interventionOrders)
   };
+  const isReprocessingActive = Boolean(
+    reprocessingResult.data?.items.some(
+      (reprocessingItem) =>
+        reprocessingItem.contribuyenteId === resolvedItem.contribuyenteId ||
+        isSameCuit(reprocessingItem.cuit, resolvedItem.cuit)
+    )
+  );
 
   return (
     <UnifiedRegisterPreviewPage
       item={resolvedItem}
+      initialIsReprocessing={isReprocessingActive}
       initialContactsData={contactsResult.data ?? null}
       initialMercurioData={mercurioResult.data ?? null}
       initialInterventionOrdersData={interventionOrdersResult.data ?? null}
