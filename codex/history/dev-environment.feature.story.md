@@ -13,3 +13,9 @@
 - Set those args as build-stage env vars before `npm run build`, with a fail-fast check for missing `NEXT_PUBLIC_API_BASE_URL`.
 - Updated GitLab CI validation and image build jobs to compile with `http://rentas-if-backend.rentas-if.svc.cluster.local`.
 - Added `.dockerignore` so local `.env` files cannot contaminate the image build context.
+
+## Disable build mocks
+
+- Changed Docker build defaults so every `NEXT_PUBLIC_USE_MOCK_*` flag is explicitly `false`.
+- Updated GitLab CI validation and image build args to pass all mock flags as `false`.
+- Updated dev ConfigMap and `.env.example` so runtime/default config also avoids mock data.
