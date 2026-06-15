@@ -1,12 +1,12 @@
-import Image from 'next/image';
-import { Skeleton } from '@mantine/core';
-import { PageLoader } from '@/components/core/PageLoader';
-import classes from '@/modules/dashboard-layout/presentation/components/DashboardLayoutShell/DashboardLayoutShell.module.css';
+import Image from "next/image";
+import { Skeleton } from "@mantine/core";
+import { PageLoader } from "@/components/core/PageLoader";
+import classes from "@/modules/dashboard-layout/presentation/components/DashboardLayoutShell/DashboardLayoutShell.module.css";
 
 const NAV_GROUPS = [
   { labelWidth: 56, itemWidths: [118, 112, 106, 114] },
   { labelWidth: 86, itemWidths: [78] },
-  { labelWidth: 96, itemWidths: [84] }
+  { labelWidth: 96, itemWidths: [84] },
 ];
 
 export default function PrivateLayoutFallback() {
@@ -39,9 +39,9 @@ export default function PrivateLayoutFallback() {
                   className={classes.navGroupLabel}
                   aria-hidden="true"
                   style={{
-                    display: 'block',
+                    display: "block",
                     minHeight: 26,
-                    boxSizing: 'border-box'
+                    boxSizing: "border-box",
                   }}
                 >
                   <Skeleton height={10} width={group.labelWidth} radius="xl" />
@@ -54,15 +54,15 @@ export default function PrivateLayoutFallback() {
                     aria-hidden="true"
                     style={{
                       minHeight: 37,
-                      boxSizing: 'border-box'
+                      boxSizing: "border-box",
                     }}
                   >
                     <div
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 'var(--mantine-spacing-sm)',
-                        height: 20
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "var(--mantine-spacing-sm)",
+                        height: 20,
                       }}
                     >
                       <Skeleton height={15} width={15} radius="sm" />

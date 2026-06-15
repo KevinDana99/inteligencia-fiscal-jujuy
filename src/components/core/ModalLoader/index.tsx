@@ -2,17 +2,17 @@
 
 import { Modal, Text } from '@mantine/core'
 import Image from 'next/image'
-import classes from './CrossModalLoader.module.css'
+import classes from './ModalLoader.module.css'
 
-type CrossModalLoaderProps = {
+export type ModalLoaderProps = {
   opened: boolean
-  message?: string
+  message: string
 }
 
-export function CrossModalLoader({
+export function ModalLoader({
   opened,
-  message = 'Procesando cruce...'
-}: CrossModalLoaderProps) {
+  message
+}: ModalLoaderProps) {
   return (
     <Modal
       opened={opened}
