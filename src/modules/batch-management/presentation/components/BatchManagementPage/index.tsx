@@ -7,14 +7,19 @@ import { BatchManagementTable } from '../BatchManagementTable'
 import { BatchManagementNavbarAction } from './BatchManagementNavbarAction'
 import { BatchManagementSearchBar } from './BatchManagementSearchBar'
 import classes from './BatchManagementPage.module.css'
-import type { IBatchListData } from '../../../data/models/BatchManagement'
+import type {
+  IBatchAvailableCrosses,
+  IBatchListData
+} from '../../../data/models/BatchManagement'
 
 export function BatchManagementPage({
-  initialBatchData
+  initialBatchData,
+  initialAvailableCrosses
 }: {
   initialBatchData: IBatchListData | null
+  initialAvailableCrosses: IBatchAvailableCrosses
 }) {
-  const controller = useBatchManagement(initialBatchData)
+  const controller = useBatchManagement(initialBatchData, initialAvailableCrosses)
 
   return (
     <>

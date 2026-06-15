@@ -13,6 +13,7 @@ export function useBatchManagementTable(controller: BatchManagementTableControll
       onToggle: () => controller.onToggleBatch(batch.id),
       crossMenu: {
         batchId: batch.id,
+        availableCrosses: controller.availableCrosses,
         filters: controller.getBatchCrossFilters(batch.id),
         validationMessage: controller.getBatchCrossValidationMessage(batch.id),
         executionError: controller.getBatchCrossExecutionError(batch.id),

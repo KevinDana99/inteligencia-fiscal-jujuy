@@ -19,6 +19,8 @@ function cloneItems(items: IReprocessingItems): IReprocessingItems {
 export class MockReprocessingSource implements IReprocessingSource {
   async listReprocessing(params: IReprocessingListParams = {}): Promise<IReprocessingListData> {
     const normalizedSearch = normalizeSearchValue(params.search ?? '')
+    const requestedPage = Math.max(1, params.page ?? 1)
+    const itemsPerPage = Math.max(1, params.itemsPerPage ?? 10)
     const activeItems = cloneItems(reprocessingItemsMock).filter(
       (item) => item.isReprocessing
     )
@@ -30,13 +32,16 @@ export class MockReprocessingSource implements IReprocessingSource {
             item.businessName.toLowerCase().includes(normalizedSearch)
         )
       : activeItems
+    const totalPages = Math.ceil(filteredItems.length / itemsPerPage)
+    const page = totalPages ? Math.min(requestedPage, totalPages) : 1
+    const startIndex = (page - 1) * itemsPerPage
 
     return {
-      page: params.page ?? 1,
-      itemsPerPage: params.itemsPerPage ?? 10,
+      page,
+      itemsPerPage,
       totalItems: filteredItems.length,
-      totalPages: filteredItems.length ? 1 : 0,
-      items: filteredItems
+      totalPages,
+      items: filteredItems.slice(startIndex, startIndex + itemsPerPage)
     }
   }
 

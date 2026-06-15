@@ -25,7 +25,6 @@
     - `No se encontraron resultados para ese CUIT o razón social`
 16. La implementación debe priorizar Mantine UI como base de componentes.
 17. Los estilos específicos no cubiertos por Mantine deben resolverse sin romper la estructura modular del módulo.
-<<<<<<< HEAD
 18. La iconografía del módulo y del dashboard detalle debe resolverse con `Tabler Icons`.
 19. Si se necesita reutilización o mapping de iconos, se deben centralizar en `src/global/icons`.
 20. La pantalla `/vista-previa-padron/[cuit]` debe resolverse usando el mismo universo mock que hoy alimenta el listado de cards de `Padrón Unificado`.
@@ -42,5 +41,3 @@
 26. `AddressCard`, `ContactCard` y `NotesCard` deben trabajar con mock local y sus acciones de agregar, editar y eliminar deben actualizar estado mock reactivo dentro de la pantalla.
 27. `Marcar reproceso` dentro del dashboard detalle no debe manejar todavía un toggle funcional local; solo debe abrir su modal mock.
 28. `Agregar lote` debe abrir un selector o modal mock que liste lotes mock e incluya un buscador mock.
-=======
->>>>>>> 997b820800728019a058a02f71e719b312933d3d

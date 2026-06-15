@@ -21,7 +21,8 @@ import type {
 export interface IUnifiedRegisterSource {
   listContributors(
     page?: number,
-    itemsPerPage?: number
+    itemsPerPage?: number,
+    search?: string
   ): Promise<IUnifiedRegisterListData>;
   getContributorHeader(contribuyenteId: string): Promise<IUnifiedRegisterHeaderRecord>;
   listMercurioFines(

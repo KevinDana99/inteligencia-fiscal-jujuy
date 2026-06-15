@@ -2,7 +2,10 @@
 
 import { useState } from 'react'
 import { executeBatchCrossAction } from '../../../data/actions'
-import type { IBatchCrossFilters } from '../../../data/models/BatchManagement'
+import type {
+  IBatchAvailableCrosses,
+  IBatchCrossFilters
+} from '../../../data/models/BatchManagement'
 import {
   buildBatchCrossExecutionPayloads,
   getBatchCrossValidationMessage,
@@ -12,10 +15,12 @@ import {
 
 type UseBatchManagementCrossExecutionParams = {
   getBatchCrossFilters: (batchId: string) => IBatchCrossFilters
+  availableCrosses: IBatchAvailableCrosses
 }
 
 export function useBatchManagementCrossExecution({
-  getBatchCrossFilters
+  getBatchCrossFilters,
+  availableCrosses
 }: UseBatchManagementCrossExecutionParams) {
   const [batchCrossExecutionErrors, setBatchCrossExecutionErrors] = useState<
     Record<string, string | null>
@@ -50,7 +55,7 @@ export function useBatchManagementCrossExecution({
   function canConfirmBatchCrossFilters(batchId: string) {
     const filters = getBatchCrossFilters(batchId)
 
-    if (!hasExecutableBatchCrosses(batchId, filters)) {
+    if (!hasExecutableBatchCrosses(batchId, filters, availableCrosses)) {
       return false
     }
 
@@ -67,11 +72,15 @@ export function useBatchManagementCrossExecution({
 
     const payloads = buildBatchCrossExecutionPayloads(
       batchId,
-      getBatchCrossFilters(batchId)
+      getBatchCrossFilters(batchId),
+      availableCrosses
     )
 
     if (!payloads.length) {
-      setBatchCrossExecutionError(batchId, getEmptyExecutableBatchCrossMessage())
+      setBatchCrossExecutionError(
+        batchId,
+        getEmptyExecutableBatchCrossMessage(availableCrosses)
+      )
       return false
     }
 

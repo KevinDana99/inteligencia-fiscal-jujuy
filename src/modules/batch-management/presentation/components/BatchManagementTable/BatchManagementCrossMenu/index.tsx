@@ -47,6 +47,10 @@ export function BatchManagementCrossMenu({
           />
         ))}
 
+        {menu.emptyMessage ? (
+          <Text className={classes.crossValidationMessage}>{menu.emptyMessage}</Text>
+        ) : null}
+
         {menu.feedbackMessage ? (
           <Text className={classes.crossValidationMessage}>
             {menu.feedbackMessage}

@@ -1,0 +1,45 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+.pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.control {
+  min-width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--mantine-color-gray-5);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.control:hover {
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-8);
+}
+
+.control[data-active] {
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-9);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+}
+
+.caption {
+  color: var(--mantine-color-gray-5);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}

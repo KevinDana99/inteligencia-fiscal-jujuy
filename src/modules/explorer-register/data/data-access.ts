@@ -1,7 +1,4 @@
 import { createAuthenticatedApiClientConfig } from '@/lib/auth/create-authenticated-api-client-config';
-import {
-  EXPLORER_REGISTER_API_BASE_URL_FALLBACK
-} from '../constants';
 import type { IExplorerRegisterSource } from './interfaces/ExplorerRegisterSource';
 import { MockExplorerRegisterSource } from './sources/mock/MockExplorerRegisterSource';
 import { RestExplorerRegisterSource } from './sources/rest/RestExplorerRegisterSource';
@@ -15,11 +12,7 @@ export async function createServerExplorerRegisterSource(): Promise<IExplorerReg
     return new MockExplorerRegisterSource();
   }
 
-  const config = await createAuthenticatedApiClientConfig({
-    baseUrl:
-      process.env.NEXT_PUBLIC_API_BASE_URL ??
-      EXPLORER_REGISTER_API_BASE_URL_FALLBACK,
-  });
+  const config = await createAuthenticatedApiClientConfig();
 
   return new RestExplorerRegisterSource(config);
 }
