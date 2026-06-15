@@ -240,3 +240,24 @@ Reviewed the local Swagger contract and live authenticated responses for `GET /a
 - `bun x jest src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts --runInBand`
 - `bun x tsc --noEmit --pretty false --incremental false`
 - `bun x eslint src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts src/modules/unified-register/presentation/hooks/useUnifiedRegisterInterventionOrders.ts`
+
+## Unified Padron Reprocessing Contributor Resolution - 2026-06-15
+
+### Summary
+
+Fixed `/vista-previa-padron/[cuit]` so the visible CUIT is the source of truth when resolving the contributor used by `POST /api/reprocesos`.
+
+### Main Changes
+
+- Added a shared preview contributor resolver that normalizes CUIT values and prefers the contributor matched by the visible CUIT over a stale `id` query param.
+- Updated the preview route to resolve fixture/list matches by CUIT first and validate any route-id fallback against the backend header CUIT.
+- Added a filtered `GET /api/reprocesos` call from the preview route to initialize the `Marcar reproceso` switch with the active backend state.
+- Updated the reproceso confirmation to build the POST payload from the currently rendered `item.contribuyenteId`.
+- Updated the active switch path to call `DELETE /api/reprocesos/{contribuyenteId}` and show `CUIT quitado de reproceso`.
+- Added the requested pre-POST log with `{ cuitMostrado, contribuyenteIdEnviado }`.
+
+### Validation
+
+- `bun x jest src/modules/unified-register/data/utils/resolveUnifiedRegisterPreviewContributor.test.ts --runInBand`
+- `bun x tsc --noEmit --incremental false`
+- `bun run lint`

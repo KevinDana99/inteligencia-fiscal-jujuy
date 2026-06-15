@@ -2,7 +2,10 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { TOAST_DASHBOARD_MESSAGES, toast } from "@/components/core/toasts";
-import { markReprocessingAction } from "@/modules/reprocessing/data/actions";
+import {
+  markReprocessingAction,
+  unmarkReprocessingAction,
+} from "@/modules/reprocessing/data/actions";
 import type { IReprocessingMarkPayload } from "@/modules/reprocessing/data/models/Reprocessing";
 import {
   createAlternateAddressAction,
@@ -59,6 +62,7 @@ const EMPTY_CONTACT_FORM: ContactForm = {
 
 export function useUnifiedRegisterPreview(
   item: IUnifiedRegisterDetail,
+  initialIsReprocessing: boolean,
   initialContactsData: IUnifiedRegisterContactsListData | null,
   initialNotesData: IUnifiedRegisterNotesListData | null,
   initialMercurioData: IUnifiedRegisterFinesListData | null,
@@ -91,6 +95,9 @@ export function useUnifiedRegisterPreview(
   const [reprocessingActionError, setReprocessingActionError] = useState<
     string | null
   >(null);
+  const [isReprocessingMarked, setIsReprocessingMarked] = useState(
+    initialIsReprocessing
+  );
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editKind, setEditKind] = useState<EditKind>(null);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
@@ -115,6 +122,8 @@ export function useUnifiedRegisterPreview(
   const [isNotesPagePending, startNotesPageTransition] = useTransition();
   const [isNoteSavePending, startNoteSaveTransition] = useTransition();
   const [isNoteDeletePending, startNoteDeleteTransition] = useTransition();
+  const [isReprocessingTogglePending, startReprocessingToggleTransition] =
+    useTransition();
   const mercurio = useUnifiedRegisterMercurio({
     contribuyenteId: item.contribuyenteId,
     initialData: initialMercurioData,
@@ -208,13 +217,45 @@ export function useUnifiedRegisterPreview(
     setReprocessingActionError(null);
   };
 
-  const confirmReprocessing = async (payload: IReprocessingMarkPayload) => {
+  const toggleReprocessing = () => {
     setReprocessingActionError(null);
 
-    const result = await markReprocessingAction({
-      contribuyenteId: payload.contribuyenteId,
-      description: payload.description?.trim() || null,
+    if (!isReprocessingMarked) {
+      setActiveHeaderModal("reprocessing");
+      return;
+    }
+
+    startReprocessingToggleTransition(() => {
+      void (async () => {
+        const result = await unmarkReprocessingAction(item.contribuyenteId);
+
+        if (!result.success) {
+          setReprocessingActionError(
+            result.error ?? "No fue posible quitar el CUIT de reproceso."
+          );
+          return;
+        }
+
+        setIsReprocessingMarked(false);
+        toast.show(TOAST_DASHBOARD_MESSAGES.REMOVE_REPROCESSING_SUCCESS);
+      })();
     });
+  };
+
+  const confirmReprocessing = async (payload: IReprocessingMarkPayload) => {
+    setReprocessingActionError(null);
+    const reprocessingPayload: IReprocessingMarkPayload = {
+      contribuyenteId: item.contribuyenteId,
+      description: payload.description?.trim() || null,
+    };
+
+    console.log({
+      action: "vista-previa-padron.markReprocessing",
+      cuitMostrado: item.cuit,
+      contribuyenteIdEnviado: reprocessingPayload.contribuyenteId,
+    });
+
+    const result = await markReprocessingAction(reprocessingPayload);
 
     if (!result.success) {
       const errorMessage =
@@ -224,6 +265,7 @@ export function useUnifiedRegisterPreview(
       throw new Error(errorMessage);
     }
 
+    setIsReprocessingMarked(true);
     toast.show(TOAST_DASHBOARD_MESSAGES.SEND_REPROCESSING_ERROR);
   };
 
@@ -628,6 +670,7 @@ export function useUnifiedRegisterPreview(
     interventionOrdersTotalItems: interventionOrdersList.totalItems,
     interventionOrdersError: interventionOrdersList.error,
     reprocessingActionError,
+    isReprocessingMarked,
     batchSearch,
     filteredLotOptions,
     activeSourceTableId,
@@ -649,6 +692,7 @@ export function useUnifiedRegisterPreview(
     isInterventionOrdersPagePending: interventionOrdersList.isPagePending,
     isNoteSavePending,
     isNoteDeletePending,
+    isReprocessingTogglePending,
     formValue,
     contactForm,
     editingItemId,
@@ -658,6 +702,7 @@ export function useUnifiedRegisterPreview(
     setContactField,
     openHeaderModal,
     closeHeaderModal,
+    toggleReprocessing,
     confirmReprocessing,
     selectLotOption,
     closeLotConfirmModal,

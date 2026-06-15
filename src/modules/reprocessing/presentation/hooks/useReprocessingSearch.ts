@@ -2,32 +2,22 @@
 
 import { useRef, useState, useTransition } from 'react'
 import { getReprocessingAction } from '../../data/actions'
-import type {
-  IReprocessingItems,
-  IReprocessingListData
-} from '../../data/models/Reprocessing'
-import {
-  getInitialReprocessingItems,
-  normalizeReprocessingSearchValue
-} from '../utils'
+import type { IReprocessingListData } from '../../data/models/Reprocessing'
+import { normalizeReprocessingSearchValue } from '../utils'
 
 const SEARCH_DEBOUNCE_MS = 500
 const MIN_SEARCH_LENGTH = 3
 
 interface UseReprocessingSearchParams {
   initialData?: IReprocessingListData | null
-  items: IReprocessingItems
-  total: number
-  setItems: React.Dispatch<React.SetStateAction<IReprocessingItems>>
-  setTotal: React.Dispatch<React.SetStateAction<number>>
+  itemsPerPage: number
+  onSearchResult: (data: IReprocessingListData) => void
 }
 
 export function useReprocessingSearch({
   initialData,
-  items,
-  total,
-  setItems,
-  setTotal
+  itemsPerPage,
+  onSearchResult
 }: UseReprocessingSearchParams) {
   const [searchValue, setSearchValue] = useState('')
   const [isSearchPending, startSearchTransition] = useTransition()
@@ -47,8 +37,15 @@ export function useReprocessingSearch({
     latestSearchRequestIdRef.current = requestId
 
     if (normalizedValue.length > 0 && normalizedValue.length < MIN_SEARCH_LENGTH) {
-      setItems(getInitialReprocessingItems(initialData))
-      setTotal(initialData?.totalItems ?? 0)
+      onSearchResult(
+        initialData ?? {
+          page: 1,
+          itemsPerPage,
+          totalItems: 0,
+          totalPages: 0,
+          items: []
+        }
+      )
       return
     }
 
@@ -56,23 +53,22 @@ export function useReprocessingSearch({
       startSearchTransition(() => {
         void (async () => {
           const result = await getReprocessingAction({
-            search: normalizedValue || null
+            search: normalizedValue || null,
+            page: 1,
+            itemsPerPage
           })
 
           if (latestSearchRequestIdRef.current !== requestId || !result.data) {
             return
           }
 
-          setItems(result.data.items)
-          setTotal(result.data.totalItems)
+          onSearchResult(result.data)
         })()
       })
     }, SEARCH_DEBOUNCE_MS)
   }
 
   return {
-    items,
-    total,
     searchValue,
     isSearchPending,
     setSearchValue: updateSearchValue

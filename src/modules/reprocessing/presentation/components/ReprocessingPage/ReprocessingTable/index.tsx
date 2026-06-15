@@ -4,6 +4,7 @@ import { ActionIcon, Badge, Table, Text } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
 import { REPROCESSING_PAGE_LABELS } from '../../../constants/reprocessingPageLabels'
 import {
+  useReprocessingPreviewNavigation,
   useReprocessingRemoveTrigger
 } from '../../../hooks'
 import type {
@@ -21,6 +22,10 @@ export function ReprocessingTable({
   items,
   setPendingRemovalItem
 }: ReprocessingTableProps) {
+  const {
+    navigateToPreview,
+    handlePreviewRowKeyDown
+  } = useReprocessingPreviewNavigation()
   const { openRemoveModal } = useReprocessingRemoveTrigger({
     items,
     setPendingRemovalItem
@@ -43,7 +48,15 @@ export function ReprocessingTable({
         <Table.Tbody>
           {items.length ? (
             items.map((item) => (
-              <Table.Tr key={item.id} className={classes.row}>
+              <Table.Tr
+                key={item.id}
+                className={classes.row}
+                onClick={() => navigateToPreview(item)}
+                onKeyDown={(event) => handlePreviewRowKeyDown(event, item)}
+                tabIndex={0}
+                role="link"
+                aria-label={`Ver padrón de ${item.businessName} (${item.cuit})`}
+              >
                 <Table.Td className={classes.cuitCell}>{item.cuit}</Table.Td>
                 <Table.Td className={classes.nameCell}>{item.businessName}</Table.Td>
                 <Table.Td className={classes.mutedCell}>{item.date}</Table.Td>
@@ -57,11 +70,13 @@ export function ReprocessingTable({
                 <Table.Td
                   className={classes.actionCell}
                   onClick={(event) => event.stopPropagation()}
+                  onKeyDown={(event) => event.stopPropagation()}
                 >
                   <ActionIcon
                     variant="subtle"
                     className={classes.removeButton}
                     onClick={() => openRemoveModal(item.id)}
+                    aria-label={`Quitar ${item.cuit} de reproceso`}
                   >
                     <IconX size={14} />
                   </ActionIcon>

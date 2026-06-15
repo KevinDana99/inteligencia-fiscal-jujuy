@@ -217,12 +217,14 @@ function RecordsTable({
 
 export function UnifiedRegisterPreviewPage({
   item,
+  initialIsReprocessing,
   initialContactsData,
   initialMercurioData,
   initialInterventionOrdersData,
   initialNotesData
 }: {
   item: IUnifiedRegisterDetail;
+  initialIsReprocessing: boolean;
   initialContactsData: IUnifiedRegisterContactsListData | null;
   initialMercurioData: IUnifiedRegisterFinesListData | null;
   initialInterventionOrdersData: IUnifiedRegisterInterventionOrdersListData | null;
@@ -251,6 +253,7 @@ export function UnifiedRegisterPreviewPage({
     interventionOrdersTotalItems,
     interventionOrdersError,
     reprocessingActionError,
+    isReprocessingMarked,
     batchSearch,
     filteredLotOptions,
     selectedLotOption,
@@ -271,6 +274,7 @@ export function UnifiedRegisterPreviewPage({
     isInterventionOrdersPagePending,
     isNoteSavePending,
     isNoteDeletePending,
+    isReprocessingTogglePending,
     formValue,
     contactForm,
     editingItemId,
@@ -280,6 +284,7 @@ export function UnifiedRegisterPreviewPage({
     setContactField,
     openHeaderModal,
     closeHeaderModal,
+    toggleReprocessing,
     confirmReprocessing,
     selectLotOption,
     closeLotConfirmModal,
@@ -302,6 +307,7 @@ export function UnifiedRegisterPreviewPage({
     goToNextInterventionOrderPage
   } = useUnifiedRegisterPreview(
     item,
+    initialIsReprocessing,
     initialContactsData,
     initialNotesData,
     initialMercurioData,
@@ -432,8 +438,17 @@ export function UnifiedRegisterPreviewPage({
 
         <div className={classes.headerActions}>
           <Group gap="sm">
-            <button className={classes.switchAction} onClick={() => openHeaderModal('reprocessing')}>
-              <span className={classes.switchTrack}>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={isReprocessingMarked}
+              className={`${classes.switchAction} ${
+                isReprocessingMarked ? classes.switchActionActive : ''
+              }`}
+              onClick={toggleReprocessing}
+              disabled={isReprocessingTogglePending}
+            >
+              <span className={classes.switchTrack} aria-hidden="true">
                 <span className={classes.switchKnob} />
               </span>
               <span>Marcar reproceso</span>
