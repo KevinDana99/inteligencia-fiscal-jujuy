@@ -10,6 +10,24 @@ function getNullableText(value: string | null | undefined) {
   return value ?? '';
 }
 
+function formatHeaderDate(value: string | null | undefined) {
+  const normalizedValue = getNullableText(value).trim();
+
+  if (!normalizedValue) {
+    return '';
+  }
+
+  const isoDateMatch = normalizedValue.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s].*)?$/);
+
+  if (!isoDateMatch) {
+    return normalizedValue;
+  }
+
+  const [, year, month, day] = isoDateMatch;
+
+  return `${day}/${month}/${year}`;
+}
+
 function buildActivityEntry(
   activity: IUnifiedRegisterHeaderActivity | null,
   fallback: Partial<IUnifiedRegisterActivityEntry>,
@@ -82,7 +100,7 @@ export function applyUnifiedRegisterHeaderToDetail(
     regime: header.tipoContribuyente,
     activity: getNullableText(header.actividadPrimaria?.nombre),
     riskLevel: header.riesgo,
-    startedAt: getNullableText(header.inicioActividad),
+    startedAt: formatHeaderDate(header.inicioActividad),
     jurisdiction: '',
     fiscalAddress: getNullableText(header.domicilios.fiscal),
     commercialAddress: getNullableText(header.domicilios.comercial),

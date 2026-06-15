@@ -2,16 +2,21 @@
 
 import { useRouter } from 'next/navigation'
 import {
-  ANNUAL_BATCH_CROSS_OPTIONS,
   BATCH_CROSS_MONTH_OPTIONS,
-  BATCH_CROSS_SELECT_COMBOBOX_PROPS,
-  MONTHLY_BATCH_CROSS_OPTIONS
+  BATCH_CROSS_SELECT_COMBOBOX_PROPS
 } from '../../../constants'
-import type { IBatchCrossFilters } from '../../../../data/models/BatchManagement'
-import { createBatchCrossYearOptions } from '../../../utils'
+import type {
+  IBatchAvailableCrosses,
+  IBatchCrossFilters
+} from '../../../../data/models/BatchManagement'
+import {
+  createBatchCrossYearOptions,
+  getBatchCrossOptionLabels
+} from '../../../utils'
 
 type BatchManagementCrossMenuController = {
   batchId: string
+  availableCrosses: IBatchAvailableCrosses
   filters: IBatchCrossFilters
   validationMessage: string | null
   executionError: string | null
@@ -42,6 +47,14 @@ export function useBatchManagementCrossMenu(
 ) {
   const router = useRouter()
   const yearOptions = createBatchCrossYearOptions()
+  const monthlyOptionLabels = getBatchCrossOptionLabels(
+    controller.availableCrosses,
+    'monthly'
+  )
+  const annualOptionLabels = getBatchCrossOptionLabels(
+    controller.availableCrosses,
+    'annual'
+  )
 
   async function handleConfirm() {
     const wasConfirmed = await controller.onConfirm(controller.batchId)
@@ -53,15 +66,19 @@ export function useBatchManagementCrossMenu(
 
   return {
     feedbackMessage: controller.validationMessage ?? controller.executionError,
+    emptyMessage:
+      monthlyOptionLabels.length || annualOptionLabels.length
+        ? null
+        : 'No hay cruces disponibles para ejecutar.',
     sections: [
-      ...(MONTHLY_BATCH_CROSS_OPTIONS.length
+      ...(monthlyOptionLabels.length
         ? [
             {
               key: 'monthly' as const,
               pillLabel: 'Mensual',
               title: 'Cruces mensuales',
               isOpen: controller.filters.monthly.isOpen,
-              optionLabels: MONTHLY_BATCH_CROSS_OPTIONS,
+              optionLabels: monthlyOptionLabels,
               periodTone: 'monthly' as const,
               fromMonth: {
                 data: BATCH_CROSS_MONTH_OPTIONS,
@@ -108,32 +125,46 @@ export function useBatchManagementCrossMenu(
             }
           ]
         : []),
-      {
-        key: 'annual' as const,
-        pillLabel: 'Anual',
-        title: 'Cruces anuales',
-        isOpen: controller.filters.annual.isOpen,
-        optionLabels: [...ANNUAL_BATCH_CROSS_OPTIONS],
-        periodTone: 'annual' as const,
-        fromMonth: null,
-        toMonth: null,
-        fromYear: {
-          data: yearOptions,
-          value: controller.filters.annual.fromYear,
-          onChange: (value: string | null) =>
-            controller.onYearChange(controller.batchId, 'annual', 'fromYear', value)
-        },
-        toYear: {
-          data: yearOptions,
-          value: controller.filters.annual.toYear,
-          onChange: (value: string | null) =>
-            controller.onYearChange(controller.batchId, 'annual', 'toYear', value)
-        },
-        selectedCrossTypes: controller.filters.annual.crossTypes,
-        onToggle: () => controller.onSectionToggle(controller.batchId, 'annual'),
-        onCrossTypeToggle: (crossType: string) =>
-          controller.onCrossTypeToggle(controller.batchId, 'annual', crossType)
-      }
+      ...(annualOptionLabels.length
+        ? [
+            {
+              key: 'annual' as const,
+              pillLabel: 'Anual',
+              title: 'Cruces anuales',
+              isOpen: controller.filters.annual.isOpen,
+              optionLabels: annualOptionLabels,
+              periodTone: 'annual' as const,
+              fromMonth: null,
+              toMonth: null,
+              fromYear: {
+                data: yearOptions,
+                value: controller.filters.annual.fromYear,
+                onChange: (value: string | null) =>
+                  controller.onYearChange(
+                    controller.batchId,
+                    'annual',
+                    'fromYear',
+                    value
+                  )
+              },
+              toYear: {
+                data: yearOptions,
+                value: controller.filters.annual.toYear,
+                onChange: (value: string | null) =>
+                  controller.onYearChange(
+                    controller.batchId,
+                    'annual',
+                    'toYear',
+                    value
+                  )
+              },
+              selectedCrossTypes: controller.filters.annual.crossTypes,
+              onToggle: () => controller.onSectionToggle(controller.batchId, 'annual'),
+              onCrossTypeToggle: (crossType: string) =>
+                controller.onCrossTypeToggle(controller.batchId, 'annual', crossType)
+            }
+          ]
+        : [])
     ],
     confirmButton: {
       disabled: !controller.canConfirm || controller.isExecuting,

@@ -127,3 +127,32 @@
 - `bun x jest src/modules/batch-management/presentation/utils/batchCrossPeriods.test.ts --runInBand`
 - `bun x eslint src/modules/batch-management/presentation/components/BatchManagementTable/index.tsx src/modules/batch-management/presentation/hooks/useBatchManagement.ts src/modules/batch-management/presentation/utils/batchCrossPeriods.ts src/modules/batch-management/presentation/utils/batchCrossPeriods.test.ts`
 - `bun x tsc --noEmit`
+
+## 2026-06-15 Catalogo de cruces en Gestion de Lotes
+
+- Se reviso Swagger local para `GET /api/procesos-informacion/cruces`: expone `200 OK` sin schema declarado; una llamada sin token responde `401`, confirmando que debe consultarse con sesion server-side.
+- Se agrego `listAvailableCrosses` al puerto del modulo, source REST, mock source, DTOs, mappers y server action.
+- `BatchManagementModule` ahora carga lotes y cruces disponibles en paralelo y pasa `initialAvailableCrosses` a la pagina cliente.
+- El menu de cruces por lote ahora construye opciones mensuales/anuales desde el catalogo del backend y usa esos metadatos para enviar `codigoCruce` y `versionCruce` al ejecutar.
+- El mapper REST acepta arrays directos o wrappers comunes (`cruces`, `items`, `data`, `resultados`) porque Swagger no declara la forma exacta de respuesta.
+- Se ajusto el mapper al contrato real del backend `crucesMensuales` / `crucesAnuales`, que no incluye nombre visible y requiere derivar la periodicidad desde el wrapper.
+- Se limito el menu a cruces ejecutables desde lotes con parametros soportados; `cruce-bi-papel` queda oculto hasta tener UI de parametros y `desvio-bi-convenio-multilateral` envia `jurisdiccion=910` y `jurisdiccionesExcluidasTotalIngresos=923`.
+
+### Validation
+
+- `bun x jest src/modules/batch-management/data/sources/rest/mappers/mapBatchDto.test.ts src/modules/batch-management/presentation/utils/batchManagementCross.test.ts --runInBand`
+- `bun x tsc --noEmit --incremental false`
+- `bun x eslint src/modules/batch-management/index.tsx src/modules/batch-management/data/actions/index.ts src/modules/batch-management/data/actions/queries/getBatchAvailableCrossesAction.ts src/modules/batch-management/data/interfaces/BatchManagementSource.ts src/modules/batch-management/data/models/BatchManagement.ts src/modules/batch-management/data/sources/mock/MockBatchManagementSource.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.ts src/modules/batch-management/data/sources/rest/dtos/BatchManagementDtos.ts src/modules/batch-management/data/sources/rest/mappers/mapBatchDto.ts src/modules/batch-management/data/sources/rest/mappers/mapBatchDto.test.ts src/modules/batch-management/presentation/components/BatchManagementPage/index.tsx src/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementCrossMenu/index.tsx src/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementCrossMenu/useBatchManagementCrossMenu.ts src/modules/batch-management/presentation/components/BatchManagementTable/useBatchManagementTable.ts src/modules/batch-management/presentation/hooks/useBatchManagement.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementCross.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementCrossExecution.ts src/modules/batch-management/presentation/utils/batchManagementCross.ts src/modules/batch-management/presentation/utils/batchManagementCross.test.ts`
+
+## 2026-06-15 Normalizacion de regimen en lotes
+
+- Se reviso `NormalizadorTipoRegimen` del backend y el contrato que rechaza `CM` en creacion/previsualizacion de lotes.
+- El select de creacion de lotes ahora usa `ConvenioMultilateral` y `RegimenLocal`, eliminando valores no aceptados por el contrato actual.
+- El adapter REST mantiene compatibilidad defensiva: si llega `CM`, `Convenio Multilateral (CM)`, `RG` o `Regimen Local`, serializa el `FormData` con el valor normalizado que acepta backend.
+- Se agrego una prueba de `RestBatchManagementSource` para asegurar que `Regimen` nunca sale como `CM` en preview ni creacion.
+
+### Validation
+
+- `bun x jest src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts src/modules/batch-management/data/sources/rest/mappers/mapBatchDto.test.ts src/modules/batch-management/presentation/utils/batchManagementCross.test.ts --runInBand`
+- `bun x tsc --noEmit --incremental false`
+- `bun x eslint src/modules/batch-management/data/models/BatchManagement.ts src/modules/batch-management/data/sources/rest/dtos/BatchManagementDtos.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts src/modules/batch-management/presentation/constants/batchManagementCreate.ts`

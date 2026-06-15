@@ -1,5 +1,6 @@
 import type { IBatchManagementSource } from '../../interfaces/BatchManagementSource';
 import type {
+  IBatchAvailableCrosses,
   IBatchCrossExecutionPayload,
   IBatchCrossExecutionSummary,
   IBatchCreatePayload,
@@ -11,6 +12,16 @@ import type {
   IBatchPreviewPayload
 } from '../../models/BatchManagement';
 import { batchManagementMock } from './fixtures/batches';
+
+const availableBatchCrossesMock: IBatchAvailableCrosses = [
+  {
+    id: 'desvio-bi-convenio-multilateral:1.0.0',
+    label: 'Control de desvio de BI - Regimen CM',
+    publicCode: 'desvio-bi-convenio-multilateral',
+    version: '1.0.0',
+    periodicity: 'annual'
+  }
+];
 
 let nextBatchSequence = batchManagementMock.reduce(
   (maxValue, item) => Math.max(maxValue, Number(item.batchNumber) || 0),
@@ -90,6 +101,30 @@ function toRawPreviewRecord(record: IBatchPreviewData['records'][number]) {
 }
 
 export class MockBatchManagementSource implements IBatchManagementSource {
+  async listAvailableCrosses(): Promise<IBatchAvailableCrosses> {
+    console.log(
+      JSON.stringify(
+        {
+          endpoint: '/api/procesos-informacion/cruces',
+          action: 'MockBatchManagementSource.listAvailableCrosses',
+          METHOD: 'GET',
+          RESPONSE_RAW: {
+            cruces: availableBatchCrossesMock.map((cross) => ({
+              codigoCruce: cross.publicCode,
+              nombreCruce: cross.label,
+              versionCruce: cross.version,
+              periodicidad: cross.periodicity === 'monthly' ? 'Mensual' : 'Anual'
+            }))
+          }
+        },
+        null,
+        2
+      )
+    );
+
+    return availableBatchCrossesMock;
+  }
+
   async listBatches(params: IBatchListParams = {}): Promise<IBatchListData> {
     const normalizedSearch = normalizeSearchValue(params.search ?? '');
     const items = normalizedSearch

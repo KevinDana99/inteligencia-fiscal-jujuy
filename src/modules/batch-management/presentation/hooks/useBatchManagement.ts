@@ -1,6 +1,9 @@
 'use client'
 
-import type { IBatchListData } from '../../data/models/BatchManagement'
+import type {
+  IBatchAvailableCrosses,
+  IBatchListData
+} from '../../data/models/BatchManagement'
 import { getBatchListCountLabel, getBatchListRangeLabel } from '../utils'
 import {
   useBatchManagementBatches,
@@ -9,7 +12,10 @@ import {
   useBatchManagementSearch
 } from './batch-management'
 
-export function useBatchManagement(initialBatchData?: IBatchListData | null) {
+export function useBatchManagement(
+  initialBatchData?: IBatchListData | null,
+  initialAvailableCrosses: IBatchAvailableCrosses = []
+) {
   const batches = useBatchManagementBatches(initialBatchData)
   const search = useBatchManagementSearch({
     itemsPerPage: batches.itemsPerPage,
@@ -18,7 +24,7 @@ export function useBatchManagement(initialBatchData?: IBatchListData | null) {
   const create = useBatchManagementCreate({
     onBatchCreated: batches.handleBatchCreated
   })
-  const cross = useBatchManagementCross()
+  const cross = useBatchManagementCross(initialAvailableCrosses)
 
   return {
     navbarAction: {

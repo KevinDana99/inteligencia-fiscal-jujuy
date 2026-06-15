@@ -3,14 +3,10 @@ export type ApiBatchRegime =
   | 'Regimen Local'
   | 'No inscripto';
 export type ApiBatchRequestRegime =
-  | 'CM'
   | 'Convenio Multilateral'
   | 'ConvenioMultilateral'
-  | 'Convenio Multilateral (CM)'
   | 'Regimen Local'
-  | 'RegimenLocal'
-  | 'No inscripto'
-  | 'NoInscripto';
+  | 'RegimenLocal';
 
 export interface ApiBatchAuthorDto {
   id: string;
@@ -111,6 +107,42 @@ export interface ApiExecuteBatchCrossResponseDto {
   claveIdempotencia: string;
   fechaSolicitud: string;
 }
+
+export interface ApiBatchAvailableCrossDto {
+  id?: string | number | null;
+  codigoCruce?: string | null;
+  codigo?: string | null;
+  code?: string | null;
+  clave?: string | null;
+  nombreCruce?: string | null;
+  nombre?: string | null;
+  name?: string | null;
+  etiqueta?: string | null;
+  titulo?: string | null;
+  descripcion?: string | null;
+  versionCruce?: string | number | null;
+  version?: string | number | null;
+  versionActual?: string | number | null;
+  periodicidad?: string | null;
+  tipoPeriodicidad?: string | null;
+  frecuencia?: string | null;
+  granularidad?: string | null;
+  periodo?: string | null;
+  tipoPeriodo?: string | null;
+}
+
+export type ApiBatchAvailableCrossesResponseDto =
+  | ApiBatchAvailableCrossDto[]
+  | {
+      crucesMensuales?: ApiBatchAvailableCrossDto[] | null;
+      CrucesMensuales?: ApiBatchAvailableCrossDto[] | null;
+      crucesAnuales?: ApiBatchAvailableCrossDto[] | null;
+      CrucesAnuales?: ApiBatchAvailableCrossDto[] | null;
+      cruces?: ApiBatchAvailableCrossDto[] | null;
+      items?: ApiBatchAvailableCrossDto[] | null;
+      data?: ApiBatchAvailableCrossDto[] | { cruces?: ApiBatchAvailableCrossDto[] | null } | null;
+      resultados?: ApiBatchAvailableCrossDto[] | null;
+    };
 
 export interface ApiBatchErrorDto {
   codigo: string;

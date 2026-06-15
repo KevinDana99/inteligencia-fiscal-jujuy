@@ -2,6 +2,7 @@ import { getJson, postFormData, postJson } from '@/lib/api-client';
 import type { ApiClientConfig } from '@/lib/api-client';
 import type { IBatchManagementSource } from '../../interfaces/BatchManagementSource';
 import type {
+  IBatchAvailableCrosses,
   IBatchCrossExecutionPayload,
   IBatchCrossExecutionSummary,
   BatchRequestRegime,
@@ -14,6 +15,7 @@ import type {
   IBatchPreviewPayload
 } from '../../models/BatchManagement';
 import type {
+  ApiBatchAvailableCrossesResponseDto,
   ApiBatchCreateResponseDto,
   ApiBatchDetailResponseDto,
   ApiBatchListResponseDto,
@@ -22,6 +24,7 @@ import type {
   ApiExecuteBatchCrossResponseDto
 } from './dtos/BatchManagementDtos';
 import {
+  mapBatchAvailableCrossesResponseDto,
   mapBatchCreateResponseDto,
   mapBatchDetailResponseDto,
   mapBatchListResponseDto,
@@ -31,11 +34,17 @@ import {
 } from './mappers/mapBatchDto';
 
 function normalizeRequestRegime(regime: string): BatchRequestRegime {
-  if (regime === 'RG') {
-    return 'Regimen Local';
+  const normalizedRegime = regime.trim();
+
+  if (normalizedRegime === 'CM' || normalizedRegime === 'Convenio Multilateral (CM)') {
+    return 'ConvenioMultilateral';
   }
 
-  return regime as BatchRequestRegime;
+  if (normalizedRegime === 'RG' || normalizedRegime === 'Regimen Local') {
+    return 'RegimenLocal';
+  }
+
+  return normalizedRegime as BatchRequestRegime;
 }
 
 function parseCuitsText(cuitsText?: string | null) {
@@ -71,6 +80,33 @@ function logRestBatchManagementEvent(event: unknown) {
 
 export class RestBatchManagementSource implements IBatchManagementSource {
   constructor(private readonly config: ApiClientConfig) {}
+
+  async listAvailableCrosses(): Promise<IBatchAvailableCrosses> {
+    const path = '/api/procesos-informacion/cruces';
+
+    logRestBatchManagementEvent({
+      endpoint: path,
+      action: 'RestBatchManagementSource.listAvailableCrosses',
+      METHOD: 'GET',
+      REQUEST_RAW: {
+        requestUrl: path
+      }
+    });
+
+    const response = await getJson<ApiBatchAvailableCrossesResponseDto>(
+      path,
+      this.config
+    );
+
+    logRestBatchManagementEvent({
+      endpoint: path,
+      action: 'RestBatchManagementSource.listAvailableCrosses',
+      METHOD: 'GET',
+      RESPONSE_RAW: response
+    });
+
+    return mapBatchAvailableCrossesResponseDto(response);
+  }
 
   async listBatches(params: IBatchListParams = {}): Promise<IBatchListData> {
     const searchParams = new URLSearchParams();
