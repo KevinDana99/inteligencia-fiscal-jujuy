@@ -3,6 +3,7 @@
 import type { IReprocessingListData } from '../../../data/models/Reprocessing'
 import { useReprocessingPage } from '../../hooks'
 import { ReprocessingAlertBanner } from './ReprocessingAlertBanner'
+import { ReprocessingPagination } from './ReprocessingPagination'
 import { ReprocessingRemoveModal } from './ReprocessingRemoveModal'
 import { ReprocessingSearch } from './ReprocessingSearch'
 import { ReprocessingTable } from './ReprocessingTable'
@@ -16,10 +17,16 @@ export function ReprocessingPage({
   const {
     items,
     total,
+    currentPage,
+    itemsPerPage,
+    totalPages,
+    searchValue,
+    isSearchPending,
+    isPagePending,
     pendingRemovalItem,
-    setItems,
-    setTotal,
+    setSearchValue,
     setPendingRemovalItem,
+    goToPage,
     removeItem
   } = useReprocessingPage(initialData)
 
@@ -27,15 +34,20 @@ export function ReprocessingPage({
     <div className={classes.root}>
       <ReprocessingAlertBanner total={total} />
       <ReprocessingSearch
-        initialData={initialData}
-        items={items}
-        total={total}
-        setItems={setItems}
-        setTotal={setTotal}
+        value={searchValue}
+        onChange={setSearchValue}
+        isPending={isSearchPending}
       />
       <ReprocessingTable
         items={items}
         setPendingRemovalItem={setPendingRemovalItem}
+      />
+      <ReprocessingPagination
+        activePage={currentPage}
+        itemsPerPage={itemsPerPage}
+        totalPages={totalPages}
+        onChange={goToPage}
+        disabled={isPagePending || isSearchPending}
       />
       <ReprocessingRemoveModal
         pendingRemovalItem={pendingRemovalItem}

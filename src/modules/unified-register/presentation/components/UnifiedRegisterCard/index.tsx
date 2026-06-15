@@ -4,14 +4,18 @@ import type { Route } from 'next';
 import { ActionIcon, Badge, Card, Menu, Text } from '@mantine/core';
 import { IconDots, IconFolderPlus, IconReload } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
-import type { IUnifiedRegisterItem } from '../../../data/models/UnifiedRegister';
+import type {
+  IUnifiedRegisterItem,
+  UnifiedRegisterRiskLevel
+} from '../../../data/models/UnifiedRegister';
 import classes from './UnifiedRegisterCard.module.css';
 
 const RISK_CLASS_BY_LEVEL = {
   A: classes.riskA,
   B: classes.riskB,
-  C: classes.riskC
-} as const;
+  C: classes.riskC,
+  D: classes.riskD
+} as const satisfies Record<UnifiedRegisterRiskLevel, string>;
 
 export function UnifiedRegisterCard({ item }: { item: IUnifiedRegisterItem }) {
   const router = useRouter();
@@ -44,13 +48,15 @@ export function UnifiedRegisterCard({ item }: { item: IUnifiedRegisterItem }) {
         </div>
 
         <div className={classes.aside}>
-          <Badge
-            radius="xl"
-            className={`${classes.riskBadge} ${RISK_CLASS_BY_LEVEL[item.riskLevel]}`}
-            classNames={{ label: classes.riskBadgeLabel }}
-          >
-            Riesgo {item.riskLevel}
-          </Badge>
+          {item.riskLevel ? (
+            <Badge
+              radius="xl"
+              className={`${classes.riskBadge} ${RISK_CLASS_BY_LEVEL[item.riskLevel]}`}
+              classNames={{ label: classes.riskBadgeLabel }}
+            >
+              Riesgo {item.riskLevel}
+            </Badge>
+          ) : null}
 
           <Menu position="bottom-end" shadow="md">
             <Menu.Target>

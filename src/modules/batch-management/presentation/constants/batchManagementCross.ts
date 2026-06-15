@@ -28,7 +28,11 @@ export const BATCH_CROSS_OPTIONS_BY_LABEL = {
   'Control de desvio de BI - Regimen CM': {
     legacyCode: 'CONTROL_DESVIO_BI_REGIMEN_CM',
     publicCode: 'desvio-bi-convenio-multilateral',
-    version: '1.0.0'
+    version: '1.0.0',
+    parameters: {
+      jurisdiccion: '910',
+      jurisdiccionesExcluidasTotalIngresos: '923'
+    }
   },
   'Control de BI declarada por actividad': {
     legacyCode: 'CONTROL_BI_DECLARADA_POR_ACTIVIDAD'

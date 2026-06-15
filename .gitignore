@@ -7,3 +7,7 @@ codex/assets
 bun.lock
 tsconfig.tsbuildinfo
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

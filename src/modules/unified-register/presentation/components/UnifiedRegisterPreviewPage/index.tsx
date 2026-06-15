@@ -15,6 +15,7 @@ import {
   Textarea,
   TextInput
 } from '@mantine/core';
+import { CrossModalLoader } from '@/modules/cross-management/presentation/components/CrossModalLoader';
 import {
   IconChevronDown,
   IconChevronLeft,
@@ -23,6 +24,7 @@ import {
   IconFileText,
   IconListDetails,
 } from '@tabler/icons-react';
+import { SendToReprocessingModal } from '@/modules/reprocessing/presentation/components';
 import type {
   IUnifiedRegisterAddress,
   IUnifiedRegisterContact,
@@ -33,46 +35,55 @@ import type {
   IUnifiedRegisterInterventionOrdersListData,
   IUnifiedRegisterInterventionOrder,
   IUnifiedRegisterNote,
-  IUnifiedRegisterNotesListData
+  IUnifiedRegisterNotesListData,
+  UnifiedRegisterRiskLevel
 } from '../../../data/models/UnifiedRegister';
+import { InformeGenerationModal } from '../InformeGenerationModal';
+import { InformePreviewModal } from '../InformePreviewModal';
+import { useInformeGeneration } from '../../hooks/useInformeGeneration';
 import { useUnifiedRegisterPreview } from '../../hooks/useUnifiedRegisterPreview';
+import {
+  formatNullableDetailCell,
+  getNullableRecordKey
+} from '../../utils/unifiedRegisterDetailRecords';
 import classes from './UnifiedRegisterPreviewPage.module.css';
 
 const RISK_CLASS_BY_LEVEL = {
   A: classes.riskA,
   B: classes.riskB,
-  C: classes.riskC
-} as const;
+  C: classes.riskC,
+  D: classes.riskD
+} as const satisfies Record<UnifiedRegisterRiskLevel, string>;
 
-const FINE_STATUS_CLASS = {
+const FINE_STATUS_CLASS: Record<string, string> = {
   Impaga: classes.badgeCritical,
   Pagada: classes.badgePositive,
   'En gestión': classes.badgeWarning
 } as const;
 
-const FINE_AMOUNT_CLASS = {
+const FINE_AMOUNT_CLASS: Record<string, string> = {
   Impaga: classes.amountCritical,
   Pagada: classes.amountPositive,
   'En gestión': classes.amountWarning
 } as const;
 
-const FINE_AMOUNT_COLOR = {
+const FINE_AMOUNT_COLOR: Record<string, string> = {
   Impaga: '#dc2626',
   Pagada: '#059669',
   'En gestión': '#d97706'
 } as const;
 
-const ORDER_STATUS_CLASS = {
+const ORDER_STATUS_CLASS: Record<string, string> = {
   'En curso': classes.badgeWarning,
   Cerrada: classes.badgePositive
 } as const;
 
-const ORDER_AMOUNT_CLASS = {
+const ORDER_AMOUNT_CLASS: Record<string, string> = {
   'En curso': classes.amountWarning,
   Cerrada: classes.amountPositive
 } as const;
 
-const ORDER_AMOUNT_COLOR = {
+const ORDER_AMOUNT_COLOR: Record<string, string> = {
   'En curso': '#d97706',
   Cerrada: '#059669'
 } as const;
@@ -88,6 +99,17 @@ const SOURCE_STATUS_CLASS: Record<string, string> = {
   Pagado: classes.badgeNeutral,
   Pendiente: classes.badgeCritical
 } as const;
+
+function getRiskClass(riskLevel: UnifiedRegisterRiskLevel | null) {
+  return riskLevel ? RISK_CLASS_BY_LEVEL[riskLevel] : classes.riskEmpty;
+}
+
+function getStatusClass(
+  statusClassByValue: Record<string, string>,
+  status: string | null
+) {
+  return status ? statusClassByValue[status] : undefined;
+}
 
 function Pager({
   current,
@@ -196,12 +218,14 @@ function RecordsTable({
 
 export function UnifiedRegisterPreviewPage({
   item,
+  initialIsReprocessing,
   initialContactsData,
   initialMercurioData,
   initialInterventionOrdersData,
   initialNotesData
 }: {
   item: IUnifiedRegisterDetail;
+  initialIsReprocessing: boolean;
   initialContactsData: IUnifiedRegisterContactsListData | null;
   initialMercurioData: IUnifiedRegisterFinesListData | null;
   initialInterventionOrdersData: IUnifiedRegisterInterventionOrdersListData | null;
@@ -216,7 +240,6 @@ export function UnifiedRegisterPreviewPage({
     contactActionError,
     contactsCurrentPage,
     contactsTotalPages,
-    notes,
     noteActionError,
     notesCurrentPage,
     notesTotalPages,
@@ -230,13 +253,14 @@ export function UnifiedRegisterPreviewPage({
     interventionOrdersTotalPages,
     interventionOrdersTotalItems,
     interventionOrdersError,
+    reprocessingActionError,
+    isReprocessingMarked,
     batchSearch,
     filteredLotOptions,
     selectedLotOption,
     activeSourceTableId,
     activeSourceTable,
     activeNote,
-    activeNoteIndex,
     isEditModalOpen,
     isDeleteModalOpen,
     editKind,
@@ -251,6 +275,7 @@ export function UnifiedRegisterPreviewPage({
     isInterventionOrdersPagePending,
     isNoteSavePending,
     isNoteDeletePending,
+    isReprocessingTogglePending,
     formValue,
     contactForm,
     editingItemId,
@@ -260,6 +285,8 @@ export function UnifiedRegisterPreviewPage({
     setContactField,
     openHeaderModal,
     closeHeaderModal,
+    toggleReprocessing,
+    confirmReprocessing,
     selectLotOption,
     closeLotConfirmModal,
     openCreateModal,
@@ -271,6 +298,8 @@ export function UnifiedRegisterPreviewPage({
     closeDeleteModal,
     resetDeleteModal,
     confirmDeleteModal,
+    goToPreviousContactPage,
+    goToNextContactPage,
     goToPreviousNote,
     goToNextNote,
     goToPreviousFinePage,
@@ -279,11 +308,13 @@ export function UnifiedRegisterPreviewPage({
     goToNextInterventionOrderPage
   } = useUnifiedRegisterPreview(
     item,
+    initialIsReprocessing,
     initialContactsData,
     initialNotesData,
     initialMercurioData,
     initialInterventionOrdersData
   );
+  const informeGeneration = useInformeGeneration(item);
 
   const isEditingNote = editKind === 'note';
   const isEditingContact = editKind === 'contact';
@@ -339,6 +370,10 @@ export function UnifiedRegisterPreviewPage({
         : deleteKind === 'note'
           ? '¿Estás seguro que querés eliminar esta nota?'
           : '';
+  const closeInformeFlow = () => {
+    informeGeneration.resetFlow();
+    closeHeaderModal();
+  };
 
   return (
     <div className={classes.page}>
@@ -358,7 +393,11 @@ export function UnifiedRegisterPreviewPage({
                 <span className={classes.statusDot} />
                 {item.status}
               </span>
-              <span className={`${classes.pill} ${classes.regimeText}`}>{item.regime}</span>
+              {item.regime ? (
+                <span className={`${classes.pill} ${classes.regimeText}`}>
+                  {item.regime}
+                </span>
+              ) : null}
               <span className={`${classes.pill} ${classes.controlPill}`}>
                 Control IF: {item.controlLotsLabel}
               </span>
@@ -390,16 +429,27 @@ export function UnifiedRegisterPreviewPage({
             </div>
           </div>
 
-          <div className={`${classes.riskBox} ${RISK_CLASS_BY_LEVEL[item.riskLevel]}`}>
-            <Text className={classes.riskLevel}>{item.riskLevel}</Text>
+          <div className={`${classes.riskBox} ${getRiskClass(item.riskLevel)}`}>
+            <Text className={classes.riskLevel}>
+              {formatNullableDetailCell(item.riskLevel)}
+            </Text>
             <Text className={classes.riskLabel}>Riesgo</Text>
           </div>
         </div>
 
         <div className={classes.headerActions}>
           <Group gap="sm">
-            <button className={classes.switchAction} onClick={() => openHeaderModal('reprocessing')}>
-              <span className={classes.switchTrack}>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={isReprocessingMarked}
+              className={`${classes.switchAction} ${
+                isReprocessingMarked ? classes.switchActionActive : ''
+              }`}
+              onClick={toggleReprocessing}
+              disabled={isReprocessingTogglePending}
+            >
+              <span className={classes.switchTrack} aria-hidden="true">
                 <span className={classes.switchKnob} />
               </span>
               <span>Marcar reproceso</span>
@@ -632,6 +682,8 @@ export function UnifiedRegisterPreviewPage({
               <Pager
                 current={contactsTotalPages ? contactsCurrentPage : 0}
                 total={Math.max(contactsTotalPages, 1)}
+                onPrevious={goToPreviousContactPage}
+                onNext={goToNextContactPage}
                 disabled={isContactsPagePending || contactsTotalPages <= 1}
               />
             }
@@ -648,7 +700,9 @@ export function UnifiedRegisterPreviewPage({
                     </button>
                     <button
                       className={classes.deleteLink}
-                      onClick={() => openDeleteModal('contact', contacts[0].id)}
+                      onClick={() =>
+                        openDeleteModal('contact', contacts[0].recordId ?? contacts[0].id)
+                      }
                     >
                       Eliminar
                     </button>
@@ -657,7 +711,10 @@ export function UnifiedRegisterPreviewPage({
               </div>
               <div className={classes.contactsList}>
                 {contacts.map((contact) => (
-                  <div key={contact.id} className={classes.contactItem}>
+                  <div
+                    key={`${contact.recordId ?? 'contact'}-${contact.id}`}
+                    className={classes.contactItem}
+                  >
                     <Text className={classes.contactLabel}>{contact.label}</Text>
                     <Text className={classes.contactValue}>{contact.value}</Text>
                   </div>
@@ -734,25 +791,40 @@ export function UnifiedRegisterPreviewPage({
             title="Multas Mercurio"
             badgeLabel={`${finesTotalItems} registros`}
             columns={['N°', 'Fecha', 'Descripción', 'Monto', 'Estado']}
-            rows={fines.map((fine: IUnifiedRegisterFine) => (
-              <Table.Tr key={fine.id}>
-                <Table.Td className={classes.mutedCodeCell}>{fine.id}</Table.Td>
-                <Table.Td className={classes.mutedCell}>{fine.issuedAt}</Table.Td>
-                <Table.Td className={classes.descriptionCell}>{fine.description}</Table.Td>
+            rows={fines.map((fine: IUnifiedRegisterFine, index) => (
+              <Table.Tr key={getNullableRecordKey(fine.id, 'fine', index)}>
+                <Table.Td className={classes.mutedCodeCell}>
+                  {formatNullableDetailCell(fine.id)}
+                </Table.Td>
+                <Table.Td className={classes.mutedCell}>
+                  {formatNullableDetailCell(fine.issuedAt)}
+                </Table.Td>
+                <Table.Td className={classes.descriptionCell}>
+                  {formatNullableDetailCell(fine.description)}
+                </Table.Td>
                 <Table.Td
-                  className={`${classes.amountCell} ${FINE_AMOUNT_CLASS[fine.status]}`}
-                  style={{ color: FINE_AMOUNT_COLOR[fine.status] }}
+                  className={`${classes.amountCell} ${
+                    getStatusClass(FINE_AMOUNT_CLASS, fine.status) ?? ''
+                  }`}
+                  style={{
+                    color: fine.status ? FINE_AMOUNT_COLOR[fine.status] : undefined
+                  }}
                 >
-                  {fine.amount}
+                  {formatNullableDetailCell(fine.amount)}
                 </Table.Td>
                 <Table.Td className={classes.statusCell}>
-                  <Badge
-                    radius="xl"
-                    className={`${FINE_STATUS_CLASS[fine.status]} ${classes.statusBadge}`}
-                    classNames={{ label: classes.statusBadgeLabel }}
-                  >
-                    {fine.status}
-                  </Badge>
+                  {fine.status ? (
+                    <Badge
+                      radius="xl"
+                      className={`${
+                        getStatusClass(FINE_STATUS_CLASS, fine.status) ??
+                        classes.badgeNeutral
+                      } ${classes.statusBadge}`}
+                      classNames={{ label: classes.statusBadgeLabel }}
+                    >
+                      {fine.status}
+                    </Badge>
+                  ) : null}
                 </Table.Td>
               </Table.Tr>
             ))}
@@ -776,27 +848,40 @@ export function UnifiedRegisterPreviewPage({
             title="Órdenes de Intervención"
             badgeLabel={`${interventionOrdersTotalItems} registros`}
             columns={['N° OI', 'Período', 'Motivo', 'Monto', 'Estado']}
-            rows={interventionOrders.map((order: IUnifiedRegisterInterventionOrder) => (
-              <Table.Tr key={order.id}>
+            rows={interventionOrders.map((order: IUnifiedRegisterInterventionOrder, index) => (
+              <Table.Tr key={getNullableRecordKey(order.id, 'order', index)}>
                 <Table.Td className={classes.orderCodeCellCell}>
-                  <span className={classes.orderCodeCell}>{order.id}</span>
+                  <span className={classes.orderCodeCell}>
+                    {formatNullableDetailCell(order.id)}
+                  </span>
                 </Table.Td>
-                <Table.Td className={classes.mutedCell}>{order.period}</Table.Td>
-                <Table.Td>{order.reason}</Table.Td>
+                <Table.Td className={classes.mutedCell}>
+                  {formatNullableDetailCell(order.period)}
+                </Table.Td>
+                <Table.Td>{formatNullableDetailCell(order.reason)}</Table.Td>
                 <Table.Td
-                  className={`${classes.amountCell} ${ORDER_AMOUNT_CLASS[order.status]}`}
-                  style={{ color: ORDER_AMOUNT_COLOR[order.status] }}
+                  className={`${classes.amountCell} ${
+                    getStatusClass(ORDER_AMOUNT_CLASS, order.status) ?? ''
+                  }`}
+                  style={{
+                    color: order.status ? ORDER_AMOUNT_COLOR[order.status] : undefined
+                  }}
                 >
-                  {order.amount}
+                  {formatNullableDetailCell(order.amount)}
                 </Table.Td>
                 <Table.Td className={classes.statusCell}>
-                  <Badge
-                    radius="xl"
-                    className={`${ORDER_STATUS_CLASS[order.status]} ${classes.statusBadge}`}
-                    classNames={{ label: classes.statusBadgeLabel }}
-                  >
-                    {order.status}
-                  </Badge>
+                  {order.status ? (
+                    <Badge
+                      radius="xl"
+                      className={`${
+                        getStatusClass(ORDER_STATUS_CLASS, order.status) ??
+                        classes.badgeNeutral
+                      } ${classes.statusBadge}`}
+                      classNames={{ label: classes.statusBadgeLabel }}
+                    >
+                      {order.status}
+                    </Badge>
+                  ) : null}
                 </Table.Td>
               </Table.Tr>
             ))}
@@ -905,98 +990,29 @@ export function UnifiedRegisterPreviewPage({
         </div>
       </div>
 
-      <Modal
+      <SendToReprocessingModal
         opened={activeHeaderModal === 'reprocessing'}
         onClose={closeHeaderModal}
-        title="Marcar reproceso"
-        centered
-        zIndex={900}
-        classNames={{
-          overlay: classes.modalOverlay,
-          inner: classes.modalInner,
-          content: classes.modalContent,
-          header: classes.modalHeader,
-          body: classes.modalBody,
-          title: classes.modalTitle
-        }}
-      >
-        <Stack gap="sm">
-          <Text className={classes.modalText}>
-            Esta iteración solo implementa la apertura visual del modal de reproceso.
-          </Text>
-          <Group justify="flex-end">
-            <Button radius="xl" className={classes.staticButton} onClick={closeHeaderModal}>
-              Cerrar
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
+        contribuyenteId={item.contribuyenteId}
+        cuit={item.cuit}
+        razonSocial={item.businessName}
+        error={reprocessingActionError}
+        onConfirm={confirmReprocessing}
+      />
 
-      <Modal
-        opened={activeHeaderModal === 'crosses'}
-        onClose={closeHeaderModal}
-        title="Cruces a realizar"
-        size="lg"
-        centered
-        zIndex={900}
-        classNames={{
-          overlay: classes.modalOverlay,
-          inner: classes.modalInner,
-          content: classes.modalContent,
-          header: classes.modalHeader,
-          body: classes.modalBody,
-          title: classes.modalTitle
-        }}
-      >
-        <Stack gap="md">
-          <Text className={classes.modalText}>
-            Panel mock de cruces. La conexión con la lógica final se hará en otra iteración.
-          </Text>
-          <Card className={classes.modalMockCard} padding="md" radius="md">
-            <Stack gap="xs">
-              <Text fw={600}>Mensuales</Text>
-              <Text size="sm" c="dimmed">
-                Control de desvío de BI, créditos, SAF y agentes.
-              </Text>
-            </Stack>
-          </Card>
-          <Card className={classes.modalMockCard} padding="md" radius="md">
-            <Stack gap="xs">
-              <Text fw={600}>Anuales</Text>
-              <Text size="sm" c="dimmed">
-                Régimen CM, BI declarada, no inscriptos y bases presuntivas.
-              </Text>
-            </Stack>
-          </Card>
-        </Stack>
-      </Modal>
+      <CrossModalLoader opened={activeHeaderModal === 'crosses'} />
 
-      <Modal
-        opened={activeHeaderModal === 'report'}
-        onClose={closeHeaderModal}
-        title="Generar informe"
-        centered
-        zIndex={900}
-        classNames={{
-          overlay: classes.modalOverlay,
-          inner: classes.modalInner,
-          content: classes.modalContent,
-          header: classes.modalHeader,
-          body: classes.modalBody,
-          title: classes.modalTitle
-        }}
-      >
-        <Stack gap="sm">
-          <Text className={classes.modalText}>
-            Este modal queda mock hasta tener el flujo reutilizable final del proyecto.
-          </Text>
-          <Group justify="flex-end">
-            <Button radius="xl" className={classes.staticButton} onClick={closeHeaderModal}>
-              Cerrar
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
+      <InformeGenerationModal
+        opened={activeHeaderModal === 'report' && informeGeneration.step === 'form'}
+        report={informeGeneration}
+        onClose={closeInformeFlow}
+      />
+
+      <InformePreviewModal
+        opened={activeHeaderModal === 'report' && informeGeneration.step === 'preview'}
+        report={informeGeneration}
+        onClose={closeInformeFlow}
+      />
 
       <Modal
         opened={Boolean(selectedLotOption)}

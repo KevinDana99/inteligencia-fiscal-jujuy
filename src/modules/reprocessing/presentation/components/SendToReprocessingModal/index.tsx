@@ -1,6 +1,6 @@
 'use client'
 
-import { Modal } from '@mantine/core'
+import { Modal, Text } from '@mantine/core'
 import {
   useSendToReprocessingModal,
   type ISendToReprocessingModalProps
@@ -28,6 +28,7 @@ export function SendToReprocessingModal(
       opened={props.opened}
       onClose={handleClose}
       centered
+      zIndex={900}
       withCloseButton
       title={<SendToReprocessingModalHeader subtitle={subtitle} />}
       classNames={{
@@ -44,6 +45,10 @@ export function SendToReprocessingModal(
       />
 
       <SendToReprocessingModalAlert />
+
+      {props.error ? (
+        <Text className={classes.errorText}>{props.error}</Text>
+      ) : null}
 
       <SendToReprocessingModalFooter
         isSubmitting={isSubmitting}

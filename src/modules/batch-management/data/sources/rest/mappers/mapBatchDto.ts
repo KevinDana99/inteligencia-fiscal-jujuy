@@ -1,4 +1,7 @@
 import type {
+  BatchCrossPeriodicity,
+  IBatchAvailableCross,
+  IBatchAvailableCrosses,
   IBatchCrossExecutionPayload,
   IBatchCrossExecutionSummary,
   IBatchCreatedSummary,
@@ -10,6 +13,8 @@ import type {
   IBatchPreviewRecord
 } from '../../../models/BatchManagement';
 import type {
+  ApiBatchAvailableCrossDto,
+  ApiBatchAvailableCrossesResponseDto,
   ApiBatchAuthorDto,
   ApiBatchCreateResponseDto,
   ApiBatchCuitDto,
@@ -21,6 +26,12 @@ import type {
   ApiExecuteBatchCrossRequestDto,
   ApiExecuteBatchCrossResponseDto
 } from '../dtos/BatchManagementDtos';
+
+type ApiRecord = Record<string, unknown>;
+
+const BATCH_CROSS_LABELS_BY_PUBLIC_CODE: Record<string, string> = {
+  'desvio-bi-convenio-multilateral': 'Control de desvio de BI - Regimen CM'
+};
 
 function mapBatchAuthor(dto: ApiBatchAuthorDto): IBatchManagementAuthor {
   return {
@@ -35,6 +46,168 @@ function getBusinessName(dto: {
   razon_social?: string | null;
 }) {
   return dto.razonSocial ?? dto.RazonSocial ?? dto.razon_social ?? null;
+}
+
+function isRecord(value: unknown): value is ApiRecord {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function getStringField(dto: ApiRecord, keys: string[]) {
+  for (const key of keys) {
+    const value = dto[key];
+
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+
+    if (typeof value === 'number') {
+      return String(value);
+    }
+  }
+
+  return null;
+}
+
+function normalizePeriodicity(value: string | null): BatchCrossPeriodicity {
+  const normalized = (value ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
+  if (
+    normalized.includes('mensual') ||
+    normalized.includes('monthly') ||
+    normalized === 'mes' ||
+    normalized === 'm'
+  ) {
+    return 'monthly';
+  }
+
+  return 'annual';
+}
+
+function withPeriodicity(
+  item: unknown,
+  periodicity: BatchCrossPeriodicity
+): ApiBatchAvailableCrossDto | null {
+  if (!isRecord(item)) {
+    return null;
+  }
+
+  return {
+    ...item,
+    periodicidad: periodicity === 'monthly' ? 'Mensual' : 'Anual'
+  } as ApiBatchAvailableCrossDto;
+}
+
+function getAvailableCrossItems(
+  dto: ApiBatchAvailableCrossesResponseDto
+): ApiBatchAvailableCrossDto[] {
+  if (Array.isArray(dto)) {
+    return dto;
+  }
+
+  if (!isRecord(dto)) {
+    return [];
+  }
+
+  const record = dto as ApiRecord;
+  const groupedItems = [
+    ...[
+      record.crucesMensuales,
+      record.CrucesMensuales,
+      record.monthlyCrosses,
+      record.crucesMonthly
+    ].flatMap((value) =>
+      Array.isArray(value)
+        ? value
+            .map((item) => withPeriodicity(item, 'monthly'))
+            .filter((item): item is ApiBatchAvailableCrossDto => Boolean(item))
+        : []
+    ),
+    ...[
+      record.crucesAnuales,
+      record.CrucesAnuales,
+      record.annualCrosses,
+      record.crucesAnnual
+    ].flatMap((value) =>
+      Array.isArray(value)
+        ? value
+            .map((item) => withPeriodicity(item, 'annual'))
+            .filter((item): item is ApiBatchAvailableCrossDto => Boolean(item))
+        : []
+    )
+  ];
+
+  if (groupedItems.length) {
+    return groupedItems;
+  }
+
+  for (const key of ['cruces', 'items', 'data', 'resultados']) {
+    const value = record[key];
+
+    if (Array.isArray(value)) {
+      return value.filter(isRecord) as ApiBatchAvailableCrossDto[];
+    }
+
+    if (isRecord(value)) {
+      const nestedItems = getAvailableCrossItems(
+        value as ApiBatchAvailableCrossesResponseDto
+      );
+
+      if (nestedItems.length) {
+        return nestedItems;
+      }
+    }
+  }
+
+  return [];
+}
+
+function mapAvailableCrossDto(dto: ApiBatchAvailableCrossDto): IBatchAvailableCross | null {
+  const record = dto as ApiRecord;
+  const publicCode = getStringField(record, [
+    'codigoCruce',
+    'codigo',
+    'code',
+    'clave',
+    'id'
+  ]);
+
+  if (!publicCode) {
+    return null;
+  }
+
+  const version =
+    getStringField(record, ['versionCruce', 'version', 'versionActual']) ?? '1.0.0';
+  const label =
+    getStringField(record, [
+      'nombreCruce',
+      'nombre',
+      'name',
+      'etiqueta',
+      'titulo',
+      'descripcion'
+    ]) ??
+    BATCH_CROSS_LABELS_BY_PUBLIC_CODE[publicCode] ??
+    publicCode;
+
+  return {
+    id: `${publicCode}:${version}`,
+    label,
+    publicCode,
+    version,
+    periodicity: normalizePeriodicity(
+      getStringField(record, [
+        'periodicidad',
+        'tipoPeriodicidad',
+        'frecuencia',
+        'granularidad',
+        'periodo',
+        'tipoPeriodo'
+      ])
+    )
+  };
 }
 
 function mapBatchCuit(batchId: string, dto: ApiBatchCuitDto): IBatchManagementCuit {
@@ -69,6 +242,25 @@ export function mapBatchListResponseDto(dto: ApiBatchListResponseDto): IBatchLis
     totalPages: dto.totalPaginas,
     batches: dto.lotes.map(mapBatchListItemDto)
   };
+}
+
+export function mapBatchAvailableCrossesResponseDto(
+  dto: ApiBatchAvailableCrossesResponseDto
+): IBatchAvailableCrosses {
+  const seen = new Set<string>();
+
+  return getAvailableCrossItems(dto).reduce<IBatchAvailableCrosses>((crosses, item) => {
+    const cross = mapAvailableCrossDto(item);
+
+    if (!cross || seen.has(cross.id)) {
+      return crosses;
+    }
+
+    seen.add(cross.id);
+    crosses.push(cross);
+
+    return crosses;
+  }, []);
 }
 
 export function mapBatchDetailResponseDto(dto: ApiBatchDetailResponseDto): IBatchManagementItem {

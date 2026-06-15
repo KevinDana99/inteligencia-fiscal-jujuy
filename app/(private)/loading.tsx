@@ -1,5 +1,5 @@
-import { DashboardPageLoader } from '@/modules/dashboard-layout/presentation/components/DashboardPageLoader';
+import { PageLoader } from '@/components/core/PageLoader';
 
 export default function Loading() {
-  return <DashboardPageLoader />;
+  return <PageLoader />;
 }

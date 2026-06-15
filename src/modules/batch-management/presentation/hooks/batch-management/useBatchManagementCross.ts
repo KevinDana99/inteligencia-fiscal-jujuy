@@ -1,16 +1,20 @@
 'use client'
 
 import type {
+  IBatchAvailableCrosses,
   IBatchCrossFilters,
   IBatchCrossSectionFilters
 } from '../../../data/models/BatchManagement'
 import { useBatchManagementCrossExecution } from './useBatchManagementCrossExecution'
 import { useBatchManagementCrossFilters } from './useBatchManagementCrossFilters'
 
-export function useBatchManagementCross() {
+export function useBatchManagementCross(
+  availableCrosses: IBatchAvailableCrosses = []
+) {
   const filters = useBatchManagementCrossFilters()
   const execution = useBatchManagementCrossExecution({
-    getBatchCrossFilters: filters.getBatchCrossFilters
+    getBatchCrossFilters: filters.getBatchCrossFilters,
+    availableCrosses
   })
 
   function setBatchCrossYear(
@@ -50,6 +54,7 @@ export function useBatchManagementCross() {
   }
 
   return {
+    availableCrosses,
     getBatchCrossFilters: filters.getBatchCrossFilters,
     getBatchCrossValidationMessage: execution.getBatchCrossValidation,
     getBatchCrossExecutionError: execution.getBatchCrossExecutionError,

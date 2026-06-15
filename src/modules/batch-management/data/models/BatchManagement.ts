@@ -1,13 +1,9 @@
 export type BatchRegime = 'Convenio Multilateral' | 'Regimen Local' | 'No inscripto';
 export type BatchRequestRegime =
-  | 'CM'
   | 'Convenio Multilateral'
   | 'ConvenioMultilateral'
-  | 'Convenio Multilateral (CM)'
   | 'Regimen Local'
-  | 'RegimenLocal'
-  | 'No inscripto'
-  | 'NoInscripto';
+  | 'RegimenLocal';
 
 export interface IBatchManagementAuthor {
   id: string;
@@ -42,6 +38,18 @@ export interface IBatchCrossFilters {
   monthly: IBatchCrossSectionFilters;
   annual: IBatchCrossSectionFilters;
 }
+
+export type BatchCrossPeriodicity = 'monthly' | 'annual';
+
+export interface IBatchAvailableCross {
+  id: string;
+  label: string;
+  publicCode: string;
+  version: string;
+  periodicity: BatchCrossPeriodicity;
+}
+
+export type IBatchAvailableCrosses = Array<IBatchAvailableCross>;
 
 export interface IBatchManagementItem {
   id: string;

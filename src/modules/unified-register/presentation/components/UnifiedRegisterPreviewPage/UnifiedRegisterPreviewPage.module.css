@@ -209,6 +209,26 @@
   color: #059669;
 }
 
+.riskD {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.riskD .riskLevel,
+.riskD .riskLabel {
+  color: #2563eb;
+}
+
+.riskEmpty {
+  background: var(--mantine-color-gray-0);
+  border-color: var(--mantine-color-gray-2);
+}
+
+.riskEmpty .riskLevel,
+.riskEmpty .riskLabel {
+  color: var(--mantine-color-gray-5);
+}
+
 .headerActions {
   display: flex;
   align-items: center;
@@ -263,6 +283,24 @@
   color: var(--mantine-color-gray-7);
 }
 
+.switchAction:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.switchActionActive {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: var(--mantine-color-blue-7);
+}
+
+.switchActionActive:hover,
+.switchActionActive:active {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: var(--mantine-color-blue-7);
+}
+
 .switchTrack {
   position: relative;
   width: 28px;
@@ -270,6 +308,10 @@
   flex-shrink: 0;
   border-radius: 999px;
   background: var(--mantine-color-gray-2);
+}
+
+.switchActionActive .switchTrack {
+  background: var(--mantine-color-blue-5);
 }
 
 .switchKnob {
@@ -281,6 +323,11 @@
   border-radius: 999px;
   background: var(--mantine-color-white);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 120ms ease;
+}
+
+.switchActionActive .switchKnob {
+  transform: translateX(12px);
 }
 
 .secondaryActionIcon {
