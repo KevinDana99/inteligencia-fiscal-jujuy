@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import type { Route } from 'next';
-import { useRouter } from 'next/navigation';
+import type { Route } from "next";
+import { useRouter } from "next/navigation";
 import {
   ActionIcon,
   Badge,
@@ -13,9 +13,8 @@ import {
   Table,
   Text,
   Textarea,
-  TextInput
-} from '@mantine/core';
-import { CrossModalLoader } from '@/modules/cross-management/presentation/components/CrossModalLoader';
+  TextInput,
+} from "@mantine/core";
 import {
   IconChevronDown,
   IconChevronLeft,
@@ -23,8 +22,8 @@ import {
   IconArrowNarrowRight,
   IconFileText,
   IconListDetails,
-} from '@tabler/icons-react';
-import { SendToReprocessingModal } from '@/modules/reprocessing/presentation/components';
+} from "@tabler/icons-react";
+import { SendToReprocessingModal } from "@/modules/reprocessing/presentation/components";
 import type {
   IUnifiedRegisterAddress,
   IUnifiedRegisterContact,
@@ -36,68 +35,68 @@ import type {
   IUnifiedRegisterInterventionOrder,
   IUnifiedRegisterNote,
   IUnifiedRegisterNotesListData,
-  UnifiedRegisterRiskLevel
-} from '../../../data/models/UnifiedRegister';
-import { InformeGenerationModal } from '../InformeGenerationModal';
-import { InformePreviewModal } from '../InformePreviewModal';
-import { useInformeGeneration } from '../../hooks/useInformeGeneration';
-import { useUnifiedRegisterPreview } from '../../hooks/useUnifiedRegisterPreview';
+  UnifiedRegisterRiskLevel,
+} from "../../../data/models/UnifiedRegister";
+import { InformeGenerationModal } from "../InformeGenerationModal";
+import { InformePreviewModal } from "../InformePreviewModal";
+import { useInformeGeneration } from "../../hooks/useInformeGeneration";
+import { useUnifiedRegisterPreview } from "../../hooks/useUnifiedRegisterPreview";
 import {
   formatNullableDetailCell,
-  getNullableRecordKey
-} from '../../utils/unifiedRegisterDetailRecords';
-import classes from './UnifiedRegisterPreviewPage.module.css';
+  getNullableRecordKey,
+} from "../../utils/unifiedRegisterDetailRecords";
+import classes from "./UnifiedRegisterPreviewPage.module.css";
 
 const RISK_CLASS_BY_LEVEL = {
   A: classes.riskA,
   B: classes.riskB,
   C: classes.riskC,
-  D: classes.riskD
+  D: classes.riskD,
 } as const satisfies Record<UnifiedRegisterRiskLevel, string>;
 
 const FINE_STATUS_CLASS: Record<string, string> = {
   Impaga: classes.badgeCritical,
   Pagada: classes.badgePositive,
-  'En gestión': classes.badgeWarning
+  "En gestión": classes.badgeWarning,
 } as const;
 
 const FINE_AMOUNT_CLASS: Record<string, string> = {
   Impaga: classes.amountCritical,
   Pagada: classes.amountPositive,
-  'En gestión': classes.amountWarning
+  "En gestión": classes.amountWarning,
 } as const;
 
 const FINE_AMOUNT_COLOR: Record<string, string> = {
-  Impaga: '#dc2626',
-  Pagada: '#059669',
-  'En gestión': '#d97706'
+  Impaga: "#dc2626",
+  Pagada: "#059669",
+  "En gestión": "#d97706",
 } as const;
 
 const ORDER_STATUS_CLASS: Record<string, string> = {
-  'En curso': classes.badgeWarning,
-  Cerrada: classes.badgePositive
+  "En curso": classes.badgeWarning,
+  Cerrada: classes.badgePositive,
 } as const;
 
 const ORDER_AMOUNT_CLASS: Record<string, string> = {
-  'En curso': classes.amountWarning,
-  Cerrada: classes.amountPositive
+  "En curso": classes.amountWarning,
+  Cerrada: classes.amountPositive,
 } as const;
 
 const ORDER_AMOUNT_COLOR: Record<string, string> = {
-  'En curso': '#d97706',
-  Cerrada: '#059669'
+  "En curso": "#d97706",
+  Cerrada: "#059669",
 } as const;
 
 const SOURCE_STATUS_CLASS: Record<string, string> = {
-  '✓ Validado': classes.badgeNeutral,
+  "✓ Validado": classes.badgeNeutral,
   Diferencia: classes.badgeCritical,
   Desvío: classes.badgeCritical,
   Revisar: classes.badgeWarning,
-  '✓ OK': classes.badgeNeutral,
-  'Al día': classes.badgeNeutral,
-  'Deuda parcial': classes.badgeWarning,
+  "✓ OK": classes.badgeNeutral,
+  "Al día": classes.badgeNeutral,
+  "Deuda parcial": classes.badgeWarning,
   Pagado: classes.badgeNeutral,
-  Pendiente: classes.badgeCritical
+  Pendiente: classes.badgeCritical,
 } as const;
 
 function getRiskClass(riskLevel: UnifiedRegisterRiskLevel | null) {
@@ -116,7 +115,7 @@ function Pager({
   total,
   onPrevious,
   onNext,
-  disabled
+  disabled,
 }: {
   current: number;
   total: number;
@@ -155,7 +154,7 @@ function SectionCard({
   title,
   action,
   children,
-  footer
+  footer,
 }: {
   title: string;
   action?: React.ReactNode;
@@ -179,7 +178,7 @@ function RecordsTable({
   badgeLabel,
   columns,
   rows,
-  footer
+  footer,
 }: {
   title: string;
   badgeLabel: string;
@@ -199,7 +198,11 @@ function RecordsTable({
       </div>
 
       <div className={classes.tableWrapper}>
-        <Table withTableBorder={false} withColumnBorders={false} withRowBorders={false}>
+        <Table
+          withTableBorder={false}
+          withColumnBorders={false}
+          withRowBorders={false}
+        >
           <Table.Thead>
             <Table.Tr>
               {columns.map((column) => (
@@ -222,7 +225,7 @@ export function UnifiedRegisterPreviewPage({
   initialContactsData,
   initialMercurioData,
   initialInterventionOrdersData,
-  initialNotesData
+  initialNotesData,
 }: {
   item: IUnifiedRegisterDetail;
   initialIsReprocessing: boolean;
@@ -305,7 +308,7 @@ export function UnifiedRegisterPreviewPage({
     goToPreviousFinePage,
     goToNextFinePage,
     goToPreviousInterventionOrderPage,
-    goToNextInterventionOrderPage
+    goToNextInterventionOrderPage,
   } = useUnifiedRegisterPreview(
     item,
     initialIsReprocessing,
@@ -316,60 +319,60 @@ export function UnifiedRegisterPreviewPage({
   );
   const informeGeneration = useInformeGeneration(item);
 
-  const isEditingNote = editKind === 'note';
-  const isEditingContact = editKind === 'contact';
+  const isEditingNote = editKind === "note";
+  const isEditingContact = editKind === "contact";
   const isContactFormEmpty =
     !contactForm.phone.trim() &&
     !contactForm.mail.trim() &&
     !contactForm.legal.trim() &&
     !contactForm.accountant.trim();
-  const backRoute = '/' as Route;
+  const backRoute = "/" as Route;
   const editModalTitle =
-    editKind === 'address'
+    editKind === "address"
       ? editingItemId
-        ? 'Editar domicilio alternativo'
-        : 'Agregar domicilio alternativo'
-      : editKind === 'contact'
-        ? editingItemId
-          ? 'Editar contacto'
-          : 'Agregar contacto'
-        : editKind === 'note'
-          ? editingItemId
-            ? 'Editar nota'
-            : 'Agregar nota'
-          : '';
+        ? "Editar domicilio alternativo"
+        : "Agregar domicilio alternativo"
+      : editKind === "contact"
+      ? editingItemId
+        ? "Editar contacto"
+        : "Agregar contacto"
+      : editKind === "note"
+      ? editingItemId
+        ? "Editar nota"
+        : "Agregar nota"
+      : "";
   const editModalLabel =
-    editKind === 'note'
-      ? 'Nota'
-      : editKind === 'address'
-        ? 'Dirección'
-        : editKind === 'contact'
-          ? 'Contacto'
-          : '';
+    editKind === "note"
+      ? "Nota"
+      : editKind === "address"
+      ? "Dirección"
+      : editKind === "contact"
+      ? "Contacto"
+      : "";
   const editModalPlaceholder =
-    editKind === 'note'
-      ? 'Ingresá una nota'
-      : editKind === 'address'
-        ? 'Ej: Av. Independencia 500, S.S. de Jujuy'
-        : editKind === 'contact'
-          ? 'Ingresá un contacto'
-          : '';
+    editKind === "note"
+      ? "Ingresá una nota"
+      : editKind === "address"
+      ? "Ej: Av. Independencia 500, S.S. de Jujuy"
+      : editKind === "contact"
+      ? "Ingresá un contacto"
+      : "";
   const deleteModalTitle =
-    deleteKind === 'address'
-      ? 'Eliminar domicilio'
-      : deleteKind === 'contact'
-        ? 'Eliminar contacto'
-        : deleteKind === 'note'
-          ? 'Eliminar nota'
-          : '';
+    deleteKind === "address"
+      ? "Eliminar domicilio"
+      : deleteKind === "contact"
+      ? "Eliminar contacto"
+      : deleteKind === "note"
+      ? "Eliminar nota"
+      : "";
   const deleteModalDescription =
-    deleteKind === 'address'
-      ? '¿Estás seguro que querés eliminar este domicilio alternativo?'
-      : deleteKind === 'contact'
-        ? '¿Estás seguro que querés eliminar este contacto?'
-        : deleteKind === 'note'
-          ? '¿Estás seguro que querés eliminar esta nota?'
-          : '';
+    deleteKind === "address"
+      ? "¿Estás seguro que querés eliminar este domicilio alternativo?"
+      : deleteKind === "contact"
+      ? "¿Estás seguro que querés eliminar este contacto?"
+      : deleteKind === "note"
+      ? "¿Estás seguro que querés eliminar esta nota?"
+      : "";
   const closeInformeFlow = () => {
     informeGeneration.resetFlow();
     closeHeaderModal();
@@ -377,7 +380,10 @@ export function UnifiedRegisterPreviewPage({
 
   return (
     <div className={classes.page}>
-      <button className={classes.backButton} onClick={() => router.push(backRoute)}>
+      <button
+        className={classes.backButton}
+        onClick={() => router.push(backRoute)}
+      >
         <IconChevronLeft size={14} />
         <span>Padrón Unificado</span>
       </button>
@@ -405,7 +411,9 @@ export function UnifiedRegisterPreviewPage({
                 <span
                   key={activity.id}
                   className={`${classes.pill} ${
-                    activity.type === 'Primaria' ? classes.activityPrimaryPill : classes.activitySecondaryPill
+                    activity.type === "Primaria"
+                      ? classes.activityPrimaryPill
+                      : classes.activitySecondaryPill
                   }`}
                 >
                   {activity.label}
@@ -444,7 +452,7 @@ export function UnifiedRegisterPreviewPage({
               role="switch"
               aria-checked={isReprocessingMarked}
               className={`${classes.switchAction} ${
-                isReprocessingMarked ? classes.switchActionActive : ''
+                isReprocessingMarked ? classes.switchActionActive : ""
               }`}
               onClick={toggleReprocessing}
               disabled={isReprocessingTogglePending}
@@ -455,10 +463,19 @@ export function UnifiedRegisterPreviewPage({
               <span>Marcar reproceso</span>
             </button>
 
-            <button className={classes.secondaryAction} onClick={() => openHeaderModal('crosses')}>
-              <IconListDetails size={12} className={classes.secondaryActionIcon} />
+            <button
+              className={classes.secondaryAction}
+              onClick={() => openHeaderModal("crosses")}
+            >
+              <IconListDetails
+                size={12}
+                className={classes.secondaryActionIcon}
+              />
               <span>Cruces a realizar</span>
-              <IconChevronDown size={12} className={classes.secondaryActionChevron} />
+              <IconChevronDown
+                size={12}
+                className={classes.secondaryActionChevron}
+              />
             </button>
           </Group>
 
@@ -468,7 +485,7 @@ export function UnifiedRegisterPreviewPage({
               radius="xl"
               className={`${classes.headerGhostButton} ${classes.staticButton}`}
               leftSection={<IconFileText size={14} />}
-              onClick={() => openHeaderModal('report')}
+              onClick={() => openHeaderModal("report")}
             >
               Generar Informe
             </Button>
@@ -476,13 +493,15 @@ export function UnifiedRegisterPreviewPage({
               radius="xl"
               className={`${classes.headerPrimaryButton} ${classes.staticButton}`}
               onClick={() =>
-                activeHeaderModal === 'batch' ? closeHeaderModal() : openHeaderModal('batch')
+                activeHeaderModal === "batch"
+                  ? closeHeaderModal()
+                  : openHeaderModal("batch")
               }
             >
               Agregar a lote
             </Button>
 
-            {activeHeaderModal === 'batch' ? (
+            {activeHeaderModal === "batch" ? (
               <>
                 <button
                   type="button"
@@ -491,30 +510,34 @@ export function UnifiedRegisterPreviewPage({
                   onClick={closeHeaderModal}
                 />
                 <div className={classes.batchDropdown}>
-                <TextInput
-                  classNames={{
-                    input: classes.batchDropdownInput
-                  }}
-                  value={batchSearch}
-                  onChange={(event) => setBatchSearch(event.currentTarget.value)}
-                  placeholder="Buscar lote..."
-                />
+                  <TextInput
+                    classNames={{
+                      input: classes.batchDropdownInput,
+                    }}
+                    value={batchSearch}
+                    onChange={(event) =>
+                      setBatchSearch(event.currentTarget.value)
+                    }
+                    placeholder="Buscar lote..."
+                  />
 
-                <div className={classes.batchDropdownList}>
-                  {filteredLotOptions.map((lot) => (
-                    <button
-                      key={lot.id}
-                      type="button"
-                      className={classes.batchDropdownOption}
-                      onClick={() => selectLotOption(lot)}
-                    >
-                      <Text className={classes.batchDropdownOptionTitle}>{lot.label}</Text>
-                      <Text className={classes.batchDropdownOptionMeta}>
-                        {lot.cuitCount} CUITs
-                      </Text>
-                    </button>
-                  ))}
-                </div>
+                  <div className={classes.batchDropdownList}>
+                    {filteredLotOptions.map((lot) => (
+                      <button
+                        key={lot.id}
+                        type="button"
+                        className={classes.batchDropdownOption}
+                        onClick={() => selectLotOption(lot)}
+                      >
+                        <Text className={classes.batchDropdownOptionTitle}>
+                          {lot.label}
+                        </Text>
+                        <Text className={classes.batchDropdownOptionMeta}>
+                          {lot.cuitCount} CUITs
+                        </Text>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </>
             ) : null}
@@ -524,7 +547,12 @@ export function UnifiedRegisterPreviewPage({
 
       <div className={classes.metricsGrid}>
         {item.widgets.map((widget) => (
-          <Card key={widget.id} className={classes.metricCard} padding={0} radius="lg">
+          <Card
+            key={widget.id}
+            className={classes.metricCard}
+            padding={0}
+            radius="lg"
+          >
             <Text className={classes.metricLabel}>{widget.label}</Text>
 
             {widget.splitValue ? (
@@ -551,7 +579,7 @@ export function UnifiedRegisterPreviewPage({
               <>
                 <Text
                   className={`${classes.metricValue} ${
-                    widget.id === 'debt' ? classes.metricValueCritical : ''
+                    widget.id === "debt" ? classes.metricValueCritical : ""
                   }`}
                 >
                   {widget.value}
@@ -568,7 +596,7 @@ export function UnifiedRegisterPreviewPage({
                 {widget.subtitle ? (
                   <Text
                     className={`${classes.metricSubtitle} ${
-                      widget.id === 'debt' ? classes.metricSubtitleCritical : ''
+                      widget.id === "debt" ? classes.metricSubtitleCritical : ""
                     }`}
                   >
                     {widget.subtitle}
@@ -588,18 +616,22 @@ export function UnifiedRegisterPreviewPage({
                 <div
                   key={activity.id}
                   className={`${classes.activityEntry} ${
-                    index > 0 ? classes.activityEntryBorder : ''
+                    index > 0 ? classes.activityEntryBorder : ""
                   }`}
                 >
                   <div>
-                    <Text className={classes.activityType}>{activity.type}</Text>
-                    <Text className={classes.activityLabel}>{activity.label}</Text>
+                    <Text className={classes.activityType}>
+                      {activity.type}
+                    </Text>
+                    <Text className={classes.activityLabel}>
+                      {activity.label}
+                    </Text>
                   </div>
                   <Badge
                     radius="xl"
                     classNames={{ label: classes.activityTagLabel }}
                     className={
-                      activity.tagTone === 'blue'
+                      activity.tagTone === "blue"
                         ? classes.activityTagPrimary
                         : classes.activityTagSecondary
                     }
@@ -620,7 +652,7 @@ export function UnifiedRegisterPreviewPage({
                 radius="md"
                 size="xs"
                 className={`${classes.inlineAddButton} ${classes.staticButton}`}
-                onClick={() => openCreateModal('address')}
+                onClick={() => openCreateModal("address")}
               >
                 + Agregar
               </Button>
@@ -629,11 +661,15 @@ export function UnifiedRegisterPreviewPage({
             <div className={classes.addressList}>
               <div className={classes.addressBlock}>
                 <Text className={classes.addressLabel}>Fiscal</Text>
-                <Text className={classes.addressValue}>{item.fiscalAddress}</Text>
+                <Text className={classes.addressValue}>
+                  {item.fiscalAddress}
+                </Text>
               </div>
               <div className={classes.addressBlock}>
                 <Text className={classes.addressLabel}>Comercial</Text>
-                <Text className={classes.addressValue}>{item.commercialAddress}</Text>
+                <Text className={classes.addressValue}>
+                  {item.commercialAddress}
+                </Text>
               </div>
 
               <Text className={classes.subsectionLabel}>Alternativos</Text>
@@ -642,18 +678,25 @@ export function UnifiedRegisterPreviewPage({
                   <div className={classes.inlineActionRow}>
                     <button
                       className={classes.editLink}
-                      onClick={() => openEditModal('address', address as IUnifiedRegisterAddress)}
+                      onClick={() =>
+                        openEditModal(
+                          "address",
+                          address as IUnifiedRegisterAddress
+                        )
+                      }
                     >
                       Editar
                     </button>
                     <button
                       className={classes.deleteLink}
-                      onClick={() => openDeleteModal('address', address.id)}
+                      onClick={() => openDeleteModal("address", address.id)}
                     >
                       Eliminar
                     </button>
                   </div>
-                  <Text className={classes.inlinePanelValue}>{address.address}</Text>
+                  <Text className={classes.inlinePanelValue}>
+                    {address.address}
+                  </Text>
                 </div>
               ))}
               {!addresses.length ? (
@@ -673,7 +716,7 @@ export function UnifiedRegisterPreviewPage({
                 radius="md"
                 size="xs"
                 className={`${classes.inlineAddButton} ${classes.staticButton}`}
-                onClick={() => openCreateModal('contact')}
+                onClick={() => openCreateModal("contact")}
               >
                 + Agregar
               </Button>
@@ -694,14 +737,22 @@ export function UnifiedRegisterPreviewPage({
                   <>
                     <button
                       className={classes.editLink}
-                      onClick={() => openEditModal('contact', contacts[0] as IUnifiedRegisterContact)}
+                      onClick={() =>
+                        openEditModal(
+                          "contact",
+                          contacts[0] as IUnifiedRegisterContact
+                        )
+                      }
                     >
                       Editar
                     </button>
                     <button
                       className={classes.deleteLink}
                       onClick={() =>
-                        openDeleteModal('contact', contacts[0].recordId ?? contacts[0].id)
+                        openDeleteModal(
+                          "contact",
+                          contacts[0].recordId ?? contacts[0].id
+                        )
                       }
                     >
                       Eliminar
@@ -712,16 +763,22 @@ export function UnifiedRegisterPreviewPage({
               <div className={classes.contactsList}>
                 {contacts.map((contact) => (
                   <div
-                    key={`${contact.recordId ?? 'contact'}-${contact.id}`}
+                    key={`${contact.recordId ?? "contact"}-${contact.id}`}
                     className={classes.contactItem}
                   >
-                    <Text className={classes.contactLabel}>{contact.label}</Text>
-                    <Text className={classes.contactValue}>{contact.value}</Text>
+                    <Text className={classes.contactLabel}>
+                      {contact.label}
+                    </Text>
+                    <Text className={classes.contactValue}>
+                      {contact.value}
+                    </Text>
                   </div>
                 ))}
               </div>
               {!contacts.length ? (
-                <Text className={classes.emptyStateText}>No hay contactos cargados.</Text>
+                <Text className={classes.emptyStateText}>
+                  No hay contactos cargados.
+                </Text>
               ) : null}
               {contactActionError ? (
                 <Text className={classes.modalText} c="red">
@@ -740,7 +797,7 @@ export function UnifiedRegisterPreviewPage({
                 radius="md"
                 size="xs"
                 className={`${classes.inlineAddButton} ${classes.staticButton}`}
-                onClick={() => openCreateModal('note')}
+                onClick={() => openCreateModal("note")}
               >
                 + Nota
               </Button>
@@ -761,13 +818,18 @@ export function UnifiedRegisterPreviewPage({
                   <div className={classes.inlineActionRow}>
                     <button
                       className={classes.editLink}
-                      onClick={() => openEditModal('note', activeNote as IUnifiedRegisterNote)}
+                      onClick={() =>
+                        openEditModal(
+                          "note",
+                          activeNote as IUnifiedRegisterNote
+                        )
+                      }
                     >
                       Editar
                     </button>
                     <button
                       className={classes.deleteLink}
-                      onClick={() => openDeleteModal('note', activeNote.id)}
+                      onClick={() => openDeleteModal("note", activeNote.id)}
                     >
                       Eliminar
                     </button>
@@ -775,7 +837,9 @@ export function UnifiedRegisterPreviewPage({
                   <Text className={classes.noteText}>{activeNote.text}</Text>
                 </>
               ) : (
-                <Text className={classes.emptyStateText}>No hay notas cargadas.</Text>
+                <Text className={classes.emptyStateText}>
+                  No hay notas cargadas.
+                </Text>
               )}
               {noteActionError ? (
                 <Text className={classes.modalText} c="red">
@@ -790,9 +854,9 @@ export function UnifiedRegisterPreviewPage({
           <RecordsTable
             title="Multas Mercurio"
             badgeLabel={`${finesTotalItems} registros`}
-            columns={['N°', 'Fecha', 'Descripción', 'Monto', 'Estado']}
+            columns={["N°", "Fecha", "Descripción", "Monto", "Estado"]}
             rows={fines.map((fine: IUnifiedRegisterFine, index) => (
-              <Table.Tr key={getNullableRecordKey(fine.id, 'fine', index)}>
+              <Table.Tr key={getNullableRecordKey(fine.id, "fine", index)}>
                 <Table.Td className={classes.mutedCodeCell}>
                   {formatNullableDetailCell(fine.id)}
                 </Table.Td>
@@ -804,10 +868,12 @@ export function UnifiedRegisterPreviewPage({
                 </Table.Td>
                 <Table.Td
                   className={`${classes.amountCell} ${
-                    getStatusClass(FINE_AMOUNT_CLASS, fine.status) ?? ''
+                    getStatusClass(FINE_AMOUNT_CLASS, fine.status) ?? ""
                   }`}
                   style={{
-                    color: fine.status ? FINE_AMOUNT_COLOR[fine.status] : undefined
+                    color: fine.status
+                      ? FINE_AMOUNT_COLOR[fine.status]
+                      : undefined,
                   }}
                 >
                   {formatNullableDetailCell(fine.amount)}
@@ -847,44 +913,48 @@ export function UnifiedRegisterPreviewPage({
           <RecordsTable
             title="Órdenes de Intervención"
             badgeLabel={`${interventionOrdersTotalItems} registros`}
-            columns={['N° OI', 'Período', 'Motivo', 'Monto', 'Estado']}
-            rows={interventionOrders.map((order: IUnifiedRegisterInterventionOrder, index) => (
-              <Table.Tr key={getNullableRecordKey(order.id, 'order', index)}>
-                <Table.Td className={classes.orderCodeCellCell}>
-                  <span className={classes.orderCodeCell}>
-                    {formatNullableDetailCell(order.id)}
-                  </span>
-                </Table.Td>
-                <Table.Td className={classes.mutedCell}>
-                  {formatNullableDetailCell(order.period)}
-                </Table.Td>
-                <Table.Td>{formatNullableDetailCell(order.reason)}</Table.Td>
-                <Table.Td
-                  className={`${classes.amountCell} ${
-                    getStatusClass(ORDER_AMOUNT_CLASS, order.status) ?? ''
-                  }`}
-                  style={{
-                    color: order.status ? ORDER_AMOUNT_COLOR[order.status] : undefined
-                  }}
-                >
-                  {formatNullableDetailCell(order.amount)}
-                </Table.Td>
-                <Table.Td className={classes.statusCell}>
-                  {order.status ? (
-                    <Badge
-                      radius="xl"
-                      className={`${
-                        getStatusClass(ORDER_STATUS_CLASS, order.status) ??
-                        classes.badgeNeutral
-                      } ${classes.statusBadge}`}
-                      classNames={{ label: classes.statusBadgeLabel }}
-                    >
-                      {order.status}
-                    </Badge>
-                  ) : null}
-                </Table.Td>
-              </Table.Tr>
-            ))}
+            columns={["N° OI", "Período", "Motivo", "Monto", "Estado"]}
+            rows={interventionOrders.map(
+              (order: IUnifiedRegisterInterventionOrder, index) => (
+                <Table.Tr key={getNullableRecordKey(order.id, "order", index)}>
+                  <Table.Td className={classes.orderCodeCellCell}>
+                    <span className={classes.orderCodeCell}>
+                      {formatNullableDetailCell(order.id)}
+                    </span>
+                  </Table.Td>
+                  <Table.Td className={classes.mutedCell}>
+                    {formatNullableDetailCell(order.period)}
+                  </Table.Td>
+                  <Table.Td>{formatNullableDetailCell(order.reason)}</Table.Td>
+                  <Table.Td
+                    className={`${classes.amountCell} ${
+                      getStatusClass(ORDER_AMOUNT_CLASS, order.status) ?? ""
+                    }`}
+                    style={{
+                      color: order.status
+                        ? ORDER_AMOUNT_COLOR[order.status]
+                        : undefined,
+                    }}
+                  >
+                    {formatNullableDetailCell(order.amount)}
+                  </Table.Td>
+                  <Table.Td className={classes.statusCell}>
+                    {order.status ? (
+                      <Badge
+                        radius="xl"
+                        className={`${
+                          getStatusClass(ORDER_STATUS_CLASS, order.status) ??
+                          classes.badgeNeutral
+                        } ${classes.statusBadge}`}
+                        classNames={{ label: classes.statusBadgeLabel }}
+                      >
+                        {order.status}
+                      </Badge>
+                    ) : null}
+                  </Table.Td>
+                </Table.Tr>
+              )
+            )}
             footer={
               <Pager
                 current={interventionOrdersCurrentPage}
@@ -892,7 +962,8 @@ export function UnifiedRegisterPreviewPage({
                 onPrevious={goToPreviousInterventionOrderPage}
                 onNext={goToNextInterventionOrderPage}
                 disabled={
-                  isInterventionOrdersPagePending || interventionOrdersTotalPages <= 1
+                  isInterventionOrdersPagePending ||
+                  interventionOrdersTotalPages <= 1
                 }
               />
             }
@@ -909,7 +980,9 @@ export function UnifiedRegisterPreviewPage({
                 <button
                   key={table.id}
                   className={`${classes.tabButton} ${
-                    activeSourceTableId === table.id ? classes.tabButtonActive : ''
+                    activeSourceTableId === table.id
+                      ? classes.tabButtonActive
+                      : ""
                   }`}
                   onClick={() => setActiveSourceTableId(table.id)}
                 >
@@ -937,10 +1010,14 @@ export function UnifiedRegisterPreviewPage({
                     <Table.Tr key={`${activeSourceTable.id}-${rowIndex}`}>
                       {row.map((cell, cellIndex) => {
                         const isLastCell = cellIndex === row.length - 1;
-                        const columnName = activeSourceTable.columns[cellIndex]?.toLowerCase() ?? '';
-                        const isDifferenceColumn = columnName === 'diferencia';
-                        const isCriticalValue = isDifferenceColumn && cell.trim().startsWith('+');
-                        const isPositiveDifference = isDifferenceColumn && !cell.trim().startsWith('+');
+                        const columnName =
+                          activeSourceTable.columns[cellIndex]?.toLowerCase() ??
+                          "";
+                        const isDifferenceColumn = columnName === "diferencia";
+                        const isCriticalValue =
+                          isDifferenceColumn && cell.trim().startsWith("+");
+                        const isPositiveDifference =
+                          isDifferenceColumn && !cell.trim().startsWith("+");
 
                         if (isLastCell) {
                           return (
@@ -950,10 +1027,14 @@ export function UnifiedRegisterPreviewPage({
                             >
                               <Badge
                                 radius="xl"
-                                className={`${SOURCE_STATUS_CLASS[cell] ?? classes.badgeNeutral} ${
-                                  classes.sourceStatusBadge
-                                }`}
-                                classNames={{ root: classes.sourceStatusBadgeRoot, label: classes.sourceStatusBadgeLabel }}
+                                className={`${
+                                  SOURCE_STATUS_CLASS[cell] ??
+                                  classes.badgeNeutral
+                                } ${classes.sourceStatusBadge}`}
+                                classNames={{
+                                  root: classes.sourceStatusBadgeRoot,
+                                  label: classes.sourceStatusBadgeLabel,
+                                }}
                               >
                                 {cell}
                               </Badge>
@@ -964,13 +1045,15 @@ export function UnifiedRegisterPreviewPage({
                         return (
                           <Table.Td
                             key={`${activeSourceTable.id}-${rowIndex}-${cellIndex}`}
-                            className={isCriticalValue ? classes.amountCritical : ''}
+                            className={
+                              isCriticalValue ? classes.amountCritical : ""
+                            }
                             style={
                               isCriticalValue
-                                ? { color: '#dc2626', fontWeight: 600 }
+                                ? { color: "#dc2626", fontWeight: 600 }
                                 : isPositiveDifference
-                                  ? { color: '#059669', fontWeight: 600 }
-                                  : undefined
+                                ? { color: "#059669", fontWeight: 600 }
+                                : undefined
                             }
                           >
                             {cell}
@@ -991,7 +1074,7 @@ export function UnifiedRegisterPreviewPage({
       </div>
 
       <SendToReprocessingModal
-        opened={activeHeaderModal === 'reprocessing'}
+        opened={activeHeaderModal === "reprocessing"}
         onClose={closeHeaderModal}
         contribuyenteId={item.contribuyenteId}
         cuit={item.cuit}
@@ -1000,16 +1083,58 @@ export function UnifiedRegisterPreviewPage({
         onConfirm={confirmReprocessing}
       />
 
-      <CrossModalLoader opened={activeHeaderModal === 'crosses'} />
+      <Modal
+        opened={activeHeaderModal === "crosses"}
+        onClose={closeHeaderModal}
+        title="Cruces a realizar"
+        size="lg"
+        centered
+        zIndex={900}
+        classNames={{
+          overlay: classes.modalOverlay,
+          inner: classes.modalInner,
+          content: classes.modalContent,
+          header: classes.modalHeader,
+          body: classes.modalBody,
+          title: classes.modalTitle,
+        }}
+      >
+        <Stack gap="md">
+          <Text className={classes.modalText}>
+            Panel mock de cruces. La conexión con la lógica final se hará en
+            otra iteración.
+          </Text>
+          <Card className={classes.modalMockCard} padding="md" radius="md">
+            <Stack gap="xs">
+              <Text fw={600}>Mensuales</Text>
+              <Text size="sm" c="dimmed">
+                Control de desvío de BI, créditos, SAF y agentes.
+              </Text>
+            </Stack>
+          </Card>
+          <Card className={classes.modalMockCard} padding="md" radius="md">
+            <Stack gap="xs">
+              <Text fw={600}>Anuales</Text>
+              <Text size="sm" c="dimmed">
+                Régimen CM, BI declarada, no inscriptos y bases presuntivas.
+              </Text>
+            </Stack>
+          </Card>
+        </Stack>
+      </Modal>
 
       <InformeGenerationModal
-        opened={activeHeaderModal === 'report' && informeGeneration.step === 'form'}
+        opened={
+          activeHeaderModal === "report" && informeGeneration.step === "form"
+        }
         report={informeGeneration}
         onClose={closeInformeFlow}
       />
 
       <InformePreviewModal
-        opened={activeHeaderModal === 'report' && informeGeneration.step === 'preview'}
+        opened={
+          activeHeaderModal === "report" && informeGeneration.step === "preview"
+        }
         report={informeGeneration}
         onClose={closeInformeFlow}
       />
@@ -1027,14 +1152,16 @@ export function UnifiedRegisterPreviewPage({
           content: `${classes.modalContent} ${classes.lotConfirmModalContent}`,
           header: `${classes.modalHeader} ${classes.lotConfirmModalHeader}`,
           body: `${classes.modalBody} ${classes.lotConfirmModalBody}`,
-          title: classes.modalTitle
+          title: classes.modalTitle,
         }}
       >
         {selectedLotOption ? (
           <Stack gap={0}>
-            <Text className={`${classes.modalText} ${classes.lotConfirmModalText}`}>
-              ¿Querés agregar este CUIT al lote {selectedLotOption.label} ({selectedLotOption.cuitCount}{' '}
-              CUITs actualmente)
+            <Text
+              className={`${classes.modalText} ${classes.lotConfirmModalText}`}
+            >
+              ¿Querés agregar este CUIT al lote {selectedLotOption.label} (
+              {selectedLotOption.cuitCount} CUITs actualmente)
             </Text>
             <Group justify="flex-end" gap="sm">
               <Button
@@ -1070,23 +1197,23 @@ export function UnifiedRegisterPreviewPage({
           content: classes.modalContent,
           header: classes.modalHeader,
           body: classes.modalBody,
-          title: classes.modalTitle
+          title: classes.modalTitle,
         }}
       >
         {deleteKind ? (
           <Stack gap="lg">
             <Text className={classes.modalText}>{deleteModalDescription}</Text>
-            {deleteKind === 'address' && addressActionError ? (
+            {deleteKind === "address" && addressActionError ? (
               <Text className={classes.modalText} c="red">
                 {addressActionError}
               </Text>
             ) : null}
-            {deleteKind === 'contact' && contactActionError ? (
+            {deleteKind === "contact" && contactActionError ? (
               <Text className={classes.modalText} c="red">
                 {contactActionError}
               </Text>
             ) : null}
-            {deleteKind === 'note' && noteActionError ? (
+            {deleteKind === "note" && noteActionError ? (
               <Text className={classes.modalText} c="red">
                 {noteActionError}
               </Text>
@@ -1098,9 +1225,9 @@ export function UnifiedRegisterPreviewPage({
                 className={`${classes.modalGhostButton} ${classes.staticButton}`}
                 onClick={closeDeleteModal}
                 disabled={
-                  (deleteKind === 'address' && isAddressDeletePending) ||
-                  (deleteKind === 'contact' && isContactDeletePending) ||
-                  (deleteKind === 'note' && isNoteDeletePending)
+                  (deleteKind === "address" && isAddressDeletePending) ||
+                  (deleteKind === "contact" && isContactDeletePending) ||
+                  (deleteKind === "note" && isNoteDeletePending)
                 }
               >
                 Cancelar
@@ -1110,9 +1237,9 @@ export function UnifiedRegisterPreviewPage({
                 className={`${classes.deletePrimaryButton} ${classes.staticButton}`}
                 onClick={confirmDeleteModal}
                 loading={
-                  (deleteKind === 'address' && isAddressDeletePending) ||
-                  (deleteKind === 'contact' && isContactDeletePending) ||
-                  (deleteKind === 'note' && isNoteDeletePending)
+                  (deleteKind === "address" && isAddressDeletePending) ||
+                  (deleteKind === "contact" && isContactDeletePending) ||
+                  (deleteKind === "note" && isNoteDeletePending)
                 }
               >
                 Eliminar
@@ -1133,16 +1260,16 @@ export function UnifiedRegisterPreviewPage({
         classNames={{
           overlay: classes.modalOverlay,
           inner: classes.modalInner,
-          content: `${classes.modalContent} ${isEditingContact ? classes.contactModalContent : ''} ${
-            isEditingNote ? classes.noteModalContent : ''
-          }`,
-          header: `${classes.modalHeader} ${isEditingContact ? classes.contactModalHeader : ''} ${
-            isEditingNote ? classes.noteModalHeader : ''
-          }`,
-          body: `${classes.modalBody} ${isEditingContact ? classes.contactModalBody : ''} ${
-            isEditingNote ? classes.noteModalBody : ''
-          }`,
-          title: classes.modalTitle
+          content: `${classes.modalContent} ${
+            isEditingContact ? classes.contactModalContent : ""
+          } ${isEditingNote ? classes.noteModalContent : ""}`,
+          header: `${classes.modalHeader} ${
+            isEditingContact ? classes.contactModalHeader : ""
+          } ${isEditingNote ? classes.noteModalHeader : ""}`,
+          body: `${classes.modalBody} ${
+            isEditingContact ? classes.contactModalBody : ""
+          } ${isEditingNote ? classes.noteModalBody : ""}`,
+          title: classes.modalTitle,
         }}
       >
         {isEditingContact ? (
@@ -1150,46 +1277,65 @@ export function UnifiedRegisterPreviewPage({
             <div className={classes.contactModalFields}>
               <div>
                 <Text className={classes.contactModalLabel}>
-                  Teléfono <span className={classes.contactModalOptional}>(opcional)</span>
+                  Teléfono{" "}
+                  <span className={classes.contactModalOptional}>
+                    (opcional)
+                  </span>
                 </Text>
                 <TextInput
                   classNames={{ input: classes.modalInputField }}
                   value={contactForm.phone}
-                  onChange={(event) => setContactField('phone', event.currentTarget.value)}
+                  onChange={(event) =>
+                    setContactField("phone", event.currentTarget.value)
+                  }
                   placeholder="+5388 000-0000"
                 />
               </div>
               <div>
                 <Text className={classes.contactModalLabel}>
-                  Mail <span className={classes.contactModalOptional}>(opcional)</span>
+                  Mail{" "}
+                  <span className={classes.contactModalOptional}>
+                    (opcional)
+                  </span>
                 </Text>
                 <TextInput
                   classNames={{ input: classes.modalInputField }}
                   value={contactForm.mail}
-                  onChange={(event) => setContactField('mail', event.currentTarget.value)}
+                  onChange={(event) =>
+                    setContactField("mail", event.currentTarget.value)
+                  }
                   placeholder="correo@ejemplo.com"
                 />
               </div>
               <div>
                 <Text className={classes.contactModalLabel}>
-                  Representante legal{' '}
-                  <span className={classes.contactModalOptional}>(opcional)</span>
+                  Representante legal{" "}
+                  <span className={classes.contactModalOptional}>
+                    (opcional)
+                  </span>
                 </Text>
                 <TextInput
                   classNames={{ input: classes.modalInputField }}
                   value={contactForm.legal}
-                  onChange={(event) => setContactField('legal', event.currentTarget.value)}
+                  onChange={(event) =>
+                    setContactField("legal", event.currentTarget.value)
+                  }
                   placeholder="Nombre completo"
                 />
               </div>
               <div>
                 <Text className={classes.contactModalLabel}>
-                  Contador <span className={classes.contactModalOptional}>(opcional)</span>
+                  Contador{" "}
+                  <span className={classes.contactModalOptional}>
+                    (opcional)
+                  </span>
                 </Text>
                 <TextInput
                   classNames={{ input: classes.modalInputField }}
                   value={contactForm.accountant}
-                  onChange={(event) => setContactField('accountant', event.currentTarget.value)}
+                  onChange={(event) =>
+                    setContactField("accountant", event.currentTarget.value)
+                  }
                   placeholder="Nombre o estudio"
                 />
               </div>
@@ -1199,7 +1345,11 @@ export function UnifiedRegisterPreviewPage({
                 {contactActionError}
               </Text>
             ) : null}
-            <Group justify="flex-end" gap="sm" className={classes.contactModalFooter}>
+            <Group
+              justify="flex-end"
+              gap="sm"
+              className={classes.contactModalFooter}
+            >
               <Button
                 variant="default"
                 radius="xl"
@@ -1224,9 +1374,9 @@ export function UnifiedRegisterPreviewPage({
           <Stack gap={0}>
             <Textarea
               classNames={{
-                input: classes.noteModalTextarea
+                input: classes.noteModalTextarea,
               }}
-              value={formValue ?? ''}
+              value={formValue ?? ""}
               onChange={(event) => setFormValue(event.currentTarget.value)}
               placeholder="Escribí la nota..."
               rows={4}
@@ -1262,14 +1412,14 @@ export function UnifiedRegisterPreviewPage({
             <TextInput
               classNames={{
                 label: classes.modalInputLabel,
-                input: classes.modalInputField
+                input: classes.modalInputField,
               }}
               label={editModalLabel}
-              value={formValue ?? ''}
+              value={formValue ?? ""}
               onChange={(event) => setFormValue(event.currentTarget.value)}
               placeholder={editModalPlaceholder}
             />
-            {editKind === 'address' && addressActionError ? (
+            {editKind === "address" && addressActionError ? (
               <Text className={classes.modalText} c="red">
                 {addressActionError}
               </Text>
@@ -1280,7 +1430,7 @@ export function UnifiedRegisterPreviewPage({
                 radius="xl"
                 className={`${classes.modalGhostButton} ${classes.staticButton}`}
                 onClick={closeEditModal}
-                disabled={editKind === 'address' && isAddressSavePending}
+                disabled={editKind === "address" && isAddressSavePending}
               >
                 Cancelar
               </Button>
@@ -1289,7 +1439,7 @@ export function UnifiedRegisterPreviewPage({
                 className={`${classes.modalPrimaryButton} ${classes.staticButton}`}
                 onClick={submitEditModal}
                 disabled={!formValue?.trim()}
-                loading={editKind === 'address' && isAddressSavePending}
+                loading={editKind === "address" && isAddressSavePending}
               >
                 Guardar
               </Button>
