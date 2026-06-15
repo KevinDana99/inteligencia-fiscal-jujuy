@@ -5,8 +5,8 @@ export const UNIFIED_REGISTER_PAGINATION_QUERY_PARAMS = {
 } as const;
 
 export const UNIFIED_REGISTER_DETAIL_PAGINATION_QUERY_PARAMS = {
-  page: 'pagina',
-  itemsPerPage: 'itemsPagina'
+  page: 'Pagina',
+  itemsPerPage: 'ItemsPagina'
 } as const;
 
 export const UNIFIED_REGISTER_DETAIL_PAGINATION = {

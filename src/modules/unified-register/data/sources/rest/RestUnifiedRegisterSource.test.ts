@@ -38,6 +38,15 @@ describe('RestUnifiedRegisterSource', () => {
             tipoContribuyente: 'Régimen General',
             activo: true,
             riesgo: 'B'
+          },
+          {
+            id: 'fc094ce7-1f6a-1678-eb01-23b95265f492',
+            cuit: '33100009116',
+            razonSocial: 'Contribuyente DEV 00001',
+            actividad: 'DESARROLLO DE SOFTWARE',
+            tipoContribuyente: 'LOCAL',
+            activo: true,
+            riesgo: 'B'
           }
         ]
       })
@@ -59,6 +68,15 @@ describe('RestUnifiedRegisterSource', () => {
           businessName: 'ANOVA SRL',
           activity: 'Servicios profesionales',
           regime: 'Régimen General',
+          status: 'Activo',
+          riskLevel: 'B'
+        },
+        {
+          contribuyenteId: 'fc094ce7-1f6a-1678-eb01-23b95265f492',
+          cuit: '33100009116',
+          businessName: 'Contribuyente DEV 00001',
+          activity: 'DESARROLLO DE SOFTWARE',
+          regime: 'Regimen Local',
           status: 'Activo',
           riskLevel: 'B'
         }
@@ -176,7 +194,7 @@ describe('RestUnifiedRegisterSource', () => {
       ]
     });
     expect(fetchMock.mock.calls[0][0]).toBe(
-      'http://api.test/api/procesos-informacion/padron/unificado/contributor-1/mercurio?pagina=1&itemsPagina=20'
+      'http://api.test/api/procesos-informacion/padron/unificado/contributor-1/mercurio?Pagina=1&ItemsPagina=20'
     );
   });
 
@@ -225,7 +243,35 @@ describe('RestUnifiedRegisterSource', () => {
       ]
     });
     expect(fetchMock.mock.calls[0][0]).toBe(
-      'http://api.test/api/procesos-informacion/padron/unificado/contributor-1/ordenes-intervencion?pagina=2&itemsPagina=50'
+      'http://api.test/api/procesos-informacion/padron/unificado/contributor-1/ordenes-intervencion?Pagina=2&ItemsPagina=50'
+    );
+  });
+
+  it('lists empty intervention orders with default Swagger pagination params', async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({
+        pagina: 1,
+        itemsPagina: 20,
+        totalItems: 0,
+        totalPaginas: 0,
+        ordenes: []
+      })
+    );
+
+    const source = new RestUnifiedRegisterSource({
+      baseUrl: 'http://api.test',
+      token: 'access-token'
+    });
+
+    await expect(source.listInterventionOrders('contributor-1')).resolves.toEqual({
+      pagina: 1,
+      itemsPagina: 20,
+      totalItems: 0,
+      totalPaginas: 0,
+      ordenes: []
+    });
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'http://api.test/api/procesos-informacion/padron/unificado/contributor-1/ordenes-intervencion?Pagina=1&ItemsPagina=20'
     );
   });
 });

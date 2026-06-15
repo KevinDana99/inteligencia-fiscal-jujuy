@@ -78,6 +78,7 @@ function mapContributorType(
   }
 
   if (
+    normalizedKey === 'GENERAL' ||
     normalizedKey === 'REGIMEN_GENERAL' ||
     normalizedKey === 'REGIMEN GENERAL'
   ) {
@@ -88,7 +89,11 @@ function mapContributorType(
     return 'No inscripto';
   }
 
-  if (normalizedKey === 'REGIMEN_LOCAL' || normalizedKey === 'REGIMEN LOCAL') {
+  if (
+    normalizedKey === 'LOCAL' ||
+    normalizedKey === 'REGIMEN_LOCAL' ||
+    normalizedKey === 'REGIMEN LOCAL'
+  ) {
     return 'Regimen Local';
   }
 

@@ -22,6 +22,10 @@ variables:
   K3S_INFRA_REPO: gitlab.kamakia.io/if-rentas/k3s-infra.git
   K3S_INFRA_BRANCH: develop
   FRONTEND_PATCH_FILE: overlays/dev/if/patches/frontend-dev-image.yaml
+  NEXT_PUBLIC_API_BASE_URL: http://rentas-if-backend.rentas-if.svc.cluster.local
+  NEXT_PUBLIC_USE_MOCK_AUTH: "false"
+  NEXT_PUBLIC_USE_MOCK_ADMIN_PANEL: "false"
+  NEXT_PUBLIC_USE_MOCK_CATALOG_SHOWCASE: "true"
 
 validar_frontend:
   stage: validar
@@ -30,8 +34,12 @@ validar_frontend:
     - >
       sudo -n podman run --pull=missing --rm
       -v "$CI_PROJECT_DIR:/src:ro,Z"
+      -e NEXT_PUBLIC_API_BASE_URL="$NEXT_PUBLIC_API_BASE_URL"
+      -e NEXT_PUBLIC_USE_MOCK_AUTH="$NEXT_PUBLIC_USE_MOCK_AUTH"
+      -e NEXT_PUBLIC_USE_MOCK_ADMIN_PANEL="$NEXT_PUBLIC_USE_MOCK_ADMIN_PANEL"
+      -e NEXT_PUBLIC_USE_MOCK_CATALOG_SHOWCASE="$NEXT_PUBLIC_USE_MOCK_CATALOG_SHOWCASE"
       "$NODE_IMAGE"
-      sh -lc 'cp -a /src/. /tmp/app && cd /tmp/app && npm ci && npm run build'
+      sh -lc 'cp -a /src/. /tmp/app && cd /tmp/app && npm ci && NODE_ENV=production npm run build'
 
 construir_imagen:
   stage: construir
@@ -44,6 +52,10 @@ construir_imagen:
     - sudo -n podman login "$REGISTRY_HOST" -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
     - >
       sudo -n podman build --pull=missing
+      --build-arg NEXT_PUBLIC_API_BASE_URL="$NEXT_PUBLIC_API_BASE_URL"
+      --build-arg NEXT_PUBLIC_USE_MOCK_AUTH="$NEXT_PUBLIC_USE_MOCK_AUTH"
+      --build-arg NEXT_PUBLIC_USE_MOCK_ADMIN_PANEL="$NEXT_PUBLIC_USE_MOCK_ADMIN_PANEL"
+      --build-arg NEXT_PUBLIC_USE_MOCK_CATALOG_SHOWCASE="$NEXT_PUBLIC_USE_MOCK_CATALOG_SHOWCASE"
       -t "$IMAGE_TAG"
       -t "$IMAGE_LATEST"
       .
