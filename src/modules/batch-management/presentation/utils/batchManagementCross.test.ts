@@ -55,9 +55,12 @@ function createFilters(): IBatchCrossFilters {
 describe('batchManagementCross', () => {
   it('groups visible option labels by periodicity', () => {
     expect(getBatchCrossOptionLabels(availableCrosses, 'annual')).toEqual([
+      'cruce-bi-papel',
       'Control de desvio de BI - Regimen CM'
     ])
-    expect(getBatchCrossOptionLabels(availableCrosses, 'monthly')).toEqual([])
+    expect(getBatchCrossOptionLabels(availableCrosses, 'monthly')).toEqual([
+      'Control mensual'
+    ])
   })
 
   it('builds execution payloads from dynamic available crosses', () => {
@@ -78,12 +81,20 @@ describe('batchManagementCross', () => {
     ])
   })
 
-  it('does not build executions for unsupported crosses that require uncaptured params', () => {
+  it('builds execution payloads for any backend catalog cross', () => {
     const filters = createFilters()
     filters.annual.crossTypes = ['cruce-bi-papel']
 
     expect(
       buildBatchCrossExecutionPayloads('batch-1', filters, availableCrosses)
-    ).toEqual([])
+    ).toEqual([
+      {
+        batchId: 'batch-1',
+        crossCode: 'cruce-bi-papel',
+        crossVersion: '1.0.0',
+        periodFrom: '2024-01-01',
+        periodTo: '2025-12-31'
+      }
+    ])
   })
 })

@@ -16,15 +16,28 @@ export function CrossManagementTableRow({
   item,
   onOpenCrossPreview
 }: CrossManagementTableRowProps) {
-  const { handleOpenCrossPreview, sourceBadgeClassName } =
-    useCrossManagementTableRow({
-      item,
-      onOpenCrossPreview
-    })
+  const {
+    handleOpenCrossPreview,
+    sourceBadgeClassName,
+    statusBadgeClassName,
+    statusLabel
+  } = useCrossManagementTableRow({
+    item,
+    onOpenCrossPreview
+  })
 
   return (
     <Table.Tr className={classes.row} onClick={handleOpenCrossPreview}>
       <Table.Td className={classes.nameCell}>{item.name}</Table.Td>
+      <Table.Td>
+        <Badge
+          radius="xl"
+          classNames={{ label: classes.statusBadgeLabel }}
+          className={statusBadgeClassName}
+        >
+          {statusLabel}
+        </Badge>
+      </Table.Td>
       <Table.Td>
         <Badge
           radius="xl"

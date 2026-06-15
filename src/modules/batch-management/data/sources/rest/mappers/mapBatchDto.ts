@@ -2,6 +2,7 @@ import type {
   BatchCrossPeriodicity,
   IBatchAvailableCross,
   IBatchAvailableCrosses,
+  IBatchAddContributorPayload,
   IBatchCrossExecutionPayload,
   IBatchCrossExecutionSummary,
   IBatchCreatedSummary,
@@ -13,6 +14,7 @@ import type {
   IBatchPreviewRecord
 } from '../../../models/BatchManagement';
 import type {
+  ApiAddContributorToBatchRequestDto,
   ApiBatchAvailableCrossDto,
   ApiBatchAvailableCrossesResponseDto,
   ApiBatchAuthorDto,
@@ -324,6 +326,19 @@ export function mapBatchCreateResponseDto(
     regime: dto.regimen,
     cuitCount: dto.cantidadCuits,
     createdAt: dto.fechaGeneracion
+  };
+}
+
+export function mapAddContributorToBatchRequestDto(
+  payload: IBatchAddContributorPayload
+): ApiAddContributorToBatchRequestDto {
+  return {
+    loteId: payload.batchId,
+    contribuyente: {
+      cuit: payload.contributor.cuit,
+      razonSocial: payload.contributor.businessName,
+      regimen: payload.contributor.regime
+    }
   };
 }
 

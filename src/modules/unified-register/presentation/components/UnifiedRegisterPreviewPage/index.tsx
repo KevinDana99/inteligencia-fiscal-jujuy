@@ -254,6 +254,8 @@ export function UnifiedRegisterPreviewPage({
     interventionOrdersTotalItems,
     interventionOrdersError,
     reprocessingActionError,
+    batchOptionsError,
+    addToBatchError,
     isReprocessingMarked,
     batchSearch,
     filteredLotOptions,
@@ -276,6 +278,8 @@ export function UnifiedRegisterPreviewPage({
     isNoteSavePending,
     isNoteDeletePending,
     isReprocessingTogglePending,
+    isBatchOptionsPending,
+    isAddToBatchPending,
     formValue,
     contactForm,
     editingItemId,
@@ -289,6 +293,7 @@ export function UnifiedRegisterPreviewPage({
     confirmReprocessing,
     selectLotOption,
     closeLotConfirmModal,
+    confirmLotSelection,
     openCreateModal,
     openEditModal,
     closeEditModal,
@@ -475,6 +480,7 @@ export function UnifiedRegisterPreviewPage({
             <Button
               radius="xl"
               className={`${classes.headerPrimaryButton} ${classes.staticButton}`}
+              loading={isBatchOptionsPending && activeHeaderModal === 'batch'}
               onClick={() =>
                 activeHeaderModal === 'batch' ? closeHeaderModal() : openHeaderModal('batch')
               }
@@ -501,6 +507,20 @@ export function UnifiedRegisterPreviewPage({
                 />
 
                 <div className={classes.batchDropdownList}>
+                  {isBatchOptionsPending && filteredLotOptions.length === 0 ? (
+                    <Text className={classes.batchDropdownState}>Cargando lotes...</Text>
+                  ) : null}
+
+                  {batchOptionsError ? (
+                    <Text className={`${classes.batchDropdownState} ${classes.batchDropdownError}`}>
+                      {batchOptionsError}
+                    </Text>
+                  ) : null}
+
+                  {!isBatchOptionsPending && !batchOptionsError && filteredLotOptions.length === 0 ? (
+                    <Text className={classes.batchDropdownState}>No se encontraron lotes.</Text>
+                  ) : null}
+
                   {filteredLotOptions.map((lot) => (
                     <button
                       key={lot.id}
@@ -1036,19 +1056,24 @@ export function UnifiedRegisterPreviewPage({
               ¿Querés agregar este CUIT al lote {selectedLotOption.label} ({selectedLotOption.cuitCount}{' '}
               CUITs actualmente)
             </Text>
+            {addToBatchError ? (
+              <Text className={classes.modalErrorText}>{addToBatchError}</Text>
+            ) : null}
             <Group justify="flex-end" gap="sm">
               <Button
                 variant="default"
                 radius="xl"
                 className={`${classes.modalGhostButton} ${classes.staticButton}`}
                 onClick={closeLotConfirmModal}
+                disabled={isAddToBatchPending}
               >
                 Cancelar
               </Button>
               <Button
                 radius="xl"
                 className={`${classes.modalPrimaryButton} ${classes.staticButton}`}
-                onClick={closeLotConfirmModal}
+                loading={isAddToBatchPending}
+                onClick={confirmLotSelection}
               >
                 Confirmar
               </Button>

@@ -4,7 +4,10 @@ import type {
   IInformeFiscalActionData,
   IInformeSelectedCross
 } from '@/modules/documents';
-import type { IUnifiedRegisterDetail } from '../../data/models/UnifiedRegister';
+import type {
+  IUnifiedRegisterContributorCross,
+  IUnifiedRegisterDetail
+} from '../../data/models/UnifiedRegister';
 import {
   INFORME_CROSS_OPTIONS,
   type InformeCrossOption,
@@ -26,8 +29,30 @@ function getContactValue(item: IUnifiedRegisterDetail, contactId: string) {
   );
 }
 
-function cloneRows(cross: InformeCrossOption): IInformeSelectedCross['columnasSeleccionadas']['filas'] {
+function cloneRows(
+  cross: InformeCrossOption
+): IInformeSelectedCross['columnasSeleccionadas']['filas'] {
   return cross.columnasSeleccionadas.filas.map((row) => ({ ...row }));
+}
+
+function cloneInformeCrossOption(cross: InformeCrossOption): InformeCrossOption {
+  return {
+    ...cross,
+    sourceCodes: [...cross.sourceCodes],
+    previewColumns: cross.previewColumns.map((column) => ({ ...column })),
+    columnasSeleccionadas: {
+      claves: [...cross.columnasSeleccionadas.claves],
+      filas: cloneRows(cross)
+    }
+  };
+}
+
+function findInformeCrossTemplate(
+  contributorCross: IUnifiedRegisterContributorCross
+) {
+  return INFORME_CROSS_OPTIONS.find((option) =>
+    option.sourceCodes.includes(contributorCross.code)
+  );
 }
 
 export function buildInformeContributorData(
@@ -51,21 +76,25 @@ export function buildInformeContributorData(
 }
 
 export function getSelectedInformeCrosses(
-  selectedCrossIds: string[]
+  selectedCrossIds: string[],
+  availableCrosses: InformeCrossOption[] = INFORME_CROSS_OPTIONS
 ): InformeCrossOption[] {
-  return INFORME_CROSS_OPTIONS.filter((cross) => selectedCrossIds.includes(cross.id));
+  return availableCrosses.filter((cross) => selectedCrossIds.includes(cross.id));
 }
 
 export function buildInformeSelectedCrosses(
-  selectedCrossIds: string[]
+  selectedCrossIds: string[],
+  availableCrosses: InformeCrossOption[] = INFORME_CROSS_OPTIONS
 ): IInformeSelectedCross[] {
-  return getSelectedInformeCrosses(selectedCrossIds).map((cross) => ({
-    nombre: cross.nombre,
-    columnasSeleccionadas: {
-      claves: [...cross.columnasSeleccionadas.claves],
-      filas: cloneRows(cross)
-    }
-  }));
+  return getSelectedInformeCrosses(selectedCrossIds, availableCrosses).map(
+    (cross) => ({
+      nombre: cross.nombre,
+      columnasSeleccionadas: {
+        claves: [...cross.columnasSeleccionadas.claves],
+        filas: cloneRows(cross)
+      }
+    })
+  );
 }
 
 export function buildInformeFiscalActionData(
@@ -87,7 +116,8 @@ export function buildInformeFiscalActionData(
 export function buildInformeGenerationPayload(
   item: IUnifiedRegisterDetail,
   form: InformeGenerationForm,
-  selectedCrossIds: string[]
+  selectedCrossIds: string[],
+  availableCrosses: InformeCrossOption[] = INFORME_CROSS_OPTIONS
 ): IGenerateInformeDocumentsPayload {
   return {
     contribuyenteId: item.contribuyenteId,
@@ -95,6 +125,41 @@ export function buildInformeGenerationPayload(
     titulo: form.titulo.trim(),
     datosContribuyente: buildInformeContributorData(item),
     datosAccionFiscalizadora: buildInformeFiscalActionData(form),
-    crucesSeleccionados: buildInformeSelectedCrosses(selectedCrossIds)
+    crucesSeleccionados: buildInformeSelectedCrosses(
+      selectedCrossIds,
+      availableCrosses
+    )
   };
+}
+
+export function mapContributorCrossesToInformeOptions(
+  contributorCrosses: IUnifiedRegisterContributorCross[]
+): InformeCrossOption[] {
+  return contributorCrosses.map((contributorCross) => {
+    const template = findInformeCrossTemplate(contributorCross);
+
+    if (template) {
+      return {
+        ...cloneInformeCrossOption(template),
+        id: contributorCross.id,
+        nombre: contributorCross.name,
+        description: 'Ejecutado · datos disponibles para informe'
+      };
+    }
+
+    return {
+      id: contributorCross.id,
+      nombre: contributorCross.name,
+      description: 'Ejecutado · sin datos de detalle para informe',
+      sourceCodes: [contributorCross.code],
+      previewTitle: contributorCross.name.toUpperCase(),
+      previewColumns: [],
+      summary: '',
+      isReportReady: false,
+      columnasSeleccionadas: {
+        claves: [],
+        filas: []
+      }
+    };
+  });
 }

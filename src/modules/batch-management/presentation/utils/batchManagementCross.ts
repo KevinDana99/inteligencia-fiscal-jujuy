@@ -13,7 +13,7 @@ import {
   buildMonthlyCrossPeriod
 } from './batchCrossPeriods'
 
-const SUPPORTED_BATCH_CROSS_CONFIG_BY_CODE = {
+const BATCH_CROSS_EXECUTION_CONFIG_BY_CODE = {
   'desvio-bi-convenio-multilateral': {
     label: 'Control de desvio de BI - Regimen CM',
     parameters: {
@@ -22,6 +22,20 @@ const SUPPORTED_BATCH_CROSS_CONFIG_BY_CODE = {
     }
   }
 } as const
+
+function getBatchCrossExecutionConfig(publicCode: string) {
+  return (
+    BATCH_CROSS_EXECUTION_CONFIG_BY_CODE[
+      publicCode as keyof typeof BATCH_CROSS_EXECUTION_CONFIG_BY_CODE
+    ] ?? null
+  )
+}
+
+function getBatchCrossDisplayLabel(
+  cross: IBatchAvailableCrosses[number]
+): string {
+  return getBatchCrossExecutionConfig(cross.publicCode)?.label ?? cross.label
+}
 
 function getCurrentBatchCrossDate() {
   const currentDate = new Date()
@@ -65,24 +79,20 @@ function getExecutableBatchCrossOption(
   availableCrosses: IBatchAvailableCrosses
 ) {
   const availableCross = availableCrosses.find((cross) => {
-    const supportedConfig =
-      SUPPORTED_BATCH_CROSS_CONFIG_BY_CODE[
-        cross.publicCode as keyof typeof SUPPORTED_BATCH_CROSS_CONFIG_BY_CODE
-      ]
-
-    return supportedConfig?.label === crossType || cross.label === crossType
+    return (
+      getBatchCrossDisplayLabel(cross) === crossType ||
+      cross.label === crossType ||
+      cross.publicCode === crossType
+    )
   })
 
-  if (availableCross && availableCross.publicCode in SUPPORTED_BATCH_CROSS_CONFIG_BY_CODE) {
-    const supportedConfig =
-      SUPPORTED_BATCH_CROSS_CONFIG_BY_CODE[
-        availableCross.publicCode as keyof typeof SUPPORTED_BATCH_CROSS_CONFIG_BY_CODE
-      ]
+  if (availableCross) {
+    const executionConfig = getBatchCrossExecutionConfig(availableCross.publicCode)
 
     return {
       publicCode: availableCross.publicCode,
       version: availableCross.version,
-      parameters: supportedConfig.parameters
+      parameters: executionConfig?.parameters
     }
   }
 
@@ -99,15 +109,8 @@ export function getBatchCrossOptionLabels(
     new Set(
       availableCrosses
         .filter((cross) => cross.periodicity === periodicity)
-        .map<string | null>((cross) => {
-          const supportedConfig =
-            SUPPORTED_BATCH_CROSS_CONFIG_BY_CODE[
-              cross.publicCode as keyof typeof SUPPORTED_BATCH_CROSS_CONFIG_BY_CODE
-            ]
-
-          return supportedConfig?.label ?? null
-        })
-        .filter((label): label is string => Boolean(label))
+        .map(getBatchCrossDisplayLabel)
+        .filter((label) => Boolean(label.trim()))
     )
   )
 }
@@ -146,14 +149,19 @@ export function buildBatchCrossExecutionPayloads(
       return payloads
     }
 
-    payloads.push({
+    const payload: IBatchCrossExecutionPayload = {
       batchId,
       crossCode: option.publicCode,
       crossVersion: option.version,
       periodFrom: selection.periodFrom,
-      periodTo: selection.periodTo,
-      parameters: option.parameters
-    })
+      periodTo: selection.periodTo
+    }
+
+    if (option.parameters) {
+      payload.parameters = option.parameters
+    }
+
+    payloads.push(payload)
 
     return payloads
   }, [])
@@ -200,16 +208,13 @@ export function hasExecutableBatchCrosses(
 export function getEmptyExecutableBatchCrossMessage(
   availableCrosses: IBatchAvailableCrosses = []
 ) {
-  const optionLabels = availableCrosses
-    .map<string | null>((cross) => {
-      const supportedConfig =
-        SUPPORTED_BATCH_CROSS_CONFIG_BY_CODE[
-          cross.publicCode as keyof typeof SUPPORTED_BATCH_CROSS_CONFIG_BY_CODE
-        ]
-
-      return supportedConfig?.label ?? null
-    })
-    .filter((label): label is string => Boolean(label))
+  const optionLabels = Array.from(
+    new Set(
+      availableCrosses
+        .map(getBatchCrossDisplayLabel)
+        .filter((label) => Boolean(label.trim()))
+    )
+  )
 
   if (!optionLabels.length) {
     return EMPTY_EXECUTABLE_CROSS_MESSAGE

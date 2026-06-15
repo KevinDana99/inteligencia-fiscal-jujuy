@@ -68,10 +68,5 @@ export const BATCH_CROSS_SELECT_COMBOBOX_PROPS = {
   }
 } satisfies NonNullable<SelectProps['comboboxProps']>
 
-const SUPPORTED_PUBLIC_BATCH_CROSS_LABELS = Object.entries(
-  BATCH_CROSS_OPTIONS_BY_LABEL
-)
-  .filter(([, config]) => 'publicCode' in config)
-  .map(([label]) => label)
-
-export const EMPTY_EXECUTABLE_CROSS_MESSAGE = `Seleccioná un cruce disponible: ${SUPPORTED_PUBLIC_BATCH_CROSS_LABELS.join(', ')}.`
+export const EMPTY_EXECUTABLE_CROSS_MESSAGE =
+  'No hay cruces disponibles para ejecutar.'

@@ -149,3 +149,12 @@ export interface ApiUnifiedRegisterContactsListResponseDto {
   totalPaginas: number;
   contactos: ApiUnifiedRegisterContactResponseDto[];
 }
+
+export interface ApiUnifiedRegisterContributorCrossDto {
+  id: string;
+  nombre: string;
+}
+
+export interface ApiUnifiedRegisterContributorCrossesResponseDto {
+  cruces: ApiUnifiedRegisterContributorCrossDto[];
+}

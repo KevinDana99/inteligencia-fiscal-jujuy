@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useState, useTransition } from 'react';
 import {
   downloadDocumentAction,
   generateInformeDocumentsAction,
@@ -8,18 +8,21 @@ import {
   type IGeneratedInformeDocuments,
   type IGenerateInformeDocumentsPayload
 } from '@/modules/documents';
+import { getContributorCrossesAction } from '../../data/actions';
 import type { IUnifiedRegisterDetail } from '../../data/models/UnifiedRegister';
 import {
   DEFAULT_SELECTED_INFORME_CROSS_IDS,
   INFORME_CROSS_OPTIONS,
   INFORME_DEFAULT_FORM,
+  type InformeCrossOption,
   type InformeFiscalActionField,
   type InformeGenerationForm
 } from '../constants/informeGeneration';
 import {
   buildInformeContributorData,
   buildInformeGenerationPayload,
-  getSelectedInformeCrosses
+  getSelectedInformeCrosses,
+  mapContributorCrossesToInformeOptions
 } from '../utils/buildInformeGenerationPayload';
 import { downloadBase64File } from '../utils/downloadBase64File';
 
@@ -33,9 +36,19 @@ const cloneDefaultForm = (): InformeGenerationForm => ({
   }
 });
 
+const getDefaultSelectedCrossIds = (crosses: InformeCrossOption[]) => {
+  const firstReportReadyCross = crosses.find(
+    (cross) => cross.isReportReady !== false
+  );
+
+  return firstReportReadyCross ? [firstReportReadyCross.id] : [];
+};
+
 export function useInformeGeneration(item: IUnifiedRegisterDetail) {
   const [step, setStep] = useState<InformeGenerationStep>('form');
   const [form, setForm] = useState<InformeGenerationForm>(cloneDefaultForm);
+  const [availableCrosses, setAvailableCrosses] =
+    useState<InformeCrossOption[]>(INFORME_CROSS_OPTIONS);
   const [selectedCrossIds, setSelectedCrossIds] = useState<string[]>(
     DEFAULT_SELECTED_INFORME_CROSS_IDS
   );
@@ -45,17 +58,88 @@ export function useInformeGeneration(item: IUnifiedRegisterDetail) {
     useState<IGenerateInformeDocumentsPayload | null>(null);
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [crossesError, setCrossesError] = useState<string | null>(null);
+  const [loadedCrossesContributorId, setLoadedCrossesContributorId] =
+    useState<string | null>(null);
   const [downloadingFormat, setDownloadingFormat] =
     useState<DocumentDownloadFormat | null>(null);
   const [isGenerating, startGenerationTransition] = useTransition();
   const [isDownloading, startDownloadTransition] = useTransition();
 
-  const contributorData = useMemo(() => buildInformeContributorData(item), [item]);
-  const selectedCrosses = useMemo(
-    () => getSelectedInformeCrosses(selectedCrossIds),
-    [selectedCrossIds]
+  const contributorData = useMemo(
+    () => buildInformeContributorData(item),
+    [item]
   );
-  const canGenerate = Boolean(form.titulo.trim()) && selectedCrossIds.length > 0;
+  const selectedCrosses = useMemo(
+    () => getSelectedInformeCrosses(selectedCrossIds, availableCrosses),
+    [availableCrosses, selectedCrossIds]
+  );
+  const isLoadingCrosses = loadedCrossesContributorId !== item.contribuyenteId;
+  const hasUnavailableSelectedCross =
+    selectedCrosses.length !== selectedCrossIds.length ||
+    selectedCrosses.some((cross) => cross.isReportReady === false);
+  const canGenerate =
+    Boolean(form.titulo.trim()) &&
+    selectedCrossIds.length > 0 &&
+    !hasUnavailableSelectedCross &&
+    !isLoadingCrosses;
+
+  useEffect(() => {
+    let isActive = true;
+
+    getContributorCrossesAction(item.contribuyenteId)
+      .then((result) => {
+        if (!isActive) {
+          return;
+        }
+
+        if (!result.data) {
+          setAvailableCrosses([]);
+          setSelectedCrossIds([]);
+          setCrossesError(
+            result.error ?? 'No fue posible listar los cruces del contribuyente.'
+          );
+          setLoadedCrossesContributorId(item.contribuyenteId);
+          return;
+        }
+
+        const nextCrosses = mapContributorCrossesToInformeOptions(
+          result.data.crosses
+        );
+
+        setAvailableCrosses(nextCrosses);
+        setSelectedCrossIds((current) => {
+          const availableReportReadyIds = new Set(
+            nextCrosses
+              .filter((cross) => cross.isReportReady !== false)
+              .map((cross) => cross.id)
+          );
+          const currentAvailableIds = current.filter((crossId) =>
+            availableReportReadyIds.has(crossId)
+          );
+
+          return currentAvailableIds.length
+            ? currentAvailableIds
+            : getDefaultSelectedCrossIds(nextCrosses);
+        });
+        setCrossesError(null);
+        setLoadedCrossesContributorId(item.contribuyenteId);
+      })
+      .catch(() => {
+        if (!isActive) {
+          return;
+        }
+
+        setAvailableCrosses([]);
+        setSelectedCrossIds([]);
+        setCrossesError('No fue posible listar los cruces del contribuyente.');
+        setLoadedCrossesContributorId(item.contribuyenteId);
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [item.contribuyenteId]);
 
   const updateFormField = (field: 'titulo' | 'destinatario', value: string) => {
     setForm((current) => ({
@@ -80,6 +164,14 @@ export function useInformeGeneration(item: IUnifiedRegisterDetail) {
   };
 
   const toggleCross = (crossId: string) => {
+    const cross = availableCrosses.find(
+      (availableCross) => availableCross.id === crossId
+    );
+
+    if (cross?.isReportReady === false) {
+      return;
+    }
+
     setSelectedCrossIds((current) =>
       current.includes(crossId)
         ? current.filter((selectedCrossId) => selectedCrossId !== crossId)
@@ -99,7 +191,19 @@ export function useInformeGeneration(item: IUnifiedRegisterDetail) {
       return;
     }
 
-    const payload = buildInformeGenerationPayload(item, form, selectedCrossIds);
+    if (hasUnavailableSelectedCross) {
+      setGenerationError(
+        'Los cruces seleccionados no tienen datos suficientes para generar el informe.'
+      );
+      return;
+    }
+
+    const payload = buildInformeGenerationPayload(
+      item,
+      form,
+      selectedCrossIds,
+      availableCrosses
+    );
 
     setGenerationError(null);
     setDownloadError(null);
@@ -154,7 +258,7 @@ export function useInformeGeneration(item: IUnifiedRegisterDetail) {
   const resetFlow = () => {
     setStep('form');
     setForm(cloneDefaultForm());
-    setSelectedCrossIds(DEFAULT_SELECTED_INFORME_CROSS_IDS);
+    setSelectedCrossIds(getDefaultSelectedCrossIds(availableCrosses));
     setGeneratedDocuments(null);
     setPreviewPayload(null);
     setGenerationError(null);
@@ -163,9 +267,10 @@ export function useInformeGeneration(item: IUnifiedRegisterDetail) {
   };
 
   return {
-    availableCrosses: INFORME_CROSS_OPTIONS,
+    availableCrosses,
     canGenerate,
     contributorData,
+    crossesError,
     downloadError,
     downloadingFormat,
     form,
@@ -173,6 +278,7 @@ export function useInformeGeneration(item: IUnifiedRegisterDetail) {
     generationError,
     isDownloading,
     isGenerating,
+    isLoadingCrosses,
     previewPayload,
     selectedCrosses,
     selectedCrossIds,

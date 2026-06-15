@@ -1,6 +1,7 @@
 import type {
   IUnifiedRegisterAlternateAddressRecord,
   IUnifiedRegisterContactRecord,
+  IUnifiedRegisterContributorCross,
   IUnifiedRegisterFineRecord,
   IUnifiedRegisterHeaderRecord,
   IUnifiedRegisterInterventionOrderRecord,
@@ -10,12 +11,34 @@ import type {
 import type {
   ApiUnifiedRegisterAlternateAddressResponseDto,
   ApiUnifiedRegisterContactResponseDto,
+  ApiUnifiedRegisterContributorCrossDto,
   ApiUnifiedRegisterFineResponseDto,
   ApiUnifiedRegisterHeaderResponseDto,
   ApiUnifiedRegisterInterventionOrderResponseDto,
   ApiUnifiedRegisterListItemDto,
   ApiUnifiedRegisterNoteResponseDto
 } from '../dtos/ApiUnifiedRegisterDtos';
+
+const CONTRIBUTOR_CROSS_LABELS: Record<string, string> = {
+  ControlDesvioBiRegimenGral: 'Control de desvío de BI — Régimen Gral',
+  ControlDesvioBiRegimenCm: 'Control de desvío de BI — Régimen CM',
+  ControlBiDeclaradaPorActividad: 'Control de BI declarada por actividad',
+  ControlCreditos: 'Control de créditos',
+  ControlSaf: 'Control SAF',
+  ControlAgentes: 'Control de agentes',
+  DeteccionContribuyentesNoInscriptos:
+    'Detección de contribuyentes no inscriptos',
+  ComparacionBasesPresuntivas: 'Comparación de bases presuntivas',
+  ContribuyentesMasDosInmuebles: 'Contribuyentes con más de dos inmuebles',
+  CruceBiPapel: 'Cruce BI Papel'
+};
+
+function formatContributorCrossName(value: string) {
+  return (
+    CONTRIBUTOR_CROSS_LABELS[value] ??
+    value.replace(/([a-z])([A-Z])/g, '$1 $2').trim()
+  );
+}
 
 export function mapAlternateAddressDto(
   dto: ApiUnifiedRegisterAlternateAddressResponseDto
@@ -52,6 +75,16 @@ export function mapContactDto(
     nombreContador: dto.nombreContador,
     contribuyenteId: dto.contribuyenteId,
     activo: dto.activo
+  };
+}
+
+export function mapContributorCrossDto(
+  dto: ApiUnifiedRegisterContributorCrossDto
+): IUnifiedRegisterContributorCross {
+  return {
+    id: dto.id,
+    code: dto.nombre,
+    name: formatContributorCrossName(dto.nombre)
   };
 }
 

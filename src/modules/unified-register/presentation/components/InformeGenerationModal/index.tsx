@@ -232,18 +232,37 @@ export function InformeGenerationModal({
 
       <div className={classes.sectionLabel}>3) Inconsistencias detectadas — Cruces</div>
       <div className={classes.crossesBox}>
-        {report.availableCrosses.map((cross) => (
-          <Checkbox
-            key={cross.id}
-            checked={report.selectedCrossIds.includes(cross.id)}
-            onChange={() => report.toggleCross(cross.id)}
-            label={cross.nombre}
-            description={cross.description}
-            color="blue"
-            size="sm"
-            classNames={crossCheckboxClasses}
-          />
-        ))}
+        {report.isLoadingCrosses ? (
+          <Text className={classes.crossStateText}>Cargando cruces...</Text>
+        ) : null}
+
+        {!report.isLoadingCrosses && report.crossesError ? (
+          <Text className={classes.crossStateText}>{report.crossesError}</Text>
+        ) : null}
+
+        {!report.isLoadingCrosses &&
+        !report.crossesError &&
+        report.availableCrosses.length === 0 ? (
+          <Text className={classes.crossStateText}>
+            No se encontraron cruces asociados
+          </Text>
+        ) : null}
+
+        {!report.isLoadingCrosses
+          ? report.availableCrosses.map((cross) => (
+              <Checkbox
+                key={cross.id}
+                checked={report.selectedCrossIds.includes(cross.id)}
+                onChange={() => report.toggleCross(cross.id)}
+                label={cross.nombre}
+                description={cross.description}
+                color="blue"
+                size="sm"
+                disabled={cross.isReportReady === false}
+                classNames={crossCheckboxClasses}
+              />
+            ))
+          : null}
       </div>
 
       {report.generationError ? (

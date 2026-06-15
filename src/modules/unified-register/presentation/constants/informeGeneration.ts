@@ -24,9 +24,11 @@ export interface InformeCrossPreviewColumn {
 export interface InformeCrossOption extends IInformeSelectedCross {
   id: string;
   description: string;
+  sourceCodes: string[];
   previewTitle: string;
   previewColumns: InformeCrossPreviewColumn[];
   summary: string;
+  isReportReady?: boolean;
 }
 
 export const INFORME_DEFAULT_FORM: InformeGenerationForm = {
@@ -66,6 +68,7 @@ export const INFORME_CROSS_OPTIONS: InformeCrossOption[] = [
     id: 'cruce_cm',
     nombre: 'Control de desvío de BI — Régimen CM',
     description: 'Ejecutado · 2 CUITs analizados',
+    sourceCodes: ['ControlDesvioBiRegimenCm'],
     previewTitle: 'CRUCE DE BASE IMPONIBLE',
     previewColumns: BASE_IMPONIBLE_COLUMNS,
     summary: 'Posee diferencia de base imponible en IIBB de $ 360.872.791.',
@@ -101,6 +104,7 @@ export const INFORME_CROSS_OPTIONS: InformeCrossOption[] = [
     id: 'cruce_gral',
     nombre: 'Control de desvío de BI — Régimen Gral',
     description: 'Ejecutado · 2 CUITs analizados',
+    sourceCodes: ['ControlDesvioBiRegimenGral'],
     previewTitle: 'CRUCE DE BASE IMPONIBLE RÉGIMEN GENERAL',
     previewColumns: BASE_IMPONIBLE_COLUMNS,
     summary: 'Posee diferencia de base imponible en régimen general de $ 94.000.000.',
@@ -130,6 +134,7 @@ export const INFORME_CROSS_OPTIONS: InformeCrossOption[] = [
     id: 'cruce_act',
     nombre: 'Control de BI declarada por actividad',
     description: 'Ejecutado · 2 CUITs analizados',
+    sourceCodes: ['ControlBiDeclaradaPorActividad'],
     previewTitle: 'CRUCE DE ACTIVIDAD DECLARADA',
     previewColumns: [
       {

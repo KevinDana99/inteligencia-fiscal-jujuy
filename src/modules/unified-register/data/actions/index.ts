@@ -9,6 +9,7 @@ export * from './commands/updateContactAction';
 export * from './commands/updateNoteAction';
 export * from './queries/getAlternateAddressesAction';
 export * from './queries/getContactsAction';
+export * from './queries/getContributorCrossesAction';
 export * from './queries/getNotesAction';
 export * from './queries/getUnifiedRegisterHeaderAction';
 export * from './queries/getUnifiedRegisterInterventionOrdersAction';

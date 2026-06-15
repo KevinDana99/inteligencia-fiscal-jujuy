@@ -87,7 +87,8 @@ export function mapCrossExecutionDto(dto: ApiCrossExecutionDto): ICrossManagemen
     sourceRef: dto.lote ?? dto.cuit ?? '-',
     period: formatPeriodLabel(dto.periodoInicio, dto.periodoFin),
     cuitCount: dto.cantidadTotalCuits,
-    date: formatDateLabel(dto.fechaEjecucion)
+    date: formatDateLabel(dto.fechaEjecucion),
+    status: dto.estado
   }
 }
 

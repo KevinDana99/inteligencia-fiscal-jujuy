@@ -1,5 +1,6 @@
 import type { IBatchManagementSource } from '../../interfaces/BatchManagementSource';
 import type {
+  IBatchAddContributorPayload,
   IBatchAvailableCrosses,
   IBatchCrossExecutionPayload,
   IBatchCrossExecutionSummary,
@@ -439,6 +440,49 @@ export class MockBatchManagementSource implements IBatchManagementSource {
     );
 
     return response;
+  }
+
+  async addContributorToBatch(payload: IBatchAddContributorPayload): Promise<void> {
+    const batch = batchManagementMock.find((item) => item.id === payload.batchId);
+
+    if (!batch) {
+      throw new Error('Batch not found');
+    }
+
+    batch.cuitCount += 1;
+    batch.cuits = [
+      ...batch.cuits,
+      {
+        id: `${payload.batchId}-${batch.cuitCount}`,
+        cuit: payload.contributor.cuit,
+        businessName: payload.contributor.businessName,
+        regime: normalizeRegime(payload.contributor.regime ?? batch.regime),
+        order: batch.cuitCount
+      }
+    ];
+
+    console.log(
+      JSON.stringify(
+        {
+          endpoint: '/api/lotes/contribuyentes',
+          action: 'MockBatchManagementSource.addContributorToBatch',
+          METHOD: 'PATCH',
+          REQUEST_RAW: {
+            body: {
+              loteId: payload.batchId,
+              contribuyente: {
+                cuit: payload.contributor.cuit,
+                razonSocial: payload.contributor.businessName,
+                regimen: payload.contributor.regime
+              }
+            }
+          },
+          RESPONSE_RAW: null
+        },
+        null,
+        2
+      )
+    );
   }
 
   async executeBatchCross(

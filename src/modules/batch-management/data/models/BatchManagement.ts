@@ -108,6 +108,17 @@ export interface IBatchCreatePayload {
   cuitsText?: string | null;
 }
 
+export interface IBatchContributorInput {
+  cuit: string;
+  businessName: string | null;
+  regime: string | null;
+}
+
+export interface IBatchAddContributorPayload {
+  batchId: string;
+  contributor: IBatchContributorInput;
+}
+
 export interface IBatchPreviewPayload {
   file?: File | null;
   regime?: string | null;

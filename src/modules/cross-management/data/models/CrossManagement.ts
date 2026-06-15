@@ -6,6 +6,7 @@ export interface ICrossManagementItem {
   period: string
   cuitCount: number
   date: string
+  status: string
 }
 
 export type ICrossManagementItems = Array<ICrossManagementItem>

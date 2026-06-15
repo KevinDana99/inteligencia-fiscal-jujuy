@@ -1,8 +1,13 @@
 .tableWrap {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   border: 1px solid var(--mantine-color-gray-2);
   border-radius: 12px;
   background: var(--mantine-color-white);
+}
+
+.table {
+  min-width: 920px;
 }
 
 .table :global(table) {

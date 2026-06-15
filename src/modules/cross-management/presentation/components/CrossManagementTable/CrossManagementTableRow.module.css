@@ -63,3 +63,48 @@
   overflow: visible;
   text-overflow: clip;
 }
+
+.statusBadgeCompleted,
+.statusBadgeRunning,
+.statusBadgeFailed,
+.statusBadgePending,
+.statusBadgeDefault {
+  display: inline-flex;
+  width: fit-content;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.statusBadgeCompleted {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.statusBadgeRunning {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.statusBadgeFailed {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.statusBadgePending {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.statusBadgeDefault {
+  background: var(--mantine-color-gray-1);
+  color: var(--mantine-color-gray-7);
+}
+
+.statusBadgeLabel {
+  display: inline-block;
+  width: max-content;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+}

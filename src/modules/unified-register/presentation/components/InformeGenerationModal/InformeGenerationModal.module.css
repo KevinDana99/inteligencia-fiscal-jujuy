@@ -201,6 +201,13 @@
   cursor: pointer;
 }
 
+.crossStateText {
+  padding: 12px;
+  color: var(--mantine-color-gray-5);
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .errorText {
   margin: -8px 0 16px;
   color: var(--mantine-color-red-6);

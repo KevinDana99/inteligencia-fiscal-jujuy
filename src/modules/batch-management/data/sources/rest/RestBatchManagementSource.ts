@@ -1,7 +1,8 @@
-import { getJson, postFormData, postJson } from '@/lib/api-client';
+import { getJson, patchJson, postFormData, postJson } from '@/lib/api-client';
 import type { ApiClientConfig } from '@/lib/api-client';
 import type { IBatchManagementSource } from '../../interfaces/BatchManagementSource';
 import type {
+  IBatchAddContributorPayload,
   IBatchAvailableCrosses,
   IBatchCrossExecutionPayload,
   IBatchCrossExecutionSummary,
@@ -15,6 +16,7 @@ import type {
   IBatchPreviewPayload
 } from '../../models/BatchManagement';
 import type {
+  ApiAddContributorToBatchRequestDto,
   ApiBatchAvailableCrossesResponseDto,
   ApiBatchCreateResponseDto,
   ApiBatchDetailResponseDto,
@@ -24,6 +26,7 @@ import type {
   ApiExecuteBatchCrossResponseDto
 } from './dtos/BatchManagementDtos';
 import {
+  mapAddContributorToBatchRequestDto,
   mapBatchAvailableCrossesResponseDto,
   mapBatchCreateResponseDto,
   mapBatchDetailResponseDto,
@@ -240,6 +243,32 @@ export class RestBatchManagementSource implements IBatchManagementSource {
     });
 
     return mapBatchCreateResponseDto(response);
+  }
+
+  async addContributorToBatch(payload: IBatchAddContributorPayload): Promise<void> {
+    const requestBody = mapAddContributorToBatchRequestDto(payload);
+
+    logRestBatchManagementEvent({
+      endpoint: '/api/lotes/contribuyentes',
+      action: 'RestBatchManagementSource.addContributorToBatch',
+      METHOD: 'PATCH',
+      REQUEST_RAW: {
+        body: requestBody
+      }
+    });
+
+    await patchJson<null, ApiAddContributorToBatchRequestDto>(
+      '/api/lotes/contribuyentes',
+      requestBody,
+      this.config
+    );
+
+    logRestBatchManagementEvent({
+      endpoint: '/api/lotes/contribuyentes',
+      action: 'RestBatchManagementSource.addContributorToBatch',
+      METHOD: 'PATCH',
+      RESPONSE_RAW: null
+    });
   }
 
   async executeBatchCross(

@@ -1,5 +1,21 @@
 # Cross Management Feature Story
 
+## 2026-06-15 Estado de ejecucion en gestion de cruces
+
+- `Gestion de Cruces` ahora conserva `estado` desde `GET /api/procesos-informacion/ejecuciones` en el modelo interno como `status`.
+- La tabla principal agrega la columna `Estado` y renderiza una pill Mantine para estados como `completada`, `en_proceso`, `fallida` y `pendiente`, con fallback neutral para estados no mapeados.
+- La tabla permite scroll horizontal en pantallas angostas para evitar cortes al sumar la nueva columna.
+- Los mocks del listado incorporan `status` para mantener consistente el contrato interno y permitir ver variantes visuales en modo mock.
+- La preview mantiene compatibilidad con `ICrossPreviewData` usando el estado de la ejecucion cuando esta disponible.
+
+### Validation
+
+- `bun x tsc --noEmit --pretty false --incremental false`
+- `bun x eslint src/modules/cross-management/data/models/CrossManagement.ts src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.ts src/modules/cross-management/data/sources/rest/mappers/mapCrossManagementDto.ts src/modules/cross-management/data/sources/mock/fixtures/crossItems.ts src/modules/cross-management/presentation/constants/crossManagementTable.ts src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementTableRow.ts src/modules/cross-management/presentation/components/CrossManagementTable/CrossManagementTableRow.tsx`
+- `bun run test -- src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.test.ts --runInBand`
+- `git diff --check`
+- Browser check: `http://localhost:3000/gestion-de-cruces` redirige a `/login` por sesion expirada y no registra errores de consola.
+
 ## 2026-06-10 Ranking en preview de cruces
 
 - La pestaña secundaria de `/gestion-de-cruces/vista-previa-cruce/[crossId]` ahora se presenta como `Ranking`, con icono de barras y CTA de intimacion preservado.
