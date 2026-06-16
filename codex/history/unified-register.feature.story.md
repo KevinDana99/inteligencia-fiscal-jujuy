@@ -309,3 +309,23 @@ Connected the `Generar Informe` modal to `GET /api/contribuyentes/{contribuyente
 - `bun x eslint src/modules/unified-register/data/actions/index.ts src/modules/unified-register/data/actions/queries/getContributorCrossesAction.ts src/modules/unified-register/data/interfaces/UnifiedRegisterSource.ts src/modules/unified-register/data/models/UnifiedRegister.ts src/modules/unified-register/data/sources/mock/MockUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts src/modules/unified-register/data/sources/rest/constants/unifiedRegisterApiRoutes.ts src/modules/unified-register/data/sources/rest/dtos/ApiUnifiedRegisterDtos.ts src/modules/unified-register/data/sources/rest/mappers/unifiedRegisterMappers.ts src/modules/unified-register/presentation/components/InformeGenerationModal/index.tsx src/modules/unified-register/presentation/hooks/useInformeGeneration.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts src/modules/unified-register/presentation/constants/informeGeneration.ts`
 - `git diff --check`
 - Existing dev server responded at `http://localhost:3000`; private routes redirect to `/login` without a valid session.
+
+## Unified Padron Preview Server Module Split - 2026-06-16
+
+### Summary
+
+Split `/vista-previa-padron/[cuit]` into a lightweight route plus independent Server Component modules for each preview data section.
+
+### Main Changes
+
+- Added `src/modules/unified-register/preview.tsx` as the preview server entry.
+- Moved header/core lookup into `UnifiedRegisterPreviewHeaderModule`.
+- Added independent Server Component calls for available crosses, reprocessing state, alternate addresses, contacts, notes, Mercurio fines, and intervention orders.
+- Added a client hydration bridge/context so each server module can hydrate only its own state slice without reintroducing a route-level `Promise.all`.
+- Updated the preview UI to show per-section loading states while server modules stream in.
+
+### Validation
+
+- `bun x eslint 'app/(private)/vista-previa-padron/[cuit]/page.tsx' 'src/modules/unified-register/preview.tsx' 'src/modules/unified-register/presentation/contexts/UnifiedRegisterPreviewHydrationContext.tsx' 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/UnifiedRegisterPreviewHydrationBridge.tsx' 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/index.tsx' 'src/modules/unified-register/presentation/hooks/useUnifiedRegisterPreview.ts' 'src/modules/unified-register/presentation/hooks/useUnifiedRegisterMercurio.ts' 'src/modules/unified-register/presentation/hooks/useUnifiedRegisterInterventionOrders.ts'`
+- `bun x tsc --noEmit --incremental false`
+- `git diff --check`

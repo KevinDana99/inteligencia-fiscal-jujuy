@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { getUnifiedRegisterInterventionOrdersAction } from '../../data/actions';
 import type {
   IUnifiedRegisterInterventionOrder,
@@ -13,13 +13,19 @@ type UseUnifiedRegisterInterventionOrdersParams = {
   contribuyenteId: string;
   initialData: IUnifiedRegisterInterventionOrdersListData | null;
   initialInterventionOrders: IUnifiedRegisterInterventionOrder[];
+  loadInitialPage?: boolean;
+  waitForInitialPage?: boolean;
 };
 
 export function useUnifiedRegisterInterventionOrders({
   contribuyenteId,
   initialData,
-  initialInterventionOrders
+  initialInterventionOrders,
+  loadInitialPage = false,
+  waitForInitialPage = false
 }: UseUnifiedRegisterInterventionOrdersParams) {
+  const hasInitialData =
+    Boolean(initialData) || initialInterventionOrders.length > 0;
   const [interventionOrders, setInterventionOrders] = useState(
     initialInterventionOrders
   );
@@ -29,16 +35,36 @@ export function useUnifiedRegisterInterventionOrders({
     initialData?.totalItems ?? initialInterventionOrders.length
   );
   const [error, setError] = useState<string | null>(null);
-  const [isPagePending, startPageTransition] = useTransition();
+  const requestedInitialContributorIdRef = useRef<string | null>(
+    hasInitialData ? contribuyenteId : null
+  );
+  const [hasLoadedInitialPage, setHasLoadedInitialPage] = useState(
+    (!loadInitialPage && !waitForInitialPage) || hasInitialData
+  );
+  const [isInitialPagePending, startInitialPageTransition] = useTransition();
+  const [isPaginationPending, startPageTransition] = useTransition();
 
-  const applyListData = (data: IUnifiedRegisterInterventionOrdersListData) => {
+  const applyListData = useCallback((
+    data: IUnifiedRegisterInterventionOrdersListData
+  ) => {
     setInterventionOrders(data.ordenes.map(mapInterventionOrderRecordToViewModel));
     setCurrentPage(data.pagina);
     setTotalPages(data.totalPaginas);
     setTotalItems(data.totalItems);
-  };
+    setError(null);
+    setHasLoadedInitialPage(true);
+  }, []);
 
-  const refreshPage = async (page: number) => {
+  const applyListError = useCallback((errorMessage: string) => {
+    setInterventionOrders([]);
+    setCurrentPage(1);
+    setTotalPages(0);
+    setTotalItems(0);
+    setError(errorMessage);
+    setHasLoadedInitialPage(true);
+  }, []);
+
+  const refreshPage = useCallback(async (page: number) => {
     const result = await getUnifiedRegisterInterventionOrdersAction(
       contribuyenteId,
       {
@@ -48,14 +74,33 @@ export function useUnifiedRegisterInterventionOrders({
     );
 
     if (!result.data) {
-      setError(result.error ?? 'No fue posible listar las órdenes de intervención.');
+      applyListError(
+        result.error ?? 'No fue posible listar las órdenes de intervención.'
+      );
       return false;
     }
 
     applyListData(result.data);
-    setError(null);
     return true;
-  };
+  }, [applyListData, applyListError, contribuyenteId]);
+
+  useEffect(() => {
+    if (
+      !loadInitialPage ||
+      requestedInitialContributorIdRef.current === contribuyenteId
+    ) {
+      return;
+    }
+
+    requestedInitialContributorIdRef.current = contribuyenteId;
+    startInitialPageTransition(async () => {
+      try {
+        await refreshPage(1);
+      } finally {
+        setHasLoadedInitialPage(true);
+      }
+    });
+  }, [contribuyenteId, loadInitialPage, refreshPage]);
 
   const goToPreviousPage = () => {
     if (currentPage <= 1) {
@@ -83,7 +128,12 @@ export function useUnifiedRegisterInterventionOrders({
     totalPages,
     totalItems,
     error,
-    isPagePending,
+    isPagePending:
+      ((loadInitialPage || waitForInitialPage) && !hasLoadedInitialPage) ||
+      isInitialPagePending ||
+      isPaginationPending,
+    hydratePage: applyListData,
+    hydrateError: applyListError,
     goToPreviousPage,
     goToNextPage
   };

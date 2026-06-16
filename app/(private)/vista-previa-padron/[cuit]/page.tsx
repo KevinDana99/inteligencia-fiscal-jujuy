@@ -1,32 +1,13 @@
 import { notFound } from 'next/navigation';
-import { getReprocessingAction } from '@/modules/reprocessing/data/actions';
-import { getBatchAvailableCrossesAction } from '@/modules/batch-management/data/actions';
-import {
-  getAlternateAddressesAction,
-  getContactsAction,
-  getNotesAction,
-  getUnifiedRegisterHeaderAction,
-  getUnifiedRegisterInterventionOrdersAction,
-  getUnifiedRegisterListAction,
-  getUnifiedRegisterMercurioAction
-} from '@/modules/unified-register/data/actions';
-import { mapAlternateAddressRecordToViewModel } from '@/modules/unified-register/data/mappers/mapAlternateAddress';
-import { mapContactRecordToViewModel } from '@/modules/unified-register/data/mappers/mapContact';
-import { mapNoteRecordToViewModel } from '@/modules/unified-register/data/mappers/mapNote';
+import { getUnifiedRegisterListAction } from '@/modules/unified-register/data/actions';
 import type { IUnifiedRegisterDetail } from '@/modules/unified-register/data/models/UnifiedRegister';
-import { applyUnifiedRegisterHeaderToDetail } from '@/modules/unified-register/data/utils/unifiedRegisterDetail';
 import {
   findContributorByCuit,
   isSameCuit,
   normalizeCuit,
   resolvePreviewContribuyenteId
 } from '@/modules/unified-register/data/utils/resolveUnifiedRegisterPreviewContributor';
-import { UnifiedRegisterPreviewPage } from '@/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage';
-import { UNIFIED_REGISTER_DETAIL_TABLE_ITEMS_PER_PAGE } from '@/modules/unified-register/presentation/constants/unifiedRegisterDetail';
-import {
-  mapFineRecordToViewModel,
-  mapInterventionOrderRecordToViewModel
-} from '@/modules/unified-register/presentation/utils/unifiedRegisterDetailRecords';
+import UnifiedRegisterPreviewModule from '@/modules/unified-register/preview';
 import { unifiedRegisterDetailsFixture } from '@/modules/unified-register/data/sources/mock/fixtures/unifiedRegisterItems';
 
 const unifiedRegisterDetailTemplate = unifiedRegisterDetailsFixture[0];
@@ -103,97 +84,12 @@ export default async function UnifiedRegisterPreviewRoute({
   const item =
     fixtureItem ?? buildUnifiedRegisterDetailFallback(contribuyenteId, decodedCuit);
 
-  const [
-    availableCrossesResult,
-    headerResult,
-    alternateAddressesResult,
-    notesResult,
-    contactsResult,
-    mercurioResult,
-    interventionOrdersResult,
-    reprocessingResult
-  ] = await Promise.all([
-    getBatchAvailableCrossesAction(),
-    getUnifiedRegisterHeaderAction(contribuyenteId),
-    getAlternateAddressesAction(contribuyenteId),
-    getNotesAction(contribuyenteId, {
-      pagina: 1,
-      itemsPagina: 1
-    }),
-    getContactsAction(contribuyenteId, {
-      pagina: 1,
-      itemsPagina: 1
-    }),
-    getUnifiedRegisterMercurioAction(contribuyenteId, {
-      pagina: 1,
-      itemsPagina: UNIFIED_REGISTER_DETAIL_TABLE_ITEMS_PER_PAGE
-    }),
-    getUnifiedRegisterInterventionOrdersAction(contribuyenteId, {
-      pagina: 1,
-      itemsPagina: UNIFIED_REGISTER_DETAIL_TABLE_ITEMS_PER_PAGE
-    }),
-    getReprocessingAction({
-      search: decodedCuit,
-      page: 1,
-      itemsPerPage: 10
-    })
-  ]);
-
-  const header = headerResult.data;
-  const hasBackendHeader = Boolean(header);
-
-  if (
-    !cuitMatchedContribuyenteId &&
-    header &&
-    !isSameCuit(header.cuit, decodedCuit)
-  ) {
-    notFound();
-  }
-
-  if (!fixtureItem && !header) {
-    notFound();
-  }
-
-  const detailFromHeader = header
-    ? applyUnifiedRegisterHeaderToDetail(item, header)
-    : item;
-  const resolvedItem = {
-    ...detailFromHeader,
-    addresses:
-      alternateAddressesResult.data?.domiciliosAlternativos.map(
-        mapAlternateAddressRecordToViewModel
-      ) ?? (hasBackendHeader ? [] : item.addresses),
-    contacts:
-      contactsResult.data?.contactos.flatMap(mapContactRecordToViewModel) ??
-      (hasBackendHeader ? [] : item.contacts),
-    notes:
-      notesResult.data?.notas.map(mapNoteRecordToViewModel) ??
-      (hasBackendHeader ? [] : item.notes),
-    fines:
-      mercurioResult.data?.multas.map(mapFineRecordToViewModel) ??
-      (hasBackendHeader ? [] : item.fines),
-    interventionOrders:
-      interventionOrdersResult.data?.ordenes.map(
-        mapInterventionOrderRecordToViewModel
-      ) ?? (hasBackendHeader ? [] : item.interventionOrders)
-  };
-  const isReprocessingActive = Boolean(
-    reprocessingResult.data?.items.some(
-      (reprocessingItem) =>
-        reprocessingItem.contribuyenteId === resolvedItem.contribuyenteId ||
-        isSameCuit(reprocessingItem.cuit, resolvedItem.cuit)
-    )
-  );
-
   return (
-    <UnifiedRegisterPreviewPage
-      item={resolvedItem}
-      initialAvailableCrosses={availableCrossesResult.data ?? []}
-      initialIsReprocessing={isReprocessingActive}
-      initialContactsData={contactsResult.data ?? null}
-      initialMercurioData={mercurioResult.data ?? null}
-      initialInterventionOrdersData={interventionOrdersResult.data ?? null}
-      initialNotesData={notesResult.data ?? null}
+    <UnifiedRegisterPreviewModule
+      cuit={decodedCuit}
+      cuitMatchedContribuyenteId={cuitMatchedContribuyenteId}
+      isFixtureItem={Boolean(fixtureItem)}
+      item={item}
     />
   );
 }

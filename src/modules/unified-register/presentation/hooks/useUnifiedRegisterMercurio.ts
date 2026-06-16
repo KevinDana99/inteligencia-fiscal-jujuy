@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { getUnifiedRegisterMercurioAction } from '../../data/actions';
 import type {
   IUnifiedRegisterFine,
@@ -13,13 +13,18 @@ type UseUnifiedRegisterMercurioParams = {
   contribuyenteId: string;
   initialData: IUnifiedRegisterFinesListData | null;
   initialFines: IUnifiedRegisterFine[];
+  loadInitialPage?: boolean;
+  waitForInitialPage?: boolean;
 };
 
 export function useUnifiedRegisterMercurio({
   contribuyenteId,
   initialData,
-  initialFines
+  initialFines,
+  loadInitialPage = false,
+  waitForInitialPage = false
 }: UseUnifiedRegisterMercurioParams) {
+  const hasInitialData = Boolean(initialData) || initialFines.length > 0;
   const [fines, setFines] = useState(initialFines);
   const [currentPage, setCurrentPage] = useState(initialData?.pagina ?? 1);
   const [totalPages, setTotalPages] = useState(initialData?.totalPaginas ?? 0);
@@ -27,30 +32,65 @@ export function useUnifiedRegisterMercurio({
     initialData?.totalItems ?? initialFines.length
   );
   const [error, setError] = useState<string | null>(null);
-  const [isPagePending, startPageTransition] = useTransition();
+  const requestedInitialContributorIdRef = useRef<string | null>(
+    hasInitialData ? contribuyenteId : null
+  );
+  const [hasLoadedInitialPage, setHasLoadedInitialPage] = useState(
+    (!loadInitialPage && !waitForInitialPage) || hasInitialData
+  );
+  const [isInitialPagePending, startInitialPageTransition] = useTransition();
+  const [isPaginationPending, startPageTransition] = useTransition();
 
-  const applyListData = (data: IUnifiedRegisterFinesListData) => {
+  const applyListData = useCallback((data: IUnifiedRegisterFinesListData) => {
     setFines(data.multas.map(mapFineRecordToViewModel));
     setCurrentPage(data.pagina);
     setTotalPages(data.totalPaginas);
     setTotalItems(data.totalItems);
-  };
+    setError(null);
+    setHasLoadedInitialPage(true);
+  }, []);
 
-  const refreshPage = async (page: number) => {
+  const applyListError = useCallback((errorMessage: string) => {
+    setFines([]);
+    setCurrentPage(1);
+    setTotalPages(0);
+    setTotalItems(0);
+    setError(errorMessage);
+    setHasLoadedInitialPage(true);
+  }, []);
+
+  const refreshPage = useCallback(async (page: number) => {
     const result = await getUnifiedRegisterMercurioAction(contribuyenteId, {
       pagina: page,
       itemsPagina: UNIFIED_REGISTER_DETAIL_TABLE_ITEMS_PER_PAGE
     });
 
     if (!result.data) {
-      setError(result.error ?? 'No fue posible listar las multas Mercurio.');
+      applyListError(result.error ?? 'No fue posible listar las multas Mercurio.');
       return false;
     }
 
     applyListData(result.data);
-    setError(null);
     return true;
-  };
+  }, [applyListData, applyListError, contribuyenteId]);
+
+  useEffect(() => {
+    if (
+      !loadInitialPage ||
+      requestedInitialContributorIdRef.current === contribuyenteId
+    ) {
+      return;
+    }
+
+    requestedInitialContributorIdRef.current = contribuyenteId;
+    startInitialPageTransition(async () => {
+      try {
+        await refreshPage(1);
+      } finally {
+        setHasLoadedInitialPage(true);
+      }
+    });
+  }, [contribuyenteId, loadInitialPage, refreshPage]);
 
   const goToPreviousPage = () => {
     if (currentPage <= 1) {
@@ -78,7 +118,12 @@ export function useUnifiedRegisterMercurio({
     totalPages,
     totalItems,
     error,
-    isPagePending,
+    isPagePending:
+      ((loadInitialPage || waitForInitialPage) && !hasLoadedInitialPage) ||
+      isInitialPagePending ||
+      isPaginationPending,
+    hydratePage: applyListData,
+    hydrateError: applyListError,
     goToPreviousPage,
     goToNextPage
   };

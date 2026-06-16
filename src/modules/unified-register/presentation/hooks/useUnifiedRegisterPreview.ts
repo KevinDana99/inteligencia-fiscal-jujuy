@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition
+} from "react";
 import { TOAST_DASHBOARD_MESSAGES, toast } from "@/components/core/toasts";
 import {
   addContributorToBatchAction,
@@ -69,6 +76,27 @@ type ContactForm = {
   accountant: string;
 };
 
+type UnifiedRegisterPreviewHydrationFlags = {
+  addresses?: boolean;
+  contacts?: boolean;
+  notes?: boolean;
+  mercurio?: boolean;
+  interventionOrders?: boolean;
+  availableCrosses?: boolean;
+  reprocessing?: boolean;
+};
+
+type UseUnifiedRegisterPreviewParams = {
+  item: IUnifiedRegisterDetail;
+  initialAvailableCrosses: IBatchAvailableCrosses;
+  initialIsReprocessing: boolean;
+  initialContactsData: IUnifiedRegisterContactsListData | null;
+  initialNotesData: IUnifiedRegisterNotesListData | null;
+  initialMercurioData: IUnifiedRegisterFinesListData | null;
+  initialInterventionOrdersData: IUnifiedRegisterInterventionOrdersListData | null;
+  hydration?: UnifiedRegisterPreviewHydrationFlags;
+};
+
 const EMPTY_CONTACT_FORM: ContactForm = {
   phone: "",
   mail: "",
@@ -90,15 +118,16 @@ function mapBatchItemToLotOption(
   };
 }
 
-export function useUnifiedRegisterPreview(
-  item: IUnifiedRegisterDetail,
-  initialAvailableCrosses: IBatchAvailableCrosses,
-  initialIsReprocessing: boolean,
-  initialContactsData: IUnifiedRegisterContactsListData | null,
-  initialNotesData: IUnifiedRegisterNotesListData | null,
-  initialMercurioData: IUnifiedRegisterFinesListData | null,
-  initialInterventionOrdersData: IUnifiedRegisterInterventionOrdersListData | null
-) {
+export function useUnifiedRegisterPreview({
+  item,
+  initialAvailableCrosses,
+  initialIsReprocessing,
+  initialContactsData,
+  initialNotesData,
+  initialMercurioData,
+  initialInterventionOrdersData,
+  hydration = {},
+}: UseUnifiedRegisterPreviewParams) {
   const crossFilters = useBatchManagementCrossFilters();
   const [activeHeaderModal, setActiveHeaderModal] = useState<HeaderModal>(null);
   const [crossExecutionError, setCrossExecutionError] = useState<string | null>(
@@ -113,10 +142,16 @@ export function useUnifiedRegisterPreview(
   );
   const [addToBatchError, setAddToBatchError] = useState<string | null>(null);
   const [addresses, setAddresses] = useState(item.addresses);
+  const [isAddressesHydrating, setIsAddressesHydrating] = useState(
+    Boolean(hydration.addresses)
+  );
   const [addressActionError, setAddressActionError] = useState<string | null>(
     null
   );
   const [contacts, setContacts] = useState(item.contacts);
+  const [isContactsHydrating, setIsContactsHydrating] = useState(
+    Boolean(hydration.contacts)
+  );
   const [contactActionError, setContactActionError] = useState<string | null>(
     null
   );
@@ -127,6 +162,9 @@ export function useUnifiedRegisterPreview(
     initialContactsData?.totalPaginas ?? 0
   );
   const [notes, setNotes] = useState(item.notes);
+  const [isNotesHydrating, setIsNotesHydrating] = useState(
+    Boolean(hydration.notes)
+  );
   const [noteActionError, setNoteActionError] = useState<string | null>(null);
   const [notesCurrentPage, setNotesCurrentPage] = useState(
     initialNotesData?.pagina ?? 1
@@ -137,8 +175,16 @@ export function useUnifiedRegisterPreview(
   const [reprocessingActionError, setReprocessingActionError] = useState<
     string | null
   >(null);
+  const [availableCrosses, setAvailableCrosses] = useState(
+    initialAvailableCrosses
+  );
+  const [isAvailableCrossesHydrating, setIsAvailableCrossesHydrating] =
+    useState(Boolean(hydration.availableCrosses));
   const [isReprocessingMarked, setIsReprocessingMarked] = useState(
     initialIsReprocessing
+  );
+  const [isReprocessingHydrating, setIsReprocessingHydrating] = useState(
+    Boolean(hydration.reprocessing)
   );
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editKind, setEditKind] = useState<EditKind>(null);
@@ -175,21 +221,32 @@ export function useUnifiedRegisterPreview(
     contribuyenteId: item.contribuyenteId,
     initialData: initialMercurioData,
     initialFines: item.fines,
+    waitForInitialPage: Boolean(hydration.mercurio),
   });
   const interventionOrdersList = useUnifiedRegisterInterventionOrders({
     contribuyenteId: item.contribuyenteId,
     initialData: initialInterventionOrdersData,
     initialInterventionOrders: item.interventionOrders,
+    waitForInitialPage: Boolean(hydration.interventionOrders),
   });
+  const {
+    hydratePage: hydrateMercurioPage,
+    hydrateError: hydrateMercurioError,
+  } = mercurio;
+  const {
+    hydratePage: hydrateInterventionOrdersPage,
+    hydrateError: hydrateInterventionOrdersError,
+  } = interventionOrdersList;
   const crossTargetId = item.contribuyenteId;
   const currentCrossFilters = crossFilters.getBatchCrossFilters(crossTargetId);
   const crossValidationMessage =
     getBatchCrossValidationMessage(currentCrossFilters);
   const canConfirmCrosses =
+    !isAvailableCrossesHydrating &&
     hasExecutableBatchCrosses(
       crossTargetId,
       currentCrossFilters,
-      initialAvailableCrosses
+      availableCrosses
     ) &&
     !crossValidationMessage &&
     !isCrossExecutionPending;
@@ -258,11 +315,13 @@ export function useUnifiedRegisterPreview(
 
   const activeNote = notes[activeNoteIndex] ?? null;
 
-  const applyContactsListData = (data: IUnifiedRegisterContactsListData) => {
+  const applyContactsListData = useCallback((
+    data: IUnifiedRegisterContactsListData
+  ) => {
     setContacts(data.contactos.flatMap(mapContactRecordToViewModel));
     setContactsCurrentPage(data.pagina);
     setContactsTotalPages(data.totalPaginas);
-  };
+  }, []);
 
   const refreshContacts = async (page: number) => {
     const result = await getContactsAction(item.contribuyenteId, {
@@ -282,12 +341,12 @@ export function useUnifiedRegisterPreview(
     return true;
   };
 
-  const applyNotesListData = (data: IUnifiedRegisterNotesListData) => {
+  const applyNotesListData = useCallback((data: IUnifiedRegisterNotesListData) => {
     setNotes(data.notas.map(mapNoteRecordToViewModel));
     setNotesCurrentPage(data.pagina);
     setNotesTotalPages(data.totalPaginas);
     setActiveNoteIndex(0);
-  };
+  }, []);
 
   const refreshNotes = async (page: number) => {
     const result = await getNotesAction(item.contribuyenteId, {
@@ -304,6 +363,115 @@ export function useUnifiedRegisterPreview(
     setNoteActionError(null);
     return true;
   };
+
+  const hydrateAvailableCrosses = useCallback(
+    (nextAvailableCrosses: IBatchAvailableCrosses) => {
+      setAvailableCrosses(nextAvailableCrosses);
+      setIsAvailableCrossesHydrating(false);
+    },
+    []
+  );
+
+  const hydrateReprocessingState = useCallback(
+    (nextIsReprocessingMarked: boolean) => {
+      setIsReprocessingMarked(nextIsReprocessingMarked);
+      setIsReprocessingHydrating(false);
+    },
+    []
+  );
+
+  const hydrateAddresses = useCallback(
+    (nextAddresses: IUnifiedRegisterAddress[], error?: string | null) => {
+      setAddresses(nextAddresses);
+      setAddressActionError(error ?? null);
+      setIsAddressesHydrating(false);
+    },
+    []
+  );
+
+  const hydrateContacts = useCallback(
+    (data: IUnifiedRegisterContactsListData | null, error?: string | null) => {
+      if (data) {
+        applyContactsListData(data);
+      } else {
+        setContacts([]);
+        setContactsCurrentPage(1);
+        setContactsTotalPages(0);
+      }
+
+      setContactActionError(error ?? null);
+      setIsContactsHydrating(false);
+    },
+    [applyContactsListData]
+  );
+
+  const hydrateNotes = useCallback(
+    (data: IUnifiedRegisterNotesListData | null, error?: string | null) => {
+      if (data) {
+        applyNotesListData(data);
+      } else {
+        setNotes([]);
+        setNotesCurrentPage(1);
+        setNotesTotalPages(0);
+        setActiveNoteIndex(0);
+      }
+
+      setNoteActionError(error ?? null);
+      setIsNotesHydrating(false);
+    },
+    [applyNotesListData]
+  );
+
+  const hydrateMercurio = useCallback(
+    (data: IUnifiedRegisterFinesListData | null, error?: string | null) => {
+      if (data) {
+        hydrateMercurioPage(data);
+        return;
+      }
+
+      hydrateMercurioError(
+        error ?? 'No fue posible listar las multas Mercurio.'
+      );
+    },
+    [hydrateMercurioError, hydrateMercurioPage]
+  );
+
+  const hydrateInterventionOrders = useCallback(
+    (
+      data: IUnifiedRegisterInterventionOrdersListData | null,
+      error?: string | null
+    ) => {
+      if (data) {
+        hydrateInterventionOrdersPage(data);
+        return;
+      }
+
+      hydrateInterventionOrdersError(
+        error ?? 'No fue posible listar las órdenes de intervención.'
+      );
+    },
+    [hydrateInterventionOrdersError, hydrateInterventionOrdersPage]
+  );
+  const previewHydration = useMemo(
+    () => ({
+      hydrateAvailableCrosses,
+      hydrateReprocessingState,
+      hydrateAddresses,
+      hydrateContacts,
+      hydrateNotes,
+      hydrateMercurio,
+      hydrateInterventionOrders,
+    }),
+    [
+      hydrateAddresses,
+      hydrateAvailableCrosses,
+      hydrateContacts,
+      hydrateInterventionOrders,
+      hydrateMercurio,
+      hydrateNotes,
+      hydrateReprocessingState,
+    ]
+  );
 
   const openHeaderModal = (modal: HeaderModal) => {
     if (modal === "reprocessing") {
@@ -369,12 +537,12 @@ export function useUnifiedRegisterPreview(
     const payloads = buildBatchCrossExecutionPayloads(
       crossTargetId,
       currentCrossFilters,
-      initialAvailableCrosses
+      availableCrosses
     );
 
     if (!payloads.length) {
       setCrossExecutionError(
-        getEmptyExecutableBatchCrossMessage(initialAvailableCrosses)
+        getEmptyExecutableBatchCrossMessage(availableCrosses)
       );
       return false;
     }
@@ -898,14 +1066,17 @@ export function useUnifiedRegisterPreview(
     activeHeaderModal,
     addresses,
     addressActionError,
+    isAddressesHydrating,
     contacts,
     contactActionError,
     contactsCurrentPage,
     contactsTotalPages,
+    isContactsHydrating,
     notes,
     noteActionError,
     notesCurrentPage,
     notesTotalPages,
+    isNotesHydrating,
     fines: mercurio.fines,
     finesCurrentPage: mercurio.currentPage,
     finesTotalPages: mercurio.totalPages,
@@ -917,13 +1088,15 @@ export function useUnifiedRegisterPreview(
     interventionOrdersTotalItems: interventionOrdersList.totalItems,
     interventionOrdersError: interventionOrdersList.error,
     reprocessingActionError,
-    availableCrosses: initialAvailableCrosses,
+    availableCrosses,
+    isAvailableCrossesHydrating,
     crossFilters: currentCrossFilters,
     crossValidationMessage,
     crossExecutionError,
     batchOptionsError,
     addToBatchError,
     isReprocessingMarked,
+    isReprocessingHydrating,
     batchSearch,
     filteredLotOptions,
     activeSourceTableId,
@@ -987,5 +1160,6 @@ export function useUnifiedRegisterPreview(
     goToNextFinePage: mercurio.goToNextPage,
     goToPreviousInterventionOrderPage: interventionOrdersList.goToPreviousPage,
     goToNextInterventionOrderPage: interventionOrdersList.goToNextPage,
+    hydration: previewHydration,
   };
 }

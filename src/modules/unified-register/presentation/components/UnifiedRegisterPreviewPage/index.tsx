@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, type ReactNode } from "react";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import {
@@ -43,6 +44,7 @@ import { InformeGenerationModal } from "../InformeGenerationModal";
 import { InformePreviewModal } from "../InformePreviewModal";
 import { useInformeGeneration } from "../../hooks/useInformeGeneration";
 import { useUnifiedRegisterPreview } from "../../hooks/useUnifiedRegisterPreview";
+import { UnifiedRegisterPreviewHydrationProvider } from "../../contexts/UnifiedRegisterPreviewHydrationContext";
 import {
   formatNullableDetailCell,
   getNullableRecordKey,
@@ -221,6 +223,29 @@ function RecordsTable({
   );
 }
 
+function RecordsStateRow({
+  colSpan,
+  message,
+  tone = "muted",
+}: {
+  colSpan: number;
+  message: string;
+  tone?: "muted" | "error";
+}) {
+  return (
+    <Table.Tr>
+      <Table.Td colSpan={colSpan}>
+        <Text
+          className={tone === "error" ? classes.modalText : classes.emptyStateText}
+          c={tone === "error" ? "red" : undefined}
+        >
+          {message}
+        </Text>
+      </Table.Td>
+    </Table.Tr>
+  );
+}
+
 export function UnifiedRegisterPreviewPage({
   item,
   initialAvailableCrosses,
@@ -229,6 +254,14 @@ export function UnifiedRegisterPreviewPage({
   initialMercurioData,
   initialInterventionOrdersData,
   initialNotesData,
+  shouldHydrateMercurioOnMount = false,
+  shouldHydrateInterventionOrdersOnMount = false,
+  shouldHydrateAddressesOnMount = false,
+  shouldHydrateContactsOnMount = false,
+  shouldHydrateNotesOnMount = false,
+  shouldHydrateAvailableCrossesOnMount = false,
+  shouldHydrateReprocessingOnMount = false,
+  children,
 }: {
   item: IUnifiedRegisterDetail;
   initialAvailableCrosses: IBatchAvailableCrosses;
@@ -237,19 +270,30 @@ export function UnifiedRegisterPreviewPage({
   initialMercurioData: IUnifiedRegisterFinesListData | null;
   initialInterventionOrdersData: IUnifiedRegisterInterventionOrdersListData | null;
   initialNotesData: IUnifiedRegisterNotesListData | null;
+  shouldHydrateMercurioOnMount?: boolean;
+  shouldHydrateInterventionOrdersOnMount?: boolean;
+  shouldHydrateAddressesOnMount?: boolean;
+  shouldHydrateContactsOnMount?: boolean;
+  shouldHydrateNotesOnMount?: boolean;
+  shouldHydrateAvailableCrossesOnMount?: boolean;
+  shouldHydrateReprocessingOnMount?: boolean;
+  children?: ReactNode;
 }) {
   const router = useRouter();
   const {
     activeHeaderModal,
     addresses,
     addressActionError,
+    isAddressesHydrating,
     contacts,
     contactActionError,
     contactsCurrentPage,
     contactsTotalPages,
+    isContactsHydrating,
     noteActionError,
     notesCurrentPage,
     notesTotalPages,
+    isNotesHydrating,
     fines,
     finesCurrentPage,
     finesTotalPages,
@@ -262,12 +306,13 @@ export function UnifiedRegisterPreviewPage({
     interventionOrdersError,
     reprocessingActionError,
     availableCrosses,
+    isAvailableCrossesHydrating,
     crossFilters,
     crossValidationMessage,
     crossExecutionError,
-    batchOptionsError,
     addToBatchError,
     isReprocessingMarked,
+    isReprocessingHydrating,
     batchSearch,
     filteredLotOptions,
     selectedLotOption,
@@ -329,15 +374,26 @@ export function UnifiedRegisterPreviewPage({
     goToNextFinePage,
     goToPreviousInterventionOrderPage,
     goToNextInterventionOrderPage,
-  } = useUnifiedRegisterPreview(
+    hydration,
+  } = useUnifiedRegisterPreview({
     item,
     initialAvailableCrosses,
     initialIsReprocessing,
     initialContactsData,
     initialNotesData,
     initialMercurioData,
-    initialInterventionOrdersData
-  );
+    initialInterventionOrdersData,
+    hydration: {
+      addresses: shouldHydrateAddressesOnMount,
+      contacts: shouldHydrateContactsOnMount,
+      notes: shouldHydrateNotesOnMount,
+      mercurio: shouldHydrateMercurioOnMount,
+      interventionOrders: shouldHydrateInterventionOrdersOnMount,
+      availableCrosses: shouldHydrateAvailableCrossesOnMount,
+      reprocessing: shouldHydrateReprocessingOnMount,
+    },
+  });
+  const hydrationContextValue = useMemo(() => hydration, [hydration]);
   const informeGeneration = useInformeGeneration(
     item,
     activeHeaderModal === 'report'
@@ -403,7 +459,9 @@ export function UnifiedRegisterPreviewPage({
   };
 
   return (
-    <div className={classes.page}>
+    <UnifiedRegisterPreviewHydrationProvider value={hydrationContextValue}>
+      {children}
+      <div className={classes.page}>
       <button
         className={classes.backButton}
         onClick={() => router.push(backRoute)}
@@ -479,7 +537,7 @@ export function UnifiedRegisterPreviewPage({
                 isReprocessingMarked ? classes.switchActionActive : ""
               }`}
               onClick={toggleReprocessing}
-              disabled={isReprocessingTogglePending}
+              disabled={isReprocessingTogglePending || isReprocessingHydrating}
             >
               <span className={classes.switchTrack} aria-hidden="true">
                 <span className={classes.switchKnob} />
@@ -513,7 +571,11 @@ export function UnifiedRegisterPreviewPage({
                     size={12}
                     className={classes.secondaryActionIcon}
                   />
-                  <span>Cruces a realizar</span>
+                  <span>
+                    {isAvailableCrossesHydrating
+                      ? "Cargando cruces..."
+                      : "Cruces a realizar"}
+                  </span>
                   <IconChevronDown
                     size={12}
                     className={classes.secondaryActionChevron}
@@ -745,7 +807,11 @@ export function UnifiedRegisterPreviewPage({
                   </Text>
                 </div>
               ))}
-              {!addresses.length ? (
+              {isAddressesHydrating ? (
+                <Text className={classes.emptyStateText}>
+                  Cargando domicilios alternativos...
+                </Text>
+              ) : !addresses.length ? (
                 <Text className={classes.emptyStateText}>
                   No hay domicilios alternativos cargados.
                 </Text>
@@ -773,7 +839,11 @@ export function UnifiedRegisterPreviewPage({
                 total={Math.max(contactsTotalPages, 1)}
                 onPrevious={goToPreviousContactPage}
                 onNext={goToNextContactPage}
-                disabled={isContactsPagePending || contactsTotalPages <= 1}
+                disabled={
+                  isContactsHydrating ||
+                  isContactsPagePending ||
+                  contactsTotalPages <= 1
+                }
               />
             }
           >
@@ -821,7 +891,11 @@ export function UnifiedRegisterPreviewPage({
                   </div>
                 ))}
               </div>
-              {!contacts.length ? (
+              {isContactsHydrating ? (
+                <Text className={classes.emptyStateText}>
+                  Cargando contactos...
+                </Text>
+              ) : !contacts.length ? (
                 <Text className={classes.emptyStateText}>
                   No hay contactos cargados.
                 </Text>
@@ -854,12 +928,18 @@ export function UnifiedRegisterPreviewPage({
                 total={Math.max(notesTotalPages, 1)}
                 onPrevious={goToPreviousNote}
                 onNext={goToNextNote}
-                disabled={isNotesPagePending || notesTotalPages <= 1}
+                disabled={
+                  isNotesHydrating || isNotesPagePending || notesTotalPages <= 1
+                }
               />
             }
           >
             <div className={classes.highlightPanel}>
-              {activeNote ? (
+              {isNotesHydrating ? (
+                <Text className={classes.emptyStateText}>
+                  Cargando notas...
+                </Text>
+              ) : activeNote ? (
                 <>
                   <div className={classes.inlineActionRow}>
                     <button
@@ -899,47 +979,71 @@ export function UnifiedRegisterPreviewPage({
         <div className={classes.rightColumn}>
           <RecordsTable
             title="Multas Mercurio"
-            badgeLabel={`${finesTotalItems} registros`}
+            badgeLabel={
+              isFinesPagePending && !fines.length
+                ? "Cargando..."
+                : `${finesTotalItems} registros`
+            }
             columns={["N°", "Fecha", "Descripción", "Monto", "Estado"]}
-            rows={fines.map((fine: IUnifiedRegisterFine, index) => (
-              <Table.Tr key={getNullableRecordKey(fine.id, "fine", index)}>
-                <Table.Td className={classes.mutedCodeCell}>
-                  {formatNullableDetailCell(fine.id)}
-                </Table.Td>
-                <Table.Td className={classes.mutedCell}>
-                  {formatNullableDetailCell(fine.issuedAt)}
-                </Table.Td>
-                <Table.Td className={classes.descriptionCell}>
-                  {formatNullableDetailCell(fine.description)}
-                </Table.Td>
-                <Table.Td
-                  className={`${classes.amountCell} ${
-                    getStatusClass(FINE_AMOUNT_CLASS, fine.status) ?? ""
-                  }`}
-                  style={{
-                    color: fine.status
-                      ? FINE_AMOUNT_COLOR[fine.status]
-                      : undefined,
-                  }}
-                >
-                  {formatNullableDetailCell(fine.amount)}
-                </Table.Td>
-                <Table.Td className={classes.statusCell}>
-                  {fine.status ? (
-                    <Badge
-                      radius="xl"
-                      className={`${
-                        getStatusClass(FINE_STATUS_CLASS, fine.status) ??
-                        classes.badgeNeutral
-                      } ${classes.statusBadge}`}
-                      classNames={{ label: classes.statusBadgeLabel }}
+            rows={
+              fineActionError && !fines.length ? (
+                <RecordsStateRow
+                  colSpan={5}
+                  message={fineActionError}
+                  tone="error"
+                />
+              ) : isFinesPagePending && !fines.length ? (
+                <RecordsStateRow
+                  colSpan={5}
+                  message="Cargando multas Mercurio..."
+                />
+              ) : fines.length ? (
+                fines.map((fine: IUnifiedRegisterFine, index) => (
+                  <Table.Tr key={getNullableRecordKey(fine.id, "fine", index)}>
+                    <Table.Td className={classes.mutedCodeCell}>
+                      {formatNullableDetailCell(fine.id)}
+                    </Table.Td>
+                    <Table.Td className={classes.mutedCell}>
+                      {formatNullableDetailCell(fine.issuedAt)}
+                    </Table.Td>
+                    <Table.Td className={classes.descriptionCell}>
+                      {formatNullableDetailCell(fine.description)}
+                    </Table.Td>
+                    <Table.Td
+                      className={`${classes.amountCell} ${
+                        getStatusClass(FINE_AMOUNT_CLASS, fine.status) ?? ""
+                      }`}
+                      style={{
+                        color: fine.status
+                          ? FINE_AMOUNT_COLOR[fine.status]
+                          : undefined,
+                      }}
                     >
-                      {fine.status}
-                    </Badge>
-                  ) : null}
-                </Table.Td>
-              </Table.Tr>
-            ))}
+                      {formatNullableDetailCell(fine.amount)}
+                    </Table.Td>
+                    <Table.Td className={classes.statusCell}>
+                      {fine.status ? (
+                        <Badge
+                          radius="xl"
+                          className={`${
+                            getStatusClass(FINE_STATUS_CLASS, fine.status) ??
+                            classes.badgeNeutral
+                          } ${classes.statusBadge}`}
+                          classNames={{ label: classes.statusBadgeLabel }}
+                        >
+                          {fine.status}
+                        </Badge>
+                      ) : null}
+                    </Table.Td>
+                  </Table.Tr>
+                ))
+              ) : (
+                <RecordsStateRow
+                  colSpan={5}
+                  message="No hay multas Mercurio registradas."
+                />
+              )
+            }
             footer={
               <Pager
                 current={finesCurrentPage}
@@ -950,7 +1054,7 @@ export function UnifiedRegisterPreviewPage({
               />
             }
           />
-          {fineActionError ? (
+          {fineActionError && fines.length ? (
             <Text className={classes.modalText} c="red">
               {fineActionError}
             </Text>
@@ -958,49 +1062,81 @@ export function UnifiedRegisterPreviewPage({
 
           <RecordsTable
             title="Órdenes de Intervención"
-            badgeLabel={`${interventionOrdersTotalItems} registros`}
+            badgeLabel={
+              isInterventionOrdersPagePending && !interventionOrders.length
+                ? "Cargando..."
+                : `${interventionOrdersTotalItems} registros`
+            }
             columns={["N° OI", "Período", "Motivo", "Monto", "Estado"]}
-            rows={interventionOrders.map(
-              (order: IUnifiedRegisterInterventionOrder, index) => (
-                <Table.Tr key={getNullableRecordKey(order.id, "order", index)}>
-                  <Table.Td className={classes.orderCodeCellCell}>
-                    <span className={classes.orderCodeCell}>
-                      {formatNullableDetailCell(order.id)}
-                    </span>
-                  </Table.Td>
-                  <Table.Td className={classes.mutedCell}>
-                    {formatNullableDetailCell(order.period)}
-                  </Table.Td>
-                  <Table.Td>{formatNullableDetailCell(order.reason)}</Table.Td>
-                  <Table.Td
-                    className={`${classes.amountCell} ${
-                      getStatusClass(ORDER_AMOUNT_CLASS, order.status) ?? ""
-                    }`}
-                    style={{
-                      color: order.status
-                        ? ORDER_AMOUNT_COLOR[order.status]
-                        : undefined,
-                    }}
-                  >
-                    {formatNullableDetailCell(order.amount)}
-                  </Table.Td>
-                  <Table.Td className={classes.statusCell}>
-                    {order.status ? (
-                      <Badge
-                        radius="xl"
-                        className={`${
-                          getStatusClass(ORDER_STATUS_CLASS, order.status) ??
-                          classes.badgeNeutral
-                        } ${classes.statusBadge}`}
-                        classNames={{ label: classes.statusBadgeLabel }}
+            rows={
+              interventionOrdersError && !interventionOrders.length ? (
+                <RecordsStateRow
+                  colSpan={5}
+                  message={interventionOrdersError}
+                  tone="error"
+                />
+              ) : isInterventionOrdersPagePending &&
+                !interventionOrders.length ? (
+                <RecordsStateRow
+                  colSpan={5}
+                  message="Cargando órdenes de intervención..."
+                />
+              ) : interventionOrders.length ? (
+                interventionOrders.map(
+                  (order: IUnifiedRegisterInterventionOrder, index) => (
+                    <Table.Tr
+                      key={getNullableRecordKey(order.id, "order", index)}
+                    >
+                      <Table.Td className={classes.orderCodeCellCell}>
+                        <span className={classes.orderCodeCell}>
+                          {formatNullableDetailCell(order.id)}
+                        </span>
+                      </Table.Td>
+                      <Table.Td className={classes.mutedCell}>
+                        {formatNullableDetailCell(order.period)}
+                      </Table.Td>
+                      <Table.Td>
+                        {formatNullableDetailCell(order.reason)}
+                      </Table.Td>
+                      <Table.Td
+                        className={`${classes.amountCell} ${
+                          getStatusClass(ORDER_AMOUNT_CLASS, order.status) ??
+                          ""
+                        }`}
+                        style={{
+                          color: order.status
+                            ? ORDER_AMOUNT_COLOR[order.status]
+                            : undefined,
+                        }}
                       >
-                        {order.status}
-                      </Badge>
-                    ) : null}
-                  </Table.Td>
-                </Table.Tr>
+                        {formatNullableDetailCell(order.amount)}
+                      </Table.Td>
+                      <Table.Td className={classes.statusCell}>
+                        {order.status ? (
+                          <Badge
+                            radius="xl"
+                            className={`${
+                              getStatusClass(
+                                ORDER_STATUS_CLASS,
+                                order.status
+                              ) ?? classes.badgeNeutral
+                            } ${classes.statusBadge}`}
+                            classNames={{ label: classes.statusBadgeLabel }}
+                          >
+                            {order.status}
+                          </Badge>
+                        ) : null}
+                      </Table.Td>
+                    </Table.Tr>
+                  )
+                )
+              ) : (
+                <RecordsStateRow
+                  colSpan={5}
+                  message="No hay órdenes de intervención registradas."
+                />
               )
-            )}
+            }
             footer={
               <Pager
                 current={interventionOrdersCurrentPage}
@@ -1014,7 +1150,7 @@ export function UnifiedRegisterPreviewPage({
               />
             }
           />
-          {interventionOrdersError ? (
+          {interventionOrdersError && interventionOrders.length ? (
             <Text className={classes.modalText} c="red">
               {interventionOrdersError}
             </Text>
@@ -1458,6 +1594,7 @@ export function UnifiedRegisterPreviewPage({
           </Stack>
         ) : null}
       </Modal>
-    </div>
+      </div>
+    </UnifiedRegisterPreviewHydrationProvider>
   );
 }
