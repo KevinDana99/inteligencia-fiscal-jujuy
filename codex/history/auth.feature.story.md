@@ -118,3 +118,10 @@ Verified successfully with:
 - `proxy.ts` ya no aplica el proxy de auth sobre `/.well-known`, evitando que Chrome DevTools contamine la cookie `auth-post-login-redirect`.
 - `signInAction` valida la cookie antes de redirigir y cae al destino por tipo de usuario cuando el valor no es una ruta válida de la app.
 - Se agregaron tests en `route-access.test.ts` para rutas privadas válidas, `/login`, redirects externos y rutas internas de navegador.
+
+## 2026-06-16 Login Server Action cache guard
+
+- Se movió el render del `LoginForm` detrás de un Server Component con `connection()` dentro de `Suspense`, evitando que `/login` prerenderice/cachee HTML con IDs viejos de Server Actions.
+- `useLoginForm` importa `signInAction` desde el archivo directo de comando, no desde el barrel `data/actions`.
+- `useSignOut` importa `signOutAction` desde el archivo directo de comando, manteniendo la misma defensa para el menú de sesión.
+- Validado con `bun x eslint`, `bun x tsc --noEmit --incremental false`, `bun run build` y `git diff --check`.

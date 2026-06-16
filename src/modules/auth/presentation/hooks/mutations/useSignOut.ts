@@ -1,7 +1,7 @@
 'use client'
 
 import { useTransition } from 'react'
-import { signOutAction } from '../../../data/actions'
+import { signOutAction } from '../../../data/actions/commands/signOutAction'
 
 function isNextRedirectError(error: unknown): boolean {
   if (

@@ -5,7 +5,7 @@ import {
   AUTH_SESSION_EXPIRED_NOTICE_COOKIE,
   AUTH_SESSION_EXPIRED_NOTICE_MESSAGE
 } from '@/lib/auth/session-expired-notice'
-import { signInAction } from '../../../data/actions'
+import { signInAction } from '../../../data/actions/commands/signInAction'
 import { INITIAL_SIGN_IN_STATE } from '../../hooks/mutations/signInState'
 import {
   buildExpiredClientCookie,

@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
+import { connection } from 'next/server'
 import LoginForm from '@/modules/auth/presentation/components/LoginForm'
 
 export const metadata: Metadata = {
@@ -9,7 +10,13 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <Suspense fallback={null}>
-      <LoginForm />
+      <LoginPageContent />
     </Suspense>
   )
+}
+
+async function LoginPageContent() {
+  await connection()
+
+  return <LoginForm />
 }
