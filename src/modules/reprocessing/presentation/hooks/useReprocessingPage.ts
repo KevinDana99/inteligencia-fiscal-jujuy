@@ -38,7 +38,6 @@ export function useReprocessingPage(initialData?: IReprocessingListData | null) 
     isSearchPending,
     setSearchValue
   } = useReprocessingSearch({
-    initialData,
     itemsPerPage,
     onSearchResult: applyPageData
   })

@@ -6,16 +6,13 @@ import type { IReprocessingListData } from '../../data/models/Reprocessing'
 import { normalizeReprocessingSearchValue } from '../utils'
 
 const SEARCH_DEBOUNCE_MS = 500
-const MIN_SEARCH_LENGTH = 3
 
 interface UseReprocessingSearchParams {
-  initialData?: IReprocessingListData | null
   itemsPerPage: number
   onSearchResult: (data: IReprocessingListData) => void
 }
 
 export function useReprocessingSearch({
-  initialData,
   itemsPerPage,
   onSearchResult
 }: UseReprocessingSearchParams) {
@@ -35,19 +32,6 @@ export function useReprocessingSearch({
 
     const requestId = latestSearchRequestIdRef.current + 1
     latestSearchRequestIdRef.current = requestId
-
-    if (normalizedValue.length > 0 && normalizedValue.length < MIN_SEARCH_LENGTH) {
-      onSearchResult(
-        initialData ?? {
-          page: 1,
-          itemsPerPage,
-          totalItems: 0,
-          totalPages: 0,
-          items: []
-        }
-      )
-      return
-    }
 
     searchTimeoutRef.current = setTimeout(() => {
       startSearchTransition(() => {
