@@ -58,3 +58,129 @@
   font-size: 14px;
   text-align: center;
 }
+
+.modalContent {
+  position: relative;
+  z-index: 801;
+  background: var(--mantine-color-white);
+  border: 1px solid var(--mantine-color-gray-2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.modalOverlay {
+  display: flex;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 800;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+}
+
+.modalHeader {
+  background: var(--mantine-color-white);
+  border-bottom: 1px solid var(--mantine-color-gray-1);
+}
+
+.modalBody {
+  background: var(--mantine-color-white);
+}
+
+.modalTitle {
+  color: var(--mantine-color-gray-9);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.lotConfirmModalContent {
+  width: 420px;
+  max-width: 95vw;
+  border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+}
+
+.lotConfirmModalHeader {
+  padding: 28px 28px 8px;
+  border-bottom: 0;
+  min-height: 0;
+}
+
+.lotConfirmModalBody {
+  padding: 0 28px 24px;
+}
+
+.modalText {
+  color: var(--mantine-color-gray-5);
+  font-size: 13px;
+}
+
+.lotConfirmModalText {
+  margin-bottom: 24px;
+}
+
+.modalErrorText {
+  margin-top: -4px;
+  margin-bottom: 14px;
+  color: var(--mantine-color-red-6);
+  font-size: 13px;
+}
+
+.batchDropdownInput {
+  width: 100%;
+  margin: 0 0 6px;
+  background: var(--mantine-color-white);
+  border-color: var(--mantine-color-gray-2);
+  border-radius: 8px;
+  padding: 7px 12px;
+  color: #000;
+  font-size: 13px;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.batchDropdownList {
+  display: flex;
+  flex-direction: column;
+  margin: 0 -12px -6px;
+}
+
+.batchDropdownState {
+  padding: 12px 16px;
+  color: var(--mantine-color-gray-5);
+  font-size: 12.5px;
+}
+
+.batchDropdownError {
+  color: var(--mantine-color-red-6);
+}
+
+.batchDropdownOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 16px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.batchDropdownOption:hover {
+  background: var(--mantine-color-blue-1);
+}
+
+.batchDropdownOptionTitle {
+  color: var(--mantine-color-gray-9);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.batchDropdownOptionMeta {
+  color: var(--mantine-color-gray-5);
+  font-size: 12px;
+  white-space: nowrap;
+}

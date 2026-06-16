@@ -17,7 +17,17 @@ const RISK_CLASS_BY_LEVEL = {
   D: classes.riskD
 } as const satisfies Record<UnifiedRegisterRiskLevel, string>;
 
-export function UnifiedRegisterCard({ item }: { item: IUnifiedRegisterItem }) {
+interface UnifiedRegisterCardProps {
+  item: IUnifiedRegisterItem;
+  onAddToBatch: (item: IUnifiedRegisterItem) => void;
+  onMarkReprocessing: (item: IUnifiedRegisterItem) => void;
+}
+
+export function UnifiedRegisterCard({
+  item,
+  onAddToBatch,
+  onMarkReprocessing
+}: UnifiedRegisterCardProps) {
   const router = useRouter();
   const detailRoute =
     `/vista-previa-padron/${encodeURIComponent(item.cuit)}?id=${encodeURIComponent(item.contribuyenteId)}` as Route;
@@ -76,12 +86,20 @@ export function UnifiedRegisterCard({ item }: { item: IUnifiedRegisterItem }) {
               <Menu.Item
                 className={classes.menuItem}
                 leftSection={<IconFolderPlus size={14} />}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onAddToBatch(item);
+                }}
               >
                 Agregar a lote
               </Menu.Item>
               <Menu.Item
                 className={`${classes.menuItem} ${classes.menuDanger}`}
                 leftSection={<IconReload size={14} />}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onMarkReprocessing(item);
+                }}
               >
                 Marcar reproceso
               </Menu.Item>
