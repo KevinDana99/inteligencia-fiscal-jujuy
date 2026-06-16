@@ -31,17 +31,18 @@ export function IntimationTemplateFooter({
 
   return (
     <Group justify='flex-end' className={classes.footerActions}>
-      <div className={classes.customActions} hidden={footer.customActionsHidden}>
-        {footer.footerActions}
-      </div>
-      <Button
-        hidden={footer.defaultButtonHidden}
-        className={footer.confirmButton.className}
-        onClick={footer.confirmButton.onClick}
-        loading={footer.confirmButton.loading}
-      >
-        {footer.confirmButton.label}
-      </Button>
+      {footer.customActionsHidden ? null : (
+        <div className={classes.customActions}>{footer.footerActions}</div>
+      )}
+      {footer.defaultButtonHidden ? null : (
+        <Button
+          className={footer.confirmButton.className}
+          onClick={footer.confirmButton.onClick}
+          loading={footer.confirmButton.loading}
+        >
+          {footer.confirmButton.label}
+        </Button>
+      )}
     </Group>
   )
 }

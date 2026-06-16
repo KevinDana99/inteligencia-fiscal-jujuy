@@ -11,7 +11,7 @@ export function useCrossManagementNavigation() {
   const openCrossPreview = useCallback(
     (item: ICrossManagementItem) => {
       router.push(
-        `${CROSS_MANAGEMENT_PREVIEW_ROUTE}/${encodeURIComponent("pepito")}`
+        `${CROSS_MANAGEMENT_PREVIEW_ROUTE}/${encodeURIComponent(item.id)}`
       );
     },
     [router]
