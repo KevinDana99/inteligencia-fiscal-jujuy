@@ -1,4 +1,4 @@
-import type { IBatchCrossExecutionPayload } from '@/modules/batch-management/presentation/utils';
+import type { IBatchCrossExecutionPayload } from '@/modules/batch-management/data/models/BatchManagement';
 import { executeCrossAction } from '@/modules/cross-management/data/actions';
 
 export async function executePreviewCrossPayloads(

@@ -130,13 +130,13 @@ export function usePreviewContacts({
 
   const goToPreviousContactPage = () => {
     if (contactsCurrentPage > 1) {
-      startContactsPageTransition(async () => refreshContacts(contactsCurrentPage - 1));
+      startContactsPageTransition(() => { void refreshContacts(contactsCurrentPage - 1); });
     }
   };
 
   const goToNextContactPage = () => {
     if (contactsCurrentPage < contactsTotalPages) {
-      startContactsPageTransition(async () => refreshContacts(contactsCurrentPage + 1));
+      startContactsPageTransition(() => { void refreshContacts(contactsCurrentPage + 1); });
     }
   };
 

@@ -130,13 +130,13 @@ export function usePreviewNotes({
 
   const goToPreviousNote = () => {
     if (notesCurrentPage > 1) {
-      startNotesPageTransition(async () => refreshNotes(notesCurrentPage - 1));
+      startNotesPageTransition(() => { void refreshNotes(notesCurrentPage - 1); });
     }
   };
 
   const goToNextNote = () => {
     if (notesCurrentPage < notesTotalPages) {
-      startNotesPageTransition(async () => refreshNotes(notesCurrentPage + 1));
+      startNotesPageTransition(() => { void refreshNotes(notesCurrentPage + 1); });
     }
   };
 
