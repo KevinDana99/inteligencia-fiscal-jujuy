@@ -259,6 +259,17 @@
   width: 100%;
 }
 
+.convenioInput {
+  width: fit-content;
+}
+
+.convenioInput :global(.mantine-Input-input) {
+  width: 60px;
+  padding: 7px 10px;
+  font-family: monospace;
+  font-size: 13px;
+}
+
 .filterDropdown {
   position: absolute;
   top: 38px;

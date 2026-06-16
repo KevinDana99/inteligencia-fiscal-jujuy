@@ -57,19 +57,30 @@ interface ExplorerRegisterMultiValueFieldProps {
   options: IExplorerRegisterFilterOptionData[];
   values: string[];
   onChange: (values: string[]) => void;
+  mode?: 'default' | 'threeDigitNumeric';
+  placeholder?: string;
+  hint?: string;
+  withSearchIcon?: boolean;
+  inputClassName?: string;
 }
 
 function ExplorerRegisterMultiValueField({
   disabled,
   options,
   values,
-  onChange
+  onChange,
+  mode = 'default',
+  placeholder = EXPLORER_REGISTER_TEXTS.filterSearchPlaceholder,
+  hint,
+  withSearchIcon = true,
+  inputClassName
 }: ExplorerRegisterMultiValueFieldProps) {
   const field = useExplorerRegisterMultiValueField({
     disabled,
     options,
     values,
-    onChange
+    onChange,
+    mode
   });
 
   return (
@@ -77,10 +88,11 @@ function ExplorerRegisterMultiValueField({
       <TextInput
         value={field.searchValue}
         disabled={disabled}
-        leftSection={<IconSearch size={13} />}
-        leftSectionWidth={30}
-        placeholder={EXPLORER_REGISTER_TEXTS.filterSearchPlaceholder}
-        className={`${classes.filterSelect} ${classes.filterSearchInput}`}
+        leftSection={withSearchIcon ? <IconSearch size={13} /> : undefined}
+        leftSectionWidth={withSearchIcon ? 30 : undefined}
+        placeholder={placeholder}
+        inputMode={mode === 'threeDigitNumeric' ? 'numeric' : undefined}
+        className={`${classes.filterSelect} ${inputClassName ?? classes.filterSearchInput}`}
         onFocus={field.handleInputFocus}
         onBlur={field.handleInputBlur}
         onChange={(event) => field.handleInputChange(event.currentTarget.value)}
@@ -90,6 +102,8 @@ function ExplorerRegisterMultiValueField({
           }
         }}
       />
+
+      {hint ? <Text className={classes.filterHint}>{hint}</Text> : null}
 
       {field.isOpen && field.filteredOptions.length > 0 ? (
         <div className={classes.filterDropdown}>
@@ -333,6 +347,23 @@ export function ExplorerRegisterPage({
                                 controller.updateFilterValues(
                                   filter.code,
                                   value ? [value] : []
+                                )
+                              }
+                            />
+                          ) : filter.code === 'convenioJurisdiccion' ? (
+                            <ExplorerRegisterMultiValueField
+                              values={filterValue}
+                              options={[]}
+                              disabled={disabled}
+                              mode="threeDigitNumeric"
+                              withSearchIcon={false}
+                              placeholder="Ej: 910"
+                              hint="Ingresá código de 3 dígitos y presioná Enter"
+                              inputClassName={classes.convenioInput}
+                              onChange={(values) =>
+                                controller.updateFilterValues(
+                                  filter.code,
+                                  values
                                 )
                               }
                             />

@@ -12,13 +12,15 @@ interface UseExplorerRegisterMultiValueFieldParams {
   options: IExplorerRegisterFilterOptionData[];
   values: string[];
   onChange: (values: string[]) => void;
+  mode?: 'default' | 'threeDigitNumeric';
 }
 
 export function useExplorerRegisterMultiValueField({
   disabled,
   options,
   values,
-  onChange
+  onChange,
+  mode = 'default'
 }: UseExplorerRegisterMultiValueFieldParams) {
   const allowsCustomValues = options.length === 0;
   const [searchValue, setSearchValue] = useState('');
@@ -79,6 +81,11 @@ export function useExplorerRegisterMultiValueField({
   }
 
   function handleInputChange(nextValue: string) {
+    if (mode === 'threeDigitNumeric') {
+      setSearchValue(nextValue.replace(/\D/g, '').slice(0, 3));
+      return;
+    }
+
     if (!allowsCustomValues) {
       const normalizedValue = nextValue.trim().toUpperCase();
 
@@ -110,6 +117,10 @@ export function useExplorerRegisterMultiValueField({
   function handleInputKeyDown(key: string) {
     if (key !== 'Enter') {
       return false;
+    }
+
+    if (mode === 'threeDigitNumeric' && searchValue.trim().length !== 3) {
+      return true;
     }
 
     addSearchValue();
