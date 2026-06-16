@@ -17,6 +17,7 @@ import { applyUnifiedRegisterHeaderToDetail } from '@/modules/unified-register/d
 import {
   findContributorByCuit,
   isSameCuit,
+  normalizeCuit,
   resolvePreviewContribuyenteId
 } from '@/modules/unified-register/data/utils/resolveUnifiedRegisterPreviewContributor';
 import { UnifiedRegisterPreviewPage } from '@/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage';
@@ -31,28 +32,15 @@ const unifiedRegisterDetailTemplate = unifiedRegisterDetailsFixture[0];
 const CONTRIBUTOR_LOOKUP_PAGE_SIZE = 50;
 
 async function findContribuyenteByCuit(cuit: string) {
-  const firstPageResult = await getUnifiedRegisterListAction(
-    1,
-    CONTRIBUTOR_LOOKUP_PAGE_SIZE
-  );
-  const firstPage = firstPageResult.data;
+  const searchTerms = Array.from(new Set([cuit, normalizeCuit(cuit)]))
+    .map((term) => term.trim())
+    .filter(Boolean);
 
-  if (!firstPage) {
-    return null;
-  }
-
-  const firstPageMatch = firstPage.contribuyentes.find((entry) =>
-    isSameCuit(entry.cuit, cuit)
-  );
-
-  if (firstPageMatch) {
-    return firstPageMatch;
-  }
-
-  for (let page = 2; page <= firstPage.totalPaginas; page += 1) {
+  for (const searchTerm of searchTerms) {
     const pageResult = await getUnifiedRegisterListAction(
-      page,
-      CONTRIBUTOR_LOOKUP_PAGE_SIZE
+      1,
+      CONTRIBUTOR_LOOKUP_PAGE_SIZE,
+      searchTerm
     );
     const pageData = pageResult.data;
 
@@ -97,7 +85,7 @@ export default async function UnifiedRegisterPreviewRoute({
     unifiedRegisterDetailsFixture,
     decodedCuit
   );
-  const backendListItem = fixtureItem
+  const backendListItem = fixtureItem || id
     ? null
     : await findContribuyenteByCuit(decodedCuit);
   const cuitMatchedContribuyenteId =

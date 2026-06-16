@@ -44,7 +44,10 @@ const getDefaultSelectedCrossIds = (crosses: InformeCrossOption[]) => {
   return firstReportReadyCross ? [firstReportReadyCross.id] : [];
 };
 
-export function useInformeGeneration(item: IUnifiedRegisterDetail) {
+export function useInformeGeneration(
+  item: IUnifiedRegisterDetail,
+  shouldLoadCrosses = true
+) {
   const [step, setStep] = useState<InformeGenerationStep>('form');
   const [form, setForm] = useState<InformeGenerationForm>(cloneDefaultForm);
   const [availableCrosses, setAvailableCrosses] =
@@ -74,7 +77,8 @@ export function useInformeGeneration(item: IUnifiedRegisterDetail) {
     () => getSelectedInformeCrosses(selectedCrossIds, availableCrosses),
     [availableCrosses, selectedCrossIds]
   );
-  const isLoadingCrosses = loadedCrossesContributorId !== item.contribuyenteId;
+  const isLoadingCrosses =
+    shouldLoadCrosses && loadedCrossesContributorId !== item.contribuyenteId;
   const hasUnavailableSelectedCross =
     selectedCrosses.length !== selectedCrossIds.length ||
     selectedCrosses.some((cross) => cross.isReportReady === false);
@@ -85,6 +89,10 @@ export function useInformeGeneration(item: IUnifiedRegisterDetail) {
     !isLoadingCrosses;
 
   useEffect(() => {
+    if (!shouldLoadCrosses || loadedCrossesContributorId === item.contribuyenteId) {
+      return;
+    }
+
     let isActive = true;
 
     getContributorCrossesAction(item.contribuyenteId)
@@ -139,7 +147,7 @@ export function useInformeGeneration(item: IUnifiedRegisterDetail) {
     return () => {
       isActive = false;
     };
-  }, [item.contribuyenteId]);
+  }, [item.contribuyenteId, loadedCrossesContributorId, shouldLoadCrosses]);
 
   const updateFormField = (field: 'titulo' | 'destinatario', value: string) => {
     setForm((current) => ({
