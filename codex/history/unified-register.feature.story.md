@@ -329,3 +329,45 @@ Split `/vista-previa-padron/[cuit]` into a lightweight route plus independent Se
 - `bun x eslint 'app/(private)/vista-previa-padron/[cuit]/page.tsx' 'src/modules/unified-register/preview.tsx' 'src/modules/unified-register/presentation/contexts/UnifiedRegisterPreviewHydrationContext.tsx' 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/UnifiedRegisterPreviewHydrationBridge.tsx' 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/index.tsx' 'src/modules/unified-register/presentation/hooks/useUnifiedRegisterPreview.ts' 'src/modules/unified-register/presentation/hooks/useUnifiedRegisterMercurio.ts' 'src/modules/unified-register/presentation/hooks/useUnifiedRegisterInterventionOrders.ts'`
 - `bun x tsc --noEmit --incremental false`
 - `git diff --check`
+
+## Unified Padron Preview SOLID Refactor - 2026-06-16
+
+### Summary
+
+Refactored `/vista-previa-padron/[cuit]` so route resolution, preview orchestration, report generation, modal rendering, constants, and utilities live in focused modules with files kept under the 150-line limit for the touched preview flow.
+
+### Main Changes
+
+- Moved route contributor resolution into `src/modules/unified-register/preview/resolvePreviewRouteData.ts`, leaving the Next route focused on param decoding, `notFound()`, and module rendering.
+- Split the preview client controller into SOLID-style hooks and operation helpers for hydration, record actions, contacts, notes, crosses, batches, remote tables, and reprocessing.
+- Split `UnifiedRegisterPreviewPage` into small cards, table sections, modal parts, shared table/pager primitives, and preview constants/utils.
+- Split `useInformeGeneration` into form, cross-loading, and document-generation hooks, then extracted contributor-cross mapping and payload building into separate utilities.
+- Split the informe generation and preview modals into section components, moved fiscal-action field definitions and report templates into dedicated constants, and compacted CSS modules without changing their selectors.
+
+### Validation
+
+- `bun x eslint 'app/(private)/vista-previa-padron/[cuit]/page.tsx' 'src/modules/unified-register/preview/**/*.tsx' 'src/modules/unified-register/preview/*.tsx' 'src/modules/unified-register/preview/*.ts' 'src/modules/unified-register/presentation/hooks/useUnifiedRegisterPreview.ts' 'src/modules/unified-register/presentation/hooks/unified-register-preview/*.ts' 'src/modules/unified-register/presentation/hooks/useInformeGeneration.ts' 'src/modules/unified-register/presentation/hooks/informe-generation/*.ts' 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/**/*.tsx' 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/*.tsx' 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/*.ts' 'src/modules/unified-register/presentation/components/InformeGenerationModal/**/*.tsx' 'src/modules/unified-register/presentation/components/InformeGenerationModal/*.tsx' 'src/modules/unified-register/presentation/components/InformeGenerationModal/*.ts' 'src/modules/unified-register/presentation/components/InformePreviewModal/**/*.tsx' 'src/modules/unified-register/presentation/components/InformePreviewModal/*.tsx' 'src/modules/unified-register/presentation/components/InformePreviewModal/*.ts' 'src/modules/unified-register/presentation/constants/informeGeneration*.ts' 'src/modules/unified-register/presentation/constants/unifiedRegisterPreview*.ts' 'src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts' 'src/modules/unified-register/presentation/utils/mapContributorCrossesToInformeOptions.ts' 'src/modules/unified-register/presentation/utils/unifiedRegisterPreview*.ts'`
+- `bun x tsc --noEmit`
+- `bun run build`
+- File-size check over the touched preview/report modules: largest file is 149 lines.
+- Browser verification against the existing `http://localhost:3000` dev server: `/vista-previa-padron/20123456789` redirects to `/login`, the login page renders content, and no Next overlay or console errors were detected.
+
+## Unified Padron Preview Hydration Loop Fix - 2026-06-16
+
+### Summary
+
+Fixed a `Maximum update depth exceeded` loop triggered by the preview hydration bridge when streamed hydration modules called state setters through unstable `hydrate*` function references.
+
+### Main Changes
+
+- Wrapped preview hydration callbacks in `useCallback` for available crosses, reprocessing, addresses, contacts, notes, Mercurio, and intervention orders.
+- Added a per-bridge `moduleKey` guard so each streamed hydration module applies its payload only once after it mounts.
+- Kept the hydration context memoized through stable function references instead of weakening the bridge effect dependencies.
+
+### Validation
+
+- `bun x eslint 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/UnifiedRegisterPreviewHydrationBridge.tsx' 'src/modules/unified-register/presentation/hooks/useUnifiedRegisterPreview.ts' 'src/modules/unified-register/presentation/hooks/unified-register-preview/*.ts'`
+- `bun x tsc --noEmit`
+- `bun run build`
+- File-size check on the touched preview hydration hooks: largest file is 149 lines.
+- Browser verification against `http://localhost:3000/vista-previa-padron/20123456789`: unauthenticated flow redirects to `/login`, renders content, and shows no Next overlay or console errors.

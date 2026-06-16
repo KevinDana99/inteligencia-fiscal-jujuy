@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getContributorCrossesAction } from '../../../data/actions';
 import type { IUnifiedRegisterDetail } from '../../../data/models/UnifiedRegister';
 import {
@@ -26,19 +26,25 @@ export function useInformeCrosses(
   const isLoadingCrosses =
     shouldLoadCrosses && loadedCrossesContributorId !== item.contribuyenteId;
 
-  const applyCrosses = (nextCrosses: InformeCrossOption[]) => {
-    setAvailableCrosses(nextCrosses);
-    setSelectedCrossIds((current) => resolveSelectedCrosses(current, nextCrosses));
-    setCrossesError(null);
-    setLoadedCrossesContributorId(item.contribuyenteId);
-  };
+  const applyCrosses = useCallback(
+    (nextCrosses: InformeCrossOption[]) => {
+      setAvailableCrosses(nextCrosses);
+      setSelectedCrossIds((current) => resolveSelectedCrosses(current, nextCrosses));
+      setCrossesError(null);
+      setLoadedCrossesContributorId(item.contribuyenteId);
+    },
+    [item.contribuyenteId]
+  );
 
-  const setEmptyCrosses = (error?: string) => {
-    setAvailableCrosses([]);
-    setSelectedCrossIds([]);
-    setCrossesError(error ?? 'No fue posible listar los cruces del contribuyente.');
-    setLoadedCrossesContributorId(item.contribuyenteId);
-  };
+  const setEmptyCrosses = useCallback(
+    (error?: string) => {
+      setAvailableCrosses([]);
+      setSelectedCrossIds([]);
+      setCrossesError(error ?? 'No fue posible listar los cruces del contribuyente.');
+      setLoadedCrossesContributorId(item.contribuyenteId);
+    },
+    [item.contribuyenteId]
+  );
 
   useEffect(() => {
     if (!shouldLoadCrosses || loadedCrossesContributorId === item.contribuyenteId) {
@@ -62,7 +68,13 @@ export function useInformeCrosses(
     return () => {
       isActive = false;
     };
-  }, [item.contribuyenteId, loadedCrossesContributorId, shouldLoadCrosses]);
+  }, [
+    applyCrosses,
+    item.contribuyenteId,
+    loadedCrossesContributorId,
+    setEmptyCrosses,
+    shouldLoadCrosses
+  ]);
 
   const toggleCrossSelection = (crossId: string) => {
     const cross = availableCrosses.find((option) => option.id === crossId);

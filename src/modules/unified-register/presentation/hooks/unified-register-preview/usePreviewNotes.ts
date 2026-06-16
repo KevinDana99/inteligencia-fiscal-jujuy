@@ -53,7 +53,7 @@ export function usePreviewNotes({
     return true;
   };
 
-  const hydrateNotes = (
+  const hydrateNotes = useCallback((
     data: IUnifiedRegisterNotesListData | null,
     error?: string | null
   ) => {
@@ -68,7 +68,7 @@ export function usePreviewNotes({
 
     setNoteActionError(error ?? null);
     setIsNotesHydrating(false);
-  };
+  }, [applyNotesListData]);
 
   const saveNote = (
     editingItemId: string | null,

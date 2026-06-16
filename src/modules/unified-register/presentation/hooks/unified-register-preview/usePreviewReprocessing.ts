@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useCallback, useState, useTransition } from 'react';
 import { TOAST_DASHBOARD_MESSAGES, toast } from '@/components/core/toasts';
 import {
   markReprocessingAction,
@@ -39,10 +39,10 @@ export function usePreviewReprocessing({
     setReprocessingActionError(null);
   };
 
-  const hydrateReprocessingState = (nextIsReprocessingMarked: boolean) => {
+  const hydrateReprocessingState = useCallback((nextIsReprocessingMarked: boolean) => {
     setIsReprocessingMarked(nextIsReprocessingMarked);
     setIsReprocessingHydrating(false);
-  };
+  }, []);
 
   const toggleReprocessing = () => {
     clearReprocessingError();

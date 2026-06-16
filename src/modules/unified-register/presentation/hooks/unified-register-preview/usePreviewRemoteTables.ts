@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback } from 'react';
 import type {
   IUnifiedRegisterDetail,
   IUnifiedRegisterFinesListData,
@@ -35,6 +36,38 @@ export function usePreviewRemoteTables({
     initialInterventionOrders: item.interventionOrders,
     waitForInitialPage: waitForInterventionOrders
   });
+  const {
+    hydratePage: hydrateMercurioPage,
+    hydrateError: hydrateMercurioError
+  } = mercurio;
+  const {
+    hydratePage: hydrateInterventionOrdersPage,
+    hydrateError: hydrateInterventionOrdersError
+  } = interventionOrdersList;
+  const hydrateMercurio = useCallback((
+    data: IUnifiedRegisterFinesListData | null,
+    error?: string | null
+  ) => {
+    if (data) {
+      hydrateMercurioPage(data);
+      return;
+    }
+
+    hydrateMercurioError(error ?? 'No fue posible listar las multas Mercurio.');
+  }, [hydrateMercurioError, hydrateMercurioPage]);
+  const hydrateInterventionOrders = useCallback((
+    data: IUnifiedRegisterInterventionOrdersListData | null,
+    error?: string | null
+  ) => {
+    if (data) {
+      hydrateInterventionOrdersPage(data);
+      return;
+    }
+
+    hydrateInterventionOrdersError(
+      error ?? 'No fue posible listar las órdenes de intervención.'
+    );
+  }, [hydrateInterventionOrdersError, hydrateInterventionOrdersPage]);
 
   return {
     fines: mercurio.fines,
@@ -53,36 +86,7 @@ export function usePreviewRemoteTables({
     isInterventionOrdersPagePending: interventionOrdersList.isPagePending,
     goToPreviousInterventionOrderPage: interventionOrdersList.goToPreviousPage,
     goToNextInterventionOrderPage: interventionOrdersList.goToNextPage,
-    hydrateMercurio: getHydrateMercurio(mercurio),
-    hydrateInterventionOrders: getHydrateInterventionOrders(interventionOrdersList)
-  };
-}
-
-function getHydrateMercurio(mercurio: ReturnType<typeof useUnifiedRegisterMercurio>) {
-  return (data: IUnifiedRegisterFinesListData | null, error?: string | null) => {
-    if (data) {
-      mercurio.hydratePage(data);
-      return;
-    }
-
-    mercurio.hydrateError(error ?? 'No fue posible listar las multas Mercurio.');
-  };
-}
-
-function getHydrateInterventionOrders(
-  orders: ReturnType<typeof useUnifiedRegisterInterventionOrders>
-) {
-  return (
-    data: IUnifiedRegisterInterventionOrdersListData | null,
-    error?: string | null
-  ) => {
-    if (data) {
-      orders.hydratePage(data);
-      return;
-    }
-
-    orders.hydrateError(
-      error ?? 'No fue posible listar las órdenes de intervención.'
-    );
+    hydrateMercurio,
+    hydrateInterventionOrders
   };
 }

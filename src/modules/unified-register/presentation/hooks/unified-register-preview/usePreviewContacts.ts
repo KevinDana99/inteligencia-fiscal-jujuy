@@ -60,7 +60,7 @@ export function usePreviewContacts({
     return true;
   };
 
-  const hydrateContacts = (
+  const hydrateContacts = useCallback((
     data: IUnifiedRegisterContactsListData | null,
     error?: string | null
   ) => {
@@ -74,7 +74,7 @@ export function usePreviewContacts({
 
     setContactActionError(error ?? null);
     setIsContactsHydrating(false);
-  };
+  }, [applyContactsListData]);
 
   const saveContact = (
     editingItemId: string | null,

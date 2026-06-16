@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import type { IBatchAvailableCrosses } from '@/modules/batch-management/data/models/BatchManagement';
 import type {
   IUnifiedRegisterAddress,
@@ -43,8 +43,15 @@ export function UnifiedRegisterPreviewHydrationBridge({
   interventionOrdersError
 }: UnifiedRegisterPreviewHydrationBridgeProps) {
   const hydration = useUnifiedRegisterPreviewHydration();
+  const hydratedModuleKeysRef = useRef(new Set<string>());
 
   useEffect(() => {
+    if (hydratedModuleKeysRef.current.has(moduleKey)) {
+      return;
+    }
+
+    hydratedModuleKeysRef.current.add(moduleKey);
+
     if (availableCrosses) {
       hydration.hydrateAvailableCrosses(availableCrosses);
     }
@@ -97,4 +104,3 @@ export function UnifiedRegisterPreviewHydrationBridge({
 
   return null;
 }
-

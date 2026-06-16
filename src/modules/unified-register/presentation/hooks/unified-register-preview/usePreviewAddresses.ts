@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useCallback, useState, useTransition } from 'react';
 import { TOAST_DASHBOARD_MESSAGES, toast } from '@/components/core/toasts';
 import {
   createAlternateAddressAction,
@@ -34,14 +34,14 @@ export function usePreviewAddresses({
     setAddressActionError(null);
   };
 
-  const hydrateAddresses = (
+  const hydrateAddresses = useCallback((
     nextAddresses: IUnifiedRegisterAddress[],
     error?: string | null
   ) => {
     setAddresses(nextAddresses);
     setAddressActionError(error ?? null);
     setIsAddressesHydrating(false);
-  };
+  }, []);
 
   const saveAddress = (
     editingItemId: string | null,

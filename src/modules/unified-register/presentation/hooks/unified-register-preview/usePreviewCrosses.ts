@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useCallback, useState, useTransition } from 'react';
 import type { IBatchAvailableCrosses } from '@/modules/batch-management/data/models/BatchManagement';
 import { useBatchManagementCrossFilters } from '@/modules/batch-management/presentation/hooks/batch-management/useBatchManagementCrossFilters';
 import {
@@ -42,12 +42,12 @@ export function usePreviewCrosses({
     !crossValidationMessage &&
     !isCrossExecutionPending;
 
-  const hydrateAvailableCrosses = (
+  const hydrateAvailableCrosses = useCallback((
     nextAvailableCrosses: IBatchAvailableCrosses
   ) => {
     setAvailableCrosses(nextAvailableCrosses);
     setIsAvailableCrossesHydrating(false);
-  };
+  }, []);
 
   const clearCrossExecutionError = () => {
     setCrossExecutionError(null);
