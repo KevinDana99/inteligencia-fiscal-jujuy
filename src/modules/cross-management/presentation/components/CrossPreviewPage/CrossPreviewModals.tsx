@@ -2,17 +2,19 @@ import { Button, Modal } from '@mantine/core'
 import { IntimationTemplate } from '@/modules/configuration-module/presentation/components/IntimationTemplate'
 import { SendToReprocessingModal } from '@/modules/reprocessing/presentation/components'
 import type {
-  ICrossPreviewAnalysisRow,
-  ICrossPreviewPlanRow
+  ICrossPreviewAnalysisRow
 } from '../../../data/models/CrossManagement'
 import { CROSS_PREVIEW_INTIMATION_LABEL } from '../../constants/crossPreviewLabels'
 import { useCrossPreviewModals } from '../../hooks/cross-preview/useCrossPreviewModals'
-import { IntimationExportModal } from '../IntimationExportModal'
+import {
+  IntimationExportModal,
+  type IntimationExportContributor
+} from '../IntimationExportModal'
 import classes from './CrossPreviewPage.module.css'
 
 interface CrossPreviewModalsProps {
   activePreviewIndex: number
-  contributors: ICrossPreviewPlanRow[]
+  contributors: IntimationExportContributor[]
   exportModalOpened: boolean
   intimationModalOpened: boolean
   onCloseExportModal: () => void

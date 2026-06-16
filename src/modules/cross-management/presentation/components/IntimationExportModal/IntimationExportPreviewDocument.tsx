@@ -19,7 +19,7 @@ export function IntimationExportPreviewDocument({
     contributorName,
     paragraphs,
     shouldShowSource,
-    tableCells
+    tableRows
   } = useIntimationExportDocument({ contributor, templateState })
 
   return (
@@ -46,7 +46,7 @@ export function IntimationExportPreviewDocument({
 
         <IntimationExportPreviewTable
           columns={templateState.columnas}
-          cells={tableCells}
+          rows={tableRows}
         />
 
         {shouldShowSource ? (

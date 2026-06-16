@@ -19,11 +19,19 @@ export function useIntimationExportDocument({
     () => templateState.cuerpo.split('\n'),
     [templateState.cuerpo]
   )
-  const tableCells = useMemo(
+  const tableRows = useMemo(
     () =>
-      templateState.columnas.map((column) => ({
-        id: column.id,
-        value: resolveIntimationExportColumnValue(contributor, column.id)
+      (contributor?.planillaRows.length
+        ? contributor.planillaRows
+        : contributor
+          ? [contributor]
+          : []
+      ).map((row, rowIndex) => ({
+        id: `${row.id}-${rowIndex}`,
+        cells: templateState.columnas.map((column) => ({
+          id: column.id,
+          value: resolveIntimationExportColumnValue(row, column.id)
+        }))
       })),
     [contributor, templateState.columnas]
   )
@@ -33,6 +41,6 @@ export function useIntimationExportDocument({
     contributorName: contributor?.businessName ?? INTIMATION_EXPORT_EMPTY_VALUE,
     paragraphs,
     shouldShowSource: Boolean(templateState.fuenteInformacion),
-    tableCells
+    tableRows
   }
 }

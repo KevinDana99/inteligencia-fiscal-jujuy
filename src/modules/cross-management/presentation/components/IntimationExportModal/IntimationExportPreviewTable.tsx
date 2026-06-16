@@ -5,11 +5,14 @@ import classes from './IntimationExportPreview.module.css'
 
 interface IntimationExportPreviewTableProps {
   columns: IntimationTemplateColumn[]
-  cells: Array<{ id: string; value: string }>
+  rows: Array<{
+    id: string
+    cells: Array<{ id: string; value: string }>
+  }>
 }
 
 export function IntimationExportPreviewTable({
-  cells,
+  rows,
   columns
 }: IntimationExportPreviewTableProps) {
   return (
@@ -33,13 +36,15 @@ export function IntimationExportPreviewTable({
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          <Table.Tr>
-            {cells.map((cell) => (
-              <Table.Td key={cell.id} className={classes.previewTableCell}>
-                {cell.value}
-              </Table.Td>
-            ))}
-          </Table.Tr>
+          {rows.map((row) => (
+            <Table.Tr key={row.id}>
+              {row.cells.map((cell) => (
+                <Table.Td key={cell.id} className={classes.previewTableCell}>
+                  {cell.value}
+                </Table.Td>
+              ))}
+            </Table.Tr>
+          ))}
         </Table.Tbody>
       </Table>
     </div>

@@ -1,5 +1,19 @@
 # Cross Management Feature Story
 
+## 2026-06-16 Payload de intimacion por contribuyente
+
+- La previsualizacion de intimacion ahora agrupa filas de planilla por contribuyente antes de paginar el modal, evitando tratar periodos del mismo contribuyente como intimaciones separadas.
+- `filasPlanilla` se genera con todas las filas asociadas al contribuyente activo y conserva las claves exactas de `columnasSeleccionadas`.
+- Los valores exportados normalizan `anio` sin separador de miles y las columnas de base imponible como moneda con prefijo `$`.
+- La configuracion de columnas acepta `columnasSeleccionadas` y cae al set default (`anio` + bases imponibles) cuando la configuracion llega sin columnas.
+- `snapshotIntimacion.fechaCorte` se normaliza al periodo `MM/YYYY` cuando la plantilla trae el texto completo del pie.
+
+### Validation
+
+- `bun x jest src/modules/cross-management/presentation/utils/intimationDocumentPayload.test.ts src/modules/cross-management/presentation/utils/groupIntimationExportContributors.test.ts src/modules/configuration-module/presentation/utils/intimationTemplateState.test.ts --runInBand`
+- `bun x eslint src/modules/cross-management/presentation/utils/intimationDocumentPayload.ts src/modules/cross-management/presentation/utils/intimationDocumentPayload.test.ts src/modules/cross-management/presentation/utils/groupIntimationExportContributors.ts src/modules/cross-management/presentation/utils/groupIntimationExportContributors.test.ts src/modules/cross-management/presentation/utils/resolveIntimationExportColumnValue.ts src/modules/cross-management/presentation/hooks/useCrossPreview.ts src/modules/cross-management/presentation/hooks/cross-preview/useCrossPreviewModals.ts src/modules/cross-management/presentation/hooks/intimation-export/useIntimationExportModal.ts src/modules/cross-management/presentation/hooks/intimation-export/useIntimationExportDocument.ts src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewPageContent.tsx src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewModals.tsx src/modules/cross-management/presentation/components/IntimationExportModal/IntimationExportPreviewDocument.tsx src/modules/cross-management/presentation/components/IntimationExportModal/IntimationExportPreviewTable.tsx src/modules/configuration-module/data/sources/rest/RestConfigurationSource.ts src/modules/configuration-module/data/sources/rest/dtos/ApiConfigurationDtos.ts src/modules/configuration-module/presentation/utils/intimationTemplateState.ts src/modules/configuration-module/presentation/utils/intimationTemplateState.test.ts`
+- Browser check: `http://localhost:3000/gestion-de-cruces/vista-previa-cruce/92`, login con `example@example.com`, `Ranking` -> `Generar intimacion` confirma columnas `AÑO`, `Base Imponible Ingresos Brutos`, `Base Imponible Informada por Terceros (*)`, `Diferencia de Base Imponible`; la previsualizacion muestra `2025`, `$ 16.866`, `$ 0`, `$ 937.001` y no registra errores de consola.
+
 ## 2026-06-16 Icono check en estado relevante
 
 - Se reemplazo el prefijo textual `✓` del estado `Relevante` en la tabla de ranking de `vista-previa-cruce` por `IconCheck` de `@tabler/icons-react`.

@@ -1,6 +1,8 @@
 'use client'
 
+import { useMemo } from 'react'
 import type { ICrossPreviewData } from '../../data/models/CrossManagement'
+import { groupIntimationExportContributors } from '../utils/groupIntimationExportContributors'
 import { useCrossPreviewModalState } from './cross-preview/useCrossPreviewModalState'
 import { useCrossPreviewPlanillaQuery } from './cross-preview/useCrossPreviewPlanillaQuery'
 import { useCrossPreviewResumenQuery } from './cross-preview/useCrossPreviewResumenQuery'
@@ -18,8 +20,12 @@ export function useCrossPreview(cross: ICrossPreviewData) {
   const planilla = useCrossPreviewPlanillaQuery({ cross })
   const resumen = useCrossPreviewResumenQuery({ cross })
   const status = useCrossPreviewStatus({ rows: resumen.analysisRows })
+  const intimationContributors = useMemo(
+    () => groupIntimationExportContributors(planilla.rows),
+    [planilla.rows]
+  )
   const modals = useCrossPreviewModalState({
-    maxPreviewIndex: Math.max(planilla.rows.length - 1, 0)
+    maxPreviewIndex: Math.max(intimationContributors.length - 1, 0)
   })
 
   const updateTab = (tab: CrossPreviewTab) => {
@@ -46,6 +52,7 @@ export function useCrossPreview(cross: ICrossPreviewData) {
     closeFilterModal: resumen.closeFilterModal,
     columnFilters: resumen.columnFilters,
     filterableColumns: resumen.filterableColumns,
+    intimationContributors,
     openFilterModal: resumen.openFilterModal,
     planillaColumns: planilla.columns,
     planillaError: planilla.error,

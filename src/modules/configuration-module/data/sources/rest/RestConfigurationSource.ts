@@ -21,7 +21,8 @@ function mapIntimationConfigurationDto(
     cuerpo: dto.cuerpo ?? '',
     pie: dto.fechaCorte ?? dto.pie ?? '',
     fuente_informacion: dto.fuenteInformacion ?? dto.fuente_informacion ?? null,
-    columnas_seleccionadas: dto.columnas_seleccionadas ?? []
+    columnas_seleccionadas:
+      dto.columnasSeleccionadas ?? dto.columnas_seleccionadas ?? []
   }
 }
 
