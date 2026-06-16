@@ -28,21 +28,20 @@ function normalizeYearValue(value: string) {
 
 function normalizeCurrencyValue(value: string) {
   const trimmedValue = value.trim()
+  const valueWithoutCurrencySigns = trimmedValue.replace(/\$/g, '').trim()
+  const isNegative =
+    trimmedValue.startsWith('-') || valueWithoutCurrencySigns.startsWith('-')
+  const unsignedValue = valueWithoutCurrencySigns.replace(/^-+\s*/, '').trim()
 
-  if (
-    !trimmedValue ||
-    trimmedValue === INTIMATION_EXPORT_EMPTY_VALUE ||
-    trimmedValue.startsWith('$') ||
-    trimmedValue.startsWith('-$')
-  ) {
-    return trimmedValue || INTIMATION_EXPORT_EMPTY_VALUE
+  if (!/\d/.test(unsignedValue)) {
+    return '$ 0'
   }
 
-  if (trimmedValue.startsWith('-')) {
-    return `-$ ${trimmedValue.slice(1).trim()}`
+  if (isNegative && unsignedValue !== '0') {
+    return `-$ ${unsignedValue}`
   }
 
-  return `$ ${trimmedValue}`
+  return `$ ${unsignedValue}`
 }
 
 function normalizeColumnValue(columnId: string, value: string) {

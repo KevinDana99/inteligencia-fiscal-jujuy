@@ -32,6 +32,25 @@ const contributor = {
   planillaRows: [firstPlanillaRow, secondPlanillaRow]
 }
 
+const ceramicaPlanillaRow: ICrossPreviewPlanRow = {
+  id: 'ba2affa0-76a4-47bf-9f77-ed91905aae13',
+  taxpayerId: 'ba2affa0-76a4-47bf-9f77-ed91905aae13',
+  cuit: '30-50168521-2',
+  businessName: 'CERAMICA DEL NORTE S A',
+  cells: [],
+  values: {
+    anio: '2024',
+    baseImponibleIngresosBrutos: '-$ ',
+    baseImponibleInformadaPorTerceros: '$$ 0',
+    diferenciaBaseImponible: '$$ 55.803.248'
+  }
+}
+
+const ceramicaContributor = {
+  ...ceramicaPlanillaRow,
+  planillaRows: [ceramicaPlanillaRow]
+}
+
 const templateState: IntimationTemplateState = {
   asunto: 'PRESUNTA DIFERENCIA DE BASE IMPONIBLE',
   saludo: 'Senor Contribuyente:',
@@ -94,6 +113,28 @@ describe('buildIntimationDocumentPayload', () => {
         baseImponibleIngresosBrutos: '$ 1.044.794.031',
         baseImponibleInformadaPorTerceros: '$ 1.760.516.865',
         diferenciaBaseImponible: '$ 715.722.834'
+      }
+    ])
+  })
+
+  it('normalizes already formatted currency values in the API payload', () => {
+    const payload = buildIntimationDocumentPayload({
+      contributor: ceramicaContributor,
+      format: 'Pdf',
+      templateState
+    })
+
+    expect(payload.contribuyente).toEqual({
+      id: 'ba2affa0-76a4-47bf-9f77-ed91905aae13',
+      cuit: '30-50168521-2',
+      razonSocial: 'CERAMICA DEL NORTE S A'
+    })
+    expect(payload.filasPlanilla).toEqual([
+      {
+        anio: '2024',
+        baseImponibleIngresosBrutos: '$ 0',
+        baseImponibleInformadaPorTerceros: '$ 0',
+        diferenciaBaseImponible: '$ 55.803.248'
       }
     ])
   })
