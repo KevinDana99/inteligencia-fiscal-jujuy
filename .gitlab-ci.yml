@@ -20,9 +20,8 @@ variables:
   REGISTRY_HOST: gitlab.local.internal:5050
   REGISTRY_IMAGE: gitlab.local.internal:5050/if-rentas/frontend
   K3S_INFRA_REPO: gitlab.kamakia.io/if-rentas/k3s-infra.git
-<<<<<<< HEAD
-  K3S_INFRA_BRANCH: develop
-  FRONTEND_PATCH_FILE: overlays/dev/if/patches/frontend-dev-image.yaml
+  K3S_INFRA_BRANCH: main
+  FRONTEND_PATCH_FILE: overlays/prod/if/patches/frontend-prod-image.yaml
   NEXT_PUBLIC_API_BASE_URL: http://rentas-if-backend.rentas-if.svc.cluster.local
   NEXT_PUBLIC_USE_MOCK_AUTH: "false"
   NEXT_PUBLIC_USE_MOCK_ADMIN_PANEL: "false"
@@ -33,10 +32,6 @@ variables:
   NEXT_PUBLIC_USE_MOCK_EXPLORER_REGISTER: "false"
   NEXT_PUBLIC_USE_MOCK_REPROCESSING: "false"
   NEXT_PUBLIC_USE_MOCK_UNIFIED_REGISTER: "false"
-=======
-  K3S_INFRA_BRANCH: main
-  FRONTEND_PATCH_FILE: overlays/prod/if/patches/frontend-prod-image.yaml
->>>>>>> a1ce2e89cb80e6af3c74cc537a22d44ce52f9549
 
 validar_frontend:
   stage: validar
@@ -133,10 +128,5 @@ promover_k3s_infra_prod:
       fi
 
       git add "$FRONTEND_PATCH_FILE"
-<<<<<<< HEAD
-      git commit -m "chore dev actualiza imagen frontend a ${CI_COMMIT_SHORT_SHA}"
-      git push origin HEAD:"$K3S_INFRA_BRANCH"
-=======
       git commit -m "chore prod actualiza imagen frontend a ${CI_COMMIT_SHORT_SHA}"
       git push origin HEAD:"$K3S_INFRA_BRANCH"
->>>>>>> a1ce2e89cb80e6af3c74cc537a22d44ce52f9549
