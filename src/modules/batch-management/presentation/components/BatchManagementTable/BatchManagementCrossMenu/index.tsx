@@ -8,10 +8,14 @@ import classes from './BatchManagementCrossMenu.module.css'
 
 type BatchManagementCrossMenuProps = {
   controller: Parameters<typeof useBatchManagementCrossMenu>[0]
+  target?: React.ReactNode
+  position?: 'bottom-end' | 'bottom-start'
 }
 
 export function BatchManagementCrossMenu({
-  controller
+  controller,
+  target,
+  position = 'bottom-end'
 }: BatchManagementCrossMenuProps) {
   const menu = useBatchManagementCrossMenu(controller)
 
@@ -20,21 +24,23 @@ export function BatchManagementCrossMenu({
       shadow="md"
       width={420}
       withinPortal={false}
-      closeOnClickOutside={false}
+      closeOnClickOutside
       closeOnItemClick={false}
-      position="bottom-end"
+      position={position}
       offset={8}
     >
       <Menu.Target>
-        <ActionIcon
-          variant="subtle"
-          color="gray"
-          size="md"
-          onClick={(event) => event.stopPropagation()}
-          className={classes.rowActionButton}
-        >
-          <IconDotsVertical size={16} />
-        </ActionIcon>
+        {target ?? (
+          <ActionIcon
+            variant="subtle"
+            color="gray"
+            size="md"
+            onClick={(event) => event.stopPropagation()}
+            className={classes.rowActionButton}
+          >
+            <IconDotsVertical size={16} />
+          </ActionIcon>
+        )}
       </Menu.Target>
 
       <Menu.Dropdown

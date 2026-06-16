@@ -1,4 +1,6 @@
 import type {
+  ICrossExecutionPayload,
+  ICrossExecutionSummary,
   ICrossManagementListData,
   ICrossManagementListParams,
   ICrossPlanillaData,
@@ -28,6 +30,7 @@ export interface ICrossManagementQueryPort {
 }
 
 export interface ICrossManagementCommandPort {
+  executeCross(payload: ICrossExecutionPayload): Promise<ICrossExecutionSummary>
   generateIntimationDocument(
     payload: IGenerateIntimationDocumentPayload
   ): Promise<IIntimationDocumentGeneratedSummary>

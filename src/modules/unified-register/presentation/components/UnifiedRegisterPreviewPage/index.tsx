@@ -24,6 +24,8 @@ import {
   IconListDetails,
 } from "@tabler/icons-react";
 import { SendToReprocessingModal } from "@/modules/reprocessing/presentation/components";
+import { BatchManagementCrossMenu } from "@/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementCrossMenu";
+import type { IBatchAvailableCrosses } from "@/modules/batch-management/data/models/BatchManagement";
 import type {
   IUnifiedRegisterAddress,
   IUnifiedRegisterContact,
@@ -221,6 +223,7 @@ function RecordsTable({
 
 export function UnifiedRegisterPreviewPage({
   item,
+  initialAvailableCrosses,
   initialIsReprocessing,
   initialContactsData,
   initialMercurioData,
@@ -228,6 +231,7 @@ export function UnifiedRegisterPreviewPage({
   initialNotesData,
 }: {
   item: IUnifiedRegisterDetail;
+  initialAvailableCrosses: IBatchAvailableCrosses;
   initialIsReprocessing: boolean;
   initialContactsData: IUnifiedRegisterContactsListData | null;
   initialMercurioData: IUnifiedRegisterFinesListData | null;
@@ -257,6 +261,10 @@ export function UnifiedRegisterPreviewPage({
     interventionOrdersTotalItems,
     interventionOrdersError,
     reprocessingActionError,
+    availableCrosses,
+    crossFilters,
+    crossValidationMessage,
+    crossExecutionError,
     batchOptionsError,
     addToBatchError,
     isReprocessingMarked,
@@ -281,8 +289,10 @@ export function UnifiedRegisterPreviewPage({
     isNoteSavePending,
     isNoteDeletePending,
     isReprocessingTogglePending,
+    isCrossExecutionPending,
     isBatchOptionsPending,
     isAddToBatchPending,
+    canConfirmCrosses,
     formValue,
     contactForm,
     editingItemId,
@@ -293,6 +303,11 @@ export function UnifiedRegisterPreviewPage({
     openHeaderModal,
     closeHeaderModal,
     toggleReprocessing,
+    toggleCrossSection,
+    setCrossYear,
+    setCrossMonth,
+    toggleCrossType,
+    confirmCrossExecution,
     confirmReprocessing,
     selectLotOption,
     closeLotConfirmModal,
@@ -316,6 +331,7 @@ export function UnifiedRegisterPreviewPage({
     goToNextInterventionOrderPage,
   } = useUnifiedRegisterPreview(
     item,
+    initialAvailableCrosses,
     initialIsReprocessing,
     initialContactsData,
     initialNotesData,
@@ -471,20 +487,41 @@ export function UnifiedRegisterPreviewPage({
               <span>Marcar reproceso</span>
             </button>
 
-            <button
-              className={classes.secondaryAction}
-              onClick={() => openHeaderModal("crosses")}
-            >
-              <IconListDetails
-                size={12}
-                className={classes.secondaryActionIcon}
-              />
-              <span>Cruces a realizar</span>
-              <IconChevronDown
-                size={12}
-                className={classes.secondaryActionChevron}
-              />
-            </button>
+            <BatchManagementCrossMenu
+              controller={{
+                batchId: item.contribuyenteId,
+                availableCrosses,
+                filters: crossFilters,
+                validationMessage: crossValidationMessage,
+                executionError: crossExecutionError,
+                canConfirm: canConfirmCrosses,
+                isExecuting: isCrossExecutionPending,
+                onSectionToggle: (_, section) => toggleCrossSection(section),
+                onYearChange: (_, section, field, value) =>
+                  setCrossYear(section, field, value),
+                onMonthChange: (_, field, value) =>
+                  setCrossMonth(field, value),
+                onCrossTypeToggle: (_, section, crossType) =>
+                  toggleCrossType(section, crossType),
+                onConfirm: () => confirmCrossExecution(),
+                navigateOnConfirm: false,
+                onConfirmed: closeHeaderModal,
+              }}
+              target={
+                <button type="button" className={classes.secondaryAction}>
+                  <IconListDetails
+                    size={12}
+                    className={classes.secondaryActionIcon}
+                  />
+                  <span>Cruces a realizar</span>
+                  <IconChevronDown
+                    size={12}
+                    className={classes.secondaryActionChevron}
+                  />
+                </button>
+              }
+              position="bottom-start"
+            />
           </Group>
 
           <div className={classes.headerActionMenu}>
@@ -1091,46 +1128,6 @@ export function UnifiedRegisterPreviewPage({
         error={reprocessingActionError}
         onConfirm={confirmReprocessing}
       />
-
-      <Modal
-        opened={activeHeaderModal === "crosses"}
-        onClose={closeHeaderModal}
-        title="Cruces a realizar"
-        size="lg"
-        centered
-        zIndex={900}
-        classNames={{
-          overlay: classes.modalOverlay,
-          inner: classes.modalInner,
-          content: classes.modalContent,
-          header: classes.modalHeader,
-          body: classes.modalBody,
-          title: classes.modalTitle,
-        }}
-      >
-        <Stack gap="md">
-          <Text className={classes.modalText}>
-            Panel mock de cruces. La conexión con la lógica final se hará en
-            otra iteración.
-          </Text>
-          <Card className={classes.modalMockCard} padding="md" radius="md">
-            <Stack gap="xs">
-              <Text fw={600}>Mensuales</Text>
-              <Text size="sm" c="dimmed">
-                Control de desvío de BI, créditos, SAF y agentes.
-              </Text>
-            </Stack>
-          </Card>
-          <Card className={classes.modalMockCard} padding="md" radius="md">
-            <Stack gap="xs">
-              <Text fw={600}>Anuales</Text>
-              <Text size="sm" c="dimmed">
-                Régimen CM, BI declarada, no inscriptos y bases presuntivas.
-              </Text>
-            </Stack>
-          </Card>
-        </Stack>
-      </Modal>
 
       <InformeGenerationModal
         opened={

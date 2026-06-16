@@ -255,6 +255,28 @@ export interface ICrossManagementCommandResult<TData = null> {
   status?: number
 }
 
+export type ICrossExecutionOriginType = 'por_lote' | 'individual'
+
+export interface ICrossExecutionPayload {
+  crossCode: string
+  crossVersion: string
+  originType: ICrossExecutionOriginType
+  batchId?: string | null
+  contributorId?: string | null
+  periodFrom: string
+  periodTo: string
+  parameters?: Record<string, string | null>
+}
+
+export interface ICrossExecutionSummary {
+  executionId: number
+  crossCode: string
+  crossVersion: string
+  status: string
+  idempotencyKey: string
+  requestedAt: string
+}
+
 export type IIntimationDocumentFormat = 'Pdf' | 'Docx'
 
 export type IIntimationSpreadsheetCellValue = string | number | boolean

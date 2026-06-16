@@ -14,6 +14,14 @@ import {
 } from './batchCrossPeriods'
 
 const BATCH_CROSS_EXECUTION_CONFIG_BY_CODE = {
+  'cruce-bi-papel': {
+    label: 'cruce-bi-papel',
+    parameters: {
+      jurisdiccion: '910',
+      umbralAnalisisDeudaTotal: '1',
+      jurisdiccionesExcluidasTotalIngresos: '923'
+    }
+  },
   'desvio-bi-convenio-multilateral': {
     label: 'Control de desvio de BI - Regimen CM',
     parameters: {

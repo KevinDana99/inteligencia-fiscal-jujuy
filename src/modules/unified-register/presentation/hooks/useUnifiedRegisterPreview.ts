@@ -6,7 +6,18 @@ import {
   addContributorToBatchAction,
   getBatchManagementAction,
 } from "@/modules/batch-management/data/actions";
-import type { IBatchManagementItem } from "@/modules/batch-management/data/models/BatchManagement";
+import type {
+  IBatchAvailableCrosses,
+  IBatchManagementItem
+} from "@/modules/batch-management/data/models/BatchManagement";
+import { useBatchManagementCrossFilters } from "@/modules/batch-management/presentation/hooks/batch-management/useBatchManagementCrossFilters";
+import {
+  buildBatchCrossExecutionPayloads,
+  getBatchCrossValidationMessage,
+  hasExecutableBatchCrosses,
+  getEmptyExecutableBatchCrossMessage
+} from "@/modules/batch-management/presentation/utils";
+import { executeCrossAction } from "@/modules/cross-management/data/actions";
 import {
   markReprocessingAction,
   unmarkReprocessingAction,
@@ -81,13 +92,18 @@ function mapBatchItemToLotOption(
 
 export function useUnifiedRegisterPreview(
   item: IUnifiedRegisterDetail,
+  initialAvailableCrosses: IBatchAvailableCrosses,
   initialIsReprocessing: boolean,
   initialContactsData: IUnifiedRegisterContactsListData | null,
   initialNotesData: IUnifiedRegisterNotesListData | null,
   initialMercurioData: IUnifiedRegisterFinesListData | null,
   initialInterventionOrdersData: IUnifiedRegisterInterventionOrdersListData | null
 ) {
+  const crossFilters = useBatchManagementCrossFilters();
   const [activeHeaderModal, setActiveHeaderModal] = useState<HeaderModal>(null);
+  const [crossExecutionError, setCrossExecutionError] = useState<string | null>(
+    null
+  );
   const [batchSearch, setBatchSearch] = useState("");
   const [lotOptions, setLotOptions] = useState<IUnifiedRegisterBatchOption[]>(
     item.lotOptions
@@ -150,6 +166,8 @@ export function useUnifiedRegisterPreview(
   const [isNoteDeletePending, startNoteDeleteTransition] = useTransition();
   const [isReprocessingTogglePending, startReprocessingToggleTransition] =
     useTransition();
+  const [isCrossExecutionPending, startCrossExecutionTransition] =
+    useTransition();
   const [isBatchOptionsPending, startBatchOptionsTransition] = useTransition();
   const [isAddToBatchPending, startAddToBatchTransition] = useTransition();
   const latestBatchOptionsRequestIdRef = useRef(0);
@@ -163,6 +181,18 @@ export function useUnifiedRegisterPreview(
     initialData: initialInterventionOrdersData,
     initialInterventionOrders: item.interventionOrders,
   });
+  const crossTargetId = item.contribuyenteId;
+  const currentCrossFilters = crossFilters.getBatchCrossFilters(crossTargetId);
+  const crossValidationMessage =
+    getBatchCrossValidationMessage(currentCrossFilters);
+  const canConfirmCrosses =
+    hasExecutableBatchCrosses(
+      crossTargetId,
+      currentCrossFilters,
+      initialAvailableCrosses
+    ) &&
+    !crossValidationMessage &&
+    !isCrossExecutionPending;
 
   const filteredLotOptions = useMemo(() => {
     const normalizedSearch = batchSearch.trim().toLowerCase();
@@ -285,6 +315,10 @@ export function useUnifiedRegisterPreview(
       setAddToBatchError(null);
     }
 
+    if (modal === "crosses") {
+      setCrossExecutionError(null);
+    }
+
     setActiveHeaderModal(modal);
   };
 
@@ -293,6 +327,94 @@ export function useUnifiedRegisterPreview(
     setBatchSearch("");
     setReprocessingActionError(null);
     setBatchOptionsError(null);
+    setCrossExecutionError(null);
+  };
+
+  const toggleCrossSection = (section: "monthly" | "annual") => {
+    setCrossExecutionError(null);
+    crossFilters.toggleBatchCrossSection(crossTargetId, section);
+  };
+
+  const setCrossYear = (
+    section: "monthly" | "annual",
+    field: "fromYear" | "toYear",
+    value: string | null
+  ) => {
+    setCrossExecutionError(null);
+    crossFilters.setBatchCrossYear(crossTargetId, section, field, value);
+  };
+
+  const setCrossMonth = (
+    field: "fromMonth" | "toMonth",
+    value: string | null
+  ) => {
+    setCrossExecutionError(null);
+    crossFilters.setBatchCrossMonth(crossTargetId, field, value);
+  };
+
+  const toggleCrossType = (
+    section: "monthly" | "annual",
+    crossType: string
+  ) => {
+    setCrossExecutionError(null);
+    crossFilters.toggleBatchCrossType(crossTargetId, section, crossType);
+  };
+
+  const confirmCrossExecution = async () => {
+    if (crossValidationMessage) {
+      setCrossExecutionError(crossValidationMessage);
+      return false;
+    }
+
+    const payloads = buildBatchCrossExecutionPayloads(
+      crossTargetId,
+      currentCrossFilters,
+      initialAvailableCrosses
+    );
+
+    if (!payloads.length) {
+      setCrossExecutionError(
+        getEmptyExecutableBatchCrossMessage(initialAvailableCrosses)
+      );
+      return false;
+    }
+
+    setCrossExecutionError(null);
+
+    return await new Promise<boolean>((resolve) => {
+      startCrossExecutionTransition(() => {
+        void (async () => {
+          const results = await Promise.all(
+            payloads.map((payload) =>
+              executeCrossAction({
+                crossCode: payload.crossCode,
+                crossVersion: payload.crossVersion,
+                originType: "individual",
+                batchId: null,
+                contributorId: item.contribuyenteId,
+                periodFrom: payload.periodFrom,
+                periodTo: payload.periodTo,
+                parameters: payload.parameters ?? {},
+              })
+            )
+          );
+          const failedResult = results.find(
+            (result) => !result.success || !result.data
+          );
+
+          if (failedResult) {
+            setCrossExecutionError(
+              failedResult.error ?? "No fue posible ejecutar el cruce."
+            );
+            resolve(false);
+            return;
+          }
+
+          closeHeaderModal();
+          resolve(true);
+        })();
+      });
+    });
   };
 
   const toggleReprocessing = () => {
@@ -795,6 +917,10 @@ export function useUnifiedRegisterPreview(
     interventionOrdersTotalItems: interventionOrdersList.totalItems,
     interventionOrdersError: interventionOrdersList.error,
     reprocessingActionError,
+    availableCrosses: initialAvailableCrosses,
+    crossFilters: currentCrossFilters,
+    crossValidationMessage,
+    crossExecutionError,
     batchOptionsError,
     addToBatchError,
     isReprocessingMarked,
@@ -820,8 +946,10 @@ export function useUnifiedRegisterPreview(
     isNoteSavePending,
     isNoteDeletePending,
     isReprocessingTogglePending,
+    isCrossExecutionPending,
     isBatchOptionsPending,
     isAddToBatchPending,
+    canConfirmCrosses,
     formValue,
     contactForm,
     editingItemId,
@@ -832,6 +960,11 @@ export function useUnifiedRegisterPreview(
     openHeaderModal,
     closeHeaderModal,
     toggleReprocessing,
+    toggleCrossSection,
+    setCrossYear,
+    setCrossMonth,
+    toggleCrossType,
+    confirmCrossExecution,
     confirmReprocessing,
     selectLotOption,
     closeLotConfirmModal,

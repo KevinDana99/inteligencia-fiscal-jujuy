@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getReprocessingAction } from '@/modules/reprocessing/data/actions';
+import { getBatchAvailableCrossesAction } from '@/modules/batch-management/data/actions';
 import {
   getAlternateAddressesAction,
   getContactsAction,
@@ -103,6 +104,7 @@ export default async function UnifiedRegisterPreviewRoute({
     fixtureItem ?? buildUnifiedRegisterDetailFallback(contribuyenteId, decodedCuit);
 
   const [
+    availableCrossesResult,
     headerResult,
     alternateAddressesResult,
     notesResult,
@@ -111,6 +113,7 @@ export default async function UnifiedRegisterPreviewRoute({
     interventionOrdersResult,
     reprocessingResult
   ] = await Promise.all([
+    getBatchAvailableCrossesAction(),
     getUnifiedRegisterHeaderAction(contribuyenteId),
     getAlternateAddressesAction(contribuyenteId),
     getNotesAction(contribuyenteId, {
@@ -185,6 +188,7 @@ export default async function UnifiedRegisterPreviewRoute({
   return (
     <UnifiedRegisterPreviewPage
       item={resolvedItem}
+      initialAvailableCrosses={availableCrossesResult.data ?? []}
       initialIsReprocessing={isReprocessingActive}
       initialContactsData={contactsResult.data ?? null}
       initialMercurioData={mercurioResult.data ?? null}

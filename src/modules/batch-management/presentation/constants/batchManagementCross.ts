@@ -22,6 +22,15 @@ export const BATCH_CROSS_MONTH_OPTIONS = [
 ] as const
 
 export const BATCH_CROSS_OPTIONS_BY_LABEL = {
+  'cruce-bi-papel': {
+    publicCode: 'cruce-bi-papel',
+    version: '1.0.0',
+    parameters: {
+      jurisdiccion: '910',
+      umbralAnalisisDeudaTotal: '1',
+      jurisdiccionesExcluidasTotalIngresos: '923'
+    }
+  },
   'Control de desvio de BI - Regimen Gral': {
     legacyCode: 'CONTROL_DESVIO_BI_REGIMEN_GRAL'
   },
@@ -58,7 +67,7 @@ export const BATCH_CROSS_OPTIONS_BY_LABEL = {
 } as const
 
 export const BATCH_CROSS_SELECT_COMBOBOX_PROPS = {
-  withinPortal: true,
+  withinPortal: false,
   zIndex: 10001,
   width: 'target',
   offset: 4,

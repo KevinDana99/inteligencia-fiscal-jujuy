@@ -1,5 +1,7 @@
 import type { ICrossManagementSource } from '../../interfaces/CrossManagementSource'
 import type {
+  ICrossExecutionPayload,
+  ICrossExecutionSummary,
   ICrossAnalysisRow,
   ICrossDynamicColumn,
   ICrossManagementListData,
@@ -69,6 +71,19 @@ function matchesSearch(cuit: string, businessName: string, search?: string | nul
 }
 
 export class MockCrossManagementSource implements ICrossManagementSource {
+  async executeCross(
+    payload: ICrossExecutionPayload
+  ): Promise<ICrossExecutionSummary> {
+    return {
+      executionId: Date.now(),
+      crossCode: payload.crossCode,
+      crossVersion: payload.crossVersion,
+      status: 'Solicitado',
+      idempotencyKey: `mock-${payload.crossCode}-${payload.contributorId ?? payload.batchId ?? 'target'}`,
+      requestedAt: new Date().toISOString()
+    }
+  }
+
   async generateIntimationDocument(
     payload: IGenerateIntimationDocumentPayload
   ): Promise<IIntimationDocumentGeneratedSummary> {

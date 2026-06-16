@@ -163,3 +163,22 @@ export interface ApiCrossResumenResponseDto {
   esquemaAnalisisSistemico: ApiCrossDynamicSchemaDto | null
   analisisSistemico: ApiCrossAnalysisPaginationDto
 }
+
+export interface ApiExecuteCrossRequestDto {
+  versionCruce: string
+  tipoOrigen: 'por_lote' | 'individual'
+  loteId: string | null
+  contribuyenteId: string | null
+  periodoInicio: string
+  periodoFin: string
+  parametros: Record<string, string | null>
+}
+
+export interface ApiExecuteCrossResponseDto {
+  ejecucionId: number
+  codigoCruce: string
+  versionCruce: string
+  estado: string
+  claveIdempotencia: string
+  fechaSolicitud: string
+}

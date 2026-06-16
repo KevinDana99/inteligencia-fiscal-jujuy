@@ -40,6 +40,8 @@ type BatchManagementCrossMenuController = {
     crossType: string
   ) => void
   onConfirm: (batchId: string) => Promise<boolean>
+  navigateOnConfirm?: boolean
+  onConfirmed?: () => void
 }
 
 export function useBatchManagementCrossMenu(
@@ -60,6 +62,11 @@ export function useBatchManagementCrossMenu(
     const wasConfirmed = await controller.onConfirm(controller.batchId)
 
     if (wasConfirmed) {
+      if (controller.navigateOnConfirm === false) {
+        controller.onConfirmed?.()
+        return
+      }
+
       router.push(`/gestion-de-cruces?batchId=${controller.batchId}`)
     }
   }

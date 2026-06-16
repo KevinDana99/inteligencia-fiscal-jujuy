@@ -2,6 +2,8 @@ import { getJson, postJson, type ApiClientConfig } from '@/lib/api-client'
 import { INTIMATION_DOCUMENT_API_ENDPOINTS } from '../../constants/intimationDocumentContracts'
 import type { ICrossManagementSource } from '../../interfaces/CrossManagementSource'
 import type {
+  ICrossExecutionPayload,
+  ICrossExecutionSummary,
   ICrossManagementListData,
   ICrossManagementListParams,
   ICrossPlanillaData,
@@ -19,6 +21,8 @@ import type {
 } from './dtos/ApiIntimationDocumentDtos'
 import type {
   ApiCrossExecutionsListResponseDto,
+  ApiExecuteCrossRequestDto,
+  ApiExecuteCrossResponseDto,
   ApiCrossPlanillaRequestDto,
   ApiCrossPlanillaResponseDto,
   ApiCrossResumenRequestDto,
@@ -32,6 +36,10 @@ import {
   mapCrossResultsListResponseDto
 } from './mappers/mapCrossManagementDto'
 import { normalizeCrossSearchRequest } from '../../utils/crossSearch'
+
+function logRestCrossManagementEvent(event: unknown) {
+  console.log(JSON.stringify(event, null, 2))
+}
 
 function buildExecutionsQueryString(params: ICrossManagementListParams = {}) {
   const searchParams = new URLSearchParams()
@@ -82,6 +90,33 @@ function mapResumenRequestParams(
           valor: condition.value
         }))
       })) ?? []
+  }
+}
+
+function mapExecuteCrossRequest(
+  payload: ICrossExecutionPayload
+): ApiExecuteCrossRequestDto {
+  return {
+    versionCruce: payload.crossVersion,
+    tipoOrigen: payload.originType,
+    loteId: payload.batchId ?? null,
+    contribuyenteId: payload.contributorId ?? null,
+    periodoInicio: payload.periodFrom,
+    periodoFin: payload.periodTo,
+    parametros: payload.parameters ?? {}
+  }
+}
+
+function mapExecuteCrossResponse(
+  dto: ApiExecuteCrossResponseDto
+): ICrossExecutionSummary {
+  return {
+    executionId: dto.ejecucionId,
+    crossCode: dto.codigoCruce,
+    crossVersion: dto.versionCruce,
+    status: dto.estado,
+    idempotencyKey: dto.claveIdempotencia,
+    requestedAt: dto.fechaSolicitud
   }
 }
 
@@ -141,6 +176,38 @@ function mapGenerateIntimationDocumentResponse(
 
 export class RestCrossManagementSource implements ICrossManagementSource {
   constructor(private readonly config: ApiClientConfig) {}
+
+  async executeCross(
+    payload: ICrossExecutionPayload
+  ): Promise<ICrossExecutionSummary> {
+    const path = `/api/procesos-informacion/cruces/${encodeURIComponent(payload.crossCode)}/ejecuciones`
+    const requestBody = mapExecuteCrossRequest(payload)
+
+    logRestCrossManagementEvent({
+      endpoint: '/api/procesos-informacion/cruces/{codigoCruce}/ejecuciones',
+      action: 'RestCrossManagementSource.executeCross',
+      METHOD: 'POST',
+      REQUEST_RAW: {
+        codigoCruce: payload.crossCode,
+        requestUrl: path,
+        body: requestBody
+      }
+    })
+
+    const response = await postJson<
+      ApiExecuteCrossResponseDto,
+      ApiExecuteCrossRequestDto
+    >(path, requestBody, this.config)
+
+    logRestCrossManagementEvent({
+      endpoint: '/api/procesos-informacion/cruces/{codigoCruce}/ejecuciones',
+      action: 'RestCrossManagementSource.executeCross',
+      METHOD: 'POST',
+      RESPONSE_RAW: response
+    })
+
+    return mapExecuteCrossResponse(response)
+  }
 
   async generateIntimationDocument(
     payload: IGenerateIntimationDocumentPayload
