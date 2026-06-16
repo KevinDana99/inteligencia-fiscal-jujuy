@@ -1,5 +1,17 @@
 # Cross Management Feature Story
 
+## 2026-06-15 Polling del listado de ejecuciones
+
+- Se agrego polling cliente para refrescar cada 5 segundos el listado principal de `Gestion de Cruces`.
+- El polling reutiliza `getCrossManagementAction` y mantiene la consulta base de `GET /api/procesos-informacion/ejecuciones` con `Pagina=1` e `ItemsPagina=20`.
+- La tabla conserva la carga inicial server-side y los filtros locales existentes, pero ahora filtra sobre la ultima data refrescada por polling.
+- El refresco evita requests solapadas, descarta respuestas viejas al desmontar y conserva la ultima data valida ante errores transitorios.
+
+### Validation
+
+- `bun x eslint src/modules/cross-management/constants/crossManagementRequest.ts src/modules/cross-management/presentation/hooks/useCrossManagement.ts src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementPolling.ts`
+- `bun x tsc --noEmit --incremental false`
+
 ## 2026-06-15 Estado de ejecucion en gestion de cruces
 
 - `Gestion de Cruces` ahora conserva `estado` desde `GET /api/procesos-informacion/ejecuciones` en el modelo interno como `status`.
