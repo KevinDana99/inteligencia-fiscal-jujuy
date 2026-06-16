@@ -1,11 +1,17 @@
 'use client'
 
 import { createBatchAction } from '../../../data/actions'
+import { previewBatchLoadAction } from '../../../data/actions'
 import type {
   IBatchCreatedSummary,
   IBatchLoadedCuitRow
 } from '../../../data/models/BatchManagement'
-import { getCreatedBatchCuits } from '../../utils'
+import {
+  buildImportedLoadedCuitRows,
+  getImportedLoadedCuitDuplicates,
+  getImportedLoadedCuitDuplicatesError,
+  getCreatedBatchCuits
+} from '../../utils'
 import { useBatchManagementCreateForm } from './useBatchManagementCreateForm'
 import { useBatchManagementImportPreview } from './useBatchManagementImportPreview'
 import { useBatchManagementLoadedCuits } from './useBatchManagementLoadedCuits'
@@ -57,13 +63,52 @@ export function useBatchManagementCreate({
     createForm.setCreateError(null)
   }
 
-  function addManualCuits(rawValue: string) {
-    const addedCount = loadedCuits.addManualCuits(rawValue)
-
-    if (addedCount) {
-      createForm.setCreateError(null)
+  async function addManualCuits(rawValue: string) {
+    if (!rawValue.trim()) {
+      return 0
     }
 
+    const result = await previewBatchLoadAction({
+      file: null,
+      regime: createForm.createForm.regime,
+      cuitsText: rawValue
+    })
+
+    if (!result.success || !result.data) {
+      createForm.setCreateError(result.error ?? null)
+      return 0
+    }
+
+    const importedRows = buildImportedLoadedCuitRows(
+      result.data,
+      loadedCuits.loadedCuits
+    )
+    const duplicatedCuits = getImportedLoadedCuitDuplicates(
+      result.data,
+      loadedCuits.loadedCuits
+    )
+    const duplicateError = getImportedLoadedCuitDuplicatesError(
+      duplicatedCuits
+    )
+
+    const addedCount = importedRows.length
+
+    if (!addedCount) {
+      if (duplicateError) {
+        createForm.setCreateError(duplicateError)
+        return 0
+      }
+
+      const firstInvalidReason = result.data.records.find(
+        (record) => record.status !== 'valid' && record.reason
+      )?.reason
+
+      createForm.setCreateError(firstInvalidReason ?? null)
+      return 0
+    }
+
+    loadedCuits.applyImportedCuits(result.data)
+    createForm.setCreateError(duplicateError)
     return addedCount
   }
 

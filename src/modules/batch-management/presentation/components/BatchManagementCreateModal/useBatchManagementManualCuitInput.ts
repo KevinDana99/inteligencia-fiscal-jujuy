@@ -3,7 +3,7 @@
 import { useState, type ChangeEvent, type KeyboardEvent } from 'react'
 
 type UseBatchManagementManualCuitInputParams = {
-  onManualCuitsAdd: (value: string) => number
+  onManualCuitsAdd: (value: string) => Promise<number>
 }
 
 export function useBatchManagementManualCuitInput({
@@ -20,8 +20,8 @@ export function useBatchManagementManualCuitInput({
     setManualCuitValue(event.currentTarget.value)
   }
 
-  function handleManualCuitSubmit() {
-    const addedCount = onManualCuitsAdd(manualCuitValue)
+  async function handleManualCuitSubmit() {
+    const addedCount = await onManualCuitsAdd(manualCuitValue)
 
     if (!addedCount) {
       return
@@ -31,13 +31,15 @@ export function useBatchManagementManualCuitInput({
     setIsManualInputOpen(false)
   }
 
-  function handleManualInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+  async function handleManualInputKeyDown(
+    event: KeyboardEvent<HTMLInputElement>
+  ) {
     if (event.key !== 'Enter') {
       return
     }
 
     event.preventDefault()
-    handleManualCuitSubmit()
+    await handleManualCuitSubmit()
   }
 
   return {

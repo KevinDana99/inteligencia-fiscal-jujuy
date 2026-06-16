@@ -2,6 +2,7 @@ import type {
   IBatchLoadedCuitRow,
   IBatchPreviewData
 } from '../../data/models/BatchManagement'
+import { BATCH_MANAGEMENT_CREATE_ERRORS } from '../constants'
 
 function normalizeBatchCuit(value: string) {
   return value.replace(/\D/g, '')
@@ -111,4 +112,46 @@ export function buildImportedLoadedCuitRows(
 
       return accumulator
     }, [])
+}
+
+export function getImportedLoadedCuitDuplicates(
+  previewData: IBatchPreviewData,
+  loadedCuits: IBatchLoadedCuitRow[]
+) {
+  const normalizedExisting = new Set(
+    loadedCuits.map((row) => normalizeBatchCuit(row.cuit))
+  )
+
+  return previewData.records.reduce<string[]>((accumulator, row) => {
+    if (row.status !== 'valid' || !row.normalizedCuit) {
+      return accumulator
+    }
+
+    const normalizedCuit = normalizeBatchCuit(row.normalizedCuit)
+
+    if (!normalizedExisting.has(normalizedCuit)) {
+      return accumulator
+    }
+
+    if (accumulator.includes(row.originalCuit)) {
+      return accumulator
+    }
+
+    accumulator.push(row.originalCuit)
+    return accumulator
+  }, [])
+}
+
+export function getImportedLoadedCuitDuplicatesError(
+  duplicatedCuits: string[]
+) {
+  if (!duplicatedCuits.length) {
+    return null
+  }
+
+  if (duplicatedCuits.length === 1) {
+    return BATCH_MANAGEMENT_CREATE_ERRORS.duplicatedSingle(duplicatedCuits[0])
+  }
+
+  return BATCH_MANAGEMENT_CREATE_ERRORS.duplicatedMultiple
 }
