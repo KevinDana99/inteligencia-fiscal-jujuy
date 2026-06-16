@@ -178,3 +178,13 @@
 
 - `bun x jest src/modules/batch-management/presentation/utils/batchManagementCross.test.ts`
 - `bun x eslint src/modules/batch-management/presentation/constants/batchManagementCross.ts src/modules/batch-management/presentation/utils/batchManagementCross.ts src/modules/batch-management/presentation/utils/batchManagementCross.test.ts`
+
+## 2026-06-16 Z-index de selects en menu de cruces
+
+- Se elevo el `zIndex` del combobox de los selects de periodo para que el dropdown portalizado renderice por encima del menu de cruces y no quede por detras del contenedor.
+- Se desactivo el cierre automatico del menu por clicks externos/items para evitar que seleccionar una opcion del combobox portalizado colapse todo el menu de cruces.
+
+### Validation
+
+- `bun x eslint src/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementCrossMenu/index.tsx src/modules/batch-management/presentation/constants/batchManagementCross.ts`
+- `bun x tsc --noEmit --incremental false`

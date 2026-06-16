@@ -20,6 +20,8 @@ export function BatchManagementCrossMenu({
       shadow="md"
       width={420}
       withinPortal={false}
+      closeOnClickOutside={false}
+      closeOnItemClick={false}
       position="bottom-end"
       offset={8}
     >
