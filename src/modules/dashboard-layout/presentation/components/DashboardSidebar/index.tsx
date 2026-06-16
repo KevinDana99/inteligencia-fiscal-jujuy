@@ -1,11 +1,14 @@
 'use client'
+import { useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ActionIcon, Avatar, Tooltip } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
 import { IconDoorExit, IconX } from '@tabler/icons-react'
 import { getInitials, getRoleLabel } from '@/utils'
 import type { IAuthSession } from '@/modules/auth/data/models/Auth'
 import { useSignOut } from '@/modules/auth/presentation/hooks'
+import { ADMIN_PANEL_LOGOUT_MODAL } from '@/modules/admin-panel/presentation/constants/adminPanelLayout'
 import type {
   DashboardSection,
   IDashboardNavItem
@@ -14,6 +17,7 @@ import {
   DASHBOARD_NAV_GROUP_LABELS,
   DASHBOARD_NAV_GROUPS
 } from '../../../constants'
+import { DashboardLogoutModal } from '../DashboardLogoutModal'
 import classes from '../DashboardLayoutShell/DashboardLayoutShell.module.css'
 import CustomIcon from '@/global/icons'
 
@@ -70,6 +74,11 @@ export function DashboardSidebar({
   onNavigate
 }: DashboardSidebarProps) {
   const { signOut, isPending } = useSignOut()
+  const [logoutOpened, logoutHandlers] = useDisclosure(false)
+  const handleSignOut = useCallback(() => {
+    logoutHandlers.close()
+    signOut()
+  }, [logoutHandlers, signOut])
   const groups: SidebarNavGroup[] = [
     {
       label: DASHBOARD_NAV_GROUP_LABELS[DASHBOARD_NAV_GROUPS.ANALYSIS],
@@ -102,8 +111,18 @@ export function DashboardSidebar({
 
       <SidebarFooter
         isPending={isPending}
-        onSignOut={signOut}
+        onSignOut={logoutHandlers.open}
         session={session}
+      />
+
+      <DashboardLogoutModal
+        opened={logoutOpened}
+        title={ADMIN_PANEL_LOGOUT_MODAL.title}
+        description={ADMIN_PANEL_LOGOUT_MODAL.description}
+        confirmLabel={ADMIN_PANEL_LOGOUT_MODAL.confirmLabel}
+        loading={isPending}
+        onClose={logoutHandlers.close}
+        onConfirm={handleSignOut}
       />
     </aside>
   )
