@@ -1,5 +1,53 @@
 # Cross Management Feature Story
 
+## 2026-06-16 Icono check en estado relevante
+
+- Se reemplazo el prefijo textual `✓` del estado `Relevante` en la tabla de ranking de `vista-previa-cruce` por `IconCheck` de `@tabler/icons-react`.
+- El texto del `select` ahora queda como `Relevante`; el icono se renderiza superpuesto dentro del pill verde solo para el estado relevante.
+
+### Validation
+
+- `bun x eslint src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewAnalysisStatusSelect.tsx src/modules/cross-management/presentation/constants/crossPreviewStatus.ts`
+- `bun x tsc --noEmit --pretty false --incremental false`
+- `git diff --check`
+- `ctx_search` confirma 0 ocurrencias de `✓` en `src/modules/cross-management`.
+
+## 2026-06-16 Contrato de columnas para generar intimacion
+
+- Se alineo el payload de `POST /api/documentos/intimacion/generar` con Swagger local: `columnasSeleccionadas` ahora viaja en la raiz de la solicitud y `snapshotIntimacion` conserva solo asunto, saludo, cuerpo, fuente y fecha de corte.
+- `filasPlanilla` sigue construyendose con las mismas claves seleccionadas para cumplir la validacion backend de coincidencia exacta entre columnas y filas.
+- Los logs de generacion ahora cuentan columnas desde el campo raiz del payload.
+- Se agrego cobertura unitaria para bloquear regresiones en la forma del request.
+
+### Validation
+
+- `bun x jest src/modules/cross-management/presentation/utils/intimationDocumentPayload.test.ts src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.test.ts --runInBand`
+- `bun x tsc --noEmit --pretty false --incremental false`
+- `bun x eslint src/modules/cross-management/data/actions/commands/generateIntimationDocumentAction.ts src/modules/cross-management/data/models/CrossManagement.ts src/modules/cross-management/data/sources/rest/RestCrossManagementSource.ts src/modules/cross-management/data/sources/rest/dtos/ApiIntimationDocumentDtos.ts src/modules/cross-management/presentation/utils/intimationDocumentPayload.ts src/modules/cross-management/presentation/utils/intimationDocumentPayload.test.ts`
+- `git diff --check`
+- Browser check: `http://localhost:3000/gestion-de-cruces/vista-previa-cruce/91`, login con `example@example.com`, `Ranking` -> `Generar intimacion` -> seleccionar `AÑO` -> `Descargar Word` finaliza sin alerta visible.
+- Backend check directo: con `columnasSeleccionadas: ['anio']` en raiz y `filasPlanilla: [{ anio }]`, `POST /api/documentos/intimacion/generar` responde `201` con `documentoId` y `urlDescarga`.
+
+## 2026-06-16 Busqueda por CUIT formateado en preview
+
+- Se agrego `crossSearch` como utilidad compartida para normalizar busquedas de `cross-management`.
+- La busqueda local mock ahora compara texto sin acentos y tambien compara CUITs por sus digitos, permitiendo escribir `20-10000944-8` aunque el contrato guarde `20100009448`.
+- El source REST normaliza busquedas tipo CUIT antes de enviarlas como `Busqueda`/`busqueda`, sin alterar terminos textuales como razon social o lote.
+- Los headers con filtros activos en el ranking ahora muestran un dot verde junto al nombre de la columna para identificar rapidamente que filtros estan aplicados.
+- Los inputs numericos del modal de filtros usan formato visual local con separador de miles `.` y decimal `,`, por ejemplo `900.000,42`, conservando el valor canonico para aplicar el filtro.
+- Se cubrio la regresion con tests unitarios para CUIT formateado, texto y payload enviado al API.
+
+### Validation
+
+- `bun x jest src/modules/cross-management/data/utils/crossSearch.test.ts src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.test.ts --runInBand`
+- `bun x jest src/modules/cross-management/presentation/utils/crossFilterNumber.test.ts --runInBand`
+- `bun x eslint src/modules/cross-management/data/utils/crossSearch.ts src/modules/cross-management/data/utils/crossSearch.test.ts src/modules/cross-management/data/sources/mock/MockCrossManagementSource.ts src/modules/cross-management/data/sources/rest/RestCrossManagementSource.ts`
+- `bun x eslint src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewAnalysisHeaderCell.tsx`
+- `bun x eslint src/modules/cross-management/presentation/components/CrossFilterModal/index.tsx src/modules/cross-management/presentation/utils/crossFilterNumber.ts src/modules/cross-management/presentation/utils/crossFilterNumber.test.ts`
+- `bun x tsc --noEmit --pretty false --incremental false`
+- `bun run lint` sin errores; persisten 3 warnings existentes fuera de este cambio en `src/modules/cross-management/preview.tsx` y `src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/index.tsx`.
+- Browser check: `http://localhost:3000/gestion-de-cruces/vista-previa-cruce/91`, login con `example@example.com`, busqueda `20-10000944-8` devuelve 1 resultado en `Planilla` y 1 resultado en `Ranking`; filtro `B.I. JURISDICCION > 900000` reduce `Ranking` de 8 a 3 filas y muestra 1 dot verde en el header filtrado; el modal muestra `900000.42` como `900.000,42` y `650000` como `650.000`.
+
 ## 2026-06-15 Polling del listado de ejecuciones
 
 - Se agrego polling cliente para refrescar cada 5 segundos el listado principal de `Gestion de Cruces`.

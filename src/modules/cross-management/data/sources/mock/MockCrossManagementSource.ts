@@ -14,10 +14,14 @@ import type {
   ICrossResultsListData,
   ICrossResultsListParams
 } from '../../models/CrossManagement'
+import {
+  matchesCrossSearch,
+  normalizeCrossSearchText
+} from '../../utils/crossSearch'
 import { crossItemsMock, crossPreviewMockById } from './fixtures/crossItems'
 
 function normalizeSearchValue(value: string) {
-  return value.trim().toLowerCase()
+  return normalizeCrossSearchText(value)
 }
 
 function findPreview(executionId: number) {
@@ -61,16 +65,7 @@ function buildMockTaxpayerId(executionId: number, rowIndex: number) {
 }
 
 function matchesSearch(cuit: string, businessName: string, search?: string | null) {
-  const normalized = normalizeSearchValue(search ?? '')
-
-  if (!normalized) {
-    return true
-  }
-
-  return (
-    cuit.toLowerCase().includes(normalized) ||
-    businessName.toLowerCase().includes(normalized)
-  )
+  return matchesCrossSearch([cuit, businessName], search)
 }
 
 export class MockCrossManagementSource implements ICrossManagementSource {
@@ -91,9 +86,7 @@ export class MockCrossManagementSource implements ICrossManagementSource {
     const normalizedSearch = normalizeSearchValue(params.search ?? '')
     const items = normalizedSearch
       ? crossItemsMock.filter(
-          (item) =>
-            item.name.toLowerCase().includes(normalizedSearch) ||
-            item.sourceRef.toLowerCase().includes(normalizedSearch)
+          (item) => matchesCrossSearch([item.name, item.sourceRef], params.search)
         )
       : crossItemsMock
 

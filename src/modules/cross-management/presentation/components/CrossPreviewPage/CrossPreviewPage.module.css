@@ -573,6 +573,16 @@
   color: var(--mantine-color-blue-6);
 }
 
+.columnFilterActiveDot {
+  display: inline-block;
+  flex: 0 0 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--mantine-color-green-5);
+  box-shadow: 0 0 0 2px var(--mantine-color-green-1);
+}
+
 .analysisHeaderCellLeft .columnFilterButton {
   justify-content: flex-start;
 }
@@ -667,6 +677,22 @@
   justify-content: center;
 }
 
+.statusSelectWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.statusSelectIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  z-index: 1;
+  color: var(--mantine-color-green-6);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
 .statusSelect {
   border: none;
   border-radius: 999px;
@@ -687,6 +713,7 @@
 }
 
 .statusSelectRelevant {
+  padding-left: 26px;
   background: var(--mantine-color-green-0);
   color: var(--mantine-color-green-6);
 }

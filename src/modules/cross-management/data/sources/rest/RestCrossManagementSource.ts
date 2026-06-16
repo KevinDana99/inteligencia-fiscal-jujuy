@@ -31,12 +31,14 @@ import {
   mapCrossResumenResponseDto,
   mapCrossResultsListResponseDto
 } from './mappers/mapCrossManagementDto'
+import { normalizeCrossSearchRequest } from '../../utils/crossSearch'
 
 function buildExecutionsQueryString(params: ICrossManagementListParams = {}) {
   const searchParams = new URLSearchParams()
+  const search = normalizeCrossSearchRequest(params.search)
 
-  if (params.search?.trim()) {
-    searchParams.set('Busqueda', params.search.trim())
+  if (search) {
+    searchParams.set('Busqueda', search)
   }
 
   searchParams.set('Pagina', String(params.page ?? 1))
@@ -60,7 +62,7 @@ function mapPlanillaRequestParams(
   return {
     pagina: params.page ?? 1,
     itemsPagina: params.itemsPerPage ?? 20,
-    busqueda: params.search?.trim() ?? ''
+    busqueda: normalizeCrossSearchRequest(params.search)
   }
 }
 
@@ -70,7 +72,7 @@ function mapResumenRequestParams(
   return {
     pagina: params.page ?? 1,
     itemsPagina: params.itemsPerPage ?? 20,
-    busqueda: params.search?.trim() ?? '',
+    busqueda: normalizeCrossSearchRequest(params.search),
     filtrosColumnas:
       params.columnFilters?.map((filter) => ({
         campo: filter.field,
@@ -150,8 +152,7 @@ export class RestCrossManagementSource implements ICrossManagementSource {
       format: payload.formato,
       hasContributorId: Boolean(payload.contribuyente.id),
       rowsCount: payload.filasPlanilla.length,
-      selectedColumnsCount:
-        payload.snapshotIntimacion?.columnasSeleccionadas.length ?? 0
+      selectedColumnsCount: payload.columnasSeleccionadas.length
     })
 
     const response = await postJson<

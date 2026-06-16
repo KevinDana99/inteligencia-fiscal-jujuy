@@ -276,13 +276,13 @@ export interface IIntimationDocumentSnapshot {
   cuerpo: string
   fuenteInformacion?: string | null
   fechaCorte: string
-  columnasSeleccionadas: string[]
 }
 
 export interface IGenerateIntimationDocumentPayload {
   contribuyente: IIntimationDocumentContributorPayload
   formato: IIntimationDocumentFormat
   snapshotIntimacion?: IIntimationDocumentSnapshot | null
+  columnasSeleccionadas: string[]
   filasPlanilla: IIntimationSpreadsheetRow[]
 }
 

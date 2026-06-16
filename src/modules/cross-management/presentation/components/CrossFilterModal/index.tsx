@@ -17,6 +17,7 @@ import type { ICrossFilterOperator } from '../../../data/models/CrossManagement'
 import {
   CROSS_PREVIEW_FILTER_OPERATOR_LABELS
 } from '../../constants/crossPreviewFilterOperators'
+import { normalizeCrossFilterNumberValue } from '../../utils/crossFilterNumber'
 import {
   useCrossFilterModal,
   type ICrossFilterModalProps
@@ -103,7 +104,7 @@ export function CrossFilterModal(props: ICrossFilterModalProps) {
             />
           </div>
           <Text className={classes.exampleText}>
-            {isTextColumn ? 'Ejemplo: 27-30606839-9, LOAYZA' : 'Ejemplo: 1000, 25.5, -10'}
+            {isTextColumn ? 'Ejemplo: 27-30606839-9, LOAYZA' : 'Ejemplo: 900.000,42, 25,5, -10'}
           </Text>
         </div>
 
@@ -183,7 +184,7 @@ export function CrossFilterModal(props: ICrossFilterModalProps) {
             />
           </div>
           <Text className={classes.exampleText}>
-            {isTextColumn ? 'Ejemplo: 27-30606839-9, LOAYZA' : 'Ejemplo: 1000, 25.5, -10'}
+            {isTextColumn ? 'Ejemplo: 27-30606839-9, LOAYZA' : 'Ejemplo: 900.000,42, 25,5, -10'}
           </Text>
         </div>
 
@@ -243,8 +244,10 @@ function CrossFilterValueInput({
 
   return (
     <NumberInput
-      value={value}
-      onChange={(nextValue) => onChange(String(nextValue ?? ''))}
+      value={normalizeCrossFilterNumberValue(value)}
+      onValueChange={(payload) =>
+        onChange(normalizeCrossFilterNumberValue(payload.value))
+      }
       placeholder='0'
       className={classes.fieldGrow}
       classNames={{
@@ -253,6 +256,9 @@ function CrossFilterValueInput({
         control: classes.numberControl
       }}
       hideControls={false}
+      thousandSeparator='.'
+      decimalSeparator=','
+      allowedDecimalSeparators={['.', ',']}
       decimalScale={6}
       allowNegative
       allowDecimal

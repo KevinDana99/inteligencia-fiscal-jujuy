@@ -17,8 +17,7 @@ export async function generateIntimationDocumentAction(
       format: payload.formato,
       hasContributorId: Boolean(payload.contribuyente.id),
       rowsCount: payload.filasPlanilla.length,
-      selectedColumnsCount:
-        payload.snapshotIntimacion?.columnasSeleccionadas.length ?? 0
+      selectedColumnsCount: payload.columnasSeleccionadas.length
     })
 
     const source = await createServerCrossManagementSource()

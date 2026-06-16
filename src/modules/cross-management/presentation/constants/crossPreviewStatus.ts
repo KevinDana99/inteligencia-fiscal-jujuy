@@ -5,6 +5,6 @@ export const CROSS_PREVIEW_STATUS_OPTIONS: Record<
   string
 > = {
   estado: '— Estado',
-  relevante: '✓ Relevante',
+  relevante: 'Relevante',
   reproceso: '🔴 Reproceso'
 }
