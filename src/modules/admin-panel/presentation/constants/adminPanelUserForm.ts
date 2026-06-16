@@ -15,3 +15,10 @@ export const ADMIN_PANEL_EDIT_USER_PASSWORD_CONFIG = {
   confirmLabel: 'Confirmar contraseña',
   confirmRequired: false
 } as const
+
+export const ADMIN_PANEL_USER_VALIDATION_MESSAGES = {
+  firstNameRequired: 'El nombre es obligatorio.',
+  firstNameInvalid: 'El nombre solo puede contener letras y espacios.',
+  lastNameRequired: 'El apellido es obligatorio.',
+  lastNameInvalid: 'El apellido solo puede contener letras y espacios.'
+} as const

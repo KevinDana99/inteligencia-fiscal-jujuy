@@ -2,6 +2,7 @@
 
 import { createServerAdminPanelSource } from '../../data-access'
 import type { IAdminPanelActionState } from '../../models/AdminPanel'
+import { adminPanelUserIdentitySchema } from '../../../presentation/utils/adminPanelUserValidation'
 
 export async function updateAdminUserAction(
   _previousState: IAdminPanelActionState<null>,
@@ -28,6 +29,29 @@ export async function updateAdminUserAction(
     cargo,
     nuevaContrasena: nuevaContrasena ? '[REDACTED]' : null,
     confirmarContrasena: confirmarContrasena ? '[REDACTED]' : null
+  }
+
+  const identityValidation = adminPanelUserIdentitySchema.safeParse({
+    nombre,
+    apellido
+  })
+
+  if (!identityValidation.success) {
+    const message =
+      identityValidation.error.flatten().fieldErrors.nombre?.[0] ??
+      identityValidation.error.flatten().fieldErrors.apellido?.[0] ??
+      'No fue posible validar los datos del usuario.'
+
+    return {
+      success: false,
+      message,
+      errors: {
+        code: 'super_administrador.usuarios.editar.validacion_identidad',
+        message,
+        statusCode: 400
+      },
+      data: null
+    }
   }
 
   const source = await createServerAdminPanelSource()

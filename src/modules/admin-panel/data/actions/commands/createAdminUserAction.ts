@@ -6,6 +6,7 @@ import type {
   IAdminPanelCreateUserActionData,
   IAdminPanelUser
 } from '../../models/AdminPanel';
+import { adminPanelUserIdentitySchema } from '../../../presentation/utils/adminPanelUserValidation';
 
 function mapUserToContract(user: IAdminPanelUser): IAdminPanelCreateUserActionData {
   const [nombre, ...apellidoParts] = user.fullName.split(' ');
@@ -63,6 +64,29 @@ export async function createAdminUserAction(
       ...params,
       contrasena: params.contrasena ? '[REDACTED]' : '',
       confirmarContrasena: params.confirmarContrasena ? '[REDACTED]' : ''
+    }
+
+    const identityValidation = adminPanelUserIdentitySchema.safeParse({
+      nombre: params.nombre,
+      apellido: params.apellido
+    })
+
+    if (!identityValidation.success) {
+      const message =
+        identityValidation.error.flatten().fieldErrors.nombre?.[0] ??
+        identityValidation.error.flatten().fieldErrors.apellido?.[0] ??
+        'No fue posible validar los datos del usuario.'
+
+      return {
+        success: false,
+        message,
+        errors: {
+          code: 'super_administrador.usuarios.crear.validacion_identidad',
+          message,
+          statusCode: 400
+        },
+        data: null
+      }
     }
 
     const source = await createServerAdminPanelSource()
