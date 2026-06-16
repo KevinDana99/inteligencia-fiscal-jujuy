@@ -89,23 +89,23 @@
 }
 
 .riskA {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.riskB {
-  background: #fff7ed;
-  color: #ea580c;
-}
-
-.riskC {
   background: #ecfdf5;
   color: #059669;
 }
 
-.riskD {
+.riskB {
   background: #eff6ff;
   color: #2563eb;
+}
+
+.riskC {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.riskD {
+  background: #fef2f2;
+  color: #dc2626;
 }
 
 .menuButton {

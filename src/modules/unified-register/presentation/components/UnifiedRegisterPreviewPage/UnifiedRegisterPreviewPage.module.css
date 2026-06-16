@@ -180,43 +180,43 @@
 }
 
 .riskA {
-  background: #fef2f2;
-  border-color: #fecaca;
-}
-
-.riskA .riskLevel,
-.riskA .riskLabel {
-  color: #dc2626;
-}
-
-.riskB {
-  background: #fff7ed;
-  border-color: #fdba74;
-}
-
-.riskB .riskLevel,
-.riskB .riskLabel {
-  color: #ea580c;
-}
-
-.riskC {
   background: #ecfdf5;
   border-color: #86efac;
 }
 
-.riskC .riskLevel,
-.riskC .riskLabel {
+.riskA .riskLevel,
+.riskA .riskLabel {
   color: #059669;
 }
 
-.riskD {
+.riskB {
   background: #eff6ff;
   border-color: #93c5fd;
 }
 
+.riskB .riskLevel,
+.riskB .riskLabel {
+  color: #2563eb;
+}
+
+.riskC {
+  background: #fff7ed;
+  border-color: #fdba74;
+}
+
+.riskC .riskLevel,
+.riskC .riskLabel {
+  color: #ea580c;
+}
+
+.riskD {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
 .riskD .riskLevel,
 .riskD .riskLabel {
-  color: #2563eb;
+  color: #dc2626;
 }
 
 .riskEmpty {
