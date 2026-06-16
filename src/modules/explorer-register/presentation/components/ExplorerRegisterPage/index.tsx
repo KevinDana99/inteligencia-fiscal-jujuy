@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useMemo, useState } from 'react';
+import { Fragment } from 'react';
 import {
   ActionIcon,
   Button,
@@ -31,8 +31,8 @@ import {
   EXPLORER_REGISTER_TEXTS
 } from '../../constants';
 import { useExplorerRegister } from '../../hooks/useExplorerRegister';
+import { useExplorerRegisterMultiValueField } from '../../hooks/explorer-register';
 import {
-  filterExplorerRegisterOptionData,
   formatExplorerRegisterCellValue,
   getExplorerRegisterFilterOptionData,
   getExplorerRegisterFilterTagParts,
@@ -59,81 +59,42 @@ function ExplorerRegisterMultiValueField({
   values,
   onChange
 }: ExplorerRegisterMultiValueFieldProps) {
-  const [searchValue, setSearchValue] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
-  const filteredOptions = useMemo(
-    () =>
-      filterExplorerRegisterOptionData(options, values, searchValue).slice(
-        0,
-        8
-      ),
-    [options, searchValue, values]
-  );
-  const optionLabels = useMemo(
-    () => new Map(options.map((option) => [option.value, option.label])),
-    [options]
-  );
-
-  const addValue = (value: string) => {
-    const nextValue = value.trim();
-
-    if (!nextValue || disabled || values.includes(nextValue)) {
-      return;
-    }
-
-    onChange([...values, nextValue]);
-    setSearchValue('');
-    setIsOpen(false);
-  };
-
-  const addSearchValue = () => {
-    if (filteredOptions.length > 0) {
-      addValue(filteredOptions[0].value);
-      return;
-    }
-
-    if (options.length === 0) {
-      addValue(searchValue);
-    }
-  };
-
-  const removeValue = (value: string) => {
-    onChange(values.filter((selectedValue) => selectedValue !== value));
-  };
+  const field = useExplorerRegisterMultiValueField({
+    disabled,
+    options,
+    values,
+    onChange
+  });
 
   return (
     <div className={classes.multiValueField}>
       <TextInput
-        value={searchValue}
+        value={field.searchValue}
         disabled={disabled}
         leftSection={<IconSearch size={13} />}
         leftSectionWidth={30}
         placeholder={EXPLORER_REGISTER_TEXTS.filterSearchPlaceholder}
         className={`${classes.filterSelect} ${classes.filterSearchInput}`}
-        onFocus={() => setIsOpen(options.length > 0)}
-        onBlur={() => window.setTimeout(() => setIsOpen(false), 120)}
-        onChange={(event) => {
-          setSearchValue(event.currentTarget.value);
-          setIsOpen(options.length > 0);
-        }}
+        onFocus={field.handleInputFocus}
+        onBlur={field.handleInputBlur}
+        onChange={(event) => field.handleInputChange(event.currentTarget.value)}
         onKeyDown={(event) => {
-          if (event.key === 'Enter') {
+          if (field.handleInputKeyDown(event.key)) {
             event.preventDefault();
-            addSearchValue();
           }
         }}
       />
 
-      {isOpen && filteredOptions.length > 0 ? (
+      {field.isOpen && field.filteredOptions.length > 0 ? (
         <div className={classes.filterDropdown}>
-          {filteredOptions.map((option) => (
+          {field.filteredOptions.map((option) => (
             <button
               key={option.value}
               type="button"
               className={classes.filterDropdownOption}
               onMouseDown={(event) => {
                 event.preventDefault();
-                addValue(option.value);
+                field.addValue(option.value);
               }}
             >
               {option.label}
@@ -147,7 +108,7 @@ function ExplorerRegisterMultiValueField({
           {values.map((value) => {
             const tagParts = getExplorerRegisterFilterTagParts(
               value,
-              optionLabels.get(value)
+              field.optionLabels.get(value)
             );
 
             return (
@@ -162,7 +123,7 @@ function ExplorerRegisterMultiValueField({
                   type="button"
                   className={classes.filterTagRemove}
                   disabled={disabled}
-                  onClick={() => removeValue(value)}
+                  onClick={() => field.removeValue(value)}
                   aria-label={`Quitar ${value}`}
                 >
                   <IconX size={12} />
@@ -365,7 +326,7 @@ export function ExplorerRegisterPage({
                               }
                             />
                           ) : (
-                            <ExplorerRegisterMultiValueField
+                              <ExplorerRegisterMultiValueField
                               values={filterValue}
                               options={filterOptions}
                               disabled={disabled}

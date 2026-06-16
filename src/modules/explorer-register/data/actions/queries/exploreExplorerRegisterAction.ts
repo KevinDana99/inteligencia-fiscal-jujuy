@@ -14,12 +14,27 @@ export async function exploreExplorerRegisterAction(
   try {
     const source = await createServerExplorerRegisterSource();
     const data = await source.explore(payload);
+    const result = { data };
 
-    return { data };
+    console.log({
+      action: 'exploreExplorerRegisterAction',
+      payload,
+      result
+    });
+
+    return result;
   } catch (error) {
-    return mapExplorerRegisterActionError<IExplorerRegisterExploreData>(
+    const result = mapExplorerRegisterActionError<IExplorerRegisterExploreData>(
       error,
       'No fue posible explorar el padron.'
     );
+
+    console.log({
+      action: 'exploreExplorerRegisterAction',
+      payload,
+      result
+    });
+
+    return result;
   }
 }
