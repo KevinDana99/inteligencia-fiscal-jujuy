@@ -7,6 +7,7 @@ import {
   INTIMATION_DOCUMENT_FORMATS
 } from '../../../data/constants/intimationDocumentContracts'
 import type { IIntimationDocumentFormat } from '../../../data/models/CrossManagement'
+import { normalizeIntimationDocumentPayload } from '../../../data/utils/normalizeIntimationDocumentPayload'
 import { INTIMATION_DOCUMENT_DOWNLOAD_ERRORS } from '../../constants/intimationDocumentDownload'
 import { downloadIntimationDocument } from '../../utils/intimationDocumentDownload'
 import { buildIntimationDocumentPayload } from '../../utils/intimationDocumentPayload'
@@ -52,7 +53,8 @@ export function useIntimationDocumentDownload({
           format,
           templateState
         })
-        const result = await generateIntimationDocumentAction(payload)
+        const normalizedPayload = normalizeIntimationDocumentPayload(payload)
+        const result = await generateIntimationDocumentAction(normalizedPayload)
 
         if (!result.success || !result.data) {
           throw new Error(
