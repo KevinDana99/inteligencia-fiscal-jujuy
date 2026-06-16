@@ -36,6 +36,7 @@ import {
   mapCrossResultsListResponseDto
 } from './mappers/mapCrossManagementDto'
 import { normalizeCrossSearchRequest } from '../../utils/crossSearch'
+import { normalizeIntimationDocumentPayload } from '../../utils/normalizeIntimationDocumentPayload'
 
 function logRestCrossManagementEvent(event: unknown) {
   console.log(JSON.stringify(event, null, 2))
@@ -212,14 +213,16 @@ export class RestCrossManagementSource implements ICrossManagementSource {
   async generateIntimationDocument(
     payload: IGenerateIntimationDocumentPayload
   ): Promise<IIntimationDocumentGeneratedSummary> {
+    const requestPayload = normalizeIntimationDocumentPayload(payload)
+
     console.info({
       action: 'RestCrossManagementSource.generateIntimationDocument.request',
       baseUrl: this.config.baseUrl ?? process.env.NEXT_PUBLIC_API_BASE_URL,
       endpoint: INTIMATION_DOCUMENT_API_ENDPOINTS.generate,
-      format: payload.formato,
-      hasContributorId: Boolean(payload.contribuyente.id),
-      rowsCount: payload.filasPlanilla.length,
-      selectedColumnsCount: payload.columnasSeleccionadas.length
+      format: requestPayload.formato,
+      hasContributorId: Boolean(requestPayload.contribuyente.id),
+      rowsCount: requestPayload.filasPlanilla.length,
+      selectedColumnsCount: requestPayload.columnasSeleccionadas.length
     })
 
     const response = await postJson<
@@ -227,7 +230,7 @@ export class RestCrossManagementSource implements ICrossManagementSource {
       ApiGenerateIntimationDocumentRequestDto
     >(
       INTIMATION_DOCUMENT_API_ENDPOINTS.generate,
-      payload,
+      requestPayload,
       this.config
     )
 
