@@ -216,6 +216,35 @@
   color: var(--mantine-color-gray-9);
 }
 
+.agentSelectInput {
+  padding: 7px 32px 7px 10px;
+  font-size: 12px;
+  color: var(--mantine-color-gray-7);
+}
+
+.agentSelectDropdown {
+  margin-top: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--mantine-color-gray-2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.agentSelectOption {
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mantine-color-gray-7);
+  background: var(--mantine-color-white);
+}
+
+.agentSelectOption:hover,
+.agentSelectOption[data-hovered],
+.agentSelectOption[data-checked] {
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-9);
+}
+
 .multiValueField {
   position: relative;
   z-index: 1;

@@ -17,6 +17,7 @@ import {
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import {
+  IconChevronDown,
   IconPlus,
   IconSearch,
   IconX
@@ -45,6 +46,11 @@ interface ExplorerRegisterPageProps {
   catalog: IExplorerRegisterCatalog | null;
   catalogError?: string;
 }
+
+const AGENT_FILTER_OPTIONS = [
+  { value: 'Retencion', label: 'Agente de Retención' },
+  { value: 'Percepcion', label: 'Agente de Percepción' }
+] as const;
 
 interface ExplorerRegisterMultiValueFieldProps {
   disabled: boolean;
@@ -308,7 +314,29 @@ export function ExplorerRegisterPage({
                           <Text className={classes.filterLabel}>
                             {filter.name}
                           </Text>
-                          {filter.inputType === 'texto' ? (
+                          {filter.code === 'agente' ? (
+                            <Select
+                              value={filterValue[0] ?? null}
+                              data={[...AGENT_FILTER_OPTIONS]}
+                              disabled={disabled}
+                              placeholder="Seleccioná un grupo..."
+                              rightSection={
+                                <IconChevronDown size={12} color="#94A3B8" />
+                              }
+                              className={classes.filterSelect}
+                              classNames={{
+                                input: classes.agentSelectInput,
+                                dropdown: classes.agentSelectDropdown,
+                                option: classes.agentSelectOption
+                              }}
+                              onChange={(value) =>
+                                controller.updateFilterValues(
+                                  filter.code,
+                                  value ? [value] : []
+                                )
+                              }
+                            />
+                          ) : filter.inputType === 'texto' ? (
                             <TextInput
                               value={filterValue[0] ?? ''}
                               disabled={disabled}
@@ -326,7 +354,7 @@ export function ExplorerRegisterPage({
                               }
                             />
                           ) : (
-                              <ExplorerRegisterMultiValueField
+                            <ExplorerRegisterMultiValueField
                               values={filterValue}
                               options={filterOptions}
                               disabled={disabled}
