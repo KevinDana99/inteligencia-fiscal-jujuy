@@ -19,7 +19,7 @@ export const ADMIN_PANEL_MOCK_DATA: IAdminPanelData = {
       id: '019dbb8f-e390-724b-aaee-e13b1c356532',
       fullName: 'María Rodríguez',
       email: 'mrodriguez@rentas.gob.ar',
-      roleLabel: 'Inspectora'
+      roleLabel: 'Inspector'
     },
     {
       id: '019dbb8f-e390-724b-aaee-e13b1c356533',
@@ -31,7 +31,7 @@ export const ADMIN_PANEL_MOCK_DATA: IAdminPanelData = {
       id: '019dbb8f-e390-724b-aaee-e13b1c356534',
       fullName: 'Sofía López',
       email: 'slopez@rentas.gob.ar',
-      roleLabel: 'Coordinadora'
+      roleLabel: 'Coordinador'
     }
   ]
 };

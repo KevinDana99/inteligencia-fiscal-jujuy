@@ -1,8 +1,8 @@
 export const ADMIN_PANEL_ROLE_OPTIONS = [
   'Fiscal',
-  'Inspectora',
+  'Inspector',
   'Analista',
-  'Coordinadora'
+  'Coordinador'
 ] as const
 
 export type AdminPanelRoleOption = (typeof ADMIN_PANEL_ROLE_OPTIONS)[number]

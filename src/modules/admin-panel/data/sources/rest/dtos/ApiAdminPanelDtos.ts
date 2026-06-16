@@ -39,7 +39,7 @@ export type ApiCreateAdminUserRequestDto = {
   confirmarContrasena: string;
 };
 
-export type ApiCreateAdminUserResponseDto = ApiAdminUserDto;
+export type ApiCreateAdminUserResponseDto = ApiAdminListUserDto;
 
 export type ApiUpdateAdminUserRequestDto = {
   nombre: string;

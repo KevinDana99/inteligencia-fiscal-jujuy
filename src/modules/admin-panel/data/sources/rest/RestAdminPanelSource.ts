@@ -19,6 +19,7 @@ import type {
 } from './dtos/ApiAdminPanelDtos';
 import {
   mapAdminPanelDto,
+  mapAdminListUserDto,
   mapAdminUserDto,
   mapAllowedDomainDto
 } from './mappers/mapAdminPanelDto';
@@ -215,7 +216,7 @@ export class RestAdminPanelSource implements IAdminPanelSource {
 
     return {
       success: true,
-      data: mapAdminUserDto(dto)
+      data: mapAdminListUserDto(dto)
     };
   }
 

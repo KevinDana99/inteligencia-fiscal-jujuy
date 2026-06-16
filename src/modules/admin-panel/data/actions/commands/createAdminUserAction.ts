@@ -21,6 +21,30 @@ function mapUserToContract(user: IAdminPanelUser): IAdminPanelCreateUserActionDa
   };
 }
 
+function mapCreateUserResultToContract(
+  params: {
+    nombre: string;
+    apellido: string;
+    correo: string;
+    cargo: string;
+  },
+  user?: IAdminPanelUser | null
+): IAdminPanelCreateUserActionData | null {
+  if (!user) {
+    return null;
+  }
+
+  const mappedUser = mapUserToContract(user);
+
+  return {
+    ...mappedUser,
+    nombre: mappedUser.nombre.trim() || params.nombre,
+    apellido: mappedUser.apellido.trim() || params.apellido,
+    correo: mappedUser.correo.trim() || params.correo,
+    cargo: mappedUser.cargo.trim() || params.cargo
+  };
+}
+
 export async function createAdminUserAction(
   _previousState: IAdminPanelActionState<IAdminPanelCreateUserActionData>,
   formData: FormData
@@ -61,7 +85,7 @@ export async function createAdminUserAction(
         status: result.status,
         code: result.code,
         error: result.error,
-        data: result.data ? mapUserToContract(result.data) : null
+        data: mapCreateUserResultToContract(params, result.data)
       }
     })
 
@@ -70,7 +94,7 @@ export async function createAdminUserAction(
         success: true,
         message: null,
         errors: null,
-        data: result.data ? mapUserToContract(result.data) : null
+        data: mapCreateUserResultToContract(params, result.data)
       }
     }
 

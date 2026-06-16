@@ -9,6 +9,7 @@ import {
   useState
 } from 'react'
 import { useRouter } from 'next/navigation'
+import { TOAST_ADMIN_MESSAGES, toast } from '@/components/core/toasts'
 import { updateAdminUserAction } from '../../data/actions'
 import type { IAdminPanelUser } from '../../data/models/AdminPanel'
 import { useAdminPanelConfigContext } from '../contexts'
@@ -26,6 +27,10 @@ export function useEditAdminUserFormModal(
 ) {
   const router = useRouter()
   const formRef = useRef<HTMLFormElement>(null)
+  const submittedUserRef = useRef({
+    name: '',
+    surname: ''
+  })
   const [passwordStrength, setPasswordStrength] = useState(0)
   const [validationError, setValidationError] = useState<string | null>(null)
   const [emailError, setEmailError] = useState<string | null>(null)
@@ -39,16 +44,24 @@ export function useEditAdminUserFormModal(
   )
 
   const passwordColor = getPasswordStrengthColor(passwordStrength)
+  const { firstName, lastName } = splitAdminPanelUserFullName(
+    initialUser?.fullName
+  )
 
   useEffect(() => {
     if (!state.success) {
       return
     }
 
+    toast.show(TOAST_ADMIN_MESSAGES.UPDATE_USER_SUCCESS, {
+      name: submittedUserRef.current.name || firstName || 'Usuario',
+      surname: submittedUserRef.current.surname || lastName
+    })
+
     formRef.current?.reset()
     onClose()
     router.refresh()
-  }, [onClose, router, state.success])
+  }, [firstName, lastName, onClose, router, state.success])
 
   const handleEmailChange = () => {
     if (emailError) {
@@ -90,6 +103,10 @@ export function useEditAdminUserFormModal(
     setEmailError(null)
     setConfirmPasswordError(null)
     setValidationError(null)
+    submittedUserRef.current = {
+      name: String(formData.get('nombre') ?? '').trim(),
+      surname: String(formData.get('apellido') ?? '').trim()
+    }
   }
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -110,10 +127,6 @@ export function useEditAdminUserFormModal(
       setConfirmPasswordError(null)
     }
   }
-
-  const { firstName, lastName } = splitAdminPanelUserFullName(
-    initialUser?.fullName
-  )
 
   return {
     formRef,

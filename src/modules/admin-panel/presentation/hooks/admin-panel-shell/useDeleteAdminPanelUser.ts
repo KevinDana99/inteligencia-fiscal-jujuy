@@ -1,8 +1,10 @@
 'use client'
 
 import { startTransition, useCallback, useState } from 'react'
+import { TOAST_ADMIN_MESSAGES, toast } from '@/components/core/toasts'
 import { deleteAdminUserAction } from '../../../data/actions'
 import type { IAdminPanelUser } from '../../../data/models/AdminPanel'
+import { splitAdminPanelUserFullName } from '../../utils/splitAdminPanelUserFullName'
 
 export function useDeleteAdminPanelUser({
   selectedUser,
@@ -32,6 +34,9 @@ export function useDeleteAdminPanelUser({
 
     setActionError(null)
     setIsActionPending(true)
+    const { firstName, lastName } = splitAdminPanelUserFullName(
+      selectedUser.fullName
+    )
 
     return new Promise<boolean>((resolve) => {
       startTransition(() => {
@@ -46,6 +51,10 @@ export function useDeleteAdminPanelUser({
             }
 
             markUserAsDeleted(selectedUser.id)
+            toast.show(TOAST_ADMIN_MESSAGES.DELETE_USER_DANGER, {
+              name: firstName || 'Usuario',
+              surname: lastName
+            })
             clearSelectedUser()
             closeDeleteModal()
             resolve(true)

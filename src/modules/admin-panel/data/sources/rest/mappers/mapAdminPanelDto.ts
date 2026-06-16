@@ -44,7 +44,7 @@ export function mapAdminUserDto(dto: ApiAdminUserDto): IAdminPanelUser {
   };
 }
 
-function mapAdminListUserDto(dto: ApiAdminListUserDto): IAdminPanelUser {
+export function mapAdminListUserDto(dto: ApiAdminListUserDto): IAdminPanelUser {
   if ('usuario' in dto) {
     const usuarioId = getOptionalUsuarioId(dto.usuarioId ?? dto.id);
 
