@@ -5,14 +5,16 @@ import type { Route } from 'next'
 import { useRouter } from 'next/navigation'
 import type { IReprocessingItem } from '../../data/models/Reprocessing'
 
-const buildPreviewRoute = (cuit: string) =>
-  `/vista-previa-padron/${encodeURIComponent(cuit)}` as Route
+const buildPreviewRoute = (item: IReprocessingItem) =>
+  `/vista-previa-padron/${encodeURIComponent(item.cuit)}?id=${encodeURIComponent(
+    item.contribuyenteId
+  )}` as Route
 
 export function useReprocessingPreviewNavigation() {
   const router = useRouter()
 
   const navigateToPreview = (item: IReprocessingItem) => {
-    router.push(buildPreviewRoute(item.cuit))
+    router.push(buildPreviewRoute(item))
   }
 
   const handlePreviewRowKeyDown = (

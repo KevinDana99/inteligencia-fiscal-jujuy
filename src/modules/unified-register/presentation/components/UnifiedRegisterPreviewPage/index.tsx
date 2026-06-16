@@ -322,7 +322,10 @@ export function UnifiedRegisterPreviewPage({
     initialMercurioData,
     initialInterventionOrdersData
   );
-  const informeGeneration = useInformeGeneration(item);
+  const informeGeneration = useInformeGeneration(
+    item,
+    activeHeaderModal === 'report'
+  );
 
   const isEditingNote = editKind === "note";
   const isEditingContact = editKind === "contact";
