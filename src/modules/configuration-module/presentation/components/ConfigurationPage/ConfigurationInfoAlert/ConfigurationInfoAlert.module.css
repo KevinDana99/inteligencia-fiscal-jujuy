@@ -1,5 +1,6 @@
 .infoAlert {
   border: 1px solid var(--mantine-color-blue-2);
+  margin-bottom: 20px;
 }
 
 .infoAlertText {

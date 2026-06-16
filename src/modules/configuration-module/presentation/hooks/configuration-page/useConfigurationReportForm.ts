@@ -2,14 +2,17 @@
 
 import { useCallback, type ChangeEventHandler } from 'react'
 import type { ReportType } from '../../../data/models/Configuration'
+import type { ConfigurationReportValidationErrors } from '../../utils'
 
 type UseConfigurationReportFormParams = {
   informe: ReportType
+  errors: ConfigurationReportValidationErrors
   onChange: (field: keyof ReportType, value: string) => void
 }
 
 export function useConfigurationReportForm({
   informe,
+  errors,
   onChange
 }: UseConfigurationReportFormParams) {
   const handleTitleChange: ChangeEventHandler<HTMLInputElement> = useCallback(
@@ -29,11 +32,13 @@ export function useConfigurationReportForm({
   return {
     titleInput: {
       value: informe.titulo,
-      onChange: handleTitleChange
+      onChange: handleTitleChange,
+      error: errors.titulo
     },
     bodyInput: {
       value: informe.cuerpo,
-      onChange: handleBodyChange
+      onChange: handleBodyChange,
+      error: errors.cuerpo
     }
   }
 }

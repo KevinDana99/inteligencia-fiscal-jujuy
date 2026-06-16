@@ -1,13 +1,15 @@
-import { postFormData } from '@/lib/api-client';
+import { patchJson, postFormData } from '@/lib/api-client';
 import { RestBatchManagementSource } from './RestBatchManagementSource';
 
 jest.mock('@/lib/api-client', () => ({
   getJson: jest.fn(),
+  patchJson: jest.fn(),
   postFormData: jest.fn(),
   postJson: jest.fn()
 }));
 
 const mockPostFormData = postFormData as jest.MockedFunction<typeof postFormData>;
+const mockPatchJson = patchJson as jest.MockedFunction<typeof patchJson>;
 
 function getFormDataValue(formData: FormData, key: string) {
   return Array.from(formData.entries()).find(([entryKey]) => entryKey === key)?.[1];
@@ -16,6 +18,7 @@ function getFormDataValue(formData: FormData, key: string) {
 describe('RestBatchManagementSource', () => {
   beforeEach(() => {
     mockPostFormData.mockReset();
+    mockPatchJson.mockReset();
   });
 
   it('normalizes legacy CM when previewing a batch load', async () => {
@@ -87,5 +90,33 @@ describe('RestBatchManagementSource', () => {
     const formData = mockPostFormData.mock.calls[0]?.[1] as FormData;
 
     expect(getFormDataValue(formData, 'Regimen')).toBe('RegimenLocal');
+  });
+
+  it('maps add contributor to batch payload to the backend contract', async () => {
+    mockPatchJson.mockResolvedValueOnce(null);
+
+    const source = new RestBatchManagementSource({});
+
+    await source.addContributorToBatch({
+      batchId: '9de530a7-a9ac-4b91-80a7-4f3913900d41',
+      contributor: {
+        cuit: '30-70123456-8',
+        businessName: 'DISTRIBUIDORA NORTE ANDINO S.A.',
+        regime: 'Convenio Multilateral'
+      }
+    });
+
+    expect(mockPatchJson).toHaveBeenCalledWith(
+      '/api/lotes/contribuyentes',
+      {
+        loteId: '9de530a7-a9ac-4b91-80a7-4f3913900d41',
+        contribuyente: {
+          cuit: '30-70123456-8',
+          razonSocial: 'DISTRIBUIDORA NORTE ANDINO S.A.',
+          regimen: 'Convenio Multilateral'
+        }
+      },
+      {}
+    );
   });
 });

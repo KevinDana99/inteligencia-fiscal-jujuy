@@ -154,6 +154,48 @@ describe('RestUnifiedRegisterSource', () => {
     );
   });
 
+  it('lists contributor crosses through the contributor endpoint', async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({
+        cruces: [
+          {
+            id: '7d2e8d59-7d08-4a9f-a12d-449120fb7c9c',
+            nombre: 'ControlDesvioBiRegimenCm'
+          },
+          {
+            id: '7a86dc42-9464-46ad-9331-957221581bdf',
+            nombre: 'ControlCreditos'
+          }
+        ]
+      })
+    );
+
+    const source = new RestUnifiedRegisterSource({
+      baseUrl: 'http://api.test',
+      token: 'access-token'
+    });
+
+    await expect(
+      source.listContributorCrosses('contributor-1')
+    ).resolves.toEqual({
+      crosses: [
+        {
+          id: '7d2e8d59-7d08-4a9f-a12d-449120fb7c9c',
+          code: 'ControlDesvioBiRegimenCm',
+          name: 'Control de desvío de BI — Régimen CM'
+        },
+        {
+          id: '7a86dc42-9464-46ad-9331-957221581bdf',
+          code: 'ControlCreditos',
+          name: 'Control de créditos'
+        }
+      ]
+    });
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'http://api.test/api/contribuyentes/contributor-1/cruces'
+    );
+  });
+
   it('lists Mercurio fines with detail pagination query params', async () => {
     fetchMock.mockResolvedValueOnce(
       jsonResponse({

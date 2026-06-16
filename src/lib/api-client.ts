@@ -23,7 +23,7 @@ export class ApiClientError extends Error {
   }
 }
 
-type ApiRequestMethod = 'GET' | 'POST' | 'DELETE';
+type ApiRequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 function buildRequestHeaders(
   config?: ApiClientConfig,
@@ -167,7 +167,13 @@ async function request<T>(
     return null as T;
   }
 
-  return (await response.json()) as T;
+  const responseText = await response.text();
+
+  if (!responseText) {
+    return null as T;
+  }
+
+  return JSON.parse(responseText) as T;
 }
 
 export async function fetchWithAuthRetry(
@@ -211,6 +217,30 @@ export async function postJson<TResponse, TBody>(
   init?: ApiRequestInit
 ): Promise<TResponse> {
   return request<TResponse>('POST', path, config, {
+    ...init,
+    body: JSON.stringify(body)
+  });
+}
+
+export async function putJson<TResponse, TBody>(
+  path: string,
+  body: TBody,
+  config?: ApiClientConfig,
+  init?: ApiRequestInit
+): Promise<TResponse> {
+  return request<TResponse>('PUT', path, config, {
+    ...init,
+    body: JSON.stringify(body)
+  });
+}
+
+export async function patchJson<TResponse, TBody>(
+  path: string,
+  body: TBody,
+  config?: ApiClientConfig,
+  init?: ApiRequestInit
+): Promise<TResponse> {
+  return request<TResponse>('PATCH', path, config, {
     ...init,
     body: JSON.stringify(body)
   });

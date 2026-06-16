@@ -183,6 +183,7 @@ export function mapCrossPreviewContractToView(
     period: resumen.metadata.period ?? execution?.period ?? '-',
     cuitCount: totalCuits,
     date: execution?.date ?? '-',
+    status: execution?.status ?? '-',
     relevantCountLabel: resolveRelevantCountLabel(resumen),
     indicators: CROSS_PREVIEW_INDICATORS,
     planColumns,

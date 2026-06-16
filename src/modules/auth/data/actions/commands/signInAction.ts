@@ -6,7 +6,6 @@ import { redirect } from 'next/navigation';
 import {
   mapIamSessionResponseToSerializedAuthSession
 } from '@/lib/auth/session-mapper';
-import { AUTH_ROUTES } from '@/constants';
 import { setServerAuthCookies } from '@/lib/auth/cookies';
 import { AUTH_COOKIE_NAMES } from '@/lib/auth/constants';
 import {
@@ -15,6 +14,7 @@ import {
 } from '@/lib/auth/login-success-toast'
 import { AUTH_SESSION_EXPIRED_NOTICE_COOKIE } from '@/lib/auth/session-expired-notice'
 import { getRedirectPathByUserType } from '@/lib/auth/proxy-session'
+import { isPostLoginRedirectPath } from '@/lib/auth/route-access'
 import { createServerAuthSource } from '../../data-access';
 import type {
   IAuthActionState,
@@ -85,9 +85,7 @@ export async function signInAction(
       currentContext.tipoUsuario
     )
     const resolvedRedirectTo =
-      requestedRedirectTo.startsWith('/') &&
-      !requestedRedirectTo.startsWith('//') &&
-      requestedRedirectTo !== AUTH_ROUTES.login
+      isPostLoginRedirectPath(requestedRedirectTo)
         ? requestedRedirectTo
         : fallbackRedirectTo
 

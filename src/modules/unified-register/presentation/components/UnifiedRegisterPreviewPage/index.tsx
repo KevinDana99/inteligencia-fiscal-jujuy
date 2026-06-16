@@ -257,6 +257,8 @@ export function UnifiedRegisterPreviewPage({
     interventionOrdersTotalItems,
     interventionOrdersError,
     reprocessingActionError,
+    batchOptionsError,
+    addToBatchError,
     isReprocessingMarked,
     batchSearch,
     filteredLotOptions,
@@ -279,6 +281,8 @@ export function UnifiedRegisterPreviewPage({
     isNoteSavePending,
     isNoteDeletePending,
     isReprocessingTogglePending,
+    isBatchOptionsPending,
+    isAddToBatchPending,
     formValue,
     contactForm,
     editingItemId,
@@ -292,6 +296,7 @@ export function UnifiedRegisterPreviewPage({
     confirmReprocessing,
     selectLotOption,
     closeLotConfirmModal,
+    confirmLotSelection,
     openCreateModal,
     openEditModal,
     closeEditModal,
@@ -492,6 +497,7 @@ export function UnifiedRegisterPreviewPage({
             <Button
               radius="xl"
               className={`${classes.headerPrimaryButton} ${classes.staticButton}`}
+              loading={isBatchOptionsPending && activeHeaderModal === 'batch'}
               onClick={() =>
                 activeHeaderModal === "batch"
                   ? closeHeaderModal()
@@ -1163,19 +1169,24 @@ export function UnifiedRegisterPreviewPage({
               ¿Querés agregar este CUIT al lote {selectedLotOption.label} (
               {selectedLotOption.cuitCount} CUITs actualmente)
             </Text>
+            {addToBatchError ? (
+              <Text className={classes.modalErrorText}>{addToBatchError}</Text>
+            ) : null}
             <Group justify="flex-end" gap="sm">
               <Button
                 variant="default"
                 radius="xl"
                 className={`${classes.modalGhostButton} ${classes.staticButton}`}
                 onClick={closeLotConfirmModal}
+                disabled={isAddToBatchPending}
               >
                 Cancelar
               </Button>
               <Button
                 radius="xl"
                 className={`${classes.modalPrimaryButton} ${classes.staticButton}`}
-                onClick={closeLotConfirmModal}
+                loading={isAddToBatchPending}
+                onClick={confirmLotSelection}
               >
                 Confirmar
               </Button>

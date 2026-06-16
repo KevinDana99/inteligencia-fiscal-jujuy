@@ -1,4 +1,5 @@
 export type IntimationType = {
+  id?: string | null
   asunto: string
   saludo: string
   cuerpo: string
@@ -8,6 +9,7 @@ export type IntimationType = {
 }
 
 export type ReportType = {
+  id?: string | null
   titulo: string
   cuerpo: string
 }

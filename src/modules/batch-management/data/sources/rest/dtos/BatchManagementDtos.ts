@@ -89,6 +89,17 @@ export interface ApiBatchCreateResponseDto {
   creadoPor?: ApiBatchAuthorDto | null;
 }
 
+export interface ApiBatchContributorRequestDto {
+  cuit: string;
+  razonSocial: string | null;
+  regimen: string | null;
+}
+
+export interface ApiAddContributorToBatchRequestDto {
+  loteId: string;
+  contribuyente: ApiBatchContributorRequestDto;
+}
+
 export interface ApiExecuteBatchCrossRequestDto {
   versionCruce: string;
   tipoOrigen: 'por_lote';

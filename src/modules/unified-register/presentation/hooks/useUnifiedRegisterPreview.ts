@@ -1,7 +1,12 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { TOAST_DASHBOARD_MESSAGES, toast } from "@/components/core/toasts";
+import {
+  addContributorToBatchAction,
+  getBatchManagementAction,
+} from "@/modules/batch-management/data/actions";
+import type { IBatchManagementItem } from "@/modules/batch-management/data/models/BatchManagement";
 import {
   markReprocessingAction,
   unmarkReprocessingAction,
@@ -60,6 +65,20 @@ const EMPTY_CONTACT_FORM: ContactForm = {
   accountant: "",
 };
 
+const BATCH_OPTIONS_SEARCH_DEBOUNCE_MS = 250;
+
+function mapBatchItemToLotOption(
+  batch: IBatchManagementItem
+): IUnifiedRegisterBatchOption {
+  return {
+    id: batch.id,
+    label: batch.name,
+    batchNumber: batch.batchNumber,
+    regime: batch.regime,
+    cuitCount: batch.cuitCount,
+  };
+}
+
 export function useUnifiedRegisterPreview(
   item: IUnifiedRegisterDetail,
   initialIsReprocessing: boolean,
@@ -70,6 +89,13 @@ export function useUnifiedRegisterPreview(
 ) {
   const [activeHeaderModal, setActiveHeaderModal] = useState<HeaderModal>(null);
   const [batchSearch, setBatchSearch] = useState("");
+  const [lotOptions, setLotOptions] = useState<IUnifiedRegisterBatchOption[]>(
+    item.lotOptions
+  );
+  const [batchOptionsError, setBatchOptionsError] = useState<string | null>(
+    null
+  );
+  const [addToBatchError, setAddToBatchError] = useState<string | null>(null);
   const [addresses, setAddresses] = useState(item.addresses);
   const [addressActionError, setAddressActionError] = useState<string | null>(
     null
@@ -124,6 +150,9 @@ export function useUnifiedRegisterPreview(
   const [isNoteDeletePending, startNoteDeleteTransition] = useTransition();
   const [isReprocessingTogglePending, startReprocessingToggleTransition] =
     useTransition();
+  const [isBatchOptionsPending, startBatchOptionsTransition] = useTransition();
+  const [isAddToBatchPending, startAddToBatchTransition] = useTransition();
+  const latestBatchOptionsRequestIdRef = useRef(0);
   const mercurio = useUnifiedRegisterMercurio({
     contribuyenteId: item.contribuyenteId,
     initialData: initialMercurioData,
@@ -139,16 +168,59 @@ export function useUnifiedRegisterPreview(
     const normalizedSearch = batchSearch.trim().toLowerCase();
 
     if (!normalizedSearch) {
-      return item.lotOptions;
+      return lotOptions;
     }
 
-    return item.lotOptions.filter((lot) => {
+    return lotOptions.filter((lot) => {
       return (
         lot.label.toLowerCase().includes(normalizedSearch) ||
+        lot.batchNumber?.toLowerCase().includes(normalizedSearch) ||
         lot.regime.toLowerCase().includes(normalizedSearch)
       );
     });
-  }, [batchSearch, item.lotOptions]);
+  }, [batchSearch, lotOptions]);
+
+  useEffect(() => {
+    if (activeHeaderModal !== "batch") {
+      return;
+    }
+
+    const requestId = latestBatchOptionsRequestIdRef.current + 1;
+    latestBatchOptionsRequestIdRef.current = requestId;
+
+    const timeoutId = setTimeout(
+      () => {
+        startBatchOptionsTransition(() => {
+          void (async () => {
+            const result = await getBatchManagementAction({
+              search: batchSearch.trim() || null,
+              page: 1,
+              itemsPerPage: 20,
+            });
+
+            if (latestBatchOptionsRequestIdRef.current !== requestId) {
+              return;
+            }
+
+            if (!result.data) {
+              setBatchOptionsError(
+                result.error ?? "No fue posible listar los lotes."
+              );
+              return;
+            }
+
+            setLotOptions(result.data.batches.map(mapBatchItemToLotOption));
+            setBatchOptionsError(null);
+          })();
+        });
+      },
+      batchSearch.trim() ? BATCH_OPTIONS_SEARCH_DEBOUNCE_MS : 0
+    );
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [activeHeaderModal, batchSearch]);
 
   const activeSourceTable =
     item.sourceTables.find((table) => table.id === activeSourceTableId) ??
@@ -208,6 +280,11 @@ export function useUnifiedRegisterPreview(
       setReprocessingActionError(null);
     }
 
+    if (modal === "batch") {
+      setBatchOptionsError(null);
+      setAddToBatchError(null);
+    }
+
     setActiveHeaderModal(modal);
   };
 
@@ -215,6 +292,7 @@ export function useUnifiedRegisterPreview(
     setActiveHeaderModal(null);
     setBatchSearch("");
     setReprocessingActionError(null);
+    setBatchOptionsError(null);
   };
 
   const toggleReprocessing = () => {
@@ -276,7 +354,54 @@ export function useUnifiedRegisterPreview(
   };
 
   const closeLotConfirmModal = () => {
+    if (isAddToBatchPending) {
+      return;
+    }
+
     setSelectedLotOption(null);
+    setAddToBatchError(null);
+  };
+
+  const confirmLotSelection = () => {
+    if (!selectedLotOption || isAddToBatchPending) {
+      return;
+    }
+
+    const lotOption = selectedLotOption;
+
+    setAddToBatchError(null);
+
+    startAddToBatchTransition(() => {
+      void (async () => {
+        const result = await addContributorToBatchAction({
+          batchId: lotOption.id,
+          contributor: {
+            cuit: item.cuit,
+            businessName: item.businessName,
+            regime: item.regime,
+          },
+        });
+
+        if (!result.success) {
+          setAddToBatchError(
+            result.error ?? "No fue posible agregar el CUIT al lote."
+          );
+          return;
+        }
+
+        setLotOptions((current) =>
+          current.map((option) =>
+            option.id === lotOption.id
+              ? { ...option, cuitCount: option.cuitCount + 1 }
+              : option
+          )
+        );
+        toast.show(TOAST_DASHBOARD_MESSAGES.ADD_TO_BATCH_SUCCESS, {
+          name: lotOption.label,
+        });
+        setSelectedLotOption(null);
+      })();
+    });
   };
 
   const openCreateModal = (kind: Exclude<EditKind, null>) => {
@@ -670,6 +795,8 @@ export function useUnifiedRegisterPreview(
     interventionOrdersTotalItems: interventionOrdersList.totalItems,
     interventionOrdersError: interventionOrdersList.error,
     reprocessingActionError,
+    batchOptionsError,
+    addToBatchError,
     isReprocessingMarked,
     batchSearch,
     filteredLotOptions,
@@ -693,6 +820,8 @@ export function useUnifiedRegisterPreview(
     isNoteSavePending,
     isNoteDeletePending,
     isReprocessingTogglePending,
+    isBatchOptionsPending,
+    isAddToBatchPending,
     formValue,
     contactForm,
     editingItemId,
@@ -706,6 +835,7 @@ export function useUnifiedRegisterPreview(
     confirmReprocessing,
     selectLotOption,
     closeLotConfirmModal,
+    confirmLotSelection,
     openCreateModal,
     openEditModal,
     closeEditModal,

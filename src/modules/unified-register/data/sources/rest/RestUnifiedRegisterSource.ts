@@ -8,6 +8,7 @@ import type {
   IUnifiedRegisterContactRecord,
   IUnifiedRegisterContactsListData,
   IUnifiedRegisterContactsListParams,
+  IUnifiedRegisterContributorCrossesData,
   IUnifiedRegisterFinesListData,
   IUnifiedRegisterFinesListParams,
   IUnifiedRegisterHeaderRecord,
@@ -32,6 +33,7 @@ import type {
   ApiUnifiedRegisterContactRequestDto,
   ApiUnifiedRegisterContactResponseDto,
   ApiUnifiedRegisterContactsListResponseDto,
+  ApiUnifiedRegisterContributorCrossesResponseDto,
   ApiUnifiedRegisterFinesListResponseDto,
   ApiUnifiedRegisterHeaderResponseDto,
   ApiUnifiedRegisterInterventionOrdersListResponseDto,
@@ -43,6 +45,7 @@ import type {
 import {
   mapAlternateAddressDto,
   mapContactDto,
+  mapContributorCrossDto,
   mapFineDto,
   mapHeaderDto,
   mapInterventionOrderDto,
@@ -127,6 +130,19 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
     );
 
     return mapHeaderDto(dto);
+  }
+
+  async listContributorCrosses(
+    contribuyenteId: string
+  ): Promise<IUnifiedRegisterContributorCrossesData> {
+    const dto =
+      await this.requestJson<ApiUnifiedRegisterContributorCrossesResponseDto>(
+        UNIFIED_REGISTER_API_ROUTES.contributorCrosses(contribuyenteId)
+      );
+
+    return {
+      crosses: dto.cruces.map(mapContributorCrossDto)
+    };
   }
 
   async listMercurioFines(

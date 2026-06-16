@@ -8,6 +8,8 @@ import type {
   IUnifiedRegisterContactRecord,
   IUnifiedRegisterContactsListData,
   IUnifiedRegisterContactsListParams,
+  IUnifiedRegisterContributorCross,
+  IUnifiedRegisterContributorCrossesData,
   IUnifiedRegisterFinesListData,
   IUnifiedRegisterFinesListParams,
   IUnifiedRegisterHeaderRecord,
@@ -51,6 +53,24 @@ declare global {
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+const contributorCrossesMock: IUnifiedRegisterContributorCross[] = [
+  {
+    id: '7d2e8d59-7d08-4a9f-a12d-449120fb7c9c',
+    code: 'ControlDesvioBiRegimenCm',
+    name: 'Control de desvío de BI — Régimen CM'
+  },
+  {
+    id: '8fa61d74-7d9e-463b-9cdd-20f393008a6e',
+    code: 'ControlDesvioBiRegimenGral',
+    name: 'Control de desvío de BI — Régimen Gral'
+  },
+  {
+    id: '02537943-a57e-4860-a6c8-86db4d870d47',
+    code: 'ControlBiDeclaradaPorActividad',
+    name: 'Control de BI declarada por actividad'
+  }
+];
 
 function isUuid(value: string) {
   return UUID_PATTERN.test(value);
@@ -609,7 +629,11 @@ export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
     );
 
     if (!item) {
-      throwContractError(404, 'contribuyentes.no_encontrado', 'El contribuyente informado no existe.');
+      throwContractError(
+        404,
+        'contribuyentes.no_encontrado',
+        'El contribuyente informado no existe.'
+      );
     }
 
     return {
@@ -644,6 +668,22 @@ export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
         noPresentadas: Number(item.widgets.find((entry) => entry.id === 'returns')?.splitValue?.secondaryValue ?? 0)
       },
       riesgo: item.riskLevel
+    };
+  }
+
+  async listContributorCrosses(
+    contribuyenteId: string
+  ): Promise<IUnifiedRegisterContributorCrossesData> {
+    const item = unifiedRegisterDetailsFixture.find(
+      (entry) => entry.contribuyenteId === contribuyenteId
+    );
+
+    if (!item) {
+      throwContractError(404, 'contribuyentes.no_encontrado', 'El contribuyente informado no existe.');
+    }
+
+    return {
+      crosses: contributorCrossesMock.map((cross) => ({ ...cross }))
     };
   }
 

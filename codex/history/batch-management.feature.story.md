@@ -156,3 +156,14 @@
 - `bun x jest src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts src/modules/batch-management/data/sources/rest/mappers/mapBatchDto.test.ts src/modules/batch-management/presentation/utils/batchManagementCross.test.ts --runInBand`
 - `bun x tsc --noEmit --incremental false`
 - `bun x eslint src/modules/batch-management/data/models/BatchManagement.ts src/modules/batch-management/data/sources/rest/dtos/BatchManagementDtos.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts src/modules/batch-management/presentation/constants/batchManagementCreate.ts`
+
+## 2026-06-15 Catalogo completo de cruces en UI
+
+- Se corrigio el menu de cruces por lote para que liste todos los cruces devueltos por `GET /api/procesos-informacion/cruces`, separados por periodicidad.
+- La configuracion especial de `desvio-bi-convenio-multilateral` deja de funcionar como whitelist y queda solo como fuente de parametros adicionales requeridos por ese cruce.
+- La ejecucion ahora arma payloads con `codigoCruce` y `versionCruce` desde cualquier cruce seleccionado del catalogo backend.
+
+### Validation
+
+- `bun x jest src/modules/batch-management/presentation/utils/batchManagementCross.test.ts`
+- `bun x eslint src/modules/batch-management/presentation/constants/batchManagementCross.ts src/modules/batch-management/presentation/utils/batchManagementCross.ts src/modules/batch-management/presentation/utils/batchManagementCross.test.ts`

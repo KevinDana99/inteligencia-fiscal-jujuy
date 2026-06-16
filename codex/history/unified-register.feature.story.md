@@ -261,3 +261,51 @@ Fixed `/vista-previa-padron/[cuit]` so the visible CUIT is the source of truth w
 - `bun x jest src/modules/unified-register/data/utils/resolveUnifiedRegisterPreviewContributor.test.ts --runInBand`
 - `bun x tsc --noEmit --incremental false`
 - `bun run lint`
+
+## Unified Padron Add To Batch Backend Wiring - 2026-06-15
+
+### Summary
+
+Connected the `/vista-previa-padron/[cuit]` header `Agregar a lote` flow to the batch backend contracts.
+
+### Main Changes
+
+- Reused `GET /api/lotes` through `getBatchManagementAction` to populate the preview batch selector with real batch data and debounced search.
+- Added `PATCH /api/lotes/contribuyentes` to the batch-management data port, REST adapter, mock adapter, DTO mapper, and server action.
+- Mapped the frontend domain payload to Swagger shape `{ loteId, contribuyente: { cuit, razonSocial, regimen } }`.
+- Updated the shared API client with `patchJson` and empty-body response handling for `200 OK` commands without a response schema.
+- Updated the preview modal to show loading/error states and disable cancel while the add-to-batch command is pending.
+- Added REST adapter coverage for the `PATCH /api/lotes/contribuyentes` request body.
+
+### Validation
+
+- `npx jest src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts --runInBand`
+- `bun run lint`
+- `npx tsc --noEmit`
+
+## Informe Generation Contributor Crosses - 2026-06-15
+
+### Summary
+
+Connected the `Generar Informe` modal to `GET /api/contribuyentes/{contribuyenteId}/cruces` so the selectable crosses come from the contributor backend contract.
+
+### Main Changes
+
+- Added contributor-cross models, DTOs, REST route, mapper, source method, mock method, and server action under `unified-register`.
+- Mapped backend enum names to the existing report labels used by the modal.
+- Updated `useInformeGeneration` to load crosses for the active contributor, retain real backend cross ids, handle loading/error/empty states, and prevent generation when a listed cross has no local report table data.
+- Updated `InformeGenerationModal` to render loading, error, and empty states for contributor crosses.
+- Kept known report table payloads for `ControlDesvioBiRegimenCm`, `ControlDesvioBiRegimenGral`, and `ControlBiDeclaradaPorActividad` so the document generation validator still receives valid `claves` and `filas`.
+
+### Decisions
+
+- The backend contributor-cross endpoint currently returns only `{ id, nombre }`, so table data for generated reports remains sourced from the existing local informe templates for known cross codes.
+- Unknown cross codes are displayed as executed but disabled for generation until a detail contract provides the required selected columns and rows.
+
+### Validation
+
+- `bun x tsc --noEmit --incremental false`
+- `bun x jest src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts --runInBand`
+- `bun x eslint src/modules/unified-register/data/actions/index.ts src/modules/unified-register/data/actions/queries/getContributorCrossesAction.ts src/modules/unified-register/data/interfaces/UnifiedRegisterSource.ts src/modules/unified-register/data/models/UnifiedRegister.ts src/modules/unified-register/data/sources/mock/MockUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts src/modules/unified-register/data/sources/rest/constants/unifiedRegisterApiRoutes.ts src/modules/unified-register/data/sources/rest/dtos/ApiUnifiedRegisterDtos.ts src/modules/unified-register/data/sources/rest/mappers/unifiedRegisterMappers.ts src/modules/unified-register/presentation/components/InformeGenerationModal/index.tsx src/modules/unified-register/presentation/hooks/useInformeGeneration.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts src/modules/unified-register/presentation/constants/informeGeneration.ts`
+- `git diff --check`
+- Existing dev server responded at `http://localhost:3000`; private routes redirect to `/login` without a valid session.

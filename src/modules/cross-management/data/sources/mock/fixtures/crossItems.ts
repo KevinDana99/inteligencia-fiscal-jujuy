@@ -48,7 +48,8 @@ export const crossItemsMock: ICrossManagementItems = [
     sourceRef: '623',
     period: '2022–2025',
     cuitCount: 3,
-    date: '27/04/2026'
+    date: '27/04/2026',
+    status: 'completada'
   },
   {
     id: 'cross-2',
@@ -57,7 +58,8 @@ export const crossItemsMock: ICrossManagementItems = [
     sourceRef: '30-50401884-5',
     period: '2024–2025',
     cuitCount: 1,
-    date: '26/04/2026'
+    date: '26/04/2026',
+    status: 'completada'
   },
   {
     id: 'cross-3',
@@ -66,7 +68,8 @@ export const crossItemsMock: ICrossManagementItems = [
     sourceRef: 'TRUFA-589',
     period: '2023',
     cuitCount: 83,
-    date: '20/04/2026'
+    date: '20/04/2026',
+    status: 'en_proceso'
   },
   {
     id: 'cross-4',
@@ -75,7 +78,8 @@ export const crossItemsMock: ICrossManagementItems = [
     sourceRef: 'SECTOR-498',
     period: '2022',
     cuitCount: 22,
-    date: '15/04/2026'
+    date: '15/04/2026',
+    status: 'fallida'
   }
 ]
 

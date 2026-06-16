@@ -111,3 +111,10 @@ Verified successfully with:
 - Los sources REST con `fetch` directo y la descarga local de documentos quedaron cubiertos por `fetchWithAuthRetry`.
 - `/login` muestra una notificación segura y efímera cuando el usuario fue redirigido porque la sesión expiró.
 - Validado con `bun run test`, `bunx tsc --noEmit`, `bun run lint` y `bun run build`.
+
+## 2026-06-15 Chrome DevTools well-known redirect
+
+- Se corrigió el redirect post-login para ignorar rutas internas del navegador bajo `/.well-known`, incluyendo `/.well-known/appspecific/com.chrome.devtools.json`.
+- `proxy.ts` ya no aplica el proxy de auth sobre `/.well-known`, evitando que Chrome DevTools contamine la cookie `auth-post-login-redirect`.
+- `signInAction` valida la cookie antes de redirigir y cae al destino por tipo de usuario cuando el valor no es una ruta válida de la app.
+- Se agregaron tests en `route-access.test.ts` para rutas privadas válidas, `/login`, redirects externos y rutas internas de navegador.

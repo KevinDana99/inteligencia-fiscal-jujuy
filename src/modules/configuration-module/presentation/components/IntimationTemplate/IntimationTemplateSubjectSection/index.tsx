@@ -12,7 +12,7 @@ type IntimationTemplateSubjectSectionProps = {
 export function IntimationTemplateSubjectSection({
   controller
 }: IntimationTemplateSubjectSectionProps) {
-  const { state, fieldHandlers } = controller
+  const { state, errors, fieldHandlers } = controller
 
   return (
     <Card className={classes.sectionCard} radius='lg' padding={0}>
@@ -26,6 +26,7 @@ export function IntimationTemplateSubjectSection({
         <TextInput
           value={state.asunto}
           onChange={fieldHandlers.handleSubjectChange}
+          error={errors.asunto}
           classNames={{ input: classes.formInput }}
         />
       </div>

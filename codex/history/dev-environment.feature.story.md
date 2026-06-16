@@ -19,3 +19,10 @@
 - Changed Docker build defaults so every `NEXT_PUBLIC_USE_MOCK_*` flag is explicitly `false`.
 - Updated GitLab CI validation and image build args to pass all mock flags as `false`.
 - Updated dev ConfigMap and `.env.example` so runtime/default config also avoids mock data.
+
+## 2026-06-15 local backend login check
+
+- Created local ignored `.env.local` with `NEXT_PUBLIC_API_BASE_URL=http://localhost:5001` and all `NEXT_PUBLIC_USE_MOCK_*` flags set to `false`.
+- Verified the local backend responds `200 OK` on `GET /api/iam/salud` and Swagger at `http://localhost:5001/swagger/index.html`.
+- Confirmed direct login requests now reach the backend host; invalid sample credentials return backend `401` with `iam.inicio_sesion.invalido`.
+- Verified the existing Next dev server reloaded `.env.local`, `/login` responds `200 OK`, and `bun run lint` exits successfully.

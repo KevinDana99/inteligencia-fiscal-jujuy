@@ -3,6 +3,7 @@
 import { useConfig } from './useConfig'
 import {
   useDashboardConfigurationReport,
+  useSaveReportConfiguration,
   useDashboardConfigurationSuccess,
   useDashboardConfigurationTabs
 } from './dashboard-configuration'
@@ -19,14 +20,23 @@ export function useDashboardConfiguration() {
     updateConfig
   })
   const success = useDashboardConfigurationSuccess()
+  const reportSave = useSaveReportConfiguration({
+    onSuccess: success.confirmChanges
+  })
 
   return {
     state: tabs.state,
     informe: report.informe,
+    reportErrors: report.errors,
     activeTab: tabs.activeTab,
     isIntimationTab: tabs.isIntimationTab,
+    successOpened: success.successOpened,
+    isReportSavePending: reportSave.isSavePending,
     updateTab: tabs.updateTab,
     updateInforme: report.updateInforme,
+    validateInforme: report.validateInforme,
+    saveReportConfiguration: reportSave.saveReportConfiguration,
+    confirmChanges: success.confirmChanges,
     closeSuccess: success.closeSuccess
   }
 }

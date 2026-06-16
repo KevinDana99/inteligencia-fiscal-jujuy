@@ -1,11 +1,13 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { DEFAULT_CONFIGURATION } from '../../constants'
 import { useConfig } from '../useConfig'
 import {
   cloneIntimationTemplateState,
-  mapConfigurationToTemplateState
+  mapConfigurationToTemplateState,
+  type IntimationTemplateValidationErrors,
+  validateIntimationTemplateState
 } from '../../utils'
 import { useIntimationTemplateColumnPicker } from './useIntimationTemplateColumnPicker'
 import { useIntimationTemplateColumns } from './useIntimationTemplateColumns'
@@ -29,6 +31,7 @@ export function useIntimationTemplate(initialState?: IntimationTemplateState) {
   const { configuration, updateConfig } = useConfig()
   const isProviderBacked = true
   const state = mapConfigurationToTemplateState(configuration)
+  const [errors, setErrors] = useState<IntimationTemplateValidationErrors>({})
   const initialColumns = useMemo(
     () =>
       cloneIntimationTemplateState(
@@ -36,24 +39,68 @@ export function useIntimationTemplate(initialState?: IntimationTemplateState) {
       ).columnas,
     [initialState]
   )
+  const clearError = useCallback(
+    (
+      field: keyof Pick<
+        IntimationTemplateState,
+        'asunto' | 'saludo' | 'cuerpo' | 'fechaCorte'
+      >
+    ) => {
+      setErrors((currentErrors) => {
+        if (!currentErrors[field]) {
+          return currentErrors
+        }
+
+        return {
+          ...currentErrors,
+          [field]: undefined
+        }
+      })
+    },
+    []
+  )
+  const clearColumnsError = useCallback(() => {
+    setErrors((currentErrors) => {
+      if (!currentErrors.columnas) {
+        return currentErrors
+      }
+
+      return {
+        ...currentErrors,
+        columnas: undefined
+      }
+    })
+  }, [])
+  const validate = useCallback(() => {
+    const result = validateIntimationTemplateState(state)
+
+    setErrors(result.errors)
+
+    return result.success
+  }, [state])
 
   const fields = useIntimationTemplateFields({
-    updateConfig
+    updateConfig,
+    clearError
   })
   const columns = useIntimationTemplateColumns({
     visibleColumns: state.columnas,
     isProviderBacked,
-    updateConfig
+    updateConfig,
+    clearColumnsError
   })
   const columnPicker = useIntimationTemplateColumnPicker({
     initialColumns,
     currentColumns: state.columnas,
-    updateConfig
+    updateConfig,
+    clearColumnsError
   })
 
   return {
     state,
+    errors,
     isProviderBacked,
+    validate,
     ...columnPicker,
     visibleColumns: columns.visibleColumns,
     columnRows: columns.columnRows,

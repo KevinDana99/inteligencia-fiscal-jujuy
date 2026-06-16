@@ -5,6 +5,8 @@ export const UNIFIED_REGISTER_API_ROUTES = {
   contributors: UNIFIED_REGISTER_PADRON_BASE_ROUTE,
   contributorHeader: (contribuyenteId: string) =>
     `${UNIFIED_REGISTER_PADRON_BASE_ROUTE}/${contribuyenteId}/encabezado`,
+  contributorCrosses: (contribuyenteId: string) =>
+    `/api/contribuyentes/${contribuyenteId}/cruces`,
   mercurioFines: (contribuyenteId: string) =>
     `${UNIFIED_REGISTER_PADRON_BASE_ROUTE}/${contribuyenteId}/mercurio`,
   interventionOrders: (contribuyenteId: string) =>

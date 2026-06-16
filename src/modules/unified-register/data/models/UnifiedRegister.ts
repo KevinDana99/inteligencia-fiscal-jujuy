@@ -162,6 +162,7 @@ export interface IUnifiedRegisterTax {
 export interface IUnifiedRegisterBatchOption {
   id: string;
   label: string;
+  batchNumber?: string;
   regime: string;
   cuitCount: number;
 }
@@ -274,6 +275,16 @@ export interface IUnifiedRegisterInterventionOrdersListData {
   totalItems: number;
   totalPaginas: number;
   ordenes: IUnifiedRegisterInterventionOrderRecord[];
+}
+
+export interface IUnifiedRegisterContributorCross {
+  id: string;
+  code: string;
+  name: string;
+}
+
+export interface IUnifiedRegisterContributorCrossesData {
+  crosses: IUnifiedRegisterContributorCross[];
 }
 
 export interface IUnifiedRegisterCommandResult<TData = null> {

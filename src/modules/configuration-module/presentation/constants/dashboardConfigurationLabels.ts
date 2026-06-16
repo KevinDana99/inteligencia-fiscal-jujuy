@@ -13,7 +13,8 @@ export const DASHBOARD_CONFIGURATION_LABELS = {
     titleSection: 'Título del informe',
     titleField: 'Texto del título',
     bodySection: 'Texto introductorio',
-    bodyField: 'Cuerpo del informe'
+    bodyField: 'Cuerpo del informe',
+    confirmButton: 'Confirmar'
   },
   successModal: {
     title: 'Configuración actualizada',
