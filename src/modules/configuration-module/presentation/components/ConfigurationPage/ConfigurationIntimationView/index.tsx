@@ -6,6 +6,7 @@ import { IntimationTemplate } from '../../IntimationTemplate'
 type ConfigurationIntimationViewProps = {
   hidden: boolean
   controller: IntimationTemplateController
+  allowedColumns?: boolean
   onConfirm?: () => void
   isConfirmPending?: boolean
 }
@@ -13,6 +14,7 @@ type ConfigurationIntimationViewProps = {
 export function ConfigurationIntimationView({
   hidden,
   controller,
+  allowedColumns = false,
   onConfirm,
   isConfirmPending
 }: ConfigurationIntimationViewProps) {
@@ -20,6 +22,7 @@ export function ConfigurationIntimationView({
     <div hidden={hidden}>
       <IntimationTemplate
         controller={controller}
+        allowedColumns={allowedColumns}
         onConfirm={onConfirm}
         isConfirmPending={isConfirmPending}
       />

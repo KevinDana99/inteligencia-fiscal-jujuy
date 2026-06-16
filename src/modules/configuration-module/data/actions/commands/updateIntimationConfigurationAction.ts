@@ -10,25 +10,34 @@ export interface IUpdateIntimationConfigurationActionResult {
 
 export async function updateIntimationConfigurationAction(
   plantillaId: string,
-  configuration: IntimationType
+  configuration: IntimationType,
+  { allowedColumns = true }: { allowedColumns?: boolean } = {}
 ): Promise<IUpdateIntimationConfigurationActionResult> {
+  const requestPayload = {
+    asunto: configuration.asunto,
+    saludo: configuration.saludo,
+    cuerpo: configuration.cuerpo,
+    fuenteInformacion: configuration.fuente_informacion ?? null,
+    fechaCorte: configuration.pie,
+    ...(allowedColumns
+      ? {
+          columnas_seleccionadas: configuration.columnas_seleccionadas
+        }
+      : {})
+  }
+
   try {
     const source = await createServerConfigurationSource()
 
-    await source.updateIntimationConfiguration(plantillaId, configuration)
+    await source.updateIntimationConfiguration(plantillaId, configuration, {
+      allowedColumns
+    })
 
     console.log({
       endpoint: `/api/configuracion/intimacion/${plantillaId}`,
       action: 'updateIntimationConfigurationAction',
       METHOD: 'PUT',
-      REQUEST: {
-        asunto: configuration.asunto,
-        saludo: configuration.saludo,
-        cuerpo: configuration.cuerpo,
-        fuenteInformacion: configuration.fuente_informacion ?? null,
-        fechaCorte: configuration.pie,
-        columnas_seleccionadas: configuration.columnas_seleccionadas
-      },
+      REQUEST: requestPayload,
       RESPONSE: {
         success: true,
         status: 204
@@ -46,14 +55,7 @@ export async function updateIntimationConfigurationAction(
       endpoint: `/api/configuracion/intimacion/${plantillaId}`,
       action: 'updateIntimationConfigurationAction',
       METHOD: 'PUT',
-      REQUEST: {
-        asunto: configuration.asunto,
-        saludo: configuration.saludo,
-        cuerpo: configuration.cuerpo,
-        fuenteInformacion: configuration.fuente_informacion ?? null,
-        fechaCorte: configuration.pie,
-        columnas_seleccionadas: configuration.columnas_seleccionadas
-      },
+      REQUEST: requestPayload,
       RESPONSE: {
         success: false,
         error: message

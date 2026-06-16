@@ -22,7 +22,9 @@ export function useConfigurationPage() {
       intimation: {
         hidden: !dashboardConfiguration.isIntimationTab,
         controller: intimationTemplate,
-        onConfirm: intimationSave.saveIntimationConfiguration,
+        allowedColumns: false,
+        onConfirm: () =>
+          intimationSave.saveIntimationConfiguration({ allowedColumns: false }),
         isConfirmPending: intimationSave.isSavePending
       },
       report: {

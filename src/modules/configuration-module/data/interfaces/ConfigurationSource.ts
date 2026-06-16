@@ -8,7 +8,10 @@ export interface IConfigurationSource {
   getConfiguration(): Promise<ConfigurationType>
   updateIntimationConfiguration(
     plantillaId: string,
-    configuration: IntimationType
+    configuration: IntimationType,
+    options?: {
+      allowedColumns?: boolean
+    }
   ): Promise<void>
   updateReportConfiguration(
     plantillaId: string,

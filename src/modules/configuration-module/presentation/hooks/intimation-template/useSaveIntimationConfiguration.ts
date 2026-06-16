@@ -8,34 +8,42 @@ type UseSaveIntimationConfigurationParams = {
   onSuccess?: () => void
 }
 
+type SaveIntimationConfigurationOptions = {
+  allowedColumns?: boolean
+}
+
 export function useSaveIntimationConfiguration({
   onSuccess
 }: UseSaveIntimationConfigurationParams = {}) {
   const { configuration } = useConfig()
   const [isSavePending, startSaveTransition] = useTransition()
 
-  const saveIntimationConfiguration = useCallback(() => {
-    const plantillaId = configuration.intimacion.id
+  const saveIntimationConfiguration = useCallback(
+    ({ allowedColumns = true }: SaveIntimationConfigurationOptions = {}) => {
+      const plantillaId = configuration.intimacion.id
 
-    if (!plantillaId) {
-      return
-    }
+      if (!plantillaId) {
+        return
+      }
 
-    startSaveTransition(() => {
-      void (async () => {
-        const result = await updateIntimationConfigurationAction(
-          plantillaId,
-          configuration.intimacion
-        )
+      startSaveTransition(() => {
+        void (async () => {
+          const result = await updateIntimationConfigurationAction(
+            plantillaId,
+            configuration.intimacion,
+            { allowedColumns }
+          )
 
-        if (!result.success) {
-          return
-        }
+          if (!result.success) {
+            return
+          }
 
-        onSuccess?.()
-      })()
-    })
-  }, [configuration.intimacion, onSuccess])
+          onSuccess?.()
+        })()
+      })
+    },
+    [configuration.intimacion, onSuccess]
+  )
 
   return {
     isSavePending,

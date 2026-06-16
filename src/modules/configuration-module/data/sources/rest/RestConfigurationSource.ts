@@ -56,7 +56,8 @@ export class RestConfigurationSource implements IConfigurationSource {
 
   async updateIntimationConfiguration(
     plantillaId: string,
-    configuration: ConfigurationType['intimacion']
+    configuration: ConfigurationType['intimacion'],
+    { allowedColumns = true }: { allowedColumns?: boolean } = {}
   ): Promise<void> {
     await putJson<void, Omit<ApiIntimationConfigurationDto, 'id' | 'tipoDocumento'>>(
       CONFIGURATION_ENDPOINTS.intimationById(plantillaId),
@@ -66,7 +67,11 @@ export class RestConfigurationSource implements IConfigurationSource {
         cuerpo: configuration.cuerpo,
         fuenteInformacion: configuration.fuente_informacion ?? null,
         fechaCorte: configuration.pie,
-        columnas_seleccionadas: configuration.columnas_seleccionadas
+        ...(allowedColumns
+          ? {
+              columnas_seleccionadas: configuration.columnas_seleccionadas
+            }
+          : {})
       },
       this.config
     )

@@ -12,6 +12,7 @@ import classes from './IntimationTemplate.module.css'
 
 type IntimationTemplateProps = {
   controller: IntimationTemplateController
+  allowedColumns?: boolean
   confirmLabel?: string
   confirmButtonClassName?: string
   onConfirm?: () => void
@@ -21,6 +22,7 @@ type IntimationTemplateProps = {
 
 export function IntimationTemplate({
   controller,
+  allowedColumns = true,
   confirmLabel = INTIMATION_TEMPLATE_LABELS.buttons.confirmChanges,
   confirmButtonClassName,
   onConfirm,
@@ -28,7 +30,7 @@ export function IntimationTemplate({
   footerActions
 }: IntimationTemplateProps) {
   const handleConfirm = () => {
-    if (!controller.validate()) {
+    if (!controller.validate({ allowedColumns })) {
       return
     }
 
@@ -39,7 +41,10 @@ export function IntimationTemplate({
     <div className={classes.root}>
       <IntimationTemplateSubjectSection controller={controller} />
       <IntimationTemplateBodySection controller={controller} />
-      <IntimationTemplateColumnsSection controller={controller} />
+      <IntimationTemplateColumnsSection
+        controller={controller}
+        allowedColumns={allowedColumns}
+      />
       <IntimationTemplateFooter
         footerActions={footerActions}
         onConfirm={handleConfirm}
@@ -47,7 +52,9 @@ export function IntimationTemplate({
         confirmLabel={confirmLabel}
         confirmButtonClassName={confirmButtonClassName}
       />
-      <IntimationTemplateColumnPickerModal controller={controller} />
+      {allowedColumns ? (
+        <IntimationTemplateColumnPickerModal controller={controller} />
+      ) : null}
     </div>
   )
 }

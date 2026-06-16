@@ -71,13 +71,18 @@ export function useIntimationTemplate(initialState?: IntimationTemplateState) {
       }
     })
   }, [])
-  const validate = useCallback(() => {
-    const result = validateIntimationTemplateState(state)
+  const validate = useCallback(
+    ({ allowedColumns = true }: { allowedColumns?: boolean } = {}) => {
+      const result = validateIntimationTemplateState(state, {
+        allowedColumns
+      })
 
-    setErrors(result.errors)
+      setErrors(result.errors)
 
-    return result.success
-  }, [state])
+      return result.success
+    },
+    [state]
+  )
 
   const fields = useIntimationTemplateFields({
     updateConfig,
