@@ -1,5 +1,17 @@
 # Batch Management Feature Story
 
+## 2026-06-16 Scroll en preview de importacion Excel
+
+- Se limito la altura del modal `Vista previa - Importacion Excel` para que cargas grandes de CUITs no empujen el footer fuera del viewport.
+- La tabla de preview ahora tiene scroll interno, header sticky y columnas fijas para mantener legibles CUIT, razon social y estado.
+- Se agregaron ajustes responsive para conservar padding y altura util en pantallas chicas.
+
+### Validation
+
+- `bun run lint` termina con 0 errores y 3 warnings preexistentes en `src/modules/cross-management/preview.tsx` y `src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/index.tsx`.
+- `bun run build` sigue fallando por errores preexistentes de prerender con `cookies()` en `/reproceso` y `/admin`.
+- No se pudo levantar un segundo `next dev` con mocks porque ya existe un servidor activo del mismo proyecto en `localhost:3000`; no se detuvo ese proceso.
+
 ## 2026-06-15 Selector de periodo sobre menu de cruces
 
 - Se ajusto el `comboboxProps` compartido por los selects de periodo del menu de cruces para renderizar sus dropdowns en portal.
