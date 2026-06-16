@@ -1,5 +1,23 @@
 # Configuration Module Feature Story
 
+## 2026-06-16 Botones parejos en selector de columnas
+
+- Se igualaron alto, ancho minimo y padding de `Cancelar` y `Aceptar` en el footer del selector de columnas de la plantilla de intimacion.
+
+### Validation
+
+- `git diff --check`
+- Browser check: selector de columnas abierto en `http://localhost:3000/gestion-de-cruces/vista-previa-cruce/91`; `Cancelar` y `Aceptar` computan `116x36`.
+
+## 2026-06-16 Icono check en columnas de intimacion
+
+- Se reemplazo el caracter `✓` de las columnas seleccionadas de la plantilla de intimacion por `IconCheck` de `@tabler/icons-react`.
+- El ajuste conserva el contenedor y estilos actuales del token verde.
+
+### Validation
+
+- `bun x eslint src/modules/configuration-module/presentation/components/IntimationTemplate/IntimationTemplateColumnsSection/index.tsx`
+
 ## 2026-06-09 Remove confirm changes action
 
 - Se elimino el boton `Confirmar cambios` de la configuracion de intimacion y del formulario de informe de analisis.

@@ -4,9 +4,16 @@
   border-top: 1px solid var(--mantine-color-gray-2);
 }
 
-.modalCancelButton {
+.modalCancelButton,
+.primaryButton {
   height: 36px;
   min-width: 116px;
+  padding: 0 22px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.modalCancelButton {
   border: 1px solid var(--mantine-color-gray-2);
   background: var(--mantine-color-white);
   color: var(--mantine-color-gray-7);
@@ -23,10 +30,6 @@
 }
 
 .primaryButton {
-  height: 28px;
-  padding: 5px 11px;
   background: var(--mantine-color-blue-5);
   color: var(--mantine-color-white);
-  font-size: 12px;
-  line-height: 1;
 }

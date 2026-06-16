@@ -8,7 +8,7 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
-import { IconPlus, IconXFilled } from "@tabler/icons-react";
+import { IconCheck, IconPlus, IconXFilled } from "@tabler/icons-react";
 import type { IntimationTemplateController } from "../../../hooks/intimation-template";
 import { INTIMATION_TEMPLATE_LABELS } from "../../../constants";
 import classes from "./IntimationTemplateColumnsSection.module.css";
@@ -39,7 +39,9 @@ export function IntimationTemplateColumnsSection({
           <Stack gap="sm" className={classes.columnList}>
             {columnRows.map((column) => (
               <div key={column.id} className={classes.columnRow}>
-                <span className={classes.columnToken}>✓</span>
+                <span className={classes.columnToken}>
+                  <IconCheck size={16} />
+                </span>
                 <TextInput
                   value={column.value}
                   onChange={column.handleChange}

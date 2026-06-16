@@ -25,6 +25,7 @@ export function CrossPreviewAnalysisHeaderCell({
   })
 
   const isLeftAligned = column.key === 'cuit' || column.key === 'razonSocial'
+  const isFilterActive = Boolean(columnFilters[column.key])
 
   return (
     <Table.Th
@@ -39,6 +40,9 @@ export function CrossPreviewAnalysisHeaderCell({
         onClick={handleOpenFilterModal}
       >
         <span>{column.label}</span>
+        {isFilterActive ? (
+          <span className={classes.columnFilterActiveDot} title="Filtro activo" />
+        ) : null}
         <IconChevronDown size={12} stroke={2.2} />
       </button>
     </Table.Th>

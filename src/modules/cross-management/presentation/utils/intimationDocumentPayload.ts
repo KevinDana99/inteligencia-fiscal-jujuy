@@ -76,9 +76,9 @@ export function buildIntimationDocumentPayload({
       saludo: templateState.saludo,
       cuerpo: templateState.cuerpo,
       fuenteInformacion: templateState.fuenteInformacion || null,
-      fechaCorte: templateState.fechaCorte,
-      columnasSeleccionadas: columnIds
+      fechaCorte: templateState.fechaCorte
     },
+    columnasSeleccionadas: columnIds,
     filasPlanilla: buildSpreadsheetRows(contributor, columnIds)
   }
 }

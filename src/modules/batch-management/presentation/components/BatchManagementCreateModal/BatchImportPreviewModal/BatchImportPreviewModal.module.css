@@ -1,7 +1,7 @@
 .content {
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 32px);
+  max-height: min(820px, calc(100dvh - 48px));
   border-radius: 18px;
   overflow: hidden;
   background: var(--mantine-color-white);
@@ -46,11 +46,17 @@
 }
 
 .previewContent {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
   padding: 18px 24px 0;
   background: var(--mantine-color-white);
 }
 
 .previewStatusRow {
+  flex: 0 0 auto;
   padding-bottom: 16px;
 }
 
@@ -67,6 +73,7 @@
 }
 
 .previewAlert {
+  flex: 0 0 auto;
   margin-top: 16px;
   padding: 12px 14px;
   border: 1px solid rgba(230, 119, 0, 0.3);
@@ -88,10 +95,29 @@
 }
 
 .footer {
+  flex: 0 0 auto;
   margin-top: 0;
   padding: 16px 28px 24px;
   border-top: 1px solid var(--mantine-color-gray-2);
   background: var(--mantine-color-white);
+}
+
+@media (max-width: 48em) {
+  .content {
+    max-height: calc(100dvh - 24px);
+  }
+
+  .header {
+    padding: 18px 20px 14px;
+  }
+
+  .previewContent {
+    padding: 14px 16px 0;
+  }
+
+  .footer {
+    padding: 14px 16px 18px;
+  }
 }
 
 .cancelButton {

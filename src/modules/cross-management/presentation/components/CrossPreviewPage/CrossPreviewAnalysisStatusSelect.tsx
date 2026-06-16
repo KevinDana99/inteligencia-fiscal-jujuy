@@ -1,9 +1,11 @@
 import type {
   ICrossPreviewAnalysisRow
 } from '../../../data/models/CrossManagement'
+import { IconCheck } from '@tabler/icons-react'
 import { CROSS_PREVIEW_STATUS_OPTIONS } from '../../constants/crossPreviewStatus'
 import { useCrossPreviewStatusSelect } from '../../hooks/cross-preview/useCrossPreviewStatusSelect'
 import type { CrossPreviewStatus } from '../../hooks/useCrossPreview'
+import classes from './CrossPreviewPage.module.css'
 
 interface CrossPreviewAnalysisStatusSelectProps {
   onRequestStatusChange: (
@@ -26,14 +28,23 @@ export function CrossPreviewAnalysisStatusSelect({
   })
 
   return (
-    <select
-      value={status}
-      onChange={handleStatusChange}
-      className={className}
-    >
-      <option value="estado">{CROSS_PREVIEW_STATUS_OPTIONS.estado}</option>
-      <option value="relevante">{CROSS_PREVIEW_STATUS_OPTIONS.relevante}</option>
-      <option value="reproceso">{CROSS_PREVIEW_STATUS_OPTIONS.reproceso}</option>
-    </select>
+    <span className={classes.statusSelectWrap}>
+      {status === 'relevante' ? (
+        <IconCheck className={classes.statusSelectIcon} size={14} />
+      ) : null}
+      <select
+        value={status}
+        onChange={handleStatusChange}
+        className={className}
+      >
+        <option value="estado">{CROSS_PREVIEW_STATUS_OPTIONS.estado}</option>
+        <option value="relevante">
+          {CROSS_PREVIEW_STATUS_OPTIONS.relevante}
+        </option>
+        <option value="reproceso">
+          {CROSS_PREVIEW_STATUS_OPTIONS.reproceso}
+        </option>
+      </select>
+    </span>
   )
 }

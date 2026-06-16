@@ -16,8 +16,8 @@ export interface ApiGenerateIntimationDocumentRequestDto {
     cuerpo: string
     fuenteInformacion?: string | null
     fechaCorte: string
-    columnasSeleccionadas: string[]
   } | null
+  columnasSeleccionadas: string[]
   filasPlanilla: Array<Record<string, IIntimationSpreadsheetCellValue>>
 }
 
