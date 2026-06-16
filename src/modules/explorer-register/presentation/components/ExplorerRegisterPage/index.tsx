@@ -5,6 +5,7 @@ import {
   ActionIcon,
   Button,
   Card,
+  Divider,
   Group,
   Pagination,
   Radio,
@@ -16,7 +17,6 @@ import {
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import {
-  IconArrowRight,
   IconPlus,
   IconSearch,
   IconX
@@ -174,6 +174,10 @@ function ExplorerRegisterMultiValueField({
       ) : null}
     </div>
   );
+}
+
+function FilterDivider() {
+  return <Divider orientation="vertical" aria-hidden className={classes.filterDivider} />;
 }
 
 export function ExplorerRegisterPage({
@@ -381,13 +385,7 @@ export function ExplorerRegisterPage({
                         </Text>
                       ) : null}
                     </div>
-                    {shouldRenderArrow ? (
-                      <IconArrowRight
-                        size={22}
-                        stroke={2.3}
-                        className={classes.filterArrow}
-                      />
-                    ) : null}
+                    {shouldRenderArrow ? <FilterDivider /> : null}
                   </Fragment>
                 );
               })}
@@ -406,11 +404,7 @@ export function ExplorerRegisterPage({
                       controller.updateTemporalRange('startDate', value ?? '')
                     }
                   />
-                  <IconArrowRight
-                    size={22}
-                    stroke={2.3}
-                    className={classes.filterArrow}
-                  />
+                  <FilterDivider />
                   <DatePickerInput
                     label={EXPLORER_REGISTER_TEXTS.temporalEnd}
                     placeholder={EXPLORER_REGISTER_TEXTS.temporalEnd}

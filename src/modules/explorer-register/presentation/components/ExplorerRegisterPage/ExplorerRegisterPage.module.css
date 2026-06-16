@@ -318,11 +318,12 @@
   background: rgba(59, 130, 246, 0.12);
 }
 
-.filterArrow {
+.filterDivider {
   flex: 0 0 auto;
-  align-self: flex-start;
-  margin-top: 25px;
-  color: var(--mantine-color-gray-8);
+  height: 32px;
+  align-self: center;
+  margin-top: 18px;
+  --divider-color: var(--mantine-color-gray-2);
 }
 
 .switchField {
@@ -465,7 +466,7 @@
     width: 100%;
   }
 
-  .filterArrow {
+  .filterDivider {
     display: none;
   }
 }
