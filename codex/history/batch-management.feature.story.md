@@ -1,5 +1,16 @@
 # Batch Management Feature Story
 
+## 2026-06-15 Selector de periodo sobre menu de cruces
+
+- Se ajusto el `comboboxProps` compartido por los selects de periodo del menu de cruces para renderizar sus dropdowns en portal.
+- El selector conserva ancho, offset y posicion respecto del input, pero deja de quedar atrapado por el `overflow` del menu de lotes y puede mostrarse por encima del panel.
+
+### Validation
+
+- `bun run lint`
+- `bun run build` falla por errores preexistentes de prerender con `cookies()` en `/reproceso` y `/admin`.
+- Browser local: `http://localhost:3000/gestion-de-lotes` redirige a `/login`; las credenciales mock no fueron aceptadas en esta sesion local.
+
 ## 2026-06-11 Fix apertura de Nuevo Lote
 
 - Se corrigio la apertura del modal desde el boton `Nuevo Lote` para que el `MouseEvent` de React no llegue como `initialLoadedCuits`.

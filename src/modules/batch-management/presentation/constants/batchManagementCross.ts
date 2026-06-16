@@ -58,7 +58,7 @@ export const BATCH_CROSS_OPTIONS_BY_LABEL = {
 } as const
 
 export const BATCH_CROSS_SELECT_COMBOBOX_PROPS = {
-  withinPortal: false,
+  withinPortal: true,
   width: 'target',
   offset: 4,
   position: 'bottom-start',
