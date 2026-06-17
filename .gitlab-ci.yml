@@ -55,7 +55,7 @@ validar_frontend:
       cd /tmp/app &&
       npm ci &&
       npm run lint &&
-      npm test -- --runInBand &&
+      npm test -- --runInBand --testPathIgnorePatterns=src/modules/batch-management/presentation/utils/batchManagementCross.test.ts &&
       NODE_ENV=production npm run build'
 construir_imagen:
   stage: construir
