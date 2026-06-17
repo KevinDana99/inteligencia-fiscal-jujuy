@@ -32,6 +32,7 @@ export function BatchManagementTable({ controller }: BatchManagementTableProps) 
               <span className={classes.cuitCountHeader}>Cantidad de CUITs</span>
             </Table.Th>
             <Table.Th>Fecha de generación</Table.Th>
+            <Table.Th>Creado por</Table.Th>
             <Table.Th className={classes.actionColumn} />
           </Table.Tr>
         </Table.Thead>
