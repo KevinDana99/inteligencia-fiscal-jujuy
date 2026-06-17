@@ -785,6 +785,7 @@
 
 .modalInput {
   border: 1.5px solid var(--mantine-color-gray-3);
+  border-radius: var(--mantine-radius-md);
   background: var(--mantine-color-gray-0);
   color: var(--mantine-color-gray-9);
   font-size: 13.5px;
@@ -820,6 +821,7 @@
 
 .modalDropdown {
   border: 1.5px solid var(--mantine-color-gray-3);
+  border-radius: var(--mantine-radius-md);
   background: var(--mantine-color-white);
 }
 

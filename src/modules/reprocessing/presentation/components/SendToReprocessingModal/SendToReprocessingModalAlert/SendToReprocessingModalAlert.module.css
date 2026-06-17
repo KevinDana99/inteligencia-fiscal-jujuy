@@ -21,8 +21,6 @@
   color: var(--mantine-color-red-8);
   font-size: 12.5px;
   line-height: 1.45;
-}
-
-.alertTextLine:first-child {
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
