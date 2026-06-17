@@ -51,8 +51,12 @@ validar_frontend:
       -e NEXT_PUBLIC_USE_MOCK_REPROCESSING="$NEXT_PUBLIC_USE_MOCK_REPROCESSING"
       -e NEXT_PUBLIC_USE_MOCK_UNIFIED_REGISTER="$NEXT_PUBLIC_USE_MOCK_UNIFIED_REGISTER"
       "$NODE_IMAGE"
-      sh -lc 'cp -a /src/. /tmp/app && cd /tmp/app && npm ci && NODE_ENV=production npm run build'
-
+      sh -lc 'cp -a /src/. /tmp/app &&
+      cd /tmp/app &&
+      npm ci &&
+      npm run lint &&
+      npm test -- --runInBand &&
+      NODE_ENV=production npm run build'
 construir_imagen:
   stage: construir
   needs:
@@ -60,7 +64,7 @@ construir_imagen:
   interruptible: true
   script:
     - export IMAGE_TAG="$REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
-    - export IMAGE_LATEST="$REGISTRY_IMAGE:develop-latest"
+    - export IMAGE_LATEST="$REGISTRY_IMAGE:dev-latest"
     - sudo -n podman login "$REGISTRY_HOST" -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
     - >
       sudo -n podman build --pull=missing
@@ -93,6 +97,10 @@ promover_k3s_infra_dev:
       WORKDIR="/tmp/k3s-infra-frontend-${CI_PIPELINE_ID}"
 
       rm -rf "$WORKDIR"
+      test -n "${K3S_INFRA_PUSH_TOKEN:-}" || { echo "Falta variable K3S_INFRA_PUSH_TOKEN"; exit 1; }
+
+      echo "Validando acceso a k3s-infra..."
+      git ls-remote "https://oauth2:${K3S_INFRA_PUSH_TOKEN}@${K3S_INFRA_REPO}" HEAD >/dev/null
 
       git clone --branch "$K3S_INFRA_BRANCH" "https://oauth2:${K3S_INFRA_PUSH_TOKEN}@${K3S_INFRA_REPO}" "$WORKDIR"
 
@@ -103,21 +111,21 @@ promover_k3s_infra_dev:
 
       mkdir -p "$(dirname "$FRONTEND_PATCH_FILE")"
 
-      cat > "$FRONTEND_PATCH_FILE" <<EOF
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: rentas-if-frontend
-        namespace: rentas-if
-      spec:
-        template:
-          spec:
-            imagePullSecrets:
-              - name: gitlab-registry-frontend
-            containers:
-              - name: web
-                image: ${IMAGE_TAG}
-      EOF
+      printf '%s\n' \
+        'apiVersion: apps/v1' \
+        'kind: Deployment' \
+        'metadata:' \
+        '  name: rentas-if-frontend' \
+        '  namespace: rentas-if' \
+        'spec:' \
+        '  template:' \
+        '    spec:' \
+        '      imagePullSecrets:' \
+        '        - name: gitlab-registry-frontend' \
+        '      containers:' \
+        '        - name: web' \
+        "          image: ${IMAGE_TAG}" \
+        > "$FRONTEND_PATCH_FILE"
 
       git diff -- "$FRONTEND_PATCH_FILE"
 
