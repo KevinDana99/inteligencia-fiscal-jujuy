@@ -1,5 +1,18 @@
 # Cross Management Feature Story
 
+## 2026-06-16 Normalizacion de importes antes del Server Action
+
+- El hook de descarga de intimaciones ahora normaliza el payload final antes de invocar `generateIntimationDocumentAction`, evitando que la request visible hacia el Server Action conserve importes como `$$ 0`.
+- El Server Action vuelve a normalizar el payload recibido antes de loguear y antes de delegar al source REST, por lo que los logs de ambiente muestran la misma version saneada que se envia al backend.
+- Se mantiene la normalizacion defensiva del source REST para cubrir llamadas futuras que no pasen por el hook cliente.
+
+### Validation
+
+- `bun x jest src/modules/cross-management/data/utils/normalizeIntimationDocumentPayload.test.ts src/modules/cross-management/presentation/utils/intimationDocumentPayload.test.ts src/modules/cross-management/presentation/utils/resolveIntimationExportColumnValue.test.ts src/modules/cross-management/presentation/utils/groupIntimationExportContributors.test.ts src/modules/configuration-module/presentation/utils/intimationTemplateState.test.ts --runInBand`
+- `bun x eslint src/modules/cross-management/presentation/hooks/intimation-export/useIntimationDocumentDownload.ts src/modules/cross-management/data/actions/commands/generateIntimationDocumentAction.ts src/modules/cross-management/data/sources/rest/RestCrossManagementSource.ts src/modules/cross-management/data/utils/normalizeIntimationDocumentPayload.ts src/modules/cross-management/data/utils/normalizeIntimationDocumentPayload.test.ts`
+- `bun x tsc --noEmit --pretty false --incremental false`
+- `git diff --check`
+
 ## 2026-06-16 Payload de intimacion por contribuyente
 
 - La previsualizacion de intimacion ahora agrupa filas de planilla por contribuyente antes de paginar el modal, evitando tratar periodos del mismo contribuyente como intimaciones separadas.
@@ -191,7 +204,7 @@
 
 ### Validation
 
-- `bun x tsc --noEmit`
+- `bun x tsc --noEmit --incremental false`
 - `bun x eslint app/'(private)'/gestion-de-cruces/page.tsx src/modules/cross-management/index.tsx src/modules/cross-management/constants/crossManagementRequest.ts src/modules/cross-management/presentation/constants/crossManagementFilters.ts src/modules/cross-management/presentation/constants/crossManagementLabels.ts src/modules/cross-management/presentation/constants/crossManagementRoutes.ts src/modules/cross-management/presentation/constants/crossManagementTable.ts src/modules/cross-management/presentation/utils/parseCrossManagementDate.ts src/modules/cross-management/presentation/utils/matchesCrossManagementDayRange.ts src/modules/cross-management/presentation/utils/matchesCrossManagementPeriod.ts src/modules/cross-management/presentation/utils/filterCrossManagementItems.ts src/modules/cross-management/presentation/hooks/useCrossManagement.ts src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementFilters.ts src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementNavigation.ts src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementFiltersBar.ts src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementTable.ts src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementTableRow.ts src/modules/cross-management/presentation/components/CrossManagementPage/index.tsx src/modules/cross-management/presentation/components/CrossManagementPage/CrossManagementPageLoader.tsx src/modules/cross-management/presentation/components/CrossManagementHeader/index.tsx src/modules/cross-management/presentation/components/CrossManagementFiltersBar/index.tsx src/modules/cross-management/presentation/components/CrossManagementTable/index.tsx src/modules/cross-management/presentation/components/CrossManagementTable/CrossManagementTableRow.tsx src/modules/cross-management/presentation/components/CrossFilterModal/useCrossFilterModal.ts src/modules/cross-management/presentation/components/CrossPreviewPage/index.tsx`
 - `bun run lint` ya no falla por `cross-management`; queda bloqueado por un error existente en `reprocessing` y 4 warnings existentes en `unified-register`.
 
@@ -234,3 +247,18 @@
 
 - `bun x tsc --noEmit --incremental false`
 - `bun x eslint 'app/(private)/gestion-de-cruces/vista-previa-cruce/[crossId]/page.tsx' src/modules/cross-management/data/mappers/mapCrossResultsToPreview.ts src/modules/cross-management/presentation/components/CrossPreviewPage/index.tsx src/modules/cross-management/presentation/hooks/useCrossPreview.ts`
+
+## 2026-06-16 Intimation document generation BFF route
+
+- `useIntimationDocumentDownload` dejó de invocar `generateIntimationDocumentAction` desde el cliente para evitar requests atadas al hash de Server Actions entre deployments.
+- Se agregó `POST /api/documentos/intimacion/generar` como ruta BFF del frontend: parsea el payload, normaliza `filasPlanilla`, valida sesión, reenvía al backend real y propaga errores de API.
+- Se reutilizó un mapper compartido para adaptar respuestas de backend con `documentoId`, `documentId`, `id`, `urlDescarga`, `downloadUrl` o `url` al modelo interno.
+- Se agregó `generateIntimationDocument` en `presentation/utils` para que el browser envíe JSON directo al BFF y reciba `{ documentId, downloadUrl }`.
+- Se cubrió el helper client-side con tests de request exitoso y error backend.
+
+### Validation
+
+- `bun x jest src/modules/cross-management/presentation/utils/intimationDocumentGeneration.test.ts src/modules/cross-management/data/utils/normalizeIntimationDocumentPayload.test.ts src/modules/cross-management/presentation/utils/intimationDocumentPayload.test.ts --runInBand`
+- `bun x eslint app/api/documentos/intimacion/generar/route.ts src/modules/cross-management/data/sources/rest/RestCrossManagementSource.ts src/modules/cross-management/data/sources/rest/mappers/mapIntimationDocumentDto.ts src/modules/cross-management/presentation/hooks/intimation-export/useIntimationDocumentDownload.ts src/modules/cross-management/presentation/utils/intimationDocumentGeneration.ts src/modules/cross-management/presentation/utils/intimationDocumentGeneration.test.ts`
+- `bun x tsc --noEmit`
+- `git diff --check`

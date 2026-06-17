@@ -1,0 +1,104 @@
+.filtersCard {
+  position: relative;
+  z-index: 5;
+  overflow: visible;
+  border: 1px solid var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+}
+
+.filtersHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.filtersTitle {
+  color: var(--mantine-color-gray-5);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.filtersActions {
+  display: flex;
+  gap: 8px;
+}
+
+.clearButton {
+  border-color: var(--mantine-color-gray-2);
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.clearButton:hover {
+  border-color: var(--mantine-color-gray-3);
+  background: var(--mantine-color-gray-0);
+}
+
+.searchButton {
+  background: var(--mantine-color-blue-5);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.searchButton:hover {
+  background: var(--mantine-color-blue-6);
+}
+
+.filtersGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 14px;
+  align-items: flex-start;
+  overflow: visible;
+}
+
+.filterField {
+  position: relative;
+  flex: 0 1 220px;
+  min-width: 220px;
+  max-width: 260px;
+  overflow: visible;
+}
+
+.filterLabel {
+  margin-bottom: 5px;
+  color: var(--mantine-color-gray-7);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.filterHint {
+  margin-top: 4px;
+  color: var(--mantine-color-gray-5);
+  font-size: 11px;
+}
+
+.filterDivider {
+  flex: 0 0 auto;
+  height: 32px;
+  align-self: center;
+  margin-top: 18px;
+  --divider-color: var(--mantine-color-gray-2);
+}
+
+@media (max-width: 768px) {
+  .filtersHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .filterField {
+    flex-basis: 100%;
+    max-width: none;
+    width: 100%;
+  }
+
+  .filterDivider {
+    display: none;
+  }
+}

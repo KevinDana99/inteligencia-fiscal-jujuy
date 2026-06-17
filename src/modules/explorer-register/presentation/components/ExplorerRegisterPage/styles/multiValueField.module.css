@@ -1,0 +1,97 @@
+.multiValueField {
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+}
+
+.multiValueField:focus-within {
+  z-index: 60;
+}
+
+.filterDropdown {
+  position: absolute;
+  top: 38px;
+  right: 0;
+  left: 0;
+  z-index: 80;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: 8px;
+  background: var(--mantine-color-white);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.filterDropdownOption {
+  width: 100%;
+  border: 0;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 7px 10px;
+  text-align: left;
+}
+
+.filterDropdownOption:hover,
+.filterDropdownOption:focus-visible {
+  background: var(--mantine-color-blue-0);
+  color: var(--mantine-color-gray-9);
+  outline: none;
+}
+
+.filterTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.filterTag {
+  display: inline-flex;
+  max-width: 100%;
+  min-height: 26px;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #9fc2ff;
+  border-radius: 8px;
+  background: #eef5ff;
+  color: var(--mantine-color-blue-5);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 4px 6px 4px 8px;
+}
+
+.filterTagCode {
+  flex: 0 0 auto;
+}
+
+.filterTagDetail {
+  min-width: 0;
+  max-width: 120px;
+  overflow: hidden;
+  color: var(--mantine-color-gray-6);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filterTagRemove {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mantine-color-blue-5);
+  cursor: pointer;
+  padding: 0;
+}
+
+.filterTagRemove:hover {
+  background: rgba(59, 130, 246, 0.12);
+}

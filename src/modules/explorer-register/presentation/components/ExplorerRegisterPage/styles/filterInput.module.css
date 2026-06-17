@@ -1,0 +1,117 @@
+.datePickerInput {
+  flex: 0 0 220px;
+  min-width: 220px;
+  max-width: 220px;
+}
+
+.filterSelect :global(.mantine-Input-input) {
+  min-width: 0;
+  height: 34px;
+  min-height: 34px;
+  border-color: var(--mantine-color-gray-2);
+  border-radius: 8px;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.filterSelect :global(.mantine-Input-input::placeholder) {
+  color: var(--mantine-color-gray-5);
+  font-weight: 400;
+}
+
+.filterSelect :global(.mantine-InputWrapper-label) {
+  margin-bottom: 5px;
+  color: var(--mantine-color-gray-7);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.filterSelect :global(.mantine-Input-section) {
+  color: #8da0bc;
+}
+
+.filterSelect :global(.mantine-Input-input:hover),
+.filterSelect :global(.mantine-Input-input:focus),
+.filterSelect :global(.mantine-Input-input:focus-visible),
+.filterSelect :global(.mantine-Input-input[data-expanded]) {
+  border-color: #a9caff;
+  background: var(--mantine-color-white);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.08);
+}
+
+.filterSelect :global(.mantine-Combobox-dropdown),
+.filterSelect :global(.mantine-Select-dropdown) {
+  background: var(--mantine-color-white);
+  border: 1px solid var(--mantine-color-gray-2);
+  color: var(--mantine-color-gray-7);
+}
+
+.filterSelect :global(.mantine-Combobox-option),
+.filterSelect :global(.mantine-Select-option) {
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-7);
+}
+
+.filterSelect :global(.mantine-Combobox-option:hover),
+.filterSelect :global(.mantine-Combobox-option[data-hovered]),
+.filterSelect :global(.mantine-Combobox-option[data-combobox-selected]),
+.filterSelect :global(.mantine-Select-option:hover),
+.filterSelect :global(.mantine-Select-option[data-hovered]),
+.filterSelect :global(.mantine-Select-option[data-checked]) {
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-9);
+}
+
+.agentSelectInput {
+  padding: 7px 32px 7px 10px;
+  font-size: 12px;
+  color: var(--mantine-color-gray-7);
+}
+
+.agentSelectDropdown {
+  margin-top: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--mantine-color-gray-2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.agentSelectOption {
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mantine-color-gray-7);
+  background: var(--mantine-color-white);
+}
+
+.agentSelectOption:hover,
+.agentSelectOption[data-hovered],
+.agentSelectOption[data-checked] {
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-9);
+}
+
+.filterSearchInput {
+  width: 100%;
+}
+
+.convenioInput {
+  width: fit-content;
+}
+
+.convenioInput :global(.mantine-Input-input) {
+  width: 60px;
+  padding: 7px 10px;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .datePickerInput {
+    flex-basis: 100%;
+    max-width: none;
+    width: 100%;
+  }
+}

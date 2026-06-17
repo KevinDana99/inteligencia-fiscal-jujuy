@@ -2,13 +2,14 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import type { IntimationTemplateState } from '@/modules/configuration-module/presentation/hooks/intimation-template'
-import { generateIntimationDocumentAction } from '../../../data/actions'
 import {
   INTIMATION_DOCUMENT_FORMATS
 } from '../../../data/constants/intimationDocumentContracts'
 import type { IIntimationDocumentFormat } from '../../../data/models/CrossManagement'
+import { normalizeIntimationDocumentPayload } from '../../../data/utils/normalizeIntimationDocumentPayload'
 import { INTIMATION_DOCUMENT_DOWNLOAD_ERRORS } from '../../constants/intimationDocumentDownload'
 import { downloadIntimationDocument } from '../../utils/intimationDocumentDownload'
+import { generateIntimationDocument } from '../../utils/intimationDocumentGeneration'
 import { buildIntimationDocumentPayload } from '../../utils/intimationDocumentPayload'
 import type { IntimationExportContributor } from './useIntimationExportModal'
 
@@ -52,16 +53,12 @@ export function useIntimationDocumentDownload({
           format,
           templateState
         })
-        const result = await generateIntimationDocumentAction(payload)
-
-        if (!result.success || !result.data) {
-          throw new Error(
-            result.error ?? INTIMATION_DOCUMENT_DOWNLOAD_ERRORS.generationFailed
-          )
-        }
+        const normalizedPayload = normalizeIntimationDocumentPayload(payload)
+        const generatedDocument =
+          await generateIntimationDocument(normalizedPayload)
 
         await downloadIntimationDocument({
-          documentId: result.data.documentId,
+          documentId: generatedDocument.documentId,
           format
         })
       } catch (error) {

@@ -19,11 +19,24 @@
 - Se agrego el mapper puro `buildExplorerRegisterBatchRows` en utils con deduplicacion por CUIT normalizado y test unitario.
 - Se ajusto el control `switch` de filtros para usar solo componentes Mantine (`Radio` y `Button`) con estilos minimos.
 
+## 2026-06-17 - Refactor de ExplorerRegisterPage
+
+- `ExplorerRegisterPage` quedo como componente orquestador y delega navbar, columnas, filtros, errores, tabla, paginacion y estados vacios en componentes especificos.
+- Las opciones globales del filtro de agente se movieron a `presentation/constants/explorerRegisterPage.ts`.
+- La resolucion del error visible se movio a `presentation/utils/getExplorerRegisterDisplayedError.ts`.
+- Los componentes nuevos comparten el contrato del hook mediante `ExplorerRegisterController`, evitando duplicar tipos derivados de `useExplorerRegister`.
+- La carpeta `ExplorerRegisterPage` quedo con archivos por debajo de 150 lineas; el archivo mas grande es `ExplorerRegisterMultiValueField.tsx` con 121 lineas.
+- Los estilos se separaron por responsabilidad en modulos CSS especificos de navbar, columnas, filtros, inputs, multivalor, switch y resultados.
+
 ## Verificacion
 
 - `bun x jest src/modules/explorer-register --runInBand`
 - `bun x jest src/modules/explorer-register src/modules/batch-management/presentation/hooks --runInBand`
 - `bun x eslint app/layout.tsx app/'(private)'/explorar-padron/page.tsx src/modules/explorer-register`
 - `bun x eslint app/layout.tsx app/'(private)'/explorar-padron/page.tsx src/modules/explorer-register src/modules/batch-management/presentation/hooks`
+- `bun x eslint src/modules/explorer-register/presentation/components/ExplorerRegisterPage src/modules/explorer-register/presentation/constants src/modules/explorer-register/presentation/utils`
 - `bun x tsc --noEmit`
+- `bun x jest src/modules/explorer-register --runInBand`
+- `bun run build`
 - `curl -I http://127.0.0.1:3000/explorar-padron` respondio `307` hacia `/login`, esperado para la ruta privada sin sesion.
+- Browser interno: `/explorar-padron` redirige a `/login`, sin errores de consola ni overlay real de Next.

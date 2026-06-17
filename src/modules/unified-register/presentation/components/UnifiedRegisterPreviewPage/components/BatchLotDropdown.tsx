@@ -23,28 +23,41 @@ export function BatchLotDropdown({ preview }: BatchLotDropdownProps) {
         <TextInput
           classNames={{ input: classes.batchDropdownInput }}
           value={preview.batchSearch}
-          onChange={(event) => preview.setBatchSearch(event.currentTarget.value)}
+          onChange={(event) =>
+            preview.setBatchSearch(event.currentTarget.value)
+          }
           placeholder="Buscar lote..."
         />
         <div className={classes.batchDropdownList}>
           {preview.batchOptionsError ? (
-            <Text className={`${classes.batchDropdownState} ${classes.batchDropdownError}`}>
+            <Text
+              className={`${classes.batchDropdownState} ${classes.batchDropdownError}`}
+            >
               {preview.batchOptionsError}
             </Text>
-          ) : null}
-          {preview.filteredLotOptions.map((lot) => (
-            <button
-              key={lot.id}
-              type="button"
-              className={classes.batchDropdownOption}
-              onClick={() => preview.selectLotOption(lot)}
-            >
-              <Text className={classes.batchDropdownOptionTitle}>{lot.label}</Text>
-              <Text className={classes.batchDropdownOptionMeta}>
-                {lot.cuitCount} CUITs
-              </Text>
-            </button>
-          ))}
+          ) : preview.filteredLotOptions.length === 0 ? (
+            <Text className={classes.batchDropdownState}>
+              {preview.isBatchOptionsPending
+                ? 'Cargando lotes...'
+                : 'No se encontraron lotes.'}
+            </Text>
+          ) : (
+            preview.filteredLotOptions.map((lot) => (
+              <button
+                key={lot.id}
+                type="button"
+                className={classes.batchDropdownOption}
+                onClick={() => preview.selectLotOption(lot)}
+              >
+                <Text className={classes.batchDropdownOptionTitle}>
+                  {lot.label}
+                </Text>
+                <Text className={classes.batchDropdownOptionMeta}>
+                  {lot.cuitCount} CUITs
+                </Text>
+              </button>
+            ))
+          )}
         </div>
       </div>
     </>

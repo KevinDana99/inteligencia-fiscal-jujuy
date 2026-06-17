@@ -6,22 +6,26 @@ import type {
   IGenerateIntimationDocumentPayload,
   IIntimationDocumentGeneratedSummary
 } from '../../models/CrossManagement'
+import { normalizeIntimationDocumentPayload } from '../../utils/normalizeIntimationDocumentPayload'
 import { resolveCrossManagementActionError } from '../shared/resolveCrossManagementActionError'
+import util from 'util'
 
 export async function generateIntimationDocumentAction(
   payload: IGenerateIntimationDocumentPayload
 ): Promise<ICrossManagementCommandResult<IIntimationDocumentGeneratedSummary>> {
   try {
+    const normalizedPayload = normalizeIntimationDocumentPayload(payload)
+
     console.info({
       action: 'generateIntimationDocumentAction.start',
-      format: payload.formato,
-      hasContributorId: Boolean(payload.contribuyente.id),
-      rowsCount: payload.filasPlanilla.length,
-      selectedColumnsCount: payload.columnasSeleccionadas.length
+      format: normalizedPayload.formato,
+      hasContributorId: Boolean(normalizedPayload.contribuyente.id),
+      rowsCount: normalizedPayload.filasPlanilla.length,
+      selectedColumnsCount: normalizedPayload.columnasSeleccionadas.length
     })
 
     const source = await createServerCrossManagementSource()
-    const data = await source.generateIntimationDocument(payload)
+    const data = await source.generateIntimationDocument(normalizedPayload)
 
     console.info({
       action: 'generateIntimationDocumentAction.success',
