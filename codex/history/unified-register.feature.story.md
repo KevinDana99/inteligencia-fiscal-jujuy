@@ -371,3 +371,23 @@ Fixed a `Maximum update depth exceeded` loop triggered by the preview hydration 
 - `bun run build`
 - File-size check on the touched preview hydration hooks: largest file is 149 lines.
 - Browser verification against `http://localhost:3000/vista-previa-padron/20123456789`: unauthenticated flow redirects to `/login`, renders content, and shows no Next overlay or console errors.
+
+## Informe Preview Modal Scroll Fix - 2026-06-17
+
+### Summary
+
+Restored vertical scrolling in the `Informe de Investigación — Previsualización` modal without changing report generation, payloads, or download behavior.
+
+### Main Changes
+
+- Constrained the modal content height to the viewport and changed the modal body to a flex column.
+- Kept the top bar and footer from shrinking while the document stage becomes the scrollable area.
+- Updated the document stage from horizontal-only overflow to full overflow so long report previews can scroll vertically.
+
+### Validation
+
+- `git diff --check`
+- `bun x eslint 'src/modules/unified-register/presentation/components/InformePreviewModal/**/*.tsx' 'src/modules/unified-register/presentation/components/InformePreviewModal/*.tsx'`
+- `bun x tsc --noEmit --incremental false`
+- Browser verification against `http://localhost:3000/vista-previa-padron/20123456789`: unauthenticated flow redirects to `/login`, renders content, and shows no console errors.
+- `bun run build` remains blocked by existing prerender `cookies()` errors on `/reproceso` and `/admin`.
