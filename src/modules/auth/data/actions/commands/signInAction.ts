@@ -14,7 +14,6 @@ import {
 } from '@/lib/auth/login-success-toast'
 import { AUTH_SESSION_EXPIRED_NOTICE_COOKIE } from '@/lib/auth/session-expired-notice'
 import { getRedirectPathByUserType } from '@/lib/auth/proxy-session'
-import { isPostLoginRedirectPath } from '@/lib/auth/route-access'
 import { createServerAuthSource } from '../../data-access';
 import type {
   IAuthActionState,
@@ -58,9 +57,6 @@ export async function signInAction(
   const correo = String(formData.get('correo') ?? '').trim()
   const contrasena = String(formData.get('contrasena') ?? '')
   const cookieStore = await cookies()
-  const requestedRedirectTo = String(
-    cookieStore.get(AUTH_COOKIE_NAMES.postLoginRedirect)?.value ?? ''
-  ).trim()
 
   try {
     console.log('[auth][login][request]', {
@@ -81,23 +77,20 @@ export async function signInAction(
     })
     cookieStore.delete(AUTH_COOKIE_NAMES.postLoginRedirect)
     cookieStore.delete(AUTH_SESSION_EXPIRED_NOTICE_COOKIE)
-    const fallbackRedirectTo = getRedirectPathByUserType(
+    const redirectTo = getRedirectPathByUserType(
       currentContext.tipoUsuario
     )
-    const resolvedRedirectTo =
-      isPostLoginRedirectPath(requestedRedirectTo)
-        ? requestedRedirectTo
-        : fallbackRedirectTo
 
     console.log('[auth][login][response]', {
       token: redactToken(response.token),
       expiraEn: response.expiraEn,
       refrescarToken: redactToken(response.refrescarToken),
       refrescarTokenExpiraEn: response.refrescarTokenExpiraEn,
-      usuario: response.usuario
+      usuario: response.usuario,
+      redirectTo
     })
 
-    redirect(resolvedRedirectTo as Route)
+    redirect(redirectTo as Route)
   } catch (error) {
     if (isNextRedirectError(error)) {
       throw error
