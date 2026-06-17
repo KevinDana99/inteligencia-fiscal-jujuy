@@ -33,8 +33,6 @@ export async function generateIntimationDocumentAction(
       hasDownloadUrl: Boolean(data.downloadUrl)
     })
 
-    console.log(util.inspect(normalizedPayload))
-
     return {
       success: true,
       data
