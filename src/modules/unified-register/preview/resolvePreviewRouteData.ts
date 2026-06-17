@@ -1,11 +1,14 @@
 import { getUnifiedRegisterListAction } from '../data/actions';
-import type { IUnifiedRegisterDetail } from '../data/models/UnifiedRegister';
+import { isMockUnifiedRegisterEnabled } from '../data/is-mock-unified-register-enabled';
+import type {
+  IUnifiedRegisterDetail,
+  IUnifiedRegisterItem
+} from '../data/models/UnifiedRegister';
 import { unifiedRegisterDetailsFixture } from '../data/sources/mock/fixtures/unifiedRegisterItems';
 import {
   findContributorByCuit,
   isSameCuit,
-  normalizeCuit,
-  resolvePreviewContribuyenteId
+  normalizeCuit
 } from '../data/utils/resolveUnifiedRegisterPreviewContributor';
 
 const CONTRIBUTOR_LOOKUP_PAGE_SIZE = 50;
@@ -24,6 +27,10 @@ async function findContribuyenteByCuit(cuit: string) {
     );
     const pageData = pageResult.data;
 
+    if (pageResult.error) {
+      throw new Error(pageResult.error);
+    }
+
     if (!pageData) {
       continue;
     }
@@ -41,41 +48,52 @@ async function findContribuyenteByCuit(cuit: string) {
 }
 
 function buildUnifiedRegisterDetailFallback(
-  contribuyenteId: string,
-  cuit: string
+  contributor: IUnifiedRegisterItem
 ): IUnifiedRegisterDetail {
   return {
     ...unifiedRegisterDetailTemplate,
-    contribuyenteId,
-    cuit
+    ...contributor
   };
 }
 
 export async function resolveUnifiedRegisterPreviewRouteData({
-  cuit,
-  id
+  cuit
 }: {
   cuit: string;
   id?: string;
 }) {
   const fixtureItem = findContributorByCuit(unifiedRegisterDetailsFixture, cuit);
-  const backendListItem = fixtureItem || id
-    ? null
-    : await findContribuyenteByCuit(cuit);
-  const cuitMatchedContribuyenteId =
-    fixtureItem?.contribuyenteId ?? backendListItem?.contribuyenteId ?? null;
-  const contribuyenteId = resolvePreviewContribuyenteId({
-    cuitMatchedContribuyenteId,
-    routeContribuyenteId: id
-  });
+  const shouldUseMock = isMockUnifiedRegisterEnabled();
 
-  if (!contribuyenteId) {
-    return null;
+  if (shouldUseMock) {
+    if (!fixtureItem) {
+      return null;
+    }
+
+    return {
+      cuitMatchedContribuyenteId: fixtureItem.contribuyenteId,
+      isFixtureItem: true,
+      item: fixtureItem
+    };
   }
 
-  return {
-    cuitMatchedContribuyenteId,
-    isFixtureItem: Boolean(fixtureItem),
-    item: fixtureItem ?? buildUnifiedRegisterDetailFallback(contribuyenteId, cuit)
-  };
+  const backendListItem = await findContribuyenteByCuit(cuit);
+
+  if (backendListItem) {
+    return {
+      cuitMatchedContribuyenteId: backendListItem.contribuyenteId,
+      isFixtureItem: false,
+      item: buildUnifiedRegisterDetailFallback(backendListItem)
+    };
+  }
+
+  if (fixtureItem) {
+    return {
+      cuitMatchedContribuyenteId: fixtureItem.contribuyenteId,
+      isFixtureItem: true,
+      item: fixtureItem
+    };
+  }
+
+  return null;
 }

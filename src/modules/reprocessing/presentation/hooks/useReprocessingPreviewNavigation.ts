@@ -6,9 +6,7 @@ import { useRouter } from 'next/navigation'
 import type { IReprocessingItem } from '../../data/models/Reprocessing'
 
 const buildPreviewRoute = (item: IReprocessingItem) =>
-  `/vista-previa-padron/${encodeURIComponent(item.cuit)}?id=${encodeURIComponent(
-    item.contribuyenteId
-  )}` as Route
+  `/vista-previa-padron/${encodeURIComponent(item.cuit)}` as Route
 
 export function useReprocessingPreviewNavigation() {
   const router = useRouter()

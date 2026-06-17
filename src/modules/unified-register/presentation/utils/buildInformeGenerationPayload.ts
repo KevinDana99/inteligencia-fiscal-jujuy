@@ -30,7 +30,9 @@ function getContactValue(item: IUnifiedRegisterDetail, contactId: string) {
 function cloneRows(
   cross: InformeCrossOption
 ): IInformeSelectedCross['columnasSeleccionadas']['filas'] {
-  return cross.columnasSeleccionadas.filas.map((row) => ({ ...row }));
+  return cross.columnasSeleccionadas.filas
+    .filter((row) => String(row.periodo ?? '').trim().toUpperCase() !== 'TOTAL')
+    .map((row) => ({ ...row }));
 }
 
 export function buildInformeContributorData(
@@ -57,7 +59,15 @@ export function getSelectedInformeCrosses(
   selectedCrossIds: string[],
   availableCrosses: InformeCrossOption[] = INFORME_CROSS_OPTIONS
 ): InformeCrossOption[] {
-  return availableCrosses.filter((cross) => selectedCrossIds.includes(cross.id));
+  return availableCrosses
+    .filter((cross) => selectedCrossIds.includes(cross.id))
+    .map((cross) => ({
+      ...cross,
+      columnasSeleccionadas: {
+        claves: [...cross.columnasSeleccionadas.claves],
+        filas: cloneRows(cross)
+      }
+    }));
 }
 
 export function buildInformeSelectedCrosses(

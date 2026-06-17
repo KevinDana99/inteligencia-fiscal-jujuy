@@ -25,9 +25,16 @@ async function refreshSerializedAuthSession(
     return null;
   }
 
-  const refreshedSession = await refreshAuthSession({
-    refrescarToken: session.refreshToken
-  });
+  let refreshedSession: ISerializedAuthSession | null;
+
+  try {
+    refreshedSession = await refreshAuthSession({
+      refrescarToken: session.refreshToken
+    });
+  } catch {
+    await clearServerAuthCookies();
+    return null;
+  }
 
   if (!refreshedSession) {
     await clearServerAuthCookies();

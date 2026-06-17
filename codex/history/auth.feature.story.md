@@ -125,3 +125,11 @@ Verified successfully with:
 - `useLoginForm` importa `signInAction` desde el archivo directo de comando, no desde el barrel `data/actions`.
 - `useSignOut` importa `signOutAction` desde el archivo directo de comando, manteniendo la misma defensa para el menú de sesión.
 - Validado con `bun x eslint`, `bun x tsc --noEmit --incremental false`, `bun run build` y `git diff --check`.
+
+## 2026-06-17 Renovación hasta vencimiento del refresh token
+
+- Las cookies `auth-access-token` y `auth-access-token-expires-at` ahora permanecen hasta `refreshTokenExpiresAt`, permitiendo renovar aunque el access token haya vencido lógicamente.
+- `accessTokenExpiresAt` conserva su valor corto y sigue siendo la señal para disparar refresh proactivo o por expiración.
+- `refreshAuthSession` retorna `null` ante error de red, respuesta no OK o JSON inválido, evitando que una renovación fallida rompa la request.
+- `getServerAuthSession` y `refreshExpiredRequestSession` tratan errores de renovación como sesión inválida controlada.
+- Se agregó cobertura para expiración de cookies, access token vencido con refresh vigente, fallos de renovación y regresión de retry del API client.

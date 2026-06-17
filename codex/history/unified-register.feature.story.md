@@ -391,3 +391,41 @@ Restored vertical scrolling in the `Informe de Investigación — Previsualizaci
 - `bun x tsc --noEmit --incremental false`
 - Browser verification against `http://localhost:3000/vista-previa-padron/20123456789`: unauthenticated flow redirects to `/login`, renders content, and shows no console errors.
 - `bun run build` remains blocked by existing prerender `cookies()` errors on `/reproceso` and `/admin`.
+
+## Informe Generation Payload Total Row Fix - 2026-06-17
+
+### Summary
+
+Stopped sending and previewing the `TOTAL` row from selected taxable-base crosses, leaving total calculation to the backend.
+
+### Main Changes
+
+- Filtered selected cross rows with `periodo: 'TOTAL'` from the shared selected-cross builder used by both the preview and the informe generation payload.
+- Added regression coverage so generated document payloads and preview selected crosses include only period rows and no total row.
+
+### Validation
+
+- `bun x jest src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts --runInBand`
+- `bun x eslint src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts`
+- `bun x tsc --noEmit --incremental false`
+- `git diff --check`
+
+## Vista Previa Por CUIT Sin Exponer ID - 2026-06-17
+
+### Summary
+
+Changed unified register preview navigation so new URLs expose only the CUIT while the real `contribuyenteId` is resolved internally from backend lookup.
+
+### Main Changes
+
+- Removed the `?id=` query param from unified-register cards and reprocessing preview row navigation.
+- Reworked preview route resolution so backend CUIT lookup wins over fixture data and stale legacy route IDs.
+- Added a shared mock-mode helper for unified-register data access and preview resolution.
+- Added resolver regression tests for backend precedence, fixture fallback, legacy URL compatibility, mock mode, and backend lookup errors.
+
+### Validation
+
+- `npm test -- resolvePreviewRouteData.test.ts`
+- `npm test` runs the new resolver tests successfully but remains failing in unrelated `src/modules/batch-management/presentation/utils/batchManagementCross.test.ts`, where the current implementation includes `parameters` and the existing expectation does not.
+- `npm run lint` passes with existing warnings in admin/cross-management files.
+- `npm run build`

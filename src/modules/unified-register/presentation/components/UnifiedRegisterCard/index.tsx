@@ -30,7 +30,7 @@ export function UnifiedRegisterCard({
 }: UnifiedRegisterCardProps) {
   const router = useRouter();
   const detailRoute =
-    `/vista-previa-padron/${encodeURIComponent(item.cuit)}?id=${encodeURIComponent(item.contribuyenteId)}` as Route;
+    `/vista-previa-padron/${encodeURIComponent(item.cuit)}` as Route;
 
   return (
     <Card

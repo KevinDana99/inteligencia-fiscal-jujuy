@@ -1,15 +1,11 @@
 import { createAuthenticatedApiClientConfig } from '@/lib/auth/create-authenticated-api-client-config';
-import { UNIFIED_REGISTER_DATA_SOURCE_ENV } from './constants/unifiedRegisterDataSource';
 import type { IUnifiedRegisterSource } from './interfaces/UnifiedRegisterSource';
+import { isMockUnifiedRegisterEnabled } from './is-mock-unified-register-enabled';
 import { MockUnifiedRegisterSource } from './sources/mock/MockUnifiedRegisterSource';
 import { RestUnifiedRegisterSource } from './sources/rest/RestUnifiedRegisterSource';
 
-const isMockEnabled = (): boolean => {
-  return process.env[UNIFIED_REGISTER_DATA_SOURCE_ENV.useMock] === 'true';
-};
-
 export async function createServerUnifiedRegisterSource(): Promise<IUnifiedRegisterSource> {
-  if (isMockEnabled()) {
+  if (isMockUnifiedRegisterEnabled()) {
     return new MockUnifiedRegisterSource();
   }
 

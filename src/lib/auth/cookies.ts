@@ -53,25 +53,29 @@ function setAuthCookies(
   cookieStore: Pick<Awaited<ReturnType<typeof cookies>>, 'set'>,
   session: ISerializedAuthSession
 ) {
+  const refreshTokenCookieOptions = applyCookieOptions(
+    session.refreshTokenExpiresAt
+  );
+
   cookieStore.set(
     AUTH_COOKIE_NAMES.accessToken,
     session.accessToken,
-    applyCookieOptions(session.accessTokenExpiresAt)
+    refreshTokenCookieOptions
   );
   cookieStore.set(
     AUTH_COOKIE_NAMES.accessTokenExpiresAt,
     session.accessTokenExpiresAt,
-    applyCookieOptions(session.accessTokenExpiresAt)
+    refreshTokenCookieOptions
   );
   cookieStore.set(
     AUTH_COOKIE_NAMES.refreshToken,
     session.refreshToken,
-    applyCookieOptions(session.refreshTokenExpiresAt)
+    refreshTokenCookieOptions
   );
   cookieStore.set(
     AUTH_COOKIE_NAMES.refreshTokenExpiresAt,
     session.refreshTokenExpiresAt,
-    applyCookieOptions(session.refreshTokenExpiresAt)
+    refreshTokenCookieOptions
   );
 }
 

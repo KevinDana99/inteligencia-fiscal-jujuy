@@ -86,6 +86,55 @@ describe('getServerAuthSession refresh behavior', () => {
     expect(mockGetCurrentContext).toHaveBeenCalledWith('fresh-access-token');
   });
 
+  it('refreshes an expired access token while the refresh token is still valid', async () => {
+    const refreshedSession = buildSession({
+      accessToken: 'fresh-access-token',
+      accessTokenExpiresAt: new Date(NOW.getTime() + 5 * 60 * 1000).toISOString()
+    });
+
+    mockReadServerAuthSession.mockResolvedValue(
+      buildSession({
+        accessTokenExpiresAt: new Date(NOW.getTime() - 1).toISOString()
+      })
+    );
+    mockRefreshAuthSession.mockResolvedValue(refreshedSession);
+
+    await expect(getServerAuthSession()).resolves.toMatchObject({
+      accessToken: 'fresh-access-token',
+      user: {
+        autenticado: true,
+        tipoUsuario: 'ANALISTA_FISCAL'
+      }
+    });
+
+    expect(mockRefreshAuthSession).toHaveBeenCalledWith({
+      refrescarToken: 'refresh-token'
+    });
+    expect(mockSetServerAuthCookies).toHaveBeenCalledWith(refreshedSession);
+    expect(mockGetCurrentContext).toHaveBeenCalledWith('fresh-access-token');
+  });
+
+  it.each([
+    ['returns null', () => mockRefreshAuthSession.mockResolvedValue(null)],
+    [
+      'throws',
+      () => mockRefreshAuthSession.mockRejectedValue(new Error('network error'))
+    ]
+  ])('clears cookies when refresh %s', async (_label, arrange) => {
+    mockReadServerAuthSession.mockResolvedValue(
+      buildSession({
+        accessTokenExpiresAt: new Date(NOW.getTime() - 1).toISOString()
+      })
+    );
+    arrange();
+
+    await expect(getServerAuthSession()).resolves.toBeNull();
+
+    expect(mockClearServerAuthCookies).toHaveBeenCalledTimes(1);
+    expect(mockSetServerAuthCookies).not.toHaveBeenCalled();
+    expect(mockGetCurrentContext).not.toHaveBeenCalled();
+  });
+
   it('clears cookies when refreshed context cannot be resolved', async () => {
     mockReadServerAuthSession.mockResolvedValue(buildSession());
     mockRefreshAuthSession.mockResolvedValue(

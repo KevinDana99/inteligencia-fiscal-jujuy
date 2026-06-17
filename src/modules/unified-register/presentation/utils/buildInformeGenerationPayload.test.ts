@@ -6,6 +6,7 @@ import {
 import {
   buildInformeContributorData,
   buildInformeGenerationPayload,
+  getSelectedInformeCrosses,
   mapContributorCrossesToInformeOptions
 } from './buildInformeGenerationPayload';
 
@@ -59,6 +60,14 @@ describe('buildInformeGenerationPayload', () => {
       'baseImponibleInformadaPorTerceros',
       'diferenciaBaseImponible'
     ]);
+    expect(payload.crucesSeleccionados[0].columnasSeleccionadas.filas).toHaveLength(
+      2
+    );
+    expect(
+      payload.crucesSeleccionados[0].columnasSeleccionadas.filas
+    ).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ periodo: 'TOTAL' })])
+    );
     expect(payload.crucesSeleccionados[0].columnasSeleccionadas.filas[0]).toEqual(
       expect.objectContaining({
         periodo: '2025',
@@ -66,6 +75,16 @@ describe('buildInformeGenerationPayload', () => {
         baseImponibleInformadaPorTerceros: expect.any(String),
         diferenciaBaseImponible: expect.any(String)
       })
+    );
+  });
+
+  test('excludes total rows from selected crosses used by the preview', () => {
+    const selectedCrosses = getSelectedInformeCrosses(['cruce_cm']);
+
+    expect(selectedCrosses).toHaveLength(1);
+    expect(selectedCrosses[0].columnasSeleccionadas.filas).toHaveLength(2);
+    expect(selectedCrosses[0].columnasSeleccionadas.filas).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ periodo: 'TOTAL' })])
     );
   });
 
@@ -100,7 +119,9 @@ describe('buildInformeGenerationPayload', () => {
       'Control de desvío de BI — Régimen CM'
     );
     expect(payload.crucesSeleccionados[0].columnasSeleccionadas.filas).toEqual(
-      INFORME_CROSS_OPTIONS[0].columnasSeleccionadas.filas
+      INFORME_CROSS_OPTIONS[0].columnasSeleccionadas.filas.filter(
+        (row) => row.periodo !== 'TOTAL'
+      )
     );
   });
 
