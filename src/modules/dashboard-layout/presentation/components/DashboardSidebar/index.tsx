@@ -223,7 +223,7 @@ function SidebarFooter({ isPending, onSignOut, session }: SidebarFooterProps) {
   return (
     <div className={classes.sidebarFooter}>
       <div className={classes.userRow}>
-        <Avatar size={32} radius='xl' className={classes.sidebarAvatar}>
+        <Avatar size={28} radius='xl' className={classes.sidebarAvatar}>
           {getInitials(session.user.nombreUsuario ?? '')}
         </Avatar>
 

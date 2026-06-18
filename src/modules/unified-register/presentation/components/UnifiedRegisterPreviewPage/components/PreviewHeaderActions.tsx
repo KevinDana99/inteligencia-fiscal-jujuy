@@ -1,3 +1,4 @@
+import { forwardRef, type ComponentPropsWithoutRef } from 'react';
 import { Button, Group } from '@mantine/core';
 import { IconChevronDown, IconFileText, IconListDetails } from '@tabler/icons-react';
 import { BatchManagementCrossMenu } from '@/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementCrossMenu';
@@ -83,12 +84,23 @@ export function PreviewHeaderActions({ item, preview }: PreviewHeaderActionsProp
   );
 }
 
-function CrossMenuButton({ loading }: { loading: boolean }) {
-  return (
-    <button type="button" className={classes.secondaryAction}>
-      <IconListDetails size={12} className={classes.secondaryActionIcon} />
-      <span>{loading ? 'Cargando cruces...' : 'Cruces a realizar'}</span>
-      <IconChevronDown size={12} className={classes.secondaryActionChevron} />
-    </button>
-  );
-}
+type CrossMenuButtonProps = ComponentPropsWithoutRef<'button'> & {
+  loading: boolean;
+};
+
+const CrossMenuButton = forwardRef<HTMLButtonElement, CrossMenuButtonProps>(
+  function CrossMenuButton({ loading, className, ...props }, ref) {
+    return (
+      <button
+        {...props}
+        ref={ref}
+        type="button"
+        className={[classes.secondaryAction, className].filter(Boolean).join(' ')}
+      >
+        <IconListDetails size={12} className={classes.secondaryActionIcon} />
+        <span>{loading ? 'Cargando cruces...' : 'Cruces a realizar'}</span>
+        <IconChevronDown size={12} className={classes.secondaryActionChevron} />
+      </button>
+    );
+  }
+);

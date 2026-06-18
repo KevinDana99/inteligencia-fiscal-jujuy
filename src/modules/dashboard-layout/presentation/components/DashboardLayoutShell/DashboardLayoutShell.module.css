@@ -248,8 +248,20 @@
 }
 
 .sidebarAvatar {
-  --avatar-bg: var(--mantine-color-blue-5);
-  flex-shrink: 0;
+  --avatar-bg: var(--mantine-color-blue-2);
+  color: var(--mantine-color-blue-5);
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.sidebarAvatar :global(.mantine-Avatar-placeholder) {
+  color: var(--mantine-color-blue-5) !important;
+  font-family: var(--font-body) !important;
+  font-size: 10.5px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase;
 }
 
 .userMeta {
@@ -279,6 +291,7 @@
   font-size: 12px;
   font-weight: 600;
   text-transform: capitalize;
+  line-height: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -287,6 +300,7 @@
 .userRole {
   color: var(--mantine-color-gray-5);
   font-size: 10.5px;
+  line-height: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

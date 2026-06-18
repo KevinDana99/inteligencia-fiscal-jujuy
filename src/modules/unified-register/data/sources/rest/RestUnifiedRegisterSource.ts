@@ -105,14 +105,47 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
     itemsPerPage = 10,
     search?: string
   ): Promise<IUnifiedRegisterListData> {
-    const dto = await this.requestJson<ApiUnifiedRegisterListResponseDto>(
-      this.buildPaginatedPath(
-        UNIFIED_REGISTER_API_ROUTES.contributors,
-        page,
-        itemsPerPage,
-        search
+    const requestPath = this.buildPaginatedPath(
+      UNIFIED_REGISTER_API_ROUTES.contributors,
+      page,
+      itemsPerPage,
+      search
+    )
+
+    console.log(
+      JSON.stringify(
+        {
+          endpoint: UNIFIED_REGISTER_API_ROUTES.contributors,
+          action: 'RestUnifiedRegisterSource.listContributors',
+          METHOD: 'GET',
+          REQUEST_RAW: {
+            page,
+            itemsPerPage,
+            search: search ?? null,
+            requestPath
+          }
+        },
+        null,
+        2
       )
+    )
+
+    const dto = await this.requestJson<ApiUnifiedRegisterListResponseDto>(
+      requestPath
     );
+
+    console.log(
+      JSON.stringify(
+        {
+          endpoint: UNIFIED_REGISTER_API_ROUTES.contributors,
+          action: 'RestUnifiedRegisterSource.listContributors',
+          METHOD: 'GET',
+          RESPONSE_RAW: dto
+        },
+        null,
+        2
+      )
+    )
 
     return {
       pagina: dto.pagina,

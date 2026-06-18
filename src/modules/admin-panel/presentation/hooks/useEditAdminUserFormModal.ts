@@ -17,6 +17,7 @@ import {
   getPasswordStrength,
   getPasswordStrengthColor
 } from '../utils/adminPanelPassword'
+import { formatAdminPanelPersonName } from '../utils/formatAdminPanelPersonName'
 import { splitAdminPanelUserFullName } from '../utils/splitAdminPanelUserFullName'
 import { INITIAL_UPDATE_ADMIN_USER_STATE } from './mutations/updateAdminUserState'
 
@@ -54,8 +55,12 @@ export function useEditAdminUserFormModal(
     }
 
     toast.show(TOAST_ADMIN_MESSAGES.UPDATE_USER_SUCCESS, {
-      name: submittedUserRef.current.name || firstName || 'Usuario',
-      surname: submittedUserRef.current.surname || lastName
+      name: formatAdminPanelPersonName(
+        submittedUserRef.current.name || firstName || 'Usuario'
+      ),
+      surname: formatAdminPanelPersonName(
+        submittedUserRef.current.surname || lastName
+      )
     })
 
     formRef.current?.reset()

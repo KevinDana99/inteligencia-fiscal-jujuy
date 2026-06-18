@@ -4,6 +4,7 @@ import { startTransition, useCallback, useState } from 'react'
 import { TOAST_ADMIN_MESSAGES, toast } from '@/components/core/toasts'
 import { deleteAdminUserAction } from '../../../data/actions'
 import type { IAdminPanelUser } from '../../../data/models/AdminPanel'
+import { formatAdminPanelPersonName } from '../../utils/formatAdminPanelPersonName'
 import { splitAdminPanelUserFullName } from '../../utils/splitAdminPanelUserFullName'
 
 export function useDeleteAdminPanelUser({
@@ -52,8 +53,8 @@ export function useDeleteAdminPanelUser({
 
             markUserAsDeleted(selectedUser.id)
             toast.show(TOAST_ADMIN_MESSAGES.DELETE_USER_DANGER, {
-              name: firstName || 'Usuario',
-              surname: lastName
+              name: formatAdminPanelPersonName(firstName || 'Usuario'),
+              surname: formatAdminPanelPersonName(lastName)
             })
             clearSelectedUser()
             closeDeleteModal()

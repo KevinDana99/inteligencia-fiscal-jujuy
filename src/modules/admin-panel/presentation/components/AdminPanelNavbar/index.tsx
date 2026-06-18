@@ -45,7 +45,6 @@ export function AdminPanelNavbar({
           <div className={classes.profileChip}>
             <Avatar
               size={30}
-              color='blue.5'
               radius='xl'
               className={classes.profileAvatar}
             >
