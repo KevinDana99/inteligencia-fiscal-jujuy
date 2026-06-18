@@ -1,5 +1,50 @@
 # Cross Management Feature Story
 
+## 2026-06-18 Sidebar activo en preview de cruce
+
+- `/gestion-de-cruces/vista-previa-cruce/<id>` ahora resuelve la seccion activa del dashboard como `Gestión de Cruces`.
+- El matcher de seccion contempla subrutas bajo `/gestion-de-cruces`, conservando el item activo del sidebar y el titulo de seccion.
+- Se agrego cobertura unitaria para la ruta dinamica de preview de cruce.
+
+### Validation
+
+- `/Users/gastonmorales/.bun/bin/bun x tsc --noEmit --incremental false`
+- `/Users/gastonmorales/.bun/bin/bun x eslint src/modules/dashboard-layout/data/models/DashboardLayout.ts src/modules/dashboard-layout/data/models/DashboardLayout.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/jest/bin/jest.js src/modules/dashboard-layout/data/models/DashboardLayout.test.ts --runInBand`
+
+## 2026-06-18 Drag and drop de columnas de intimacion
+
+- `Planilla adjunta — Columnas` ahora permite reordenar las columnas seleccionadas con drag and drop desde el icono de agarre.
+- Las columnas seleccionadas de `Planilla adjunta — Columnas` se muestran como texto, no como inputs, conservando las acciones de reordenar y quitar.
+- El texto de las columnas seleccionadas usa `font-weight: 500`.
+- El modal `Elegir columnas de la planilla` tambien permite reordenar la lista de `Columnas visibles` antes de aceptar.
+- El selector de columnas ahora usa seleccion multiple con indicador tipo checkbox para pasar varias columnas disponibles o visibles en una sola accion.
+- El reordenamiento actualiza `columnas_seleccionadas` conservando el mismo source of truth de configuracion de intimacion.
+- Se agrego cobertura unitaria para el helper de reordenamiento compartido.
+
+### Validation
+
+- `/Users/gastonmorales/.bun/bin/bun x tsc --noEmit --incremental false`
+- `/Users/gastonmorales/.bun/bin/bun x eslint src/modules/configuration-module/presentation/hooks/intimation-template/useIntimationTemplate.ts src/modules/configuration-module/presentation/hooks/intimation-template/useIntimationTemplateColumns.ts src/modules/configuration-module/presentation/components/IntimationTemplate/IntimationTemplateColumnsSection/index.tsx`
+- `/Users/gastonmorales/.bun/bin/bun x eslint src/modules/configuration-module/presentation/constants/intimationTemplateLabels.ts src/modules/configuration-module/presentation/hooks/intimation-template/useIntimationTemplateColumnPicker.ts src/modules/configuration-module/presentation/components/IntimationTemplate/IntimationTemplateColumnPickerModal/useIntimationTemplateColumnPickerModal.ts src/modules/configuration-module/presentation/components/IntimationTemplate/IntimationTemplateColumnPickerModal/IntimationTemplateColumnPickerList/index.tsx`
+- `/Users/gastonmorales/.bun/bin/bun x eslint src/modules/configuration-module/presentation/utils/intimationTemplateColumns.ts src/modules/configuration-module/presentation/utils/intimationTemplateColumns.test.ts src/modules/configuration-module/presentation/hooks/intimation-template/useIntimationTemplateColumns.ts src/modules/configuration-module/presentation/hooks/intimation-template/useIntimationTemplateColumnPicker.ts src/modules/configuration-module/presentation/components/IntimationTemplate/IntimationTemplateColumnsSection/index.tsx src/modules/configuration-module/presentation/components/IntimationTemplate/IntimationTemplateColumnPickerModal/useIntimationTemplateColumnPickerModal.ts src/modules/configuration-module/presentation/components/IntimationTemplate/IntimationTemplateColumnPickerModal/IntimationTemplateColumnPickerList/index.tsx`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/jest/bin/jest.js src/modules/configuration-module/presentation/utils/intimationTemplateColumns.test.ts --runInBand`
+- `/Users/gastonmorales/.bun/bin/bun run lint` queda sin errores y conserva 6 warnings existentes fuera de este cambio.
+- `curl -I --max-time 5 http://localhost:3000/gestion-de-cruces/vista-previa-cruce/92` responde `307` a `/login` por sesion expirada.
+
+## 2026-06-18 Iconos en estados del listado
+
+- La columna `Estado` de `/gestion-de-cruces` ahora muestra iconos en sus labels: `Check` para `Completada`, `Clock` para `En proceso` y `X` para `Fallida`.
+- La clasificacion de estados del listado se centralizo en `useCrossManagementTableRow`, reutilizando los mismos grupos para color e icono.
+- El badge de estado desactiva el uppercase por defecto de Mantine para conservar labels capitalizadas como `Completada`, `En proceso` y `Fallida`.
+- El header de la columna `Fecha` del listado ahora se muestra como `Fecha de ejecución`.
+
+### Validation
+
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint src/modules/cross-management/presentation/components/CrossManagementTable/CrossManagementTableRow.tsx src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementTableRow.ts`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint src/modules/cross-management/presentation/constants/crossManagementTable.ts`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit --pretty false --incremental false`
+
 ## 2026-06-17 Opciones dinamicas para columnas de intimacion
 
 - El modal `Elegir columnas de la planilla` ahora recibe un catalogo dinamico construido desde las columnas y filas visibles de la planilla.

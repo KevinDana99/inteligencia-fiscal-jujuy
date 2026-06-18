@@ -1,9 +1,3 @@
-.datePickerInput {
-  flex: 0 0 220px;
-  min-width: 220px;
-  max-width: 220px;
-}
-
 .filterSelect :global(.mantine-Input-input) {
   min-width: 0;
   height: 34px;
@@ -108,10 +102,100 @@
   font-size: 13px;
 }
 
+.temporalBlock {
+  display: flex;
+  flex: 1 0 100%;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 14px 20px;
+  margin-bottom: 16px;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  background: #eff6ff;
+}
+
+.temporalTitle {
+  color: var(--mantine-color-blue-5);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.temporalControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.temporalField {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.temporalLabel {
+  color: var(--mantine-color-blue-5);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.temporalDateInput {
+  width: 178px;
+}
+
+.temporalDateInput :global(.mantine-Input-input) {
+  height: 32px;
+  min-height: 32px;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: var(--mantine-color-white);
+  color: var(--mantine-color-gray-9);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+}
+
+.temporalDateInput :global(.mantine-Input-input:hover),
+.temporalDateInput :global(.mantine-Input-input:focus),
+.temporalDateInput :global(.mantine-Input-input:focus-visible) {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.08);
+}
+
+.temporalDateInput :global(.mantine-Input-section) {
+  color: #94a3b8;
+}
+
+.temporalArrow {
+  flex: 0 0 auto;
+  color: var(--mantine-color-blue-5);
+}
+
 @media (max-width: 768px) {
-  .datePickerInput {
-    flex-basis: 100%;
-    max-width: none;
+  .temporalBlock {
+    align-items: flex-start;
+  }
+
+  .temporalControls {
     width: 100%;
+  }
+
+  .temporalField {
+    flex: 1 1 100%;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .temporalDateInput {
+    width: 100%;
+  }
+
+  .temporalArrow {
+    display: none;
   }
 }

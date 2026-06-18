@@ -40,3 +40,26 @@ export function getAvailableIntimationColumns(
     (option) => !selectedColumns.some((column) => column.id === option.id)
   )
 }
+
+export function reorderIntimationTemplateColumns(
+  columns: IntimationTemplateColumn[],
+  sourceColumnId: string,
+  targetColumnId: string
+) {
+  if (sourceColumnId === targetColumnId) {
+    return columns
+  }
+
+  const sourceIndex = columns.findIndex((column) => column.id === sourceColumnId)
+  const targetIndex = columns.findIndex((column) => column.id === targetColumnId)
+
+  if (sourceIndex === -1 || targetIndex === -1) {
+    return columns
+  }
+
+  const reorderedColumns = [...columns]
+  const [sourceColumn] = reorderedColumns.splice(sourceIndex, 1)
+  reorderedColumns.splice(targetIndex, 0, sourceColumn)
+
+  return reorderedColumns
+}

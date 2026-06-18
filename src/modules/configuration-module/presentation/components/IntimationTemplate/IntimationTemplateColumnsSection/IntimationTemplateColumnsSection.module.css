@@ -27,9 +27,45 @@
 
 .columnRow {
   display: grid;
-  grid-template-columns: 16px minmax(0, 1fr) 36px;
+  grid-template-columns: 28px 16px minmax(0, 1fr) 36px;
   align-items: center;
   gap: 10px;
+  min-height: 36px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transition:
+    background-color 0.12s,
+    border-color 0.12s,
+    opacity 0.12s;
+}
+
+.columnRowDragging {
+  opacity: 0.55;
+}
+
+.columnRowDragOver {
+  border-color: var(--mantine-color-blue-3);
+  background: var(--mantine-color-blue-0);
+}
+
+.columnDragHandle {
+  width: 28px;
+  height: 28px;
+  color: var(--mantine-color-gray-5);
+  cursor: grab;
+}
+
+.columnDragHandle:hover,
+.columnDragHandle:focus,
+.columnDragHandle:focus-visible,
+.columnDragHandle[data-hovered],
+.columnDragHandle[data-active] {
+  background: var(--mantine-color-gray-0);
+  color: var(--mantine-color-gray-7);
+}
+
+.columnDragHandle:active {
+  cursor: grabbing;
 }
 
 .columnToken {
@@ -39,8 +75,12 @@
   line-height: 1;
 }
 
-.columnInput {
+.columnText {
   min-width: 0;
+  color: var(--mantine-color-gray-9);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
 }
 
 .columnRemove {

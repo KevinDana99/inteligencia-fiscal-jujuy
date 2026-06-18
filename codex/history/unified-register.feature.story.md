@@ -448,3 +448,36 @@ Changed unified register preview navigation so new URLs expose only the CUIT whi
 - `npm test` runs the new resolver tests successfully but remains failing in unrelated `src/modules/batch-management/presentation/utils/batchManagementCross.test.ts`, where the current implementation includes `parameters` and the existing expectation does not.
 - `npm run lint` passes with existing warnings in admin/cross-management files.
 - `npm run build`
+
+## Vista Previa Source Tables Commented Out - 2026-06-17
+
+### Summary
+
+Commented out the source tables block rendered below `Órdenes de Intervención` in the unified register preview, preserving the code for future reactivation.
+
+### Main Changes
+
+- Commented the `SourceTablesCard` import and render call in the preview right column.
+- Left `SourceTablesCard.tsx` untouched so the complete block implementation remains in the repository.
+
+### Validation
+
+- `PATH='/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin':$PATH node_modules/.bin/eslint 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/components/PreviewRightColumn.tsx'`
+
+## Home Add To Batch Modal Close Fix - 2026-06-18
+
+### Summary
+
+Fixed the `/` add-to-batch modal so the lot list remains visible during close transitions and the selector content is capped at 600px.
+
+### Main Changes
+
+- Kept loaded lot options intact when closing the selector modal, leaving state cleanup to the next open cycle.
+- Added selector-specific modal classes so only the add-to-batch list gets a 600px responsive cap and internal vertical scrolling.
+
+### Validation
+
+- `PATH='/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin':$PATH node_modules/.bin/eslint src/modules/unified-register/presentation/components/UnifiedRegisterPage/index.tsx src/modules/unified-register/presentation/hooks/useUnifiedRegisterPage/useUnifiedRegisterPageActions.ts`
+- `PATH='/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin':$PATH node_modules/.bin/tsc --noEmit --pretty false --incremental false`
+- `git diff --check`
+- `curl -I -sS http://127.0.0.1:3000/` responded with the expected private-route redirect to `/login` without a valid terminal session.

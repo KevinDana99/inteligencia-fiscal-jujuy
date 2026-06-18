@@ -1,7 +1,7 @@
 import type { PreviewController } from '../types';
 import { InterventionOrdersTable } from './InterventionOrdersTable';
 import { MercurioTable } from './MercurioTable';
-import { SourceTablesCard } from './SourceTablesCard';
+// import { SourceTablesCard } from './SourceTablesCard';
 import classes from '../UnifiedRegisterPreviewPage.module.css';
 
 type PreviewRightColumnProps = {
@@ -13,7 +13,7 @@ export function PreviewRightColumn({ preview }: PreviewRightColumnProps) {
     <div className={classes.rightColumn}>
       <MercurioTable preview={preview} />
       <InterventionOrdersTable preview={preview} />
-      <SourceTablesCard preview={preview} />
+      {/* <SourceTablesCard preview={preview} /> */}
     </div>
   );
 }

@@ -41,6 +41,7 @@ export function ExplorerRegisterFiltersCard({
           </div>
         </div>
         <div className={classes.filtersGrid}>
+          <ExplorerRegisterTemporalFilters controller={controller} />
           {controller.activeFilters.map((filter, index) => (
             <ExplorerRegisterFilterField
               key={filter.code}
@@ -49,7 +50,6 @@ export function ExplorerRegisterFiltersCard({
               shouldRenderDivider={shouldRenderFilterDivider(controller, index)}
             />
           ))}
-          <ExplorerRegisterTemporalFilters controller={controller} />
         </div>
       </Stack>
     </Card>

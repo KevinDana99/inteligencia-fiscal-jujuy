@@ -3,18 +3,19 @@
 import {
   useCallback,
   useMemo,
-  type ChangeEventHandler,
+  useState,
+  type DragEventHandler,
   type MouseEventHandler
 } from 'react'
 import type {
   ConfigurationType,
   DeepPartial
 } from '../../../data/models/Configuration'
+import { reorderIntimationTemplateColumns } from '../../utils'
 import type { IntimationTemplateColumn } from './useIntimationTemplate'
 
 type UseIntimationTemplateColumnsParams = {
   visibleColumns: IntimationTemplateColumn[]
-  isProviderBacked: boolean
   updateConfig: (newConfig: DeepPartial<ConfigurationType>) => void
   clearColumnsError: () => void
 }
@@ -22,26 +23,46 @@ type UseIntimationTemplateColumnsParams = {
 export type IntimationTemplateColumnRow = {
   id: string
   value: string
-  readOnly: boolean
+  isDragging: boolean
+  isDragOver: boolean
+  dragHandleLabel: string
   removeLabel: string
-  handleChange: ChangeEventHandler<HTMLInputElement>
+  handleDragStart: DragEventHandler<HTMLButtonElement>
+  handleDragEnd: DragEventHandler<HTMLButtonElement>
+  handleDragOver: DragEventHandler<HTMLDivElement>
+  handleDragLeave: DragEventHandler<HTMLDivElement>
+  handleDrop: DragEventHandler<HTMLDivElement>
   handleRemove: MouseEventHandler<HTMLButtonElement>
 }
 
 export function useIntimationTemplateColumns({
   visibleColumns,
-  isProviderBacked,
   updateConfig,
   clearColumnsError
 }: UseIntimationTemplateColumnsParams) {
-  const updateColumn = useCallback(
-    (columnId: string, value: string) => {
-      void columnId
-      void value
+  const [draggingColumnId, setDraggingColumnId] = useState<string | null>(null)
+  const [dragOverColumnId, setDragOverColumnId] = useState<string | null>(null)
 
-      return
+  const reorderColumn = useCallback(
+    (sourceColumnId: string, targetColumnId: string) => {
+      const reorderedColumns = reorderIntimationTemplateColumns(
+        visibleColumns,
+        sourceColumnId,
+        targetColumnId
+      )
+
+      if (reorderedColumns === visibleColumns) {
+        return
+      }
+
+      clearColumnsError()
+      updateConfig({
+        intimacion: {
+          columnas_seleccionadas: reorderedColumns.map((column) => column.id)
+        }
+      })
     },
-    []
+    [clearColumnsError, updateConfig, visibleColumns]
   )
 
   const removeColumn = useCallback(
@@ -63,22 +84,70 @@ export function useIntimationTemplateColumns({
       visibleColumns.map((column) => ({
         id: column.id,
         value: column.value,
-        readOnly: isProviderBacked,
+        isDragging: draggingColumnId === column.id,
+        isDragOver: dragOverColumnId === column.id,
+        dragHandleLabel: `Reordenar columna ${column.value}`,
         removeLabel: `Eliminar columna ${column.value}`,
-        handleChange: (event) => {
-          updateColumn(column.id, event.currentTarget.value)
+        handleDragStart: (event) => {
+          event.dataTransfer.effectAllowed = 'move'
+          event.dataTransfer.setData('text/plain', column.id)
+          setDraggingColumnId(column.id)
+        },
+        handleDragEnd: () => {
+          setDraggingColumnId(null)
+          setDragOverColumnId(null)
+        },
+        handleDragOver: (event) => {
+          if (!draggingColumnId || draggingColumnId === column.id) {
+            return
+          }
+
+          event.preventDefault()
+          event.dataTransfer.dropEffect = 'move'
+          setDragOverColumnId(column.id)
+        },
+        handleDragLeave: (event) => {
+          const relatedTarget = event.relatedTarget
+
+          if (
+            relatedTarget instanceof Node &&
+            event.currentTarget.contains(relatedTarget)
+          ) {
+            return
+          }
+
+          setDragOverColumnId((currentColumnId) =>
+            currentColumnId === column.id ? null : currentColumnId
+          )
+        },
+        handleDrop: (event) => {
+          event.preventDefault()
+          const sourceColumnId =
+            event.dataTransfer.getData('text/plain') || draggingColumnId
+
+          if (sourceColumnId) {
+            reorderColumn(sourceColumnId, column.id)
+          }
+
+          setDraggingColumnId(null)
+          setDragOverColumnId(null)
         },
         handleRemove: () => {
           removeColumn(column.id)
         }
       })),
-    [isProviderBacked, removeColumn, updateColumn, visibleColumns]
+    [
+      dragOverColumnId,
+      draggingColumnId,
+      removeColumn,
+      reorderColumn,
+      visibleColumns
+    ]
   )
 
   return {
     visibleColumns,
     columnRows,
-    updateColumn,
     removeColumn
   }
 }

@@ -103,7 +103,6 @@ export function useIntimationTemplate(
   })
   const columns = useIntimationTemplateColumns({
     visibleColumns: state.columnas,
-    isProviderBacked,
     updateConfig,
     clearColumnsError
   })
@@ -125,7 +124,6 @@ export function useIntimationTemplate(
     columnRows: columns.columnRows,
     updateField: fields.updateField,
     fieldHandlers: fields.fieldHandlers,
-    updateColumn: columns.updateColumn,
     removeColumn: columns.removeColumn
   }
 }

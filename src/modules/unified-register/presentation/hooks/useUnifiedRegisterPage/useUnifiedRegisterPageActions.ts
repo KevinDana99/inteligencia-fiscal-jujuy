@@ -139,9 +139,6 @@ export function useUnifiedRegisterPageActions() {
     }
 
     setSelectedBatchItem(null);
-    setBatchSearch('');
-    setLotOptions([]);
-    setBatchOptionsError(null);
   }
 
   function selectLotOption(lot: IUnifiedRegisterBatchOption) {

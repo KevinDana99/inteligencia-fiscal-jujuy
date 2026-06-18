@@ -94,13 +94,13 @@ export function UnifiedRegisterPage({
         zIndex={900}
         classNames={{
           overlay: classes.modalOverlay,
-          content: classes.modalContent,
+          content: `${classes.modalContent} ${classes.batchModalContent}`,
           header: classes.modalHeader,
-          body: classes.modalBody,
+          body: `${classes.modalBody} ${classes.batchModalBody}`,
           title: classes.modalTitle
         }}
       >
-        <Stack gap="sm">
+        <Stack gap="sm" className={classes.batchModalStack}>
           <TextInput
             classNames={{ input: classes.batchDropdownInput }}
             value={batchSearch}

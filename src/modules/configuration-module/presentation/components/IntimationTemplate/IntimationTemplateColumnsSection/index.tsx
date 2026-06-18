@@ -8,7 +8,12 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
-import { IconCheck, IconPlus, IconXFilled } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconDragDrop,
+  IconPlus,
+  IconXFilled,
+} from "@tabler/icons-react";
 import type { IntimationTemplateController } from "../../../hooks/intimation-template";
 import { INTIMATION_TEMPLATE_LABELS } from "../../../constants";
 import classes from "./IntimationTemplateColumnsSection.module.css";
@@ -38,17 +43,35 @@ export function IntimationTemplateColumnsSection({
 
           <Stack gap="sm" className={classes.columnList}>
             {columnRows.map((column) => (
-              <div key={column.id} className={classes.columnRow}>
+              <div
+                key={column.id}
+                className={[
+                  classes.columnRow,
+                  column.isDragging ? classes.columnRowDragging : null,
+                  column.isDragOver ? classes.columnRowDragOver : null,
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                onDragOver={column.handleDragOver}
+                onDragLeave={column.handleDragLeave}
+                onDrop={column.handleDrop}
+              >
+                <ActionIcon
+                  variant="subtle"
+                  color="gray"
+                  aria-label={column.dragHandleLabel}
+                  title={column.dragHandleLabel}
+                  draggable
+                  onDragStart={column.handleDragStart}
+                  onDragEnd={column.handleDragEnd}
+                  className={classes.columnDragHandle}
+                >
+                  <IconDragDrop size={16} />
+                </ActionIcon>
                 <span className={classes.columnToken}>
                   <IconCheck size={16} />
                 </span>
-                <TextInput
-                  value={column.value}
-                  onChange={column.handleChange}
-                  readOnly={column.readOnly}
-                  className={classes.columnInput}
-                  classNames={{ input: classes.formInput }}
-                />
+                <Text className={classes.columnText}>{column.value}</Text>
                 <ActionIcon
                   variant="subtle"
                   color="red"

@@ -5,5 +5,5 @@ export const CROSS_MANAGEMENT_TABLE_COLUMNS = [
   'Lote / CUIT',
   'Período',
   'CUITs',
-  'Fecha'
+  'Fecha de ejecución'
 ] as const

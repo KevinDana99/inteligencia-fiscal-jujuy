@@ -30,11 +30,10 @@
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   min-height: 32px;
-  gap: 12px;
+  gap: 8px;
   padding: 4px 8px;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 8px;
   background: transparent;
   cursor: pointer;
@@ -56,8 +55,50 @@
   background: var(--mantine-color-blue-0);
 }
 
+.columnPickerRowDragging {
+  opacity: 0.55;
+}
+
+.columnPickerRowDragOver {
+  border-color: var(--mantine-color-blue-3);
+  background: var(--mantine-color-blue-0);
+}
+
+.columnPickerDragHandle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 18px;
+  color: var(--mantine-color-gray-5);
+  cursor: grab;
+}
+
+.columnPickerRow:active .columnPickerDragHandle {
+  cursor: grabbing;
+}
+
+.columnPickerCheckbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--mantine-color-gray-3);
+  border-radius: 4px;
+  color: var(--mantine-color-white);
+  background: var(--mantine-color-white);
+}
+
+.columnPickerCheckboxChecked {
+  border-color: var(--mantine-color-blue-5);
+  background: var(--mantine-color-blue-5);
+}
+
 .columnPickerLabel {
+  flex: 1;
   color: var(--mantine-color-gray-8);
   font-size: 13px;
   line-height: 1.4;
+  text-align: left;
 }
