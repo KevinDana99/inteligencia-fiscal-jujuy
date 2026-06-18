@@ -10,11 +10,13 @@ import {
   getAvailableIntimationColumns,
   getIntimationColumnOptionById
 } from '../../utils'
+import type { IntimationColumnOption } from '../../constants'
 import type { IntimationTemplateColumn } from './useIntimationTemplate'
 
 type UseIntimationTemplateColumnPickerParams = {
   initialColumns: IntimationTemplateColumn[]
   currentColumns: IntimationTemplateColumn[]
+  columnOptions?: IntimationColumnOption[]
   updateConfig: (newConfig: DeepPartial<ConfigurationType>) => void
   clearColumnsError: () => void
 }
@@ -22,6 +24,7 @@ type UseIntimationTemplateColumnPickerParams = {
 export function useIntimationTemplateColumnPicker({
   initialColumns,
   currentColumns,
+  columnOptions,
   updateConfig,
   clearColumnsError
 }: UseIntimationTemplateColumnPickerParams) {
@@ -84,7 +87,10 @@ export function useIntimationTemplateColumnPicker({
       return
     }
 
-    const option = getIntimationColumnOptionById(selectedAvailableColumnId)
+    const option = getIntimationColumnOptionById(
+      selectedAvailableColumnId,
+      columnOptions
+    )
 
     if (!option) {
       return
@@ -104,7 +110,7 @@ export function useIntimationTemplateColumnPicker({
       ]
     })
     setSelectedAvailableColumnId(null)
-  }, [selectedAvailableColumnId])
+  }, [columnOptions, selectedAvailableColumnId])
 
   const removeSelectedColumn = useCallback(() => {
     if (!selectedVisibleColumnId) {
@@ -122,7 +128,10 @@ export function useIntimationTemplateColumnPicker({
     columnPickerDraft,
     selectedAvailableColumnId,
     selectedVisibleColumnId,
-    availableColumns: getAvailableIntimationColumns(columnPickerDraft),
+    availableColumns: getAvailableIntimationColumns(
+      columnPickerDraft,
+      columnOptions
+    ),
     openColumnPicker,
     closeColumnPicker,
     confirmColumnPicker,

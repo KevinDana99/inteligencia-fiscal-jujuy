@@ -2,14 +2,6 @@ import { Checkbox, Text } from '@mantine/core';
 import type { InformeGenerationReport } from '../types';
 import classes from '../InformeGenerationModal.module.css';
 
-const crossCheckboxClasses = {
-  root: classes.crossRow,
-  body: classes.crossBody,
-  input: classes.crossInput,
-  label: classes.crossTitle,
-  description: classes.crossDescription
-};
-
 export function CrossSelectionSection({
   report
 }: {
@@ -38,19 +30,45 @@ export function CrossSelectionSection({
           </Text>
         ) : null}
         {!report.isLoadingCrosses
-          ? report.availableCrosses.map((cross) => (
-              <Checkbox
-                key={cross.id}
-                checked={report.selectedCrossIds.includes(cross.id)}
-                onChange={() => report.toggleCross(cross.id)}
-                label={cross.nombre}
-                description={cross.description}
-                color="blue"
-                size="sm"
-                disabled={cross.isReportReady === false}
-                classNames={crossCheckboxClasses}
-              />
-            ))
+          ? report.availableCrosses.map((cross) => {
+              const isSelected = report.selectedCrossIds.includes(cross.id);
+              const isDisabled = cross.isReportReady === false;
+
+              return (
+                <div
+                  key={cross.id}
+                  className={classes.crossRow}
+                  data-disabled={isDisabled || undefined}
+                  data-selected={isSelected || undefined}
+                  role={isDisabled ? undefined : 'button'}
+                  tabIndex={isDisabled ? undefined : 0}
+                  onClick={() => report.openCrossColumnPicker(cross.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      report.openCrossColumnPicker(cross.id);
+                    }
+                  }}
+                >
+                  <Checkbox
+                    aria-label={`Seleccionar ${cross.nombre}`}
+                    checked={isSelected}
+                    onClick={(event) => event.stopPropagation()}
+                    onChange={() => report.toggleCross(cross.id)}
+                    color="blue"
+                    size="sm"
+                    disabled={isDisabled}
+                    classNames={{ input: classes.crossInput }}
+                  />
+                  <div className={classes.crossText}>
+                    <Text className={classes.crossTitle}>{cross.nombre}</Text>
+                    <Text className={classes.crossDescription}>
+                      {cross.description}
+                    </Text>
+                  </div>
+                </div>
+              );
+            })
           : null}
       </div>
     </>

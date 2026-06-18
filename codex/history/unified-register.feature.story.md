@@ -1,5 +1,24 @@
 # Unified Register Feature Story
 
+## Informe Cross Column Picker - 2026-06-17
+
+### Summary
+
+Added a column picker modal for `3) Inconsistencias detectadas — Cruces` inside the report generation flow.
+
+### Main Changes
+
+- Clicking a report cross row now opens `Columnas del informe`, a two-list picker for available and visible columns.
+- The checkbox still controls whether the cross is included in the report, while the row visual state shows selected crosses.
+- Column choices are stored per cross and preserved even when the cross is unchecked.
+- The report preview and generated payload now respect the selected column keys per cross.
+
+### Validation
+
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/.bin/jest src/modules/unified-register/presentation/utils/informeCrossColumnSelection.test.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts --runInBand`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit --pretty false --incremental false`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint src/modules/unified-register/presentation/hooks/informe-generation/useInformeCrosses.ts src/modules/unified-register/presentation/components/InformeGenerationModal/index.tsx src/modules/unified-register/presentation/components/InformeGenerationModal/components/CrossSelectionSection.tsx src/modules/unified-register/presentation/components/InformeGenerationModal/components/CrossColumnsPickerModal.tsx src/modules/unified-register/presentation/components/InformePreviewModal/components/CrossPreviewTable.tsx src/modules/unified-register/presentation/utils/informeCrossColumnSelection.ts src/modules/unified-register/presentation/utils/informeCrossColumnSelection.test.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts`
+
 ## Summary
 
 Refactored the main `Padrón Unificado` presentation logic so the listing page delegates search and page state to hooks instead of keeping handler logic inline.

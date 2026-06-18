@@ -78,6 +78,7 @@ export function CrossPreviewPageContent({ cross }: CrossPreviewPageContentProps)
 
       <CrossPreviewModals
         activePreviewIndex={preview.activePreviewIndex}
+        intimationColumnOptions={preview.intimationColumnOptions}
         contributors={preview.intimationContributors}
         exportModalOpened={preview.exportModalOpened}
         intimationModalOpened={preview.intimationModalOpened}

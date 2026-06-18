@@ -2,6 +2,7 @@
 
 import { Modal } from '@mantine/core';
 import { ContributorReadonlySection } from './components/ContributorReadonlySection';
+import { CrossColumnsPickerModal } from './components/CrossColumnsPickerModal';
 import { CrossSelectionSection } from './components/CrossSelectionSection';
 import { FiscalActionSection } from './components/FiscalActionSection';
 import { GenerationModalFooter } from './components/GenerationModalFooter';
@@ -36,6 +37,7 @@ export function InformeGenerationModal({
       <FiscalActionSection report={report} />
       <CrossSelectionSection report={report} />
       <GenerationModalFooter report={report} onClose={onClose} />
+      <CrossColumnsPickerModal report={report} />
     </Modal>
   );
 }

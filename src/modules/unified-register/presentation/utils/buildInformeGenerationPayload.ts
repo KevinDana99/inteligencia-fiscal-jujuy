@@ -1,4 +1,5 @@
 import type {
+  DocumentCellValue,
   IGenerateInformeDocumentsPayload,
   IInformeContributorData,
   IInformeFiscalActionData,
@@ -32,7 +33,17 @@ function cloneRows(
 ): IInformeSelectedCross['columnasSeleccionadas']['filas'] {
   return cross.columnasSeleccionadas.filas
     .filter((row) => String(row.periodo ?? '').trim().toUpperCase() !== 'TOTAL')
-    .map((row) => ({ ...row }));
+    .map((row) => cloneSelectedColumnsRow(row, cross.columnasSeleccionadas.claves));
+}
+
+function cloneSelectedColumnsRow(
+  row: Record<string, DocumentCellValue>,
+  columnKeys: string[]
+) {
+  return Object.fromEntries([
+    ['periodo', row.periodo ?? null],
+    ...columnKeys.map((columnKey) => [columnKey, row[columnKey] ?? null])
+  ]);
 }
 
 export function buildInformeContributorData(

@@ -25,4 +25,16 @@ describe('mapConfigurationToTemplateState', () => {
       'diferenciaBaseImponible'
     ])
   })
+
+  it('uses provided column options when configured columns are not available', () => {
+    const state = mapConfigurationToTemplateState(configurationWithEmptyColumns, [
+      { id: 'fact_arca_anio', label: 'Fact. ARCA (año)' },
+      { id: 'imp_presuntivo', label: 'Imp. Presuntivo' }
+    ])
+
+    expect(state.columnas).toEqual([
+      { id: 'fact_arca_anio', value: 'Fact. ARCA (año)' },
+      { id: 'imp_presuntivo', value: 'Imp. Presuntivo' }
+    ])
+  })
 })

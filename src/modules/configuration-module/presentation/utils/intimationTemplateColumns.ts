@@ -8,8 +8,13 @@ const COLUMN_LABELS = new Map<string, string>(
   INTIMATION_COLUMN_OPTIONS.map((option) => [option.id, option.label])
 )
 
-export function getIntimationColumnLabel(columnId: string): string {
-  const knownLabel = COLUMN_LABELS.get(columnId)
+export function getIntimationColumnLabel(
+  columnId: string,
+  columnOptions?: IntimationColumnOption[]
+): string {
+  const knownLabel =
+    columnOptions?.find((option) => option.id === columnId)?.label ??
+    COLUMN_LABELS.get(columnId)
 
   if (knownLabel) {
     return knownLabel
@@ -21,15 +26,17 @@ export function getIntimationColumnLabel(columnId: string): string {
 }
 
 export function getIntimationColumnOptionById(
-  columnId: string
+  columnId: string,
+  columnOptions: IntimationColumnOption[] = INTIMATION_COLUMN_OPTIONS
 ): IntimationColumnOption | undefined {
-  return INTIMATION_COLUMN_OPTIONS.find((option) => option.id === columnId)
+  return columnOptions.find((option) => option.id === columnId)
 }
 
 export function getAvailableIntimationColumns(
-  selectedColumns: IntimationTemplateColumn[]
+  selectedColumns: IntimationTemplateColumn[],
+  columnOptions: IntimationColumnOption[] = INTIMATION_COLUMN_OPTIONS
 ) {
-  return INTIMATION_COLUMN_OPTIONS.filter(
+  return columnOptions.filter(
     (option) => !selectedColumns.some((column) => column.id === option.id)
   )
 }
