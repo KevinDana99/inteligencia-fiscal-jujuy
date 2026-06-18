@@ -103,8 +103,13 @@
 
 .batchDescription,
 .batchDate,
+.batchAuthor,
 .emptyState {
   color: var(--mantine-color-gray-5);
+}
+
+.batchAuthor {
+  text-transform: capitalize;
 }
 
 .cuitCountCell {

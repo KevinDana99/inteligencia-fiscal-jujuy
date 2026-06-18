@@ -278,6 +278,7 @@
   color: var(--mantine-color-gray-9);
   font-size: 12px;
   font-weight: 600;
+  text-transform: capitalize;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
