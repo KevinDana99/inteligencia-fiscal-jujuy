@@ -1,5 +1,20 @@
 # Cross Management Feature Story
 
+## 2026-06-17 Opciones dinamicas para columnas de intimacion
+
+- El modal `Elegir columnas de la planilla` ahora recibe un catalogo dinamico construido desde las columnas y filas visibles de la planilla.
+- Las opciones disponibles se limitan a columnas que tengan al menos un valor real en la tabla; se excluyen vacios y `-`, pero se conserva `0` como valor valido.
+- Se excluyen columnas identificadoras tecnicas como `ID`, `ID 2` e `ID Periodo` aunque tengan valores.
+- La configuracion de intimacion acepta opciones externas para resolver labels y descartar columnas configuradas que no existan en el catalogo actual de la planilla.
+
+### Validation
+
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/.bin/jest src/modules/cross-management/presentation/utils/buildIntimationColumnOptionsFromPlanilla.test.ts src/modules/configuration-module/presentation/utils/intimationTemplateState.test.ts --runInBand`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit --pretty false --incremental false`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint src/modules/configuration-module/presentation/constants/intimationTemplateColumns.ts src/modules/configuration-module/presentation/utils/intimationTemplateColumns.ts src/modules/configuration-module/presentation/utils/intimationTemplateState.ts src/modules/configuration-module/presentation/utils/intimationTemplateState.test.ts src/modules/configuration-module/presentation/hooks/intimation-template/useIntimationTemplate.ts src/modules/configuration-module/presentation/hooks/intimation-template/useIntimationTemplateColumnPicker.ts src/modules/cross-management/presentation/utils/buildIntimationColumnOptionsFromPlanilla.ts src/modules/cross-management/presentation/utils/buildIntimationColumnOptionsFromPlanilla.test.ts src/modules/cross-management/presentation/hooks/useCrossPreview.ts src/modules/cross-management/presentation/hooks/cross-preview/useCrossPreviewModals.ts src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewModals.tsx src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewPageContent.tsx`
+- `git diff --check`
+- `curl -I --max-time 5 http://localhost:3000/gestion-de-cruces/vista-previa-cruce/92` responde `307` a `/login` por sesion expirada.
+
 ## 2026-06-16 Normalizacion de importes antes del Server Action
 
 - El hook de descarga de intimaciones ahora normaliza el payload final antes de invocar `generateIntimationDocumentAction`, evitando que la request visible hacia el Server Action conserve importes como `$$ 0`.

@@ -88,6 +88,31 @@ describe('buildInformeGenerationPayload', () => {
     );
   });
 
+  test('uses the current selected column keys for report payload rows', () => {
+    const payload = buildInformeGenerationPayload(
+      item,
+      INFORME_DEFAULT_FORM,
+      ['cruce_cm'],
+      [
+        {
+          ...INFORME_CROSS_OPTIONS[0],
+          columnasSeleccionadas: {
+            ...INFORME_CROSS_OPTIONS[0].columnasSeleccionadas,
+            claves: ['diferenciaBaseImponible']
+          }
+        }
+      ]
+    );
+
+    expect(payload.crucesSeleccionados[0].columnasSeleccionadas.claves).toEqual([
+      'diferenciaBaseImponible'
+    ]);
+    expect(payload.crucesSeleccionados[0].columnasSeleccionadas.filas[0]).toEqual({
+      periodo: '2025',
+      diferenciaBaseImponible: '$ 207.204.355'
+    });
+  });
+
   test('maps backend contributor crosses to report-ready informe options', () => {
     const options = mapContributorCrossesToInformeOptions([
       {

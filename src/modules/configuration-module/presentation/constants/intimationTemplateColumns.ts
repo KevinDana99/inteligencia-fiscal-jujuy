@@ -1,4 +1,9 @@
-export const INTIMATION_COLUMN_OPTIONS = [
+export type IntimationColumnOption = {
+  id: string
+  label: string
+}
+
+export const INTIMATION_COLUMN_OPTIONS: IntimationColumnOption[] = [
   { id: 'anio', label: 'AÑO' },
   {
     id: 'baseImponibleIngresosBrutos',
@@ -34,6 +39,4 @@ export const INTIMATION_COLUMN_OPTIONS = [
   { id: 'alicuota', label: 'Alícuota' },
   { id: 'dif_creditos', label: 'Dif. Créditos' },
   { id: 'saf', label: 'SAF' }
-] as const
-
-export type IntimationColumnOption = (typeof INTIMATION_COLUMN_OPTIONS)[number]
+]
