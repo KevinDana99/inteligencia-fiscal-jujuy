@@ -1,17 +1,6 @@
 :root {
-  --bg: #f6efe4;
-  --bg-accent: #efe0c8;
-  --surface: rgba(255, 252, 245, 0.84);
-  --surface-strong: #fffaf2;
-  --text: #1f1a17;
-  --muted: #64594f;
-  --accent: #b45a2d;
-  --accent-dark: #7a3618;
-  --border: rgba(31, 26, 23, 0.12);
-  --success: #21664d;
-  --shadow: 0 24px 70px rgba(122, 54, 24, 0.12);
-  --font-display: var(--font-dm-sans), 'Segoe UI', Helvetica, Arial, sans-serif;
-  --font-body: var(--font-dm-sans), 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-display: var(--font-dm-sans), "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-body: var(--font-dm-sans), "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
 * {
@@ -27,10 +16,6 @@ body {
   min-height: 100vh;
   color: var(--text);
   font-family: var(--font-body);
-  background:
-    radial-gradient(circle at top left, rgba(180, 90, 45, 0.18), transparent 32%),
-    radial-gradient(circle at right center, rgba(33, 102, 77, 0.14), transparent 22%),
-    linear-gradient(180deg, var(--bg) 0%, #f3ead8 100%);
 }
 
 #mantine-style-nonce,
@@ -44,13 +29,11 @@ a {
 
 .hero {
   border: 1px solid var(--border);
-  background: linear-gradient(135deg, rgba(255, 250, 242, 0.92), rgba(239, 224, 200, 0.72));
   box-shadow: var(--shadow);
 }
 
 .eyebrow {
   margin: 0 0 12px;
-  color: var(--accent-dark);
   text-transform: uppercase;
   letter-spacing: 0.16em;
   font-size: 12px;
