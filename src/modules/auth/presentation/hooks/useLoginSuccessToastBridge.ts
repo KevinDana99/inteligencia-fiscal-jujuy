@@ -11,6 +11,7 @@ import {
   buildExpiredClientCookie,
   hasClientCookie,
 } from "../utils/authLoginSuccessToastCookie";
+import { formatPersonName } from '@/utils';
 
 export function useLoginSuccessToastBridge(
   displayName?: string | null,
@@ -26,7 +27,7 @@ export function useLoginSuccessToastBridge(
       window.location.protocol === "https:"
     );
 
-    const normalizedDisplayName = displayName?.trim() || "Usuario";
+    const normalizedDisplayName = formatPersonName(displayName) || "Usuario";
 
     toast.show(message, {
       user: normalizedDisplayName,

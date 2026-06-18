@@ -1,5 +1,6 @@
 'use client'
 
+import { formatPersonName } from '@/utils'
 import type { IAdminPanelUser } from '../../../data/models/AdminPanel'
 import { AdminPanelActionModal } from './AdminPanelActionModal'
 import CreateUserFormModal from './CreateUserFormModal'
@@ -58,7 +59,7 @@ export function AdminPanelModals({
       <AdminPanelActionModal
         opened={deleteOpened}
         title='Eliminar usuario'
-        description={`Estás por eliminar a ${selectedUser?.fullName ?? 'este usuario'} del listado activo.`}
+        description={`Estás por eliminar a ${formatPersonName(selectedUser?.fullName) || 'este usuario'} del listado activo.`}
         icon='delete'
         semantic='red'
         confirmLabel='Eliminar usuario'
