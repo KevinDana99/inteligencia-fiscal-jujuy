@@ -196,6 +196,50 @@ describe('RestUnifiedRegisterSource', () => {
     );
   });
 
+  it('gets contributor cross columns through the dynamic columns endpoint', async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({
+        nombreCruce: 'ControlDesvioBiRegimenCm',
+        datos: {
+          columnas: ['anio', 'biEstimada', 'diferenciaBi', 'detalle'],
+          filas: [
+            {
+              anio: 2025,
+              biEstimada: 1751937.4278,
+              diferenciaBi: 824432.4378,
+              detalle: {
+                estado: 'Completo'
+              }
+            }
+          ]
+        }
+      })
+    );
+
+    const source = new RestUnifiedRegisterSource({
+      baseUrl: 'http://api.test',
+      token: 'access-token'
+    });
+
+    await expect(
+      source.getContributorCrossColumns('contributor-1', 'cross-1')
+    ).resolves.toEqual({
+      code: 'ControlDesvioBiRegimenCm',
+      columns: ['anio', 'biEstimada', 'diferenciaBi', 'detalle'],
+      rows: [
+        {
+          anio: 2025,
+          biEstimada: 1751937.4278,
+          diferenciaBi: 824432.4378,
+          detalle: '{"estado":"Completo"}'
+        }
+      ]
+    });
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'http://api.test/api/contribuyentes/cruces/columnas?contribuyenteId=contributor-1&cruceId=cross-1'
+    );
+  });
+
   it('lists Mercurio fines with detail pagination query params', async () => {
     fetchMock.mockResolvedValueOnce(
       jsonResponse({

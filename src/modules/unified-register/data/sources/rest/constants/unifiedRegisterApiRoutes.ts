@@ -7,6 +7,11 @@ export const UNIFIED_REGISTER_API_ROUTES = {
     `${UNIFIED_REGISTER_PADRON_BASE_ROUTE}/${contribuyenteId}/encabezado`,
   contributorCrosses: (contribuyenteId: string) =>
     `/api/contribuyentes/${contribuyenteId}/cruces`,
+  contributorCrossColumns: (contribuyenteId: string, cruceId: string) => {
+    const params = new URLSearchParams({ contribuyenteId, cruceId });
+
+    return `/api/contribuyentes/cruces/columnas?${params.toString()}`;
+  },
   mercurioFines: (contribuyenteId: string) =>
     `${UNIFIED_REGISTER_PADRON_BASE_ROUTE}/${contribuyenteId}/mercurio`,
   interventionOrders: (contribuyenteId: string) =>

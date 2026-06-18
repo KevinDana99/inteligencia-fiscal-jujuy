@@ -134,5 +134,3 @@ export const INFORME_CROSS_OPTIONS: InformeCrossOption[] = [
     }
   }
 ];
-
-export const DEFAULT_SELECTED_INFORME_CROSS_IDS = [INFORME_CROSS_OPTIONS[0].id];

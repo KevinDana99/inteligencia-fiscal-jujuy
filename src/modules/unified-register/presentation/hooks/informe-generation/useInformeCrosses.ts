@@ -1,13 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { getContributorCrossesAction } from '../../../data/actions';
-import type { IUnifiedRegisterDetail } from '../../../data/models/UnifiedRegister';
 import {
-  DEFAULT_SELECTED_INFORME_CROSS_IDS,
-  INFORME_CROSS_OPTIONS,
-  type InformeCrossOption
-} from '../../constants/informeGeneration';
+  getContributorCrossColumnsAction,
+  getContributorCrossesAction
+} from '../../../data/actions';
+import type { IUnifiedRegisterDetail } from '../../../data/models/UnifiedRegister';
+import type { InformeCrossOption } from '../../constants/informeGeneration';
 import { mapContributorCrossesToInformeOptions } from '../../utils/buildInformeGenerationPayload';
 import {
   applyInformeCrossColumnSelections,
@@ -15,17 +14,15 @@ import {
   getInformeCrossColumnsByKeys,
   type InformeCrossColumnSelectionMap
 } from '../../utils/informeCrossColumnSelection';
-import { getDefaultSelectedCrossIds } from './utils';
+
+const DYNAMIC_CROSS_COLUMNS_LOAD_VERSION = 'dynamic-cross-columns-v1';
 
 export function useInformeCrosses(
   item: IUnifiedRegisterDetail,
   shouldLoadCrosses: boolean
 ) {
-  const [sourceCrosses, setSourceCrosses] =
-    useState<InformeCrossOption[]>(INFORME_CROSS_OPTIONS);
-  const [selectedCrossIds, setSelectedCrossIds] = useState<string[]>(
-    DEFAULT_SELECTED_INFORME_CROSS_IDS
-  );
+  const [sourceCrosses, setSourceCrosses] = useState<InformeCrossOption[]>([]);
+  const [selectedCrossIds, setSelectedCrossIds] = useState<string[]>([]);
   const [selectedColumnKeysByCrossId, setSelectedColumnKeysByCrossId] =
     useState<InformeCrossColumnSelectionMap>({});
   const [columnPickerCrossId, setColumnPickerCrossId] = useState<string | null>(
@@ -34,15 +31,22 @@ export function useInformeCrosses(
   const [columnPickerDraftKeys, setColumnPickerDraftKeys] = useState<string[]>(
     []
   );
-  const [selectedAvailableColumnKey, setSelectedAvailableColumnKey] =
-    useState<string | null>(null);
-  const [selectedVisibleColumnKey, setSelectedVisibleColumnKey] =
-    useState<string | null>(null);
+  const [selectedAvailableColumnKeys, setSelectedAvailableColumnKeys] =
+    useState<string[]>([]);
+  const [selectedVisibleColumnKeys, setSelectedVisibleColumnKeys] = useState<
+    string[]
+  >([]);
+  const [draggingDraftColumnKey, setDraggingDraftColumnKey] = useState<
+    string | null
+  >(null);
+  const [dragOverDraftColumnKey, setDragOverDraftColumnKey] = useState<
+    string | null
+  >(null);
   const [crossesError, setCrossesError] = useState<string | null>(null);
-  const [loadedCrossesContributorId, setLoadedCrossesContributorId] =
-    useState<string | null>(null);
+  const [loadedCrossesKey, setLoadedCrossesKey] = useState<string | null>(null);
+  const activeCrossesLoadKey = `${item.contribuyenteId}:${DYNAMIC_CROSS_COLUMNS_LOAD_VERSION}`;
   const isLoadingCrosses =
-    shouldLoadCrosses && loadedCrossesContributorId !== item.contribuyenteId;
+    shouldLoadCrosses && loadedCrossesKey !== activeCrossesLoadKey;
   const availableCrosses = useMemo(
     () =>
       applyInformeCrossColumnSelections(
@@ -79,8 +83,10 @@ export function useInformeCrosses(
   );
 
   const resetPickerSelection = useCallback(() => {
-    setSelectedAvailableColumnKey(null);
-    setSelectedVisibleColumnKey(null);
+    setSelectedAvailableColumnKeys([]);
+    setSelectedVisibleColumnKeys([]);
+    setDraggingDraftColumnKey(null);
+    setDragOverDraftColumnKey(null);
   }, []);
 
   const applyCrosses = useCallback(
@@ -88,9 +94,9 @@ export function useInformeCrosses(
       setSourceCrosses(nextCrosses);
       setSelectedCrossIds((current) => resolveSelectedCrosses(current, nextCrosses));
       setCrossesError(null);
-      setLoadedCrossesContributorId(item.contribuyenteId);
+      setLoadedCrossesKey(activeCrossesLoadKey);
     },
-    [item.contribuyenteId]
+    [activeCrossesLoadKey]
   );
 
   const setEmptyCrosses = useCallback(
@@ -98,37 +104,58 @@ export function useInformeCrosses(
       setSourceCrosses([]);
       setSelectedCrossIds([]);
       setCrossesError(error ?? 'No fue posible listar los cruces del contribuyente.');
-      setLoadedCrossesContributorId(item.contribuyenteId);
+      setLoadedCrossesKey(activeCrossesLoadKey);
     },
-    [item.contribuyenteId]
+    [activeCrossesLoadKey]
   );
 
   useEffect(() => {
-    if (!shouldLoadCrosses || loadedCrossesContributorId === item.contribuyenteId) {
+    if (!shouldLoadCrosses || loadedCrossesKey === activeCrossesLoadKey) {
       return;
     }
 
     let isActive = true;
-    getContributorCrossesAction(item.contribuyenteId)
-      .then((result) => {
-        if (!isActive) return;
-        if (!result.data) {
-          setEmptyCrosses(result.error);
-          return;
-        }
-        applyCrosses(mapContributorCrossesToInformeOptions(result.data.crosses));
-      })
-      .catch(() => {
-        if (isActive) setEmptyCrosses();
-      });
+
+    async function loadContributorCrosses() {
+      const result = await getContributorCrossesAction(item.contribuyenteId);
+
+      if (!isActive) return;
+      if (!result.data) {
+        setEmptyCrosses(result.error);
+        return;
+      }
+
+      const crossesWithColumns = await Promise.all(
+        result.data.crosses.map(async (cross) => {
+          const columnsResult = await getContributorCrossColumnsAction({
+            contribuyenteId: item.contribuyenteId,
+            cruceId: cross.id
+          });
+
+          return {
+            cross,
+            columnsData: columnsResult.data,
+            error: columnsResult.error
+          };
+        })
+      );
+
+      if (!isActive) return;
+      applyCrosses(mapContributorCrossesToInformeOptions(crossesWithColumns));
+    }
+
+    loadContributorCrosses().catch(() => {
+      if (isActive) setEmptyCrosses();
+    });
 
     return () => {
       isActive = false;
     };
   }, [
+    activeCrossesLoadKey,
     applyCrosses,
     item.contribuyenteId,
-    loadedCrossesContributorId,
+    loadedCrossesKey,
     setEmptyCrosses,
     shouldLoadCrosses
   ]);
@@ -164,37 +191,56 @@ export function useInformeCrosses(
   };
 
   const selectAvailableColumn = (columnKey: string) => {
-    setSelectedAvailableColumnKey(columnKey);
-    setSelectedVisibleColumnKey(null);
+    setSelectedAvailableColumnKeys((current) =>
+      toggleSelectedColumnKey(current, columnKey)
+    );
+    setSelectedVisibleColumnKeys([]);
   };
 
   const selectVisibleColumn = (columnKey: string) => {
-    setSelectedVisibleColumnKey(columnKey);
-    setSelectedAvailableColumnKey(null);
+    setSelectedVisibleColumnKeys((current) =>
+      toggleSelectedColumnKey(current, columnKey)
+    );
+    setSelectedAvailableColumnKeys([]);
   };
 
   const addSelectedColumn = () => {
-    if (!selectedAvailableColumnKey) {
+    if (selectedAvailableColumnKeys.length === 0) {
       return;
     }
 
-    setColumnPickerDraftKeys((current) =>
-      current.includes(selectedAvailableColumnKey)
-        ? current
-        : [...current, selectedAvailableColumnKey]
-    );
-    setSelectedAvailableColumnKey(null);
+    const selectedKeys = columnPickerAvailableColumns
+      .filter((column) => selectedAvailableColumnKeys.includes(column.key))
+      .map((column) => column.key);
+
+    setColumnPickerDraftKeys((current) => {
+      const currentKeys = new Set(current);
+      return [
+        ...current,
+        ...selectedKeys.filter((columnKey) => !currentKeys.has(columnKey))
+      ];
+    });
+    setSelectedAvailableColumnKeys([]);
   };
 
   const removeSelectedColumn = () => {
-    if (!selectedVisibleColumnKey) {
+    if (selectedVisibleColumnKeys.length === 0) {
       return;
     }
 
+    const selectedKeys = new Set(selectedVisibleColumnKeys);
     setColumnPickerDraftKeys((current) =>
-      current.filter((columnKey) => columnKey !== selectedVisibleColumnKey)
+      current.filter((columnKey) => !selectedKeys.has(columnKey))
     );
-    setSelectedVisibleColumnKey(null);
+    setSelectedVisibleColumnKeys([]);
+  };
+
+  const reorderDraftColumn = (sourceColumnKey: string, targetColumnKey: string) => {
+    setColumnPickerDraftKeys((current) =>
+      reorderColumnKeys(current, sourceColumnKey, targetColumnKey)
+    );
+    setSelectedAvailableColumnKeys([]);
+    setSelectedVisibleColumnKeys([sourceColumnKey]);
   };
 
   const confirmCrossColumnPicker = () => {
@@ -206,11 +252,21 @@ export function useInformeCrosses(
       ...current,
       [activeColumnPickerCross.id]: [...columnPickerDraftKeys]
     }));
+    setSelectedCrossIds((current) => {
+      const nextSelectedIds = current.filter(
+        (crossId) => crossId !== activeColumnPickerCross.id
+      );
+
+      return columnPickerDraftKeys.length > 0
+        ? [...nextSelectedIds, activeColumnPickerCross.id]
+        : nextSelectedIds;
+    });
     closeCrossColumnPicker();
   };
 
   const resetSelectedCrosses = () => {
-    setSelectedCrossIds(getDefaultSelectedCrossIds(availableCrosses));
+    setSelectedCrossIds([]);
+    setSelectedColumnKeysByCrossId({});
   };
 
   return {
@@ -221,12 +277,17 @@ export function useInformeCrosses(
       availableColumns: columnPickerAvailableColumns,
       close: closeCrossColumnPicker,
       confirm: confirmCrossColumnPicker,
+      dragOverDraftColumnKey,
+      draggingDraftColumnKey,
       opened: Boolean(activeColumnPickerCross),
       removeSelectedColumn,
+      reorderDraftColumn,
       selectAvailableColumn,
       selectVisibleColumn,
-      selectedAvailableColumnKey,
-      selectedVisibleColumnKey,
+      selectedAvailableColumnKeys,
+      selectedVisibleColumnKeys,
+      setDragOverDraftColumnKey,
+      setDraggingDraftColumnKey,
       visibleColumns: columnPickerVisibleColumns
     },
     crossesError,
@@ -248,7 +309,36 @@ function resolveSelectedCrosses(
       .map((cross) => cross.id)
   );
   const currentAvailableIds = current.filter((crossId) => availableIds.has(crossId));
-  return currentAvailableIds.length
-    ? currentAvailableIds
-    : getDefaultSelectedCrossIds(nextCrosses);
+  return currentAvailableIds;
+}
+
+function toggleSelectedColumnKey(currentKeys: string[], columnKey: string) {
+  if (currentKeys.includes(columnKey)) {
+    return currentKeys.filter((currentKey) => currentKey !== columnKey);
+  }
+
+  return [...currentKeys, columnKey];
+}
+
+function reorderColumnKeys(
+  columnKeys: string[],
+  sourceColumnKey: string,
+  targetColumnKey: string
+) {
+  if (sourceColumnKey === targetColumnKey) {
+    return columnKeys;
+  }
+
+  const sourceIndex = columnKeys.indexOf(sourceColumnKey);
+  const targetIndex = columnKeys.indexOf(targetColumnKey);
+
+  if (sourceIndex === -1 || targetIndex === -1) {
+    return columnKeys;
+  }
+
+  const nextColumnKeys = [...columnKeys];
+  const [sourceColumn] = nextColumnKeys.splice(sourceIndex, 1);
+  nextColumnKeys.splice(targetIndex, 0, sourceColumn);
+
+  return nextColumnKeys;
 }
