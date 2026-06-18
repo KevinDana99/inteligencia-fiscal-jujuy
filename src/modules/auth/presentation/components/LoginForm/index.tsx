@@ -116,7 +116,11 @@ function LoginFormContent() {
               onChange={hideRecoveryNotice}
               disabled={isPending}
               visibilityToggleIcon={({ reveal }) =>
-                reveal ? <IconEye /> : <IconEyeOff />
+                reveal ? (
+                  <IconEyeOff className={classes.eyeIcon} stroke={2} />
+                ) : (
+                  <IconEye className={classes.eyeIcon} stroke={2} />
+                )
               }
               className={`${classes.passwordInput} ${hasError ? classes.inputError : ''}`}
             />
