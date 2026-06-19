@@ -1,5 +1,6 @@
 import { ActionIcon, Avatar, Badge, Table, Text } from '@mantine/core'
 import { IconCrown, IconEdit, IconTrash } from '@tabler/icons-react'
+import { formatPersonName } from '@/utils'
 import type { IAdminPanelUser } from '../../../data/models/AdminPanel'
 import { useAdminPanelUserRow } from '../../hooks'
 import type { AvatarColorTone } from '../../utils/getAvatarColorStyles'
@@ -46,7 +47,9 @@ export function AdminPanelUserTableRow({
             />
           ) : null}
           <div className={classes.userNameWrap}>
-            <Text className={classes.userName}>{user.fullName}</Text>
+            <Text className={classes.userName}>
+              {formatPersonName(user.fullName)}
+            </Text>
           </div>
         </div>
       </Table.Td>

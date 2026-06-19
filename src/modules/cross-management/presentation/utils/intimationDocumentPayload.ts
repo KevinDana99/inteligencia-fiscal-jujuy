@@ -25,14 +25,24 @@ function buildSpreadsheetRows(
   contributor: IntimationExportContributor,
   columnIds: string[]
 ): IIntimationSpreadsheetRow[] {
-  return [
+  const sourceRows = contributor.planillaRows.length
+    ? contributor.planillaRows
+    : [contributor]
+
+  return sourceRows.map((row) =>
     Object.fromEntries(
       columnIds.map((columnId) => [
         columnId,
-        resolveIntimationExportColumnValue(contributor, columnId)
+        resolveIntimationExportColumnValue(row, columnId)
       ])
     )
-  ]
+  )
+}
+
+function normalizeSnapshotFechaCorte(value: string) {
+  const periodMatch = value.match(/\b\d{1,2}\/\d{4}\b/)
+
+  return periodMatch?.[0] ?? value.trim()
 }
 
 export function buildIntimationDocumentPayload({
@@ -76,7 +86,7 @@ export function buildIntimationDocumentPayload({
       saludo: templateState.saludo,
       cuerpo: templateState.cuerpo,
       fuenteInformacion: templateState.fuenteInformacion || null,
-      fechaCorte: templateState.fechaCorte
+      fechaCorte: normalizeSnapshotFechaCorte(templateState.fechaCorte)
     },
     columnasSeleccionadas: columnIds,
     filasPlanilla: buildSpreadsheetRows(contributor, columnIds)

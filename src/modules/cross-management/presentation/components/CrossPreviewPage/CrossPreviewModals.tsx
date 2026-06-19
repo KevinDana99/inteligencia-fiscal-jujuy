@@ -1,18 +1,22 @@
 import { Button, Modal } from '@mantine/core'
+import type { IntimationColumnOption } from '@/modules/configuration-module/presentation/constants'
 import { IntimationTemplate } from '@/modules/configuration-module/presentation/components/IntimationTemplate'
 import { SendToReprocessingModal } from '@/modules/reprocessing/presentation/components'
 import type {
-  ICrossPreviewAnalysisRow,
-  ICrossPreviewPlanRow
+  ICrossPreviewAnalysisRow
 } from '../../../data/models/CrossManagement'
 import { CROSS_PREVIEW_INTIMATION_LABEL } from '../../constants/crossPreviewLabels'
 import { useCrossPreviewModals } from '../../hooks/cross-preview/useCrossPreviewModals'
-import { IntimationExportModal } from '../IntimationExportModal'
+import {
+  IntimationExportModal,
+  type IntimationExportContributor
+} from '../IntimationExportModal'
 import classes from './CrossPreviewPage.module.css'
 
 interface CrossPreviewModalsProps {
   activePreviewIndex: number
-  contributors: ICrossPreviewPlanRow[]
+  intimationColumnOptions: IntimationColumnOption[]
+  contributors: IntimationExportContributor[]
   exportModalOpened: boolean
   intimationModalOpened: boolean
   onCloseExportModal: () => void
@@ -27,6 +31,7 @@ interface CrossPreviewModalsProps {
 
 export function CrossPreviewModals({
   activePreviewIndex,
+  intimationColumnOptions,
   contributors,
   exportModalOpened,
   intimationModalOpened,
@@ -51,6 +56,7 @@ export function CrossPreviewModals({
     isPdfDownloading
   } = useCrossPreviewModals({
     activePreviewIndex,
+    intimationColumnOptions,
     contributors,
     onConfirmReprocessingModal,
     onOpenExportModal

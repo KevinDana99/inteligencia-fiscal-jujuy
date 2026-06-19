@@ -1,10 +1,26 @@
 'use client'
 
 import { useMemo } from 'react'
+import type { DragEventHandler } from 'react'
 import type { IntimationTemplateController } from '../../../hooks/intimation-template'
 import { INTIMATION_TEMPLATE_LABELS } from '../../../constants'
 import modalClasses from './IntimationTemplateColumnPickerModal.module.css'
 import listClasses from './IntimationTemplateColumnPickerList/IntimationTemplateColumnPickerList.module.css'
+
+type ColumnPickerRow = {
+  id: string
+  label: string
+  className: string
+  isSelected: boolean
+  draggable: boolean
+  dragHandleLabel?: string
+  handleSelect: () => void
+  handleDragStart?: DragEventHandler<HTMLButtonElement>
+  handleDragEnd?: DragEventHandler<HTMLButtonElement>
+  handleDragOver?: DragEventHandler<HTMLButtonElement>
+  handleDragLeave?: DragEventHandler<HTMLButtonElement>
+  handleDrop?: DragEventHandler<HTMLButtonElement>
+}
 
 export function useIntimationTemplateColumnPickerModal(
   controller: IntimationTemplateController
@@ -12,37 +28,106 @@ export function useIntimationTemplateColumnPickerModal(
   const {
     columnPickerOpened,
     columnPickerDraft,
-    selectedAvailableColumnId,
-    selectedVisibleColumnId,
+    selectedAvailableColumnIds,
+    selectedVisibleColumnIds,
     availableColumns,
     closeColumnPicker,
     confirmColumnPicker,
     selectAvailableColumn,
     selectVisibleColumn,
     addSelectedColumn,
-    removeSelectedColumn
+    removeSelectedColumn,
+    reorderDraftColumn,
+    draggingDraftColumnId,
+    dragOverDraftColumnId,
+    setDraggingDraftColumnId,
+    setDragOverDraftColumnId
   } = controller
 
-  const availableRows = useMemo(
+  const availableRows = useMemo<ColumnPickerRow[]>(
     () =>
       availableColumns.map((column) => ({
         id: column.id,
         label: column.label,
-        className: getRowClassName(selectedAvailableColumnId === column.id),
+        isSelected: selectedAvailableColumnIds.includes(column.id),
+        className: getRowClassName(
+          selectedAvailableColumnIds.includes(column.id)
+        ),
+        draggable: false,
         handleSelect: () => selectAvailableColumn(column.id)
       })),
-    [availableColumns, selectAvailableColumn, selectedAvailableColumnId]
+    [availableColumns, selectAvailableColumn, selectedAvailableColumnIds]
   )
 
-  const visibleRows = useMemo(
+  const visibleRows = useMemo<ColumnPickerRow[]>(
     () =>
       columnPickerDraft.map((column) => ({
         id: column.id,
         label: column.value,
-        className: getRowClassName(selectedVisibleColumnId === column.id),
-        handleSelect: () => selectVisibleColumn(column.id)
+        isSelected: selectedVisibleColumnIds.includes(column.id),
+        className: getRowClassName(
+          selectedVisibleColumnIds.includes(column.id),
+          draggingDraftColumnId === column.id,
+          dragOverDraftColumnId === column.id
+        ),
+        draggable: true,
+        dragHandleLabel: `Reordenar columna ${column.value}`,
+        handleSelect: () => selectVisibleColumn(column.id),
+        handleDragStart: (event) => {
+          event.dataTransfer.effectAllowed = 'move'
+          event.dataTransfer.setData('text/plain', column.id)
+          setDraggingDraftColumnId(column.id)
+        },
+        handleDragEnd: () => {
+          setDraggingDraftColumnId(null)
+          setDragOverDraftColumnId(null)
+        },
+        handleDragOver: (event) => {
+          if (!draggingDraftColumnId || draggingDraftColumnId === column.id) {
+            return
+          }
+
+          event.preventDefault()
+          event.dataTransfer.dropEffect = 'move'
+          setDragOverDraftColumnId(column.id)
+        },
+        handleDragLeave: (event) => {
+          const relatedTarget = event.relatedTarget
+
+          if (
+            relatedTarget instanceof Node &&
+            event.currentTarget.contains(relatedTarget)
+          ) {
+            return
+          }
+
+          setDragOverDraftColumnId((currentColumnId) =>
+            currentColumnId === column.id ? null : currentColumnId
+          )
+        },
+        handleDrop: (event) => {
+          event.preventDefault()
+          const sourceColumnId =
+            event.dataTransfer.getData('text/plain') || draggingDraftColumnId
+
+          if (sourceColumnId) {
+            reorderDraftColumn(sourceColumnId, column.id)
+          }
+
+          setDraggingDraftColumnId(null)
+          setDragOverDraftColumnId(null)
+        }
       })),
-    [columnPickerDraft, selectVisibleColumn, selectedVisibleColumnId]
+    [
+      columnPickerDraft,
+      dragOverDraftColumnId,
+      draggingDraftColumnId,
+      reorderDraftColumn,
+      selectVisibleColumn,
+      selectedVisibleColumnIds,
+      setDragOverDraftColumnId,
+      setDraggingDraftColumnId
+    ]
   )
 
   return {
@@ -70,12 +155,12 @@ export function useIntimationTemplateColumnPickerModal(
     actions: {
       addButton: {
         onClick: addSelectedColumn,
-        disabled: !selectedAvailableColumnId,
+        disabled: selectedAvailableColumnIds.length === 0,
         label: INTIMATION_TEMPLATE_LABELS.buttons.addSelectedColumn
       },
       removeButton: {
         onClick: removeSelectedColumn,
-        disabled: !selectedVisibleColumnId,
+        disabled: selectedVisibleColumnIds.length === 0,
         label: INTIMATION_TEMPLATE_LABELS.buttons.removeSelectedColumn
       }
     },
@@ -88,10 +173,16 @@ export function useIntimationTemplateColumnPickerModal(
   }
 }
 
-function getRowClassName(isSelected: boolean) {
+function getRowClassName(
+  isSelected: boolean,
+  isDragging = false,
+  isDragOver = false
+) {
   return [
     listClasses.columnPickerRow,
-    isSelected ? listClasses.columnPickerRowSelected : null
+    isSelected ? listClasses.columnPickerRowSelected : null,
+    isDragging ? listClasses.columnPickerRowDragging : null,
+    isDragOver ? listClasses.columnPickerRowDragOver : null
   ]
     .filter(Boolean)
     .join(' ')

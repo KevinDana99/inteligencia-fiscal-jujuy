@@ -26,6 +26,7 @@ export const EXPLORER_REGISTER_TEXTS = {
   switchOn: 'Sí',
   switchOff: 'No',
   allOptions: 'Todas las opciones',
+  temporalPeriod: 'Período de búsqueda',
   temporalStart: 'Fecha inicio',
   temporalEnd: 'Fecha fin',
   pageSize: 'Filas por pagina',

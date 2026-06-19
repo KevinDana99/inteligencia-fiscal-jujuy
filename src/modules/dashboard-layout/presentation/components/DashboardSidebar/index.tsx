@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { ActionIcon, Avatar, Tooltip } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { IconDoorExit, IconX } from '@tabler/icons-react'
-import { getInitials, getRoleLabel } from '@/utils'
+import { formatPersonName, getInitials, getRoleLabel } from '@/utils'
 import type { IAuthSession } from '@/modules/auth/data/models/Auth'
 import { useSignOut } from '@/modules/auth/presentation/hooks'
 import { ADMIN_PANEL_LOGOUT_MODAL } from '@/modules/admin-panel/presentation/constants/adminPanelLayout'
@@ -223,13 +223,13 @@ function SidebarFooter({ isPending, onSignOut, session }: SidebarFooterProps) {
   return (
     <div className={classes.sidebarFooter}>
       <div className={classes.userRow}>
-        <Avatar size={32} radius='xl' className={classes.sidebarAvatar}>
+        <Avatar size={28} radius='xl' className={classes.sidebarAvatar}>
           {getInitials(session.user.nombreUsuario ?? '')}
         </Avatar>
 
         <div className={classes.userMeta}>
           <span className={classes.userName}>
-            {session.user.nombreUsuario ?? 'Usuario'}
+            {formatPersonName(session.user.nombreUsuario) || 'Usuario'}
           </span>
           <span className={classes.userRole}>
             {getRoleLabel(session.user.tipoUsuario)}

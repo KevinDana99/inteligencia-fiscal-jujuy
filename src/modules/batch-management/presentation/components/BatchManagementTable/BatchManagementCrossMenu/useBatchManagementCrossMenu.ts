@@ -1,5 +1,6 @@
 'use client'
 
+import type { Route } from 'next'
 import { useRouter } from 'next/navigation'
 import {
   BATCH_CROSS_MONTH_OPTIONS,
@@ -41,6 +42,7 @@ type BatchManagementCrossMenuController = {
   ) => void
   onConfirm: (batchId: string) => Promise<boolean>
   navigateOnConfirm?: boolean
+  confirmRedirectHref?: Route
   onConfirmed?: () => void
 }
 
@@ -59,6 +61,19 @@ export function useBatchManagementCrossMenu(
   )
 
   async function handleConfirm() {
+    console.log(
+      JSON.stringify(
+        {
+          action: 'useBatchManagementCrossMenu.handleConfirm',
+          batchId: controller.batchId,
+          canConfirm: controller.canConfirm,
+          isExecuting: controller.isExecuting
+        },
+        null,
+        2
+      )
+    )
+
     const wasConfirmed = await controller.onConfirm(controller.batchId)
 
     if (wasConfirmed) {
@@ -67,7 +82,10 @@ export function useBatchManagementCrossMenu(
         return
       }
 
-      router.push(`/gestion-de-cruces?batchId=${controller.batchId}`)
+      router.push(
+        controller.confirmRedirectHref ??
+          (`/gestion-de-cruces?batchId=${controller.batchId}` as Route)
+      )
     }
   }
 

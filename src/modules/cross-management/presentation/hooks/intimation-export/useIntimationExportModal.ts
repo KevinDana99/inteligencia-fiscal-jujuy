@@ -7,7 +7,9 @@ import { INTIMATION_EXPORT_EMPTY_CONTRIBUTOR } from '../../constants/intimationE
 export type IntimationExportContributor = Pick<
   ICrossPreviewPlanRow,
   'id' | 'taxpayerId' | 'cuit' | 'businessName' | 'values' | 'cells'
->
+> & {
+  planillaRows: ICrossPreviewPlanRow[]
+}
 
 interface UseIntimationExportModalParams {
   activeIndex: number
@@ -23,7 +25,7 @@ export function useIntimationExportModal({
     Math.max(contributors.length - 1, 0)
   )
   const currentContributor = contributors[safeActiveIndex]
-  const currentPage = contributors.length ? activeIndex + 1 : 0
+  const currentPage = contributors.length ? safeActiveIndex + 1 : 0
   const totalPages = contributors.length
   const countLabel = `${contributors.length} intimaciones`
   const paginationLabel = `Contribuyente ${currentPage} de ${totalPages}`

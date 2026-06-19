@@ -53,21 +53,28 @@ export async function refreshAuthSession(
     );
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
-  const response = await fetch(`${baseUrl}/api/iam/autenticacion/renovar-sesion`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      refrescarToken: params.refrescarToken
-    })
-  });
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
+    const response = await fetch(
+      `${baseUrl}/api/iam/autenticacion/renovar-sesion`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          refrescarToken: params.refrescarToken
+        })
+      }
+    );
 
-  if (!response.ok) {
+    if (!response.ok) {
+      return null;
+    }
+
+    const sessionResponse = (await response.json()) as IIamSessionResponse;
+    return mapIamSessionResponseToSerializedAuthSession(sessionResponse);
+  } catch {
     return null;
   }
-
-  const sessionResponse = (await response.json()) as IIamSessionResponse;
-  return mapIamSessionResponseToSerializedAuthSession(sessionResponse);
 }

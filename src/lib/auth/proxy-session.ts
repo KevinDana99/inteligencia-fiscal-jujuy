@@ -134,9 +134,15 @@ export async function refreshExpiredRequestSession(
     return { session: null, refreshed: false }
   }
 
-  const refreshedSession = await refreshAuthSession({
-    refrescarToken: session.refreshToken
-  })
+  let refreshedSession: ISerializedAuthSession | null
+
+  try {
+    refreshedSession = await refreshAuthSession({
+      refrescarToken: session.refreshToken
+    })
+  } catch {
+    return { session: null, refreshed: false }
+  }
 
   if (!refreshedSession) {
     return { session: null, refreshed: false }

@@ -9,6 +9,7 @@ import type {
   IUnifiedRegisterContactsListData,
   IUnifiedRegisterContactsListParams,
   IUnifiedRegisterContributorCross,
+  IUnifiedRegisterContributorCrossColumnsData,
   IUnifiedRegisterContributorCrossesData,
   IUnifiedRegisterFinesListData,
   IUnifiedRegisterFinesListParams,
@@ -72,6 +73,73 @@ const contributorCrossesMock: IUnifiedRegisterContributorCross[] = [
   }
 ];
 
+const contributorCrossColumnsMockByCode: Record<
+  string,
+  IUnifiedRegisterContributorCrossColumnsData
+> = {
+  ControlDesvioBiRegimenCm: {
+    code: 'ControlDesvioBiRegimenCm',
+    columns: [
+      'anio',
+      'biEstimada',
+      'diferenciaBi',
+      'cu',
+      'df',
+      'cuit',
+      'razonSocial',
+      'estadoCalculo'
+    ],
+    rows: [
+      {
+        anio: 2025,
+        biEstimada: 1751937.4278,
+        diferenciaBi: 824432.4378,
+        cu: 0.0375,
+        df: 558897.32,
+        cuit: '30100009451',
+        razonSocial: 'Contribuyente DEV 00035',
+        estadoCalculo: 'Completo'
+      }
+    ]
+  },
+  ControlDesvioBiRegimenGral: {
+    code: 'ControlDesvioBiRegimenGral',
+    columns: ['anio', 'biDeclarada', 'biEstimada', 'diferenciaBi'],
+    rows: [
+      {
+        anio: 2025,
+        biDeclarada: 88000000,
+        biEstimada: 141000000,
+        diferenciaBi: 53000000
+      },
+      {
+        anio: 2026,
+        biDeclarada: 74000000,
+        biEstimada: 115000000,
+        diferenciaBi: 41000000
+      }
+    ]
+  },
+  ControlBiDeclaradaPorActividad: {
+    code: 'ControlBiDeclaradaPorActividad',
+    columns: ['anio', 'actividadDeclarada', 'biDeclarada', 'biEstimada'],
+    rows: [
+      {
+        anio: 2025,
+        actividadDeclarada: 'Venta mayorista',
+        biDeclarada: 92500000,
+        biEstimada: 124000000
+      },
+      {
+        anio: 2026,
+        actividadDeclarada: 'Fabricacion de vehiculos',
+        biDeclarada: 78000000,
+        biEstimada: 95000000
+      }
+    ]
+  }
+};
+
 function isUuid(value: string) {
   return UUID_PATTERN.test(value);
 }
@@ -125,6 +193,16 @@ function cloneContactRecords(
   records: IUnifiedRegisterContactRecord[]
 ): IUnifiedRegisterContactRecord[] {
   return records.map(cloneContactRecord);
+}
+
+function cloneContributorCrossColumnsData(
+  data: IUnifiedRegisterContributorCrossColumnsData
+): IUnifiedRegisterContributorCrossColumnsData {
+  return {
+    code: data.code,
+    columns: [...data.columns],
+    rows: data.rows.map((row) => ({ ...row }))
+  };
 }
 
 function throwContractError(status: number, codigo: string, mensaje: string): never {
@@ -369,6 +447,53 @@ function ensureContributorForContactsWrite(
   }
 
   return store;
+}
+
+function ensureContributorCrossColumns(
+  contribuyenteId: string,
+  cruceId: string
+) {
+  if (!isUuid(contribuyenteId) || !isUuid(cruceId)) {
+    throwContractError(
+      400,
+      'contribuyentes.cruces.columnas.solicitud_invalida',
+      'El contribuyente informado no es valido.'
+    );
+  }
+
+  const item = unifiedRegisterDetailsFixture.find(
+    (entry) => entry.contribuyenteId === contribuyenteId
+  );
+
+  if (!item) {
+    throwContractError(
+      404,
+      'contribuyentes.cruces.columnas.contribuyente_no_encontrado',
+      'El contribuyente informado no existe.'
+    );
+  }
+
+  const cross = contributorCrossesMock.find((entry) => entry.id === cruceId);
+
+  if (!cross) {
+    throwContractError(
+      404,
+      'contribuyentes.cruces.columnas.cruce_no_encontrado',
+      'El cruce informado no existe.'
+    );
+  }
+
+  const data = contributorCrossColumnsMockByCode[cross.code];
+
+  if (!data) {
+    throwContractError(
+      404,
+      'contribuyentes.cruces.columnas.resultado_no_encontrado',
+      'No existe resultado disponible para el contribuyente y cruce informados.'
+    );
+  }
+
+  return data;
 }
 
 function validateDireccionForCreate(
@@ -685,6 +810,15 @@ export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
     return {
       crosses: contributorCrossesMock.map((cross) => ({ ...cross }))
     };
+  }
+
+  async getContributorCrossColumns(
+    contribuyenteId: string,
+    cruceId: string
+  ): Promise<IUnifiedRegisterContributorCrossColumnsData> {
+    return cloneContributorCrossColumnsData(
+      ensureContributorCrossColumns(contribuyenteId, cruceId)
+    );
   }
 
   async listMercurioFines(

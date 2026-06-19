@@ -44,13 +44,16 @@ export function BatchManagementTableRow({ row }: BatchManagementTableRowProps) {
         <Table.Td className={`${classes.batchCell} ${classes.batchDate}`}>
           {row.batch.createdAt}
         </Table.Td>
+        <Table.Td className={`${classes.batchCell} ${classes.batchAuthor}`}>
+          {row.batch.createdBy?.name ?? '—'}
+        </Table.Td>
         <Table.Td onClick={(event) => event.stopPropagation()} className={classes.actionCell}>
           <BatchManagementCrossMenu controller={row.crossMenu} />
         </Table.Td>
       </Table.Tr>
       {row.isExpanded ? (
         <Table.Tr>
-          <Table.Td colSpan={7} className={classes.detailCell}>
+          <Table.Td colSpan={8} className={classes.detailCell}>
             {row.isLoading ? (
               <div className={classes.detailLoader}>
                 <Loader size="sm" />

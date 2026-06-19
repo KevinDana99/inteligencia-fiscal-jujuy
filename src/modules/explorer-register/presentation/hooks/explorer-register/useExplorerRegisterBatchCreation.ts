@@ -1,14 +1,18 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { PRIVATE_DASHBOARD_ROUTES } from '@/constants';
+import { useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { PRIVATE_DASHBOARD_ROUTES } from "@/constants";
 import {
   useBatchManagementCreate,
-  type BatchManagementCreateModalController
-} from '@/modules/batch-management/presentation/hooks';
-import type { IExplorerRegisterRow } from '../../../data/models/ExplorerRegister';
-import { buildExplorerRegisterBatchRows } from '../../utils';
+  type BatchManagementCreateModalController,
+} from "@/modules/batch-management/presentation/hooks";
+import type { IExplorerRegisterRow } from "../../../data/models/ExplorerRegister";
+import { EXPLORER_REGISTER_BATCH_CONTRIBUTOR_TYPE_OPTIONS } from "../../constants/registerBatchContributorType";
+import {
+  buildExplorerRegisterBatchRows,
+  getExplorerRegisterBatchContributorTypeOption,
+} from "../../utils";
 
 export function useExplorerRegisterBatchCreation(
   selectedRows: IExplorerRegisterRow[]
@@ -17,21 +21,33 @@ export function useExplorerRegisterBatchCreation(
   const create = useBatchManagementCreate({
     onBatchCreated: async () => {
       router.push(PRIVATE_DASHBOARD_ROUTES.batchManagement);
-    }
+    },
   });
   const loadedBatchRows = useMemo(
     () => buildExplorerRegisterBatchRows(selectedRows),
     [selectedRows]
   );
 
+  const contributorTypeOption = useMemo(
+    () =>
+      getExplorerRegisterBatchContributorTypeOption(selectedRows) ??
+      EXPLORER_REGISTER_BATCH_CONTRIBUTOR_TYPE_OPTIONS.all,
+    [selectedRows]
+  );
+
   function openCreateBatchModal() {
-    create.openCreateModal(loadedBatchRows);
+    create.openCreateModal(loadedBatchRows, {
+      initialRegime: contributorTypeOption.value,
+      lockedRegimeOption: contributorTypeOption,
+    });
   }
 
   const createModal: BatchManagementCreateModalController = {
     opened: create.isCreateModalOpen,
     name: create.createForm.name,
     regime: create.createForm.regime,
+    isRegimeLocked: create.isRegimeLocked,
+    regimeOptions: create.regimeOptions,
     description: create.createForm.description,
     loadedCuitsSearchValue: create.loadedCuitsSearchValue,
     loadedCuitsCount: create.loadedCuits.length,
@@ -50,12 +66,12 @@ export function useExplorerRegisterBatchCreation(
     onImportFileSelect: create.openImportPreview,
     onImportPreviewClose: create.closeImportPreview,
     onImportPreviewConfirm: create.confirmImportPreview,
-    onSubmit: create.createBatch
+    onSubmit: create.createBatch,
   };
 
   return {
     createModal,
     loadedBatchRowsCount: loadedBatchRows.length,
-    openCreateBatchModal
+    openCreateBatchModal,
   };
 }

@@ -86,7 +86,7 @@
 
 .textInput :global(.mantine-Input-input)::placeholder,
 .passwordInput :global(.mantine-PasswordInput-innerInput)::placeholder {
-  color: #adb5bd;
+  color: var(--mantine-color-gray-13);
 }
 
 .passwordInput :global(.mantine-Input-input:focus),
@@ -126,18 +126,28 @@
 }
 
 .passwordInput :global(.mantine-ActionIcon-root) {
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
-  min-height: 24px;
-  color: var(--mantine-color-gray-5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: var(--mantine-color-gray-13);
   background: transparent;
+  box-shadow: none;
+  cursor: pointer;
 }
 
 .eyeIcon {
   display: block;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
 }
 
 .passwordInput :global(.mantine-ActionIcon-root:hover),
@@ -146,6 +156,7 @@
 .passwordInput :global(.mantine-ActionIcon-root[data-hovered]),
 .passwordInput :global(.mantine-ActionIcon-root[data-focus-visible]) {
   background: transparent;
+  color: var(--mantine-color-blue-5);
 }
 
 .inputError :global(.mantine-Input-input) {

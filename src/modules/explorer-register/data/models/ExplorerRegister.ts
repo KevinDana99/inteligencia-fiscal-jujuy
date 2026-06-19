@@ -1,13 +1,13 @@
-export type ExplorerRegisterDataType = 'texto' | 'numero' | string;
+export type ExplorerRegisterDataType = "texto" | "numero" | string;
 export type ExplorerRegisterFilterInputType =
-  | 'multiseleccion'
-  | 'texto'
-  | 'switch'
+  | "multiseleccion"
+  | "texto"
+  | "switch"
   | string;
-export type ExplorerRegisterValuesOrigin = 'fijo' | 'datos' | 'libre' | string;
+export type ExplorerRegisterValuesOrigin = "fijo" | "datos" | "libre" | string;
 export type ExplorerRegisterPeriodOrigin =
-  | 'defecto36Meses'
-  | 'explicito'
+  | "defecto36Meses"
+  | "explicito"
   | string;
 export type ExplorerRegisterCellValue = string | number | null;
 
@@ -80,3 +80,8 @@ export interface IExplorerRegisterQueryResult<TData> {
   code?: string;
   status?: number;
 }
+
+export type ExplorerRegisterBatchContributorTypeOption = {
+  value: string;
+  label: string;
+};

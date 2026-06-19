@@ -14,9 +14,7 @@ export function ConfigurationPage() {
       <div className={classes.shell}>
         <div className={classes.shellBody}>
           <ConfigurationHeader />
-
           <ConfigurationTabs {...controller.tabs} />
-
           <ConfigurationContentView content={controller.content} />
         </div>
       </div>

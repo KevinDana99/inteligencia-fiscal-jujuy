@@ -1,18 +1,17 @@
 import type {
+  DocumentCellValue,
   IGenerateInformeDocumentsPayload,
   IInformeContributorData,
   IInformeFiscalActionData,
   IInformeSelectedCross
 } from '@/modules/documents';
-import type {
-  IUnifiedRegisterContributorCross,
-  IUnifiedRegisterDetail
-} from '../../data/models/UnifiedRegister';
+import type { IUnifiedRegisterDetail } from '../../data/models/UnifiedRegister';
 import {
   INFORME_CROSS_OPTIONS,
   type InformeCrossOption,
   type InformeGenerationForm
 } from '../constants/informeGeneration';
+export { mapContributorCrossesToInformeOptions } from './mapContributorCrossesToInformeOptions';
 
 function normalizeOptionalText(value: string) {
   const normalizedValue = value.trim();
@@ -29,30 +28,64 @@ function getContactValue(item: IUnifiedRegisterDetail, contactId: string) {
   );
 }
 
+function toDocumentCellValue(value: unknown): DocumentCellValue {
+  if (
+    value === null ||
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  ) {
+    return value;
+  }
+
+  if (value === undefined) {
+    return null;
+  }
+
+  try {
+    return JSON.stringify(value) ?? null;
+  } catch {
+    return String(value);
+  }
+}
+
+function resolveRowPeriod(row: Record<string, unknown>) {
+  const periodValue = row.periodo ?? row.anio ?? row.periodoFiscal ?? row.year;
+  const normalizedPeriod = toDocumentCellValue(periodValue);
+
+  return normalizedPeriod === null ? null : String(normalizedPeriod);
+}
+
 function cloneRows(
   cross: InformeCrossOption
 ): IInformeSelectedCross['columnasSeleccionadas']['filas'] {
-  return cross.columnasSeleccionadas.filas.map((row) => ({ ...row }));
+  return cross.columnasSeleccionadas.filas
+    .filter(
+      (row) =>
+        String(resolveRowPeriod(row) ?? '').trim().toUpperCase() !== 'TOTAL'
+    )
+    .map((row) => cloneSelectedColumnsRow(row, cross.columnasSeleccionadas.claves));
 }
 
-function cloneInformeCrossOption(cross: InformeCrossOption): InformeCrossOption {
-  return {
-    ...cross,
-    sourceCodes: [...cross.sourceCodes],
-    previewColumns: cross.previewColumns.map((column) => ({ ...column })),
-    columnasSeleccionadas: {
-      claves: [...cross.columnasSeleccionadas.claves],
-      filas: cloneRows(cross)
-    }
-  };
-}
-
-function findInformeCrossTemplate(
-  contributorCross: IUnifiedRegisterContributorCross
+function cloneSelectedColumnsRow(
+  row: Record<string, DocumentCellValue>,
+  columnKeys: string[]
 ) {
-  return INFORME_CROSS_OPTIONS.find((option) =>
-    option.sourceCodes.includes(contributorCross.code)
+  const selectedEntries = columnKeys.map(
+    (columnKey): [string, DocumentCellValue] => [
+      columnKey,
+      toDocumentCellValue(row[columnKey])
+    ]
   );
+
+  if (columnKeys.includes('periodo')) {
+    return Object.fromEntries(selectedEntries);
+  }
+
+  return Object.fromEntries([
+    ['periodo', resolveRowPeriod(row)] as [string, DocumentCellValue],
+    ...selectedEntries
+  ]);
 }
 
 export function buildInformeContributorData(
@@ -79,7 +112,15 @@ export function getSelectedInformeCrosses(
   selectedCrossIds: string[],
   availableCrosses: InformeCrossOption[] = INFORME_CROSS_OPTIONS
 ): InformeCrossOption[] {
-  return availableCrosses.filter((cross) => selectedCrossIds.includes(cross.id));
+  return availableCrosses
+    .filter((cross) => selectedCrossIds.includes(cross.id))
+    .map((cross) => ({
+      ...cross,
+      columnasSeleccionadas: {
+        claves: [...cross.columnasSeleccionadas.claves],
+        filas: cloneRows(cross)
+      }
+    }));
 }
 
 export function buildInformeSelectedCrosses(
@@ -130,36 +171,4 @@ export function buildInformeGenerationPayload(
       availableCrosses
     )
   };
-}
-
-export function mapContributorCrossesToInformeOptions(
-  contributorCrosses: IUnifiedRegisterContributorCross[]
-): InformeCrossOption[] {
-  return contributorCrosses.map((contributorCross) => {
-    const template = findInformeCrossTemplate(contributorCross);
-
-    if (template) {
-      return {
-        ...cloneInformeCrossOption(template),
-        id: contributorCross.id,
-        nombre: contributorCross.name,
-        description: 'Ejecutado · datos disponibles para informe'
-      };
-    }
-
-    return {
-      id: contributorCross.id,
-      nombre: contributorCross.name,
-      description: 'Ejecutado · sin datos de detalle para informe',
-      sourceCodes: [contributorCross.code],
-      previewTitle: contributorCross.name.toUpperCase(),
-      previewColumns: [],
-      summary: '',
-      isReportReady: false,
-      columnasSeleccionadas: {
-        claves: [],
-        filas: []
-      }
-    };
-  });
 }

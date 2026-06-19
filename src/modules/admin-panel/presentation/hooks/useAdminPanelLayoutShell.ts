@@ -3,7 +3,6 @@
 import { useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 import { useDisclosure } from '@mantine/hooks'
-import { getInitials } from '@/utils'
 import type { IAuthSession } from '@/modules/auth/data/models/Auth'
 import { useSignOut } from '@/modules/auth/presentation/hooks'
 import type { IAdminAllowedDomains } from '../../data/models/AdminPanel'
@@ -15,7 +14,6 @@ import { buildAllowedDomainsKey } from '../utils/buildAllowedDomainsKey'
 import { getAdminPanelSectionFromPathname } from '../utils/getAdminPanelSectionFromPathname'
 
 export function useAdminPanelLayoutShell({
-  session,
   initialAllowedDomains
 }: UseAdminPanelLayoutShellOptions) {
   const pathname = usePathname()
@@ -31,7 +29,7 @@ export function useAdminPanelLayoutShell({
     providersKey: buildAllowedDomainsKey(initialAllowedDomains),
     currentSection: getAdminPanelSectionFromPathname(pathname),
     navbar: {
-      profileInitials: getInitials(session.user.nombreUsuario ?? ''),
+      profileInitials: 'AD',
       profileLabel: ADMIN_PANEL_PROFILE_LABEL,
       isSignOutPending,
       onSignOutClick: logoutHandlers.open

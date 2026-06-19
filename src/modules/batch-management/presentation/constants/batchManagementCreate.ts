@@ -3,6 +3,11 @@ export const BATCH_REGIME_OPTIONS = [
   { value: 'RegimenLocal', label: 'Local' }
 ] as const
 
+export const BATCH_MANAGEMENT_CREATE_TEXTS = {
+  lockedRegimeHelperText:
+    'Definido por los filtros de Explorar Padrón. No editable.'
+} as const
+
 export const BATCH_MANAGEMENT_CREATE_ERRORS = {
   duplicatedSingle: (cuit: string) =>
     `El CUIT ${cuit} ya fue agregado al lote.`,

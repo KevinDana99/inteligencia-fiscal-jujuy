@@ -76,13 +76,15 @@ export function getDashboardSectionFromPathname(
     return 'padron-unificado'
   }
 
+  if (isDashboardRoutePath(pathname, DASHBOARD_ROUTES.GESTION_DE_CRUCES)) {
+    return DASHBOARD_SECTIONS.GESTION_DE_CRUCES
+  }
+
   switch (pathname) {
     case DASHBOARD_ROUTES.EXPLORAR_PADRON:
       return DASHBOARD_SECTIONS.EXPLORAR_PADRON
     case DASHBOARD_ROUTES.GESTION_DE_LOTES:
       return DASHBOARD_SECTIONS.GESTION_DE_LOTES
-    case DASHBOARD_ROUTES.GESTION_DE_CRUCES:
-      return DASHBOARD_SECTIONS.GESTION_DE_CRUCES
     case DASHBOARD_ROUTES.REPROCESO:
       return DASHBOARD_SECTIONS.REPROCESO
     case DASHBOARD_ROUTES.SETTINGS:
@@ -98,4 +100,8 @@ export function getDashboardSectionLabel(section: DashboardSection): string {
     DASHBOARD_NAV_ITEMS.find((item) => item.section === section)?.label ??
     DASHBOARD_NAV_LABELS.PADRON_UNIFICADO
   )
+}
+
+function isDashboardRoutePath(pathname: string, route: Route) {
+  return pathname === route || pathname.startsWith(`${route}/`)
 }

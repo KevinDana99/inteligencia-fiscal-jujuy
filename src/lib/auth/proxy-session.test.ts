@@ -54,6 +54,39 @@ describe('proxy-session refresh behavior', () => {
     });
   });
 
+  it('refreshes expired access tokens while the refresh token is still valid', async () => {
+    const refreshedSession = buildSession({
+      accessToken: 'fresh-access-token',
+      accessTokenExpiresAt: new Date(NOW.getTime() + 5 * 60 * 1000).toISOString()
+    });
+
+    mockRefreshAuthSession.mockResolvedValue(refreshedSession);
+
+    await expect(
+      refreshExpiredRequestSession(
+        buildSession({
+          accessTokenExpiresAt: new Date(NOW.getTime() - 1).toISOString()
+        })
+      )
+    ).resolves.toEqual({
+      session: refreshedSession,
+      refreshed: true
+    });
+
+    expect(mockRefreshAuthSession).toHaveBeenCalledWith({
+      refrescarToken: 'refresh-token'
+    });
+  });
+
+  it('returns an invalid session result when refresh throws', async () => {
+    mockRefreshAuthSession.mockRejectedValue(new Error('network error'));
+
+    await expect(refreshExpiredRequestSession(buildSession())).resolves.toEqual({
+      session: null,
+      refreshed: false
+    });
+  });
+
   it('does not refresh when the refresh token is expired', async () => {
     await expect(
       refreshExpiredRequestSession(

@@ -8,6 +8,7 @@ export type ApiIntimationConfigurationDto = {
   fechaCorte?: string | null
   fuenteInformacion?: string | null
   fuente_informacion?: string | null
+  columnasSeleccionadas?: string[] | null
   columnas_seleccionadas?: string[] | null
 }
 

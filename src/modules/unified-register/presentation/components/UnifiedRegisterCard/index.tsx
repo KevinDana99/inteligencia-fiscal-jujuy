@@ -2,9 +2,11 @@
 
 import type { Route } from 'next';
 import { ActionIcon, Badge, Card, Menu, Text } from '@mantine/core';
+import { BatchManagementAvailableLotsDropdown } from '@/modules/batch-management/presentation/components/BatchManagementAvailableLotsDropdown';
 import { IconDots, IconFolderPlus, IconReload } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import type {
+  IUnifiedRegisterBatchOption,
   IUnifiedRegisterItem,
   UnifiedRegisterRiskLevel
 } from '../../../data/models/UnifiedRegister';
@@ -19,18 +21,34 @@ const RISK_CLASS_BY_LEVEL = {
 
 interface UnifiedRegisterCardProps {
   item: IUnifiedRegisterItem;
+  isBatchDropdownOpen: boolean;
+  batchSearch: string;
+  filteredLotOptions: IUnifiedRegisterBatchOption[];
+  batchOptionsError: string | null;
+  isBatchOptionsPending: boolean;
+  onCloseBatchDropdown: () => void;
+  onBatchSearchChange: (value: string) => void;
+  onSelectLotOption: (lot: IUnifiedRegisterBatchOption) => void;
   onAddToBatch: (item: IUnifiedRegisterItem) => void;
   onMarkReprocessing: (item: IUnifiedRegisterItem) => void;
 }
 
 export function UnifiedRegisterCard({
   item,
+  isBatchDropdownOpen,
+  batchSearch,
+  filteredLotOptions,
+  batchOptionsError,
+  isBatchOptionsPending,
+  onCloseBatchDropdown,
+  onBatchSearchChange,
+  onSelectLotOption,
   onAddToBatch,
   onMarkReprocessing
 }: UnifiedRegisterCardProps) {
   const router = useRouter();
   const detailRoute =
-    `/vista-previa-padron/${encodeURIComponent(item.cuit)}?id=${encodeURIComponent(item.contribuyenteId)}` as Route;
+    `/vista-previa-padron/${encodeURIComponent(item.cuit)}` as Route;
 
   return (
     <Card
@@ -73,7 +91,9 @@ export function UnifiedRegisterCard({
               <ActionIcon
                 variant="default"
                 className={classes.menuButton}
-                onClick={(event) => event.stopPropagation()}
+                onClick={(event) => {
+                  event.stopPropagation();
+                }}
               >
                 <IconDots size={18} />
               </ActionIcon>
@@ -105,6 +125,16 @@ export function UnifiedRegisterCard({
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
+          <BatchManagementAvailableLotsDropdown
+            opened={isBatchDropdownOpen}
+            search={batchSearch}
+            options={filteredLotOptions}
+            isPending={isBatchOptionsPending}
+            error={batchOptionsError}
+            onClose={onCloseBatchDropdown}
+            onSearchChange={onBatchSearchChange}
+            onSelect={onSelectLotOption}
+          />
         </div>
       </div>
     </Card>

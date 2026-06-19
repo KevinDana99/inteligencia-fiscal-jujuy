@@ -1,7 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { ADMIN_PANEL_ROUTES } from "@/constants";
 import { createServerAdminPanelSource } from "../../data-access";
 import type { IAdminPanelActionState } from "../../models/AdminPanel";
 
@@ -142,8 +140,6 @@ export async function addAllowedDomainAction(
         result.status ?? 500
       );
     }
-
-    // revalidatePath(ADMIN_PANEL_ROUTES.settings)
 
     return {
       success: true,

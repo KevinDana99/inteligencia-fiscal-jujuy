@@ -3,6 +3,7 @@
 import { Group, Select, Text } from '@mantine/core'
 import type { BatchManagementCrossSectionController } from '../BatchManagementCrossMenu/useBatchManagementCrossMenu'
 import styles from './BatchManagementCrossPeriodFields.module.css'
+import { IconArrowRight } from '@tabler/icons-react'
 
 type BatchManagementCrossPeriodFieldsProps = {
   section: BatchManagementCrossSectionController
@@ -94,7 +95,9 @@ export function BatchManagementCrossPeriodFields({
           isMonthly={isMonthly}
           comboboxProps={comboboxProps}
         />
-        <span className={styles.periodArrow}>→</span>
+        <span className={styles.periodArrow}>
+          <IconArrowRight size={16} />
+        </span>
         <BatchManagementCrossPeriodEndpoint
           label="Hasta"
           monthField={section.toMonth}

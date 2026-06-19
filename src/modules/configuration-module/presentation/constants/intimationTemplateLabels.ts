@@ -20,8 +20,8 @@ export const INTIMATION_TEMPLATE_LABELS = {
     confirmChanges: 'Confirmar cambios',
     cancel: 'Cancelar',
     accept: 'Aceptar',
-    addSelectedColumn: 'Agregar columna visible',
-    removeSelectedColumn: 'Quitar columna visible'
+    addSelectedColumn: 'Agregar columnas visibles',
+    removeSelectedColumn: 'Quitar columnas visibles'
   },
   placeholders: {
     informationSource: 'Ej: Facturación de compras, ARCA, etc.'

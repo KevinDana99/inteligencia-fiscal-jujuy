@@ -1,5 +1,107 @@
 # Cross Management Feature Story
 
+## 2026-06-18 Preview solo con resultados y resumen
+
+- La carga inicial de `/gestion-de-cruces/vista-previa-cruce/[crossId]` ahora consulta solo `resultados-cruces` y `resumen`.
+- Se elimino el uso de `/planilla` y del listado `/ejecuciones` como fallback dentro de `getCrossPreviewAction`.
+- La tabla `Planilla` se construye desde `resultados-cruces`, conservando columnas visuales, CUIT, razon social, `taxpayerId` y metricas principales.
+- La recarga/paginacion de `Planilla` ahora usa `getCrossResultsAction`; la busqueda de la tabla queda local sobre los resultados cargados.
+- Se removio el helper de enriquecimiento de planilla con resultados, porque `resultados-cruces` paso a ser fuente principal y no refuerzo.
+
+### Validation
+
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint src/modules/cross-management/data/actions/queries/getCrossPreviewAction.ts src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.ts src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.test.ts src/modules/cross-management/data/sources/mock/MockCrossManagementSource.ts src/modules/cross-management/presentation/hooks/cross-preview/useCrossPreviewPlanillaQuery.ts`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/jest/bin/jest.js src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.test.ts --runInBand`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit --incremental false`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/next/dist/bin/next build` finaliza con `EXIT:0`.
+
+## 2026-06-18 Sidebar activo en preview de cruce
+
+- `/gestion-de-cruces/vista-previa-cruce/<id>` ahora resuelve la seccion activa del dashboard como `Gestión de Cruces`.
+- El matcher de seccion contempla subrutas bajo `/gestion-de-cruces`, conservando el item activo del sidebar y el titulo de seccion.
+- Se agrego cobertura unitaria para la ruta dinamica de preview de cruce.
+
+### Validation
+
+- `/Users/gastonmorales/.bun/bin/bun x tsc --noEmit --incremental false`
+- `/Users/gastonmorales/.bun/bin/bun x eslint src/modules/dashboard-layout/data/models/DashboardLayout.ts src/modules/dashboard-layout/data/models/DashboardLayout.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/jest/bin/jest.js src/modules/dashboard-layout/data/models/DashboardLayout.test.ts --runInBand`
+
+## 2026-06-18 Drag and drop de columnas de intimacion
+
+- `Planilla adjunta — Columnas` ahora permite reordenar las columnas seleccionadas con drag and drop desde el icono de agarre.
+- Las columnas seleccionadas de `Planilla adjunta — Columnas` se muestran como texto, no como inputs, conservando las acciones de reordenar y quitar.
+- El texto de las columnas seleccionadas usa `font-weight: 500`.
+- El modal `Elegir columnas de la planilla` tambien permite reordenar la lista de `Columnas visibles` antes de aceptar.
+- El selector de columnas ahora usa seleccion multiple con indicador tipo checkbox para pasar varias columnas disponibles o visibles en una sola accion.
+- El reordenamiento actualiza `columnas_seleccionadas` conservando el mismo source of truth de configuracion de intimacion.
+- Se agrego cobertura unitaria para el helper de reordenamiento compartido.
+
+### Validation
+
+- `/Users/gastonmorales/.bun/bin/bun x tsc --noEmit --incremental false`
+- `/Users/gastonmorales/.bun/bin/bun x eslint src/modules/configuration-module/presentation/hooks/intimation-template/useIntimationTemplate.ts src/modules/configuration-module/presentation/hooks/intimation-template/useIntimationTemplateColumns.ts src/modules/configuration-module/presentation/components/IntimationTemplate/IntimationTemplateColumnsSection/index.tsx`
+- `/Users/gastonmorales/.bun/bin/bun x eslint src/modules/configuration-module/presentation/constants/intimationTemplateLabels.ts src/modules/configuration-module/presentation/hooks/intimation-template/useIntimationTemplateColumnPicker.ts src/modules/configuration-module/presentation/components/IntimationTemplate/IntimationTemplateColumnPickerModal/useIntimationTemplateColumnPickerModal.ts src/modules/configuration-module/presentation/components/IntimationTemplate/IntimationTemplateColumnPickerModal/IntimationTemplateColumnPickerList/index.tsx`
+- `/Users/gastonmorales/.bun/bin/bun x eslint src/modules/configuration-module/presentation/utils/intimationTemplateColumns.ts src/modules/configuration-module/presentation/utils/intimationTemplateColumns.test.ts src/modules/configuration-module/presentation/hooks/intimation-template/useIntimationTemplateColumns.ts src/modules/configuration-module/presentation/hooks/intimation-template/useIntimationTemplateColumnPicker.ts src/modules/configuration-module/presentation/components/IntimationTemplate/IntimationTemplateColumnsSection/index.tsx src/modules/configuration-module/presentation/components/IntimationTemplate/IntimationTemplateColumnPickerModal/useIntimationTemplateColumnPickerModal.ts src/modules/configuration-module/presentation/components/IntimationTemplate/IntimationTemplateColumnPickerModal/IntimationTemplateColumnPickerList/index.tsx`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/jest/bin/jest.js src/modules/configuration-module/presentation/utils/intimationTemplateColumns.test.ts --runInBand`
+- `/Users/gastonmorales/.bun/bin/bun run lint` queda sin errores y conserva 6 warnings existentes fuera de este cambio.
+- `curl -I --max-time 5 http://localhost:3000/gestion-de-cruces/vista-previa-cruce/92` responde `307` a `/login` por sesion expirada.
+
+## 2026-06-18 Iconos en estados del listado
+
+- La columna `Estado` de `/gestion-de-cruces` ahora muestra iconos en sus labels: `Check` para `Completada`, `Clock` para `En proceso` y `X` para `Fallida`.
+- La clasificacion de estados del listado se centralizo en `useCrossManagementTableRow`, reutilizando los mismos grupos para color e icono.
+- El badge de estado desactiva el uppercase por defecto de Mantine para conservar labels capitalizadas como `Completada`, `En proceso` y `Fallida`.
+- El header de la columna `Fecha` del listado ahora se muestra como `Fecha de ejecución`.
+
+### Validation
+
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint src/modules/cross-management/presentation/components/CrossManagementTable/CrossManagementTableRow.tsx src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementTableRow.ts`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint src/modules/cross-management/presentation/constants/crossManagementTable.ts`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit --pretty false --incremental false`
+
+## 2026-06-17 Opciones dinamicas para columnas de intimacion
+
+- El modal `Elegir columnas de la planilla` ahora recibe un catalogo dinamico construido desde las columnas y filas visibles de la planilla.
+- Las opciones disponibles se limitan a columnas que tengan al menos un valor real en la tabla; se excluyen vacios y `-`, pero se conserva `0` como valor valido.
+- Se excluyen columnas identificadoras tecnicas como `ID`, `ID 2` e `ID Periodo` aunque tengan valores.
+- La configuracion de intimacion acepta opciones externas para resolver labels y descartar columnas configuradas que no existan en el catalogo actual de la planilla.
+
+### Validation
+
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/.bin/jest src/modules/cross-management/presentation/utils/buildIntimationColumnOptionsFromPlanilla.test.ts src/modules/configuration-module/presentation/utils/intimationTemplateState.test.ts --runInBand`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit --pretty false --incremental false`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint src/modules/configuration-module/presentation/constants/intimationTemplateColumns.ts src/modules/configuration-module/presentation/utils/intimationTemplateColumns.ts src/modules/configuration-module/presentation/utils/intimationTemplateState.ts src/modules/configuration-module/presentation/utils/intimationTemplateState.test.ts src/modules/configuration-module/presentation/hooks/intimation-template/useIntimationTemplate.ts src/modules/configuration-module/presentation/hooks/intimation-template/useIntimationTemplateColumnPicker.ts src/modules/cross-management/presentation/utils/buildIntimationColumnOptionsFromPlanilla.ts src/modules/cross-management/presentation/utils/buildIntimationColumnOptionsFromPlanilla.test.ts src/modules/cross-management/presentation/hooks/useCrossPreview.ts src/modules/cross-management/presentation/hooks/cross-preview/useCrossPreviewModals.ts src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewModals.tsx src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewPageContent.tsx`
+- `git diff --check`
+- `curl -I --max-time 5 http://localhost:3000/gestion-de-cruces/vista-previa-cruce/92` responde `307` a `/login` por sesion expirada.
+
+## 2026-06-16 Normalizacion de importes antes del Server Action
+
+- El hook de descarga de intimaciones ahora normaliza el payload final antes de invocar `generateIntimationDocumentAction`, evitando que la request visible hacia el Server Action conserve importes como `$$ 0`.
+- El Server Action vuelve a normalizar el payload recibido antes de loguear y antes de delegar al source REST, por lo que los logs de ambiente muestran la misma version saneada que se envia al backend.
+- Se mantiene la normalizacion defensiva del source REST para cubrir llamadas futuras que no pasen por el hook cliente.
+
+### Validation
+
+- `bun x jest src/modules/cross-management/data/utils/normalizeIntimationDocumentPayload.test.ts src/modules/cross-management/presentation/utils/intimationDocumentPayload.test.ts src/modules/cross-management/presentation/utils/resolveIntimationExportColumnValue.test.ts src/modules/cross-management/presentation/utils/groupIntimationExportContributors.test.ts src/modules/configuration-module/presentation/utils/intimationTemplateState.test.ts --runInBand`
+- `bun x eslint src/modules/cross-management/presentation/hooks/intimation-export/useIntimationDocumentDownload.ts src/modules/cross-management/data/actions/commands/generateIntimationDocumentAction.ts src/modules/cross-management/data/sources/rest/RestCrossManagementSource.ts src/modules/cross-management/data/utils/normalizeIntimationDocumentPayload.ts src/modules/cross-management/data/utils/normalizeIntimationDocumentPayload.test.ts`
+- `bun x tsc --noEmit --pretty false --incremental false`
+- `git diff --check`
+
+## 2026-06-16 Payload de intimacion por contribuyente
+
+- La previsualizacion de intimacion ahora agrupa filas de planilla por contribuyente antes de paginar el modal, evitando tratar periodos del mismo contribuyente como intimaciones separadas.
+- `filasPlanilla` se genera con todas las filas asociadas al contribuyente activo y conserva las claves exactas de `columnasSeleccionadas`.
+- Los valores exportados normalizan `anio` sin separador de miles y las columnas de base imponible como moneda con prefijo `$`.
+- La configuracion de columnas acepta `columnasSeleccionadas` y cae al set default (`anio` + bases imponibles) cuando la configuracion llega sin columnas.
+- `snapshotIntimacion.fechaCorte` se normaliza al periodo `MM/YYYY` cuando la plantilla trae el texto completo del pie.
+
+### Validation
+
+- `bun x jest src/modules/cross-management/presentation/utils/intimationDocumentPayload.test.ts src/modules/cross-management/presentation/utils/groupIntimationExportContributors.test.ts src/modules/configuration-module/presentation/utils/intimationTemplateState.test.ts --runInBand`
+- `bun x eslint src/modules/cross-management/presentation/utils/intimationDocumentPayload.ts src/modules/cross-management/presentation/utils/intimationDocumentPayload.test.ts src/modules/cross-management/presentation/utils/groupIntimationExportContributors.ts src/modules/cross-management/presentation/utils/groupIntimationExportContributors.test.ts src/modules/cross-management/presentation/utils/resolveIntimationExportColumnValue.ts src/modules/cross-management/presentation/hooks/useCrossPreview.ts src/modules/cross-management/presentation/hooks/cross-preview/useCrossPreviewModals.ts src/modules/cross-management/presentation/hooks/intimation-export/useIntimationExportModal.ts src/modules/cross-management/presentation/hooks/intimation-export/useIntimationExportDocument.ts src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewPageContent.tsx src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewModals.tsx src/modules/cross-management/presentation/components/IntimationExportModal/IntimationExportPreviewDocument.tsx src/modules/cross-management/presentation/components/IntimationExportModal/IntimationExportPreviewTable.tsx src/modules/configuration-module/data/sources/rest/RestConfigurationSource.ts src/modules/configuration-module/data/sources/rest/dtos/ApiConfigurationDtos.ts src/modules/configuration-module/presentation/utils/intimationTemplateState.ts src/modules/configuration-module/presentation/utils/intimationTemplateState.test.ts`
+- Browser check: `http://localhost:3000/gestion-de-cruces/vista-previa-cruce/92`, login con `example@example.com`, `Ranking` -> `Generar intimacion` confirma columnas `AÑO`, `Base Imponible Ingresos Brutos`, `Base Imponible Informada por Terceros (*)`, `Diferencia de Base Imponible`; la previsualizacion muestra `2025`, `$ 16.866`, `$ 0`, `$ 937.001` y no registra errores de consola.
+
 ## 2026-06-16 Icono check en estado relevante
 
 - Se reemplazo el prefijo textual `✓` del estado `Relevante` en la tabla de ranking de `vista-previa-cruce` por `IconCheck` de `@tabler/icons-react`.
@@ -177,7 +279,7 @@
 
 ### Validation
 
-- `bun x tsc --noEmit`
+- `bun x tsc --noEmit --incremental false`
 - `bun x eslint app/'(private)'/gestion-de-cruces/page.tsx src/modules/cross-management/index.tsx src/modules/cross-management/constants/crossManagementRequest.ts src/modules/cross-management/presentation/constants/crossManagementFilters.ts src/modules/cross-management/presentation/constants/crossManagementLabels.ts src/modules/cross-management/presentation/constants/crossManagementRoutes.ts src/modules/cross-management/presentation/constants/crossManagementTable.ts src/modules/cross-management/presentation/utils/parseCrossManagementDate.ts src/modules/cross-management/presentation/utils/matchesCrossManagementDayRange.ts src/modules/cross-management/presentation/utils/matchesCrossManagementPeriod.ts src/modules/cross-management/presentation/utils/filterCrossManagementItems.ts src/modules/cross-management/presentation/hooks/useCrossManagement.ts src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementFilters.ts src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementNavigation.ts src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementFiltersBar.ts src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementTable.ts src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementTableRow.ts src/modules/cross-management/presentation/components/CrossManagementPage/index.tsx src/modules/cross-management/presentation/components/CrossManagementPage/CrossManagementPageLoader.tsx src/modules/cross-management/presentation/components/CrossManagementHeader/index.tsx src/modules/cross-management/presentation/components/CrossManagementFiltersBar/index.tsx src/modules/cross-management/presentation/components/CrossManagementTable/index.tsx src/modules/cross-management/presentation/components/CrossManagementTable/CrossManagementTableRow.tsx src/modules/cross-management/presentation/components/CrossFilterModal/useCrossFilterModal.ts src/modules/cross-management/presentation/components/CrossPreviewPage/index.tsx`
 - `bun run lint` ya no falla por `cross-management`; queda bloqueado por un error existente en `reprocessing` y 4 warnings existentes en `unified-register`.
 
@@ -220,3 +322,18 @@
 
 - `bun x tsc --noEmit --incremental false`
 - `bun x eslint 'app/(private)/gestion-de-cruces/vista-previa-cruce/[crossId]/page.tsx' src/modules/cross-management/data/mappers/mapCrossResultsToPreview.ts src/modules/cross-management/presentation/components/CrossPreviewPage/index.tsx src/modules/cross-management/presentation/hooks/useCrossPreview.ts`
+
+## 2026-06-16 Intimation document generation BFF route
+
+- `useIntimationDocumentDownload` dejó de invocar `generateIntimationDocumentAction` desde el cliente para evitar requests atadas al hash de Server Actions entre deployments.
+- Se agregó `POST /api/documentos/intimacion/generar` como ruta BFF del frontend: parsea el payload, normaliza `filasPlanilla`, valida sesión, reenvía al backend real y propaga errores de API.
+- Se reutilizó un mapper compartido para adaptar respuestas de backend con `documentoId`, `documentId`, `id`, `urlDescarga`, `downloadUrl` o `url` al modelo interno.
+- Se agregó `generateIntimationDocument` en `presentation/utils` para que el browser envíe JSON directo al BFF y reciba `{ documentId, downloadUrl }`.
+- Se cubrió el helper client-side con tests de request exitoso y error backend.
+
+### Validation
+
+- `bun x jest src/modules/cross-management/presentation/utils/intimationDocumentGeneration.test.ts src/modules/cross-management/data/utils/normalizeIntimationDocumentPayload.test.ts src/modules/cross-management/presentation/utils/intimationDocumentPayload.test.ts --runInBand`
+- `bun x eslint app/api/documentos/intimacion/generar/route.ts src/modules/cross-management/data/sources/rest/RestCrossManagementSource.ts src/modules/cross-management/data/sources/rest/mappers/mapIntimationDocumentDto.ts src/modules/cross-management/presentation/hooks/intimation-export/useIntimationDocumentDownload.ts src/modules/cross-management/presentation/utils/intimationDocumentGeneration.ts src/modules/cross-management/presentation/utils/intimationDocumentGeneration.test.ts`
+- `bun x tsc --noEmit`
+- `git diff --check`

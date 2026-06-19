@@ -35,7 +35,9 @@ import {
   mapCrossResumenResponseDto,
   mapCrossResultsListResponseDto
 } from './mappers/mapCrossManagementDto'
+import { mapGenerateIntimationDocumentResponseDto } from './mappers/mapIntimationDocumentDto'
 import { normalizeCrossSearchRequest } from '../../utils/crossSearch'
+import { normalizeIntimationDocumentPayload } from '../../utils/normalizeIntimationDocumentPayload'
 
 function logRestCrossManagementEvent(event: unknown) {
   console.log(JSON.stringify(event, null, 2))
@@ -120,60 +122,6 @@ function mapExecuteCrossResponse(
   }
 }
 
-function resolveStringValue(...values: Array<string | null | undefined>) {
-  return values.find((value) => typeof value === 'string' && value.trim())
-}
-
-function extractDocumentIdFromUrl(url: string | null | undefined) {
-  if (!url) {
-    return null
-  }
-
-  const match = url.match(/\/api\/documentos\/([^/]+)\/descargar/i)
-
-  return match?.[1] ? decodeURIComponent(match[1]) : null
-}
-
-function mapGenerateIntimationDocumentResponse(
-  response: ApiGenerateIntimationDocumentResponseDto
-): IIntimationDocumentGeneratedSummary {
-  if (typeof response === 'string' && response.trim()) {
-    return {
-      documentId: response,
-      downloadUrl: ''
-    }
-  }
-
-  if (typeof response !== 'object' || response === null) {
-    throw new Error(
-      'El backend no devolvió el identificador del documento generado.'
-    )
-  }
-
-  const downloadUrl = resolveStringValue(
-    response.urlDescarga,
-    response.downloadUrl,
-    response.url
-  )
-  const documentId = resolveStringValue(
-    response.documentoId,
-    response.documentId,
-    response.id,
-    extractDocumentIdFromUrl(downloadUrl)
-  )
-
-  if (!documentId) {
-    throw new Error(
-      'El backend no devolvió el identificador del documento generado.'
-    )
-  }
-
-  return {
-    documentId,
-    downloadUrl: downloadUrl ?? ''
-  }
-}
-
 export class RestCrossManagementSource implements ICrossManagementSource {
   constructor(private readonly config: ApiClientConfig) {}
 
@@ -212,14 +160,16 @@ export class RestCrossManagementSource implements ICrossManagementSource {
   async generateIntimationDocument(
     payload: IGenerateIntimationDocumentPayload
   ): Promise<IIntimationDocumentGeneratedSummary> {
+    const requestPayload = normalizeIntimationDocumentPayload(payload)
+
     console.info({
       action: 'RestCrossManagementSource.generateIntimationDocument.request',
       baseUrl: this.config.baseUrl ?? process.env.NEXT_PUBLIC_API_BASE_URL,
       endpoint: INTIMATION_DOCUMENT_API_ENDPOINTS.generate,
-      format: payload.formato,
-      hasContributorId: Boolean(payload.contribuyente.id),
-      rowsCount: payload.filasPlanilla.length,
-      selectedColumnsCount: payload.columnasSeleccionadas.length
+      format: requestPayload.formato,
+      hasContributorId: Boolean(requestPayload.contribuyente.id),
+      rowsCount: requestPayload.filasPlanilla.length,
+      selectedColumnsCount: requestPayload.columnasSeleccionadas.length
     })
 
     const response = await postJson<
@@ -227,7 +177,7 @@ export class RestCrossManagementSource implements ICrossManagementSource {
       ApiGenerateIntimationDocumentRequestDto
     >(
       INTIMATION_DOCUMENT_API_ENDPOINTS.generate,
-      payload,
+      requestPayload,
       this.config
     )
 
@@ -240,7 +190,7 @@ export class RestCrossManagementSource implements ICrossManagementSource {
           : []
     })
 
-    const mappedResponse = mapGenerateIntimationDocumentResponse(response)
+    const mappedResponse = mapGenerateIntimationDocumentResponseDto(response)
 
     console.info({
       action: 'RestCrossManagementSource.generateIntimationDocument.response',

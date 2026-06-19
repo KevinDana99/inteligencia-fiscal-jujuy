@@ -1,7 +1,10 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
-import { DEFAULT_CONFIGURATION } from '../../constants'
+import {
+  DEFAULT_CONFIGURATION,
+  type IntimationColumnOption
+} from '../../constants'
 import { useConfig } from '../useConfig'
 import {
   cloneIntimationTemplateState,
@@ -27,17 +30,27 @@ export type IntimationTemplateState = {
   columnas: IntimationTemplateColumn[]
 }
 
-export function useIntimationTemplate(initialState?: IntimationTemplateState) {
+export type UseIntimationTemplateParams = {
+  initialState?: IntimationTemplateState
+  columnOptions?: IntimationColumnOption[]
+}
+
+export function useIntimationTemplate(
+  params?: IntimationTemplateState | UseIntimationTemplateParams
+) {
+  const { initialState, columnOptions } =
+    resolveIntimationTemplateParams(params)
   const { configuration, updateConfig } = useConfig()
   const isProviderBacked = true
-  const state = mapConfigurationToTemplateState(configuration)
+  const state = mapConfigurationToTemplateState(configuration, columnOptions)
   const [errors, setErrors] = useState<IntimationTemplateValidationErrors>({})
   const initialColumns = useMemo(
     () =>
       cloneIntimationTemplateState(
-        initialState ?? mapConfigurationToTemplateState(DEFAULT_CONFIGURATION)
+        initialState ??
+          mapConfigurationToTemplateState(DEFAULT_CONFIGURATION, columnOptions)
       ).columnas,
-    [initialState]
+    [columnOptions, initialState]
   )
   const clearError = useCallback(
     (
@@ -90,13 +103,13 @@ export function useIntimationTemplate(initialState?: IntimationTemplateState) {
   })
   const columns = useIntimationTemplateColumns({
     visibleColumns: state.columnas,
-    isProviderBacked,
     updateConfig,
     clearColumnsError
   })
   const columnPicker = useIntimationTemplateColumnPicker({
     initialColumns,
     currentColumns: state.columnas,
+    columnOptions,
     updateConfig,
     clearColumnsError
   })
@@ -111,7 +124,6 @@ export function useIntimationTemplate(initialState?: IntimationTemplateState) {
     columnRows: columns.columnRows,
     updateField: fields.updateField,
     fieldHandlers: fields.fieldHandlers,
-    updateColumn: columns.updateColumn,
     removeColumn: columns.removeColumn
   }
 }
@@ -119,3 +131,17 @@ export function useIntimationTemplate(initialState?: IntimationTemplateState) {
 export type IntimationTemplateController = ReturnType<
   typeof useIntimationTemplate
 >
+
+function resolveIntimationTemplateParams(
+  params?: IntimationTemplateState | UseIntimationTemplateParams
+): UseIntimationTemplateParams {
+  if (!params) {
+    return {}
+  }
+
+  if ('columnas' in params) {
+    return { initialState: params }
+  }
+
+  return params
+}

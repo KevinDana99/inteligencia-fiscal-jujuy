@@ -16,6 +16,7 @@ import {
   getPasswordStrength,
   getPasswordStrengthColor
 } from '../utils/adminPanelPassword'
+import { formatAdminPanelPersonName } from '../utils/formatAdminPanelPersonName'
 import { INITIAL_CREATE_ADMIN_USER_STATE } from './mutations/createAdminUserState'
 import type { AdminPanelUserFormDefaultValues } from '../components/AdminPanelModals/AdminPanelUserFormFields'
 
@@ -57,8 +58,12 @@ export function useCreateAdminUserFormModal(
     }
 
     toast.show(TOAST_ADMIN_MESSAGES.CREATE_USER_SUCCESS, {
-      name: state.data?.nombre?.trim() || submittedUserRef.current.name,
-      surname: state.data?.apellido?.trim() || submittedUserRef.current.surname
+      name: formatAdminPanelPersonName(
+        state.data?.nombre?.trim() || submittedUserRef.current.name
+      ),
+      surname: formatAdminPanelPersonName(
+        state.data?.apellido?.trim() || submittedUserRef.current.surname
+      )
     })
 
     onClose()

@@ -6,6 +6,7 @@ import type {
   IUnifiedRegisterContactRecord,
   IUnifiedRegisterContactsListData,
   IUnifiedRegisterContactsListParams,
+  IUnifiedRegisterContributorCrossColumnsData,
   IUnifiedRegisterContributorCrossesData,
   IUnifiedRegisterFinesListData,
   IUnifiedRegisterFinesListParams,
@@ -29,6 +30,10 @@ export interface IUnifiedRegisterSource {
   listContributorCrosses(
     contribuyenteId: string
   ): Promise<IUnifiedRegisterContributorCrossesData>;
+  getContributorCrossColumns(
+    contribuyenteId: string,
+    cruceId: string
+  ): Promise<IUnifiedRegisterContributorCrossColumnsData>;
   listMercurioFines(
     contribuyenteId: string,
     params?: IUnifiedRegisterFinesListParams

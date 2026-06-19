@@ -74,6 +74,8 @@
   white-space: nowrap;
   font-size: 11px;
   font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .statusBadgeCompleted {
@@ -107,4 +109,10 @@
   white-space: nowrap;
   overflow: visible;
   text-overflow: clip;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.statusBadgeSection {
+  margin-inline-end: 4px;
 }

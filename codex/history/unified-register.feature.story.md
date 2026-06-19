@@ -1,5 +1,44 @@
 # Unified Register Feature Story
 
+## Preview Cross Menu Target Fix - 2026-06-19
+
+### Summary
+
+Fixed the `/vista-previa-padron/[cuit]` header action `Cruces a realizar` so it opens the same cross execution menu used by `Gestión de Lotes`.
+
+### Main Changes
+
+- Updated the custom cross menu trigger to forward Mantine `Menu.Target` props and ref to the underlying button.
+- Kept the existing individual execution flow, which maps selected crosses to `POST /api/procesos-informacion/cruces/{codigoCruce}/ejecuciones` with `tipoOrigen: "individual"`, `loteId: null`, and `contribuyenteId`.
+- Disabled the trigger while the available-cross catalog is hydrating, preserving the existing `Cargando cruces...` feedback.
+
+### Validation
+
+- Reviewed local Swagger `http://localhost:5001/swagger/v1/swagger.json`: the endpoint uses `SolicitudEjecutarCruce` and supports nullable `loteId` and `contribuyenteId`.
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/components/PreviewHeaderActions.tsx`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit --incremental false`
+- `git diff --check`
+- Local private-route check: `http://localhost:3000/vista-previa-padron/20-10000944-8` and `http://localhost:3000/gestion-de-lotes` return `307 /login` with expired auth cookies without a valid session.
+
+## Informe Cross Column Picker - 2026-06-17
+
+### Summary
+
+Added a column picker modal for `3) Inconsistencias detectadas — Cruces` inside the report generation flow.
+
+### Main Changes
+
+- Clicking a report cross row now opens `Columnas del informe`, a two-list picker for available and visible columns.
+- The checkbox still controls whether the cross is included in the report, while the row visual state shows selected crosses.
+- Column choices are stored per cross and preserved even when the cross is unchecked.
+- The report preview and generated payload now respect the selected column keys per cross.
+
+### Validation
+
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/.bin/jest src/modules/unified-register/presentation/utils/informeCrossColumnSelection.test.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts --runInBand`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit --pretty false --incremental false`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint src/modules/unified-register/presentation/hooks/informe-generation/useInformeCrosses.ts src/modules/unified-register/presentation/components/InformeGenerationModal/index.tsx src/modules/unified-register/presentation/components/InformeGenerationModal/components/CrossSelectionSection.tsx src/modules/unified-register/presentation/components/InformeGenerationModal/components/CrossColumnsPickerModal.tsx src/modules/unified-register/presentation/components/InformePreviewModal/components/CrossPreviewTable.tsx src/modules/unified-register/presentation/utils/informeCrossColumnSelection.ts src/modules/unified-register/presentation/utils/informeCrossColumnSelection.test.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts`
+
 ## Summary
 
 Refactored the main `Padrón Unificado` presentation logic so the listing page delegates search and page state to hooks instead of keeping handler logic inline.
@@ -328,4 +367,171 @@ Split `/vista-previa-padron/[cuit]` into a lightweight route plus independent Se
 
 - `bun x eslint 'app/(private)/vista-previa-padron/[cuit]/page.tsx' 'src/modules/unified-register/preview.tsx' 'src/modules/unified-register/presentation/contexts/UnifiedRegisterPreviewHydrationContext.tsx' 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/UnifiedRegisterPreviewHydrationBridge.tsx' 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/index.tsx' 'src/modules/unified-register/presentation/hooks/useUnifiedRegisterPreview.ts' 'src/modules/unified-register/presentation/hooks/useUnifiedRegisterMercurio.ts' 'src/modules/unified-register/presentation/hooks/useUnifiedRegisterInterventionOrders.ts'`
 - `bun x tsc --noEmit --incremental false`
+- `git diff --check`
+
+## Unified Padron Preview SOLID Refactor - 2026-06-16
+
+### Summary
+
+Refactored `/vista-previa-padron/[cuit]` so route resolution, preview orchestration, report generation, modal rendering, constants, and utilities live in focused modules with files kept under the 150-line limit for the touched preview flow.
+
+### Main Changes
+
+- Moved route contributor resolution into `src/modules/unified-register/preview/resolvePreviewRouteData.ts`, leaving the Next route focused on param decoding, `notFound()`, and module rendering.
+- Split the preview client controller into SOLID-style hooks and operation helpers for hydration, record actions, contacts, notes, crosses, batches, remote tables, and reprocessing.
+- Split `UnifiedRegisterPreviewPage` into small cards, table sections, modal parts, shared table/pager primitives, and preview constants/utils.
+- Split `useInformeGeneration` into form, cross-loading, and document-generation hooks, then extracted contributor-cross mapping and payload building into separate utilities.
+- Split the informe generation and preview modals into section components, moved fiscal-action field definitions and report templates into dedicated constants, and compacted CSS modules without changing their selectors.
+
+### Validation
+
+- `bun x eslint 'app/(private)/vista-previa-padron/[cuit]/page.tsx' 'src/modules/unified-register/preview/**/*.tsx' 'src/modules/unified-register/preview/*.tsx' 'src/modules/unified-register/preview/*.ts' 'src/modules/unified-register/presentation/hooks/useUnifiedRegisterPreview.ts' 'src/modules/unified-register/presentation/hooks/unified-register-preview/*.ts' 'src/modules/unified-register/presentation/hooks/useInformeGeneration.ts' 'src/modules/unified-register/presentation/hooks/informe-generation/*.ts' 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/**/*.tsx' 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/*.tsx' 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/*.ts' 'src/modules/unified-register/presentation/components/InformeGenerationModal/**/*.tsx' 'src/modules/unified-register/presentation/components/InformeGenerationModal/*.tsx' 'src/modules/unified-register/presentation/components/InformeGenerationModal/*.ts' 'src/modules/unified-register/presentation/components/InformePreviewModal/**/*.tsx' 'src/modules/unified-register/presentation/components/InformePreviewModal/*.tsx' 'src/modules/unified-register/presentation/components/InformePreviewModal/*.ts' 'src/modules/unified-register/presentation/constants/informeGeneration*.ts' 'src/modules/unified-register/presentation/constants/unifiedRegisterPreview*.ts' 'src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts' 'src/modules/unified-register/presentation/utils/mapContributorCrossesToInformeOptions.ts' 'src/modules/unified-register/presentation/utils/unifiedRegisterPreview*.ts'`
+- `bun x tsc --noEmit`
+- `bun run build`
+- File-size check over the touched preview/report modules: largest file is 149 lines.
+- Browser verification against the existing `http://localhost:3000` dev server: `/vista-previa-padron/20123456789` redirects to `/login`, the login page renders content, and no Next overlay or console errors were detected.
+
+## Unified Padron Preview Hydration Loop Fix - 2026-06-16
+
+### Summary
+
+Fixed a `Maximum update depth exceeded` loop triggered by the preview hydration bridge when streamed hydration modules called state setters through unstable `hydrate*` function references.
+
+### Main Changes
+
+- Wrapped preview hydration callbacks in `useCallback` for available crosses, reprocessing, addresses, contacts, notes, Mercurio, and intervention orders.
+- Added a per-bridge `moduleKey` guard so each streamed hydration module applies its payload only once after it mounts.
+- Kept the hydration context memoized through stable function references instead of weakening the bridge effect dependencies.
+
+### Validation
+
+- `bun x eslint 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/UnifiedRegisterPreviewHydrationBridge.tsx' 'src/modules/unified-register/presentation/hooks/useUnifiedRegisterPreview.ts' 'src/modules/unified-register/presentation/hooks/unified-register-preview/*.ts'`
+- `bun x tsc --noEmit`
+- `bun run build`
+- File-size check on the touched preview hydration hooks: largest file is 149 lines.
+- Browser verification against `http://localhost:3000/vista-previa-padron/20123456789`: unauthenticated flow redirects to `/login`, renders content, and shows no Next overlay or console errors.
+
+## Informe Preview Modal Scroll Fix - 2026-06-17
+
+### Summary
+
+Restored vertical scrolling in the `Informe de Investigación — Previsualización` modal without changing report generation, payloads, or download behavior.
+
+### Main Changes
+
+- Constrained the modal content height to the viewport and changed the modal body to a flex column.
+- Kept the top bar and footer from shrinking while the document stage becomes the scrollable area.
+- Updated the document stage from horizontal-only overflow to full overflow so long report previews can scroll vertically.
+
+### Validation
+
+- `git diff --check`
+- `bun x eslint 'src/modules/unified-register/presentation/components/InformePreviewModal/**/*.tsx' 'src/modules/unified-register/presentation/components/InformePreviewModal/*.tsx'`
+- `bun x tsc --noEmit --incremental false`
+- Browser verification against `http://localhost:3000/vista-previa-padron/20123456789`: unauthenticated flow redirects to `/login`, renders content, and shows no console errors.
+- `bun run build` remains blocked by existing prerender `cookies()` errors on `/reproceso` and `/admin`.
+
+## Informe Generation Payload Total Row Fix - 2026-06-17
+
+### Summary
+
+Stopped sending and previewing the `TOTAL` row from selected taxable-base crosses, leaving total calculation to the backend.
+
+### Main Changes
+
+- Filtered selected cross rows with `periodo: 'TOTAL'` from the shared selected-cross builder used by both the preview and the informe generation payload.
+- Added regression coverage so generated document payloads and preview selected crosses include only period rows and no total row.
+
+### Validation
+
+- `bun x jest src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts --runInBand`
+- `bun x eslint src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts`
+- `bun x tsc --noEmit --incremental false`
+- `git diff --check`
+
+## Vista Previa Por CUIT Sin Exponer ID - 2026-06-17
+
+### Summary
+
+Changed unified register preview navigation so new URLs expose only the CUIT while the real `contribuyenteId` is resolved internally from backend lookup.
+
+### Main Changes
+
+- Removed the `?id=` query param from unified-register cards and reprocessing preview row navigation.
+- Reworked preview route resolution so backend CUIT lookup wins over fixture data and stale legacy route IDs.
+- Added a shared mock-mode helper for unified-register data access and preview resolution.
+- Added resolver regression tests for backend precedence, fixture fallback, legacy URL compatibility, mock mode, and backend lookup errors.
+
+### Validation
+
+- `npm test -- resolvePreviewRouteData.test.ts`
+- `npm test` runs the new resolver tests successfully but remains failing in unrelated `src/modules/batch-management/presentation/utils/batchManagementCross.test.ts`, where the current implementation includes `parameters` and the existing expectation does not.
+- `npm run lint` passes with existing warnings in admin/cross-management files.
+- `npm run build`
+
+## Vista Previa Source Tables Commented Out - 2026-06-17
+
+### Summary
+
+Commented out the source tables block rendered below `Órdenes de Intervención` in the unified register preview, preserving the code for future reactivation.
+
+### Main Changes
+
+- Commented the `SourceTablesCard` import and render call in the preview right column.
+- Left `SourceTablesCard.tsx` untouched so the complete block implementation remains in the repository.
+
+### Validation
+
+- `PATH='/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin':$PATH node_modules/.bin/eslint 'src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/components/PreviewRightColumn.tsx'`
+
+## Home Add To Batch Modal Close Fix - 2026-06-18
+
+### Summary
+
+Fixed the `/` add-to-batch modal so the lot list remains visible during close transitions and the selector content is capped at 600px.
+
+### Main Changes
+
+- Kept loaded lot options intact when closing the selector modal, leaving state cleanup to the next open cycle.
+- Added selector-specific modal classes so only the add-to-batch list gets a 600px responsive cap and internal vertical scrolling.
+
+### Validation
+
+- `PATH='/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin':$PATH node_modules/.bin/eslint src/modules/unified-register/presentation/components/UnifiedRegisterPage/index.tsx src/modules/unified-register/presentation/hooks/useUnifiedRegisterPage/useUnifiedRegisterPageActions.ts`
+- `PATH='/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin':$PATH node_modules/.bin/tsc --noEmit --pretty false --incremental false`
+- `git diff --check`
+- `curl -I -sS http://127.0.0.1:3000/` responded with the expected private-route redirect to `/login` without a valid terminal session.
+
+## Informe Generation Dynamic Cross Columns - 2026-06-18
+
+### Summary
+
+Connected the report-generation cross column picker to `GET /api/contribuyentes/cruces/columnas`, using backend-provided `datos.columnas` and `datos.filas` as the source for the modal, preview, and generation payload.
+
+### Main Changes
+
+- Added contributor cross column models, DTOs, mapper, REST route, source method, mock implementation, and server action under `unified-register`.
+- Updated `useInformeCrosses` to load column/row detail for each listed contributor cross before enabling report generation.
+- Reworked informe cross mapping so dynamic backend columns get readable labels, while the generated document payload derives required `periodo` values from backend `anio` rows.
+- Updated the preview table to keep legacy `periodo` rendering only for old local templates while rendering backend `anio` as a normal selected column.
+- Removed the old local informe cross templates as the initial UI state and versioned the dynamic column load so Fast Refresh cannot keep stale template columns visible after the endpoint integration changes.
+- Normalized dynamic cross row values so nested objects or arrays are stringified before reaching the document generation API, preventing non-scalar row validation errors.
+- Kept backend `datos.columnas` as the available column catalog only; generated informe payloads now include only the user-selected visible column keys, plus the required derived `periodo` row value.
+- Removed the default selected cross behavior so the report flow opens clean: no cross is selected and no columns are visible until the user explicitly chooses them.
+- Aligned the informe cross column picker with the `Planilla adjunta — Columnas` picker from `Generar intimación`: two card lists, checkbox selection, circular move actions, multi-select movement, and drag-and-drop ordering for visible columns.
+
+### Validation
+
+- Bundled Node was used because `bun`, `node`, `npm`, and `npx` were not available on the shell PATH.
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/jest/bin/jest.js src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/typescript/bin/tsc --noEmit --incremental false`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/unified-register/data/actions/index.ts src/modules/unified-register/data/actions/queries/getContributorCrossColumnsAction.ts src/modules/unified-register/data/interfaces/UnifiedRegisterSource.ts src/modules/unified-register/data/models/UnifiedRegister.ts src/modules/unified-register/data/sources/mock/MockUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts src/modules/unified-register/data/sources/rest/constants/unifiedRegisterApiRoutes.ts src/modules/unified-register/data/sources/rest/dtos/ApiUnifiedRegisterDtos.ts src/modules/unified-register/data/sources/rest/mappers/unifiedRegisterMappers.ts src/modules/unified-register/presentation/components/InformePreviewModal/components/CrossPreviewTable.tsx src/modules/unified-register/presentation/hooks/informe-generation/useInformeCrosses.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts src/modules/unified-register/presentation/utils/mapContributorCrossesToInformeOptions.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/hooks/informe-generation/useInformeCrosses.ts src/modules/unified-register/presentation/utils/mapContributorCrossesToInformeOptions.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts src/modules/unified-register/presentation/components/InformePreviewModal/components/CrossPreviewTable.tsx`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/jest/bin/jest.js src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/unified-register/data/sources/rest/dtos/ApiUnifiedRegisterDtos.ts src/modules/unified-register/data/sources/rest/mappers/unifiedRegisterMappers.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/utils/mapContributorCrossesToInformeOptions.ts src/modules/unified-register/presentation/hooks/useInformeGeneration.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/hooks/informe-generation/useInformeCrosses.ts src/modules/unified-register/presentation/hooks/informe-generation/utils.ts src/modules/unified-register/presentation/constants/informeGenerationCrossOptions.ts src/modules/unified-register/presentation/hooks/useInformeGeneration.ts src/modules/unified-register/presentation/utils/mapContributorCrossesToInformeOptions.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/typescript/bin/tsc --noEmit --incremental false`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/hooks/informe-generation/useInformeCrosses.ts src/modules/unified-register/presentation/components/InformeGenerationModal/components/CrossColumnsPickerModal.tsx`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/jest/bin/jest.js src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts --runInBand`
 - `git diff --check`

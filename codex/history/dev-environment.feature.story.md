@@ -1,5 +1,16 @@
 # Dev environment API base URL fix
 
+## 2026-06-19 GitLab lint fix
+
+- Removed unused imports reported by GitLab ESLint in admin panel, batch management, cross management, and cross preview files.
+- Replaced the synchronous batch-options reset inside `usePreviewBatchOptions` effect with an explicit `resetBatchOptions` handler called when opening the batch header modal.
+- Kept the modal behavior equivalent while satisfying `react-hooks/set-state-in-effect`.
+
+### Validation
+
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin:$PATH node node_modules/eslint/bin/eslint.js .`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin:$PATH node node_modules/next/dist/bin/next build`
+
 ## 2026-06-14
 
 - Removed hardcoded `localhost:5001` API base URL fallbacks from `batch-management` and `explorer-register`.

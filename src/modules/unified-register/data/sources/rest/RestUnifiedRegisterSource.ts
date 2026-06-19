@@ -8,6 +8,7 @@ import type {
   IUnifiedRegisterContactRecord,
   IUnifiedRegisterContactsListData,
   IUnifiedRegisterContactsListParams,
+  IUnifiedRegisterContributorCrossColumnsData,
   IUnifiedRegisterContributorCrossesData,
   IUnifiedRegisterFinesListData,
   IUnifiedRegisterFinesListParams,
@@ -33,6 +34,7 @@ import type {
   ApiUnifiedRegisterContactRequestDto,
   ApiUnifiedRegisterContactResponseDto,
   ApiUnifiedRegisterContactsListResponseDto,
+  ApiUnifiedRegisterContributorCrossColumnsResponseDto,
   ApiUnifiedRegisterContributorCrossesResponseDto,
   ApiUnifiedRegisterFinesListResponseDto,
   ApiUnifiedRegisterHeaderResponseDto,
@@ -45,6 +47,7 @@ import type {
 import {
   mapAlternateAddressDto,
   mapContactDto,
+  mapContributorCrossColumnsDto,
   mapContributorCrossDto,
   mapFineDto,
   mapHeaderDto,
@@ -105,14 +108,47 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
     itemsPerPage = 10,
     search?: string
   ): Promise<IUnifiedRegisterListData> {
-    const dto = await this.requestJson<ApiUnifiedRegisterListResponseDto>(
-      this.buildPaginatedPath(
-        UNIFIED_REGISTER_API_ROUTES.contributors,
-        page,
-        itemsPerPage,
-        search
+    const requestPath = this.buildPaginatedPath(
+      UNIFIED_REGISTER_API_ROUTES.contributors,
+      page,
+      itemsPerPage,
+      search
+    )
+
+    console.log(
+      JSON.stringify(
+        {
+          endpoint: UNIFIED_REGISTER_API_ROUTES.contributors,
+          action: 'RestUnifiedRegisterSource.listContributors',
+          METHOD: 'GET',
+          REQUEST_RAW: {
+            page,
+            itemsPerPage,
+            search: search ?? null,
+            requestPath
+          }
+        },
+        null,
+        2
       )
+    )
+
+    const dto = await this.requestJson<ApiUnifiedRegisterListResponseDto>(
+      requestPath
     );
+
+    console.log(
+      JSON.stringify(
+        {
+          endpoint: UNIFIED_REGISTER_API_ROUTES.contributors,
+          action: 'RestUnifiedRegisterSource.listContributors',
+          METHOD: 'GET',
+          RESPONSE_RAW: dto
+        },
+        null,
+        2
+      )
+    )
 
     return {
       pagina: dto.pagina,
@@ -143,6 +179,21 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
     return {
       crosses: dto.cruces.map(mapContributorCrossDto)
     };
+  }
+
+  async getContributorCrossColumns(
+    contribuyenteId: string,
+    cruceId: string
+  ): Promise<IUnifiedRegisterContributorCrossColumnsData> {
+    const dto =
+      await this.requestJson<ApiUnifiedRegisterContributorCrossColumnsResponseDto>(
+        UNIFIED_REGISTER_API_ROUTES.contributorCrossColumns(
+          contribuyenteId,
+          cruceId
+        )
+      );
+
+    return mapContributorCrossColumnsDto(dto);
   }
 
   async listMercurioFines(
