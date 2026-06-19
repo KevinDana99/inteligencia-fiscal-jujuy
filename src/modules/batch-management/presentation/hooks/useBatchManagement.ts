@@ -63,6 +63,8 @@ export function useBatchManagement(
       opened: create.isCreateModalOpen,
       name: create.createForm.name,
       regime: create.createForm.regime,
+      isRegimeLocked: create.isRegimeLocked,
+      regimeOptions: create.regimeOptions,
       description: create.createForm.description,
       loadedCuitsSearchValue: create.loadedCuitsSearchValue,
       loadedCuitsCount: create.loadedCuits.length,

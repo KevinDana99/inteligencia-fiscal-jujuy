@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import type { IExplorerRegisterCatalog } from '../../data/models/ExplorerRegister';
+import type { IExplorerRegisterCatalog } from "../../data/models/ExplorerRegister";
 import {
   useExplorerRegisterBatchCreation,
   useExplorerRegisterCatalog,
   useExplorerRegisterForm,
   useExplorerRegisterSearch,
-  useExplorerRegisterSelection
-} from './explorer-register';
+  useExplorerRegisterSelection,
+} from "./explorer-register";
 
 export function useExplorerRegister(
   initialCatalog: IExplorerRegisterCatalog | null
@@ -20,12 +20,10 @@ export function useExplorerRegister(
     filterValues: form.filterValues,
     onSearchSuccess: selection.resetSelection,
     selectedColumnCodes: form.selectedColumnCodes,
-    temporalRange: form.temporalRange
+    temporalRange: form.temporalRange,
   });
   const selectionState = selection.getSelectionState(search.data);
-  const batchCreation = useExplorerRegisterBatchCreation(
-    selectionState.visibleRows
-  );
+  const batchCreation = useExplorerRegisterBatchCreation(selectionState.visibleRows);
 
   function resetSearchAndSelection() {
     search.resetSearch();
@@ -52,7 +50,7 @@ export function useExplorerRegister(
     resetSearchAndSelection();
   }
 
-  function updateTemporalRange(field: 'startDate' | 'endDate', value: string) {
+  function updateTemporalRange(field: "startDate" | "endDate", value: string) {
     form.updateTemporalRange(field, value);
     resetSearchAndSelection();
   }
@@ -91,6 +89,6 @@ export function useExplorerRegister(
     updateTemporalRange,
     updateTextFilterValue,
     visibleRows: selectionState.visibleRows,
-    deselectRow: selection.deselectRow
+    deselectRow: selection.deselectRow,
   };
 }

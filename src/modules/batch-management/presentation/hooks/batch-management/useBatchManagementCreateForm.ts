@@ -1,11 +1,22 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { BATCH_REGIME_OPTIONS } from '../../constants'
 
 type BatchManagementCreateFormState = {
   name: string
   regime: string | null
   description: string
+}
+
+type BatchManagementCreateRegimeOption = {
+  value: string
+  label: string
+}
+
+type OpenCreateModalOptions = {
+  initialRegime?: string | null
+  lockedRegimeOption?: BatchManagementCreateRegimeOption | null
 }
 
 const EMPTY_BATCH_CREATE_FORM: BatchManagementCreateFormState = {
@@ -17,11 +28,24 @@ const EMPTY_BATCH_CREATE_FORM: BatchManagementCreateFormState = {
 export function useBatchManagementCreateForm() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [createForm, setCreateForm] = useState(EMPTY_BATCH_CREATE_FORM)
+  const [isRegimeLocked, setIsRegimeLocked] = useState(false)
+  const [regimeOptions, setRegimeOptions] = useState<
+    BatchManagementCreateRegimeOption[]
+  >([...BATCH_REGIME_OPTIONS])
   const [createError, setCreateError] = useState<string | null>(null)
   const [isCreatePending, startCreateTransition] = useTransition()
 
-  function openCreateModal() {
-    setCreateForm(EMPTY_BATCH_CREATE_FORM)
+  function openCreateModal(options: OpenCreateModalOptions = {}) {
+    setCreateForm({
+      ...EMPTY_BATCH_CREATE_FORM,
+      regime: options.initialRegime ?? null
+    })
+    setIsRegimeLocked(Boolean(options.lockedRegimeOption))
+    setRegimeOptions(
+      options.lockedRegimeOption
+        ? [options.lockedRegimeOption]
+        : [...BATCH_REGIME_OPTIONS]
+    )
     setCreateError(null)
     setIsCreateModalOpen(true)
   }
@@ -32,6 +56,8 @@ export function useBatchManagementCreateForm() {
 
   function resetCreateForm() {
     setCreateForm(EMPTY_BATCH_CREATE_FORM)
+    setIsRegimeLocked(false)
+    setRegimeOptions([...BATCH_REGIME_OPTIONS])
     setCreateError(null)
     setIsCreateModalOpen(false)
   }
@@ -40,6 +66,10 @@ export function useBatchManagementCreateForm() {
     field: keyof BatchManagementCreateFormState,
     value: string | null
   ) {
+    if (field === 'regime' && isRegimeLocked) {
+      return
+    }
+
     setCreateError(null)
     setCreateForm((current) => ({
       ...current,
@@ -50,6 +80,8 @@ export function useBatchManagementCreateForm() {
   return {
     isCreateModalOpen,
     createForm,
+    isRegimeLocked,
+    regimeOptions,
     createError,
     isCreatePending,
     startCreateTransition,

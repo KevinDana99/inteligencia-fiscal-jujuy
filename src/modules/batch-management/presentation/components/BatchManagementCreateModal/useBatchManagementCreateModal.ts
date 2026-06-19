@@ -1,6 +1,7 @@
 'use client'
 
 import type { ChangeEvent } from 'react'
+import { BATCH_MANAGEMENT_CREATE_TEXTS } from '../../constants'
 import type { BatchManagementCreateModalController } from '../../hooks/useBatchManagement'
 import { getLoadedCuitsCountLabel } from '../../utils'
 import { useBatchManagementFileImport } from './useBatchManagementFileImport'
@@ -56,6 +57,15 @@ export function useBatchManagementCreateModal(
       },
       regimeInput: {
         value: controller.regime,
+        label:
+          controller.regimeOptions.find(
+            (option) => option.value === controller.regime
+          )?.label ?? null,
+        data: controller.regimeOptions,
+        disabled: controller.isRegimeLocked,
+        helperText: controller.isRegimeLocked
+          ? BATCH_MANAGEMENT_CREATE_TEXTS.lockedRegimeHelperText
+          : null,
         onChange: handleRegimeChange
       },
       descriptionInput: {
