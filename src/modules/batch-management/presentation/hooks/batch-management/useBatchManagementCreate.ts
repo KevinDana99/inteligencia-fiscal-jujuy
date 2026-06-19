@@ -12,17 +12,12 @@ import {
   getImportedLoadedCuitDuplicatesError,
   getCreatedBatchCuits,
 } from "../../utils";
-import { useBatchManagementCreateForm } from "./useBatchManagementCreateForm";
+import {
+  useBatchManagementCreateForm,
+  type OpenCreateModalOptions,
+} from "./useBatchManagementCreateForm";
 import { useBatchManagementImportPreview } from "./useBatchManagementImportPreview";
 import { useBatchManagementLoadedCuits } from "./useBatchManagementLoadedCuits";
-
-type OpenCreateModalOptions = {
-  initialRegime?: string | null;
-  lockedRegimeOption?: {
-    value: string | null;
-    label: string | null;
-  } | null;
-};
 
 type UseBatchManagementCreateParams = {
   onBatchCreated: (

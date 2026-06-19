@@ -1,6 +1,6 @@
 import { BATCH_MANAGEMENT_AVAILABLE_LOTS_DROPDOWN_TEXTS } from '../../constants/batchManagementAvailableLotsDropdown';
 
-type BatchManagementAvailableLotOption = {
+export type BatchManagementAvailableLotOption = {
   id: string;
   label: string;
   cuitCount: number;

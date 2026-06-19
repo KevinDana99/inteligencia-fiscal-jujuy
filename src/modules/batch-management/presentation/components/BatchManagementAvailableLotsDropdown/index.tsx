@@ -2,27 +2,28 @@
 
 import { Text, TextInput } from '@mantine/core';
 import { BATCH_MANAGEMENT_AVAILABLE_LOTS_DROPDOWN_TEXTS } from '../../constants/batchManagementAvailableLotsDropdown';
-import { useBatchManagementAvailableLotsDropdown } from '../../hooks/batch-management/useBatchManagementAvailableLotsDropdown';
+import {
+  useBatchManagementAvailableLotsDropdown,
+  type BatchManagementAvailableLotOption
+} from '../../hooks/batch-management/useBatchManagementAvailableLotsDropdown';
 import classes from './BatchManagementAvailableLotsDropdown.module.css';
 
-type BatchManagementAvailableLotOption = {
-  id: string;
-  label: string;
-  cuitCount: number;
-};
-
-type BatchManagementAvailableLotsDropdownProps = {
+type BatchManagementAvailableLotsDropdownProps<
+  TLot extends BatchManagementAvailableLotOption
+> = {
   opened: boolean;
   search: string;
-  options: BatchManagementAvailableLotOption[];
+  options: TLot[];
   isPending: boolean;
   error: string | null;
   onClose: () => void;
   onSearchChange: (value: string) => void;
-  onSelect: (lot: BatchManagementAvailableLotOption) => void;
+  onSelect: (lot: TLot) => void;
 };
 
-export function BatchManagementAvailableLotsDropdown({
+export function BatchManagementAvailableLotsDropdown<
+  TLot extends BatchManagementAvailableLotOption
+>({
   opened,
   search,
   options,
@@ -31,7 +32,7 @@ export function BatchManagementAvailableLotsDropdown({
   onClose,
   onSearchChange,
   onSelect
-}: BatchManagementAvailableLotsDropdownProps) {
+}: BatchManagementAvailableLotsDropdownProps<TLot>) {
   const dropdown = useBatchManagementAvailableLotsDropdown({
     opened,
     options,

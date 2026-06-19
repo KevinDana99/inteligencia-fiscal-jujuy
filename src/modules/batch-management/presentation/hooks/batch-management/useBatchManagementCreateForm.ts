@@ -9,12 +9,12 @@ type BatchManagementCreateFormState = {
   description: string
 }
 
-type BatchManagementCreateRegimeOption = {
+export type BatchManagementCreateRegimeOption = {
   value: string
   label: string
 }
 
-type OpenCreateModalOptions = {
+export type OpenCreateModalOptions = {
   initialRegime?: string | null
   lockedRegimeOption?: BatchManagementCreateRegimeOption | null
 }

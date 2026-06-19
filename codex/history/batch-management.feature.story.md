@@ -1,5 +1,16 @@
 # Batch Management Feature Story
 
+## 2026-06-19 Build type fixes
+
+- Se exporto el contrato estricto de `OpenCreateModalOptions` desde `useBatchManagementCreateForm` para que `useBatchManagementCreate` no redeclare una variante mas laxa con `value` y `label` nulleables.
+- Se exporto `BatchManagementAvailableLotOption` desde el hook del dropdown de lotes disponibles.
+- `BatchManagementAvailableLotsDropdown` ahora es generico sobre opciones que extienden el contrato base, preservando campos extra como `regime` en `unified-register`.
+
+### Validation
+
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin:$PATH node node_modules/next/dist/bin/next build`
+- La build termina correctamente; durante prerender se mantienen logs capturados preexistentes de `cookies()` en rutas dinamicas, sin exit code fallido.
+
 ## 2026-06-16 Scroll en preview de importacion Excel
 
 - Se limito la altura del modal `Vista previa - Importacion Excel` para que cargas grandes de CUITs no empujen el footer fuera del viewport.
