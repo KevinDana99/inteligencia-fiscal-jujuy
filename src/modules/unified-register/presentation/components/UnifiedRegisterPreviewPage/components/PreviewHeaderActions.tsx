@@ -1,3 +1,4 @@
+import { forwardRef, type ComponentPropsWithoutRef } from 'react';
 import { Button, Group } from '@mantine/core';
 import { IconChevronDown, IconFileText, IconListDetails } from '@tabler/icons-react';
 import { BatchManagementCrossMenu } from '@/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementCrossMenu';
@@ -48,8 +49,7 @@ export function PreviewHeaderActions({ item, preview }: PreviewHeaderActionsProp
             onCrossTypeToggle: (_, section, crossType) =>
               preview.toggleCrossType(section, crossType),
             onConfirm: () => preview.confirmCrossExecution(),
-            navigateOnConfirm: false,
-            onConfirmed: preview.closeHeaderModal
+            confirmRedirectHref: '/gestion-de-cruces'
           }}
           target={<CrossMenuButton loading={preview.isAvailableCrossesHydrating} />}
           position="bottom-start"
@@ -83,12 +83,21 @@ export function PreviewHeaderActions({ item, preview }: PreviewHeaderActionsProp
   );
 }
 
-function CrossMenuButton({ loading }: { loading: boolean }) {
+const CrossMenuButton = forwardRef<
+  HTMLButtonElement,
+  ComponentPropsWithoutRef<'button'> & { loading: boolean }
+>(function CrossMenuButton({ loading, disabled, ...props }, ref) {
   return (
-    <button type="button" className={classes.secondaryAction}>
+    <button
+      {...props}
+      ref={ref}
+      type="button"
+      className={classes.secondaryAction}
+      disabled={disabled || loading}
+    >
       <IconListDetails size={12} className={classes.secondaryActionIcon} />
       <span>{loading ? 'Cargando cruces...' : 'Cruces a realizar'}</span>
       <IconChevronDown size={12} className={classes.secondaryActionChevron} />
     </button>
   );
-}
+});
