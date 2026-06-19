@@ -20,7 +20,11 @@ export function useInformeGeneration(
   );
   const hasUnavailableSelectedCross =
     selectedCrosses.length !== crosses.selectedCrossIds.length ||
-    selectedCrosses.some((cross) => cross.isReportReady === false);
+    selectedCrosses.some(
+      (cross) =>
+        cross.isReportReady === false ||
+        cross.columnasSeleccionadas.claves.length === 0
+    );
   const documents = useInformeDocuments({
     item,
     form: formState.form,

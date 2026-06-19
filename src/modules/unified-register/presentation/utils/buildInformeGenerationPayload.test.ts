@@ -113,12 +113,28 @@ describe('buildInformeGenerationPayload', () => {
     });
   });
 
-  test('maps backend contributor crosses to report-ready informe options', () => {
+  test('maps backend contributor cross columns to report-ready informe options', () => {
     const options = mapContributorCrossesToInformeOptions([
       {
-        id: 'backend-cross-id',
-        code: 'ControlDesvioBiRegimenCm',
-        name: 'Control de desvío de BI — Régimen CM'
+        cross: {
+          id: 'backend-cross-id',
+          code: 'ControlDesvioBiRegimenCm',
+          name: 'Control de desvío de BI — Régimen CM'
+        },
+        columnsData: {
+          code: 'ControlDesvioBiRegimenCm',
+          columns: ['anio', 'biEstimada', 'diferenciaBi', 'detalle'],
+          rows: [
+            {
+              anio: 2025,
+              biEstimada: 1751937.4278,
+              diferenciaBi: 824432.4378,
+              detalle: ({
+                estado: 'Completo'
+              } as unknown as string)
+            }
+          ]
+        }
       }
     ]);
 
@@ -128,34 +144,53 @@ describe('buildInformeGenerationPayload', () => {
       nombre: 'Control de desvío de BI — Régimen CM'
     });
     expect(options[0].isReportReady).toBeUndefined();
-    expect(options[0].columnasSeleccionadas.claves).toEqual(
-      INFORME_CROSS_OPTIONS[0].columnasSeleccionadas.claves
-    );
+    expect(options[0].columnasSeleccionadas.claves).toEqual([]);
+    expect(options[0].previewColumns.map((column) => column.label)).toEqual([
+      'AÑO',
+      'BI ESTIMADA',
+      'DIFERENCIA BI',
+      'DETALLE'
+    ]);
 
+    const optionsWithSelectedColumns = [
+      {
+        ...options[0],
+        columnasSeleccionadas: {
+          ...options[0].columnasSeleccionadas,
+          claves: ['biEstimada', 'detalle']
+        }
+      }
+    ];
     const payload = buildInformeGenerationPayload(
       item,
       INFORME_DEFAULT_FORM,
       ['backend-cross-id'],
-      options
+      optionsWithSelectedColumns
     );
 
     expect(payload.crucesSeleccionados).toHaveLength(1);
     expect(payload.crucesSeleccionados[0].nombre).toBe(
       'Control de desvío de BI — Régimen CM'
     );
-    expect(payload.crucesSeleccionados[0].columnasSeleccionadas.filas).toEqual(
-      INFORME_CROSS_OPTIONS[0].columnasSeleccionadas.filas.filter(
-        (row) => row.periodo !== 'TOTAL'
-      )
-    );
+    expect(payload.crucesSeleccionados[0].columnasSeleccionadas.filas).toEqual([
+      {
+        periodo: '2025',
+        biEstimada: 1751937.4278,
+        detalle: '{"estado":"Completo"}'
+      }
+    ]);
   });
 
-  test('keeps unknown backend crosses unavailable for informe generation', () => {
+  test('keeps backend crosses unavailable when the dynamic detail fails', () => {
     const options = mapContributorCrossesToInformeOptions([
       {
-        id: 'unknown-cross-id',
-        code: 'ControlCreditos',
-        name: 'Control de créditos'
+        cross: {
+          id: 'unknown-cross-id',
+          code: 'ControlCreditos',
+          name: 'Control de créditos'
+        },
+        columnsData: null,
+        error: 'No existe resultado disponible para el contribuyente y cruce informados.'
       }
     ]);
 

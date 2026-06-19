@@ -1,5 +1,20 @@
 # Cross Management Feature Story
 
+## 2026-06-18 Preview solo con resultados y resumen
+
+- La carga inicial de `/gestion-de-cruces/vista-previa-cruce/[crossId]` ahora consulta solo `resultados-cruces` y `resumen`.
+- Se elimino el uso de `/planilla` y del listado `/ejecuciones` como fallback dentro de `getCrossPreviewAction`.
+- La tabla `Planilla` se construye desde `resultados-cruces`, conservando columnas visuales, CUIT, razon social, `taxpayerId` y metricas principales.
+- La recarga/paginacion de `Planilla` ahora usa `getCrossResultsAction`; la busqueda de la tabla queda local sobre los resultados cargados.
+- Se removio el helper de enriquecimiento de planilla con resultados, porque `resultados-cruces` paso a ser fuente principal y no refuerzo.
+
+### Validation
+
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint src/modules/cross-management/data/actions/queries/getCrossPreviewAction.ts src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.ts src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.test.ts src/modules/cross-management/data/sources/mock/MockCrossManagementSource.ts src/modules/cross-management/presentation/hooks/cross-preview/useCrossPreviewPlanillaQuery.ts`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/jest/bin/jest.js src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.test.ts --runInBand`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit --incremental false`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/next/dist/bin/next build` finaliza con `EXIT:0`.
+
 ## 2026-06-18 Sidebar activo en preview de cruce
 
 - `/gestion-de-cruces/vista-previa-cruce/<id>` ahora resuelve la seccion activa del dashboard como `Gestión de Cruces`.

@@ -158,3 +158,13 @@ export interface ApiUnifiedRegisterContributorCrossDto {
 export interface ApiUnifiedRegisterContributorCrossesResponseDto {
   cruces: ApiUnifiedRegisterContributorCrossDto[];
 }
+
+export interface ApiUnifiedRegisterContributorCrossColumnsDataDto {
+  columnas: string[];
+  filas: Array<Record<string, unknown>>;
+}
+
+export interface ApiUnifiedRegisterContributorCrossColumnsResponseDto {
+  nombreCruce: string;
+  datos: ApiUnifiedRegisterContributorCrossColumnsDataDto;
+}

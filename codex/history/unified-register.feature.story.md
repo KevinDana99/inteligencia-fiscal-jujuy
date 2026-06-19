@@ -481,3 +481,37 @@ Fixed the `/` add-to-batch modal so the lot list remains visible during close tr
 - `PATH='/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin':$PATH node_modules/.bin/tsc --noEmit --pretty false --incremental false`
 - `git diff --check`
 - `curl -I -sS http://127.0.0.1:3000/` responded with the expected private-route redirect to `/login` without a valid terminal session.
+
+## Informe Generation Dynamic Cross Columns - 2026-06-18
+
+### Summary
+
+Connected the report-generation cross column picker to `GET /api/contribuyentes/cruces/columnas`, using backend-provided `datos.columnas` and `datos.filas` as the source for the modal, preview, and generation payload.
+
+### Main Changes
+
+- Added contributor cross column models, DTOs, mapper, REST route, source method, mock implementation, and server action under `unified-register`.
+- Updated `useInformeCrosses` to load column/row detail for each listed contributor cross before enabling report generation.
+- Reworked informe cross mapping so dynamic backend columns get readable labels, while the generated document payload derives required `periodo` values from backend `anio` rows.
+- Updated the preview table to keep legacy `periodo` rendering only for old local templates while rendering backend `anio` as a normal selected column.
+- Removed the old local informe cross templates as the initial UI state and versioned the dynamic column load so Fast Refresh cannot keep stale template columns visible after the endpoint integration changes.
+- Normalized dynamic cross row values so nested objects or arrays are stringified before reaching the document generation API, preventing non-scalar row validation errors.
+- Kept backend `datos.columnas` as the available column catalog only; generated informe payloads now include only the user-selected visible column keys, plus the required derived `periodo` row value.
+- Removed the default selected cross behavior so the report flow opens clean: no cross is selected and no columns are visible until the user explicitly chooses them.
+- Aligned the informe cross column picker with the `Planilla adjunta — Columnas` picker from `Generar intimación`: two card lists, checkbox selection, circular move actions, multi-select movement, and drag-and-drop ordering for visible columns.
+
+### Validation
+
+- Bundled Node was used because `bun`, `node`, `npm`, and `npx` were not available on the shell PATH.
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/jest/bin/jest.js src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/typescript/bin/tsc --noEmit --incremental false`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/unified-register/data/actions/index.ts src/modules/unified-register/data/actions/queries/getContributorCrossColumnsAction.ts src/modules/unified-register/data/interfaces/UnifiedRegisterSource.ts src/modules/unified-register/data/models/UnifiedRegister.ts src/modules/unified-register/data/sources/mock/MockUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts src/modules/unified-register/data/sources/rest/constants/unifiedRegisterApiRoutes.ts src/modules/unified-register/data/sources/rest/dtos/ApiUnifiedRegisterDtos.ts src/modules/unified-register/data/sources/rest/mappers/unifiedRegisterMappers.ts src/modules/unified-register/presentation/components/InformePreviewModal/components/CrossPreviewTable.tsx src/modules/unified-register/presentation/hooks/informe-generation/useInformeCrosses.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts src/modules/unified-register/presentation/utils/mapContributorCrossesToInformeOptions.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/hooks/informe-generation/useInformeCrosses.ts src/modules/unified-register/presentation/utils/mapContributorCrossesToInformeOptions.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts src/modules/unified-register/presentation/components/InformePreviewModal/components/CrossPreviewTable.tsx`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/jest/bin/jest.js src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/unified-register/data/sources/rest/dtos/ApiUnifiedRegisterDtos.ts src/modules/unified-register/data/sources/rest/mappers/unifiedRegisterMappers.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/utils/mapContributorCrossesToInformeOptions.ts src/modules/unified-register/presentation/hooks/useInformeGeneration.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/hooks/informe-generation/useInformeCrosses.ts src/modules/unified-register/presentation/hooks/informe-generation/utils.ts src/modules/unified-register/presentation/constants/informeGenerationCrossOptions.ts src/modules/unified-register/presentation/hooks/useInformeGeneration.ts src/modules/unified-register/presentation/utils/mapContributorCrossesToInformeOptions.ts src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/typescript/bin/tsc --noEmit --incremental false`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/hooks/informe-generation/useInformeCrosses.ts src/modules/unified-register/presentation/components/InformeGenerationModal/components/CrossColumnsPickerModal.tsx`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/jest/bin/jest.js src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts --runInBand`
+- `git diff --check`

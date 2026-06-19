@@ -2,6 +2,8 @@ import type {
   IUnifiedRegisterAlternateAddressRecord,
   IUnifiedRegisterContactRecord,
   IUnifiedRegisterContributorCross,
+  IUnifiedRegisterContributorCrossColumnsData,
+  IUnifiedRegisterContributorCrossRow,
   IUnifiedRegisterFineRecord,
   IUnifiedRegisterHeaderRecord,
   IUnifiedRegisterInterventionOrderRecord,
@@ -11,6 +13,7 @@ import type {
 import type {
   ApiUnifiedRegisterAlternateAddressResponseDto,
   ApiUnifiedRegisterContactResponseDto,
+  ApiUnifiedRegisterContributorCrossColumnsResponseDto,
   ApiUnifiedRegisterContributorCrossDto,
   ApiUnifiedRegisterFineResponseDto,
   ApiUnifiedRegisterHeaderResponseDto,
@@ -37,6 +40,35 @@ function formatContributorCrossName(value: string) {
   return (
     CONTRIBUTOR_CROSS_LABELS[value] ??
     value.replace(/([a-z])([A-Z])/g, '$1 $2').trim()
+  );
+}
+
+function mapCrossCellValue(value: unknown) {
+  if (
+    value === null ||
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  ) {
+    return value;
+  }
+
+  if (value === undefined) {
+    return null;
+  }
+
+  try {
+    return JSON.stringify(value) ?? null;
+  } catch {
+    return String(value);
+  }
+}
+
+function mapContributorCrossRow(
+  row: Record<string, unknown>
+): IUnifiedRegisterContributorCrossRow {
+  return Object.fromEntries(
+    Object.entries(row).map(([key, value]) => [key, mapCrossCellValue(value)])
   );
 }
 
@@ -85,6 +117,16 @@ export function mapContributorCrossDto(
     id: dto.id,
     code: dto.nombre,
     name: formatContributorCrossName(dto.nombre)
+  };
+}
+
+export function mapContributorCrossColumnsDto(
+  dto: ApiUnifiedRegisterContributorCrossColumnsResponseDto
+): IUnifiedRegisterContributorCrossColumnsData {
+  return {
+    code: dto.nombreCruce,
+    columns: [...dto.datos.columnas],
+    rows: dto.datos.filas.map(mapContributorCrossRow)
   };
 }
 

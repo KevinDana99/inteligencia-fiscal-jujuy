@@ -1,5 +1,6 @@
 import {
   mapAnalysisRowsToPreview,
+  mapCrossResultsToPlanillaData,
   mapPlanillaRowsToPreview
 } from './mapCrossPreviewContractToView'
 import {
@@ -7,13 +8,12 @@ import {
   mapDynamicRowValue
 } from '../utils/crossPreviewDynamicValues'
 import { mapCrossColumnFiltersToResumenRequest } from '../utils/crossPreviewFilters'
-import { enrichCrossPlanillaRowsWithTaxpayerIds } from '../utils/enrichCrossPlanillaRowsWithTaxpayerIds'
 import type {
   ICrossAnalysisRow,
   ICrossColumnFilters,
   ICrossDynamicColumn,
   ICrossPlanillaRow,
-  ICrossResultItem
+  ICrossResultsListData
 } from '../models/CrossManagement'
 
 const numberColumn: ICrossDynamicColumn = {
@@ -111,41 +111,48 @@ describe('cross preview dynamic contract mapping', () => {
     })
   })
 
-  it('enriches planilla contributor ids from cross results by CUIT', () => {
-    const rows: ICrossPlanillaRow[] = [
-      {
-        businessName: 'Empresa SA',
-        cuit: '30-50401884-5',
-        dates: {},
-        metrics: {},
-        taxpayerId: null,
-        texts: {}
-      }
-    ]
-    const results: ICrossResultItem[] = [
-      {
-        calculationStatus: 'Calculado',
-        createdAt: '2026-06-09T00:00:00.000Z',
-        crossCode: 'CRUCE',
-        crossVersion: '1',
-        cuit: '30504018845',
-        dynamicDetail: {},
-        executionId: 1,
-        granularity: 'Anual',
-        id: '1',
-        metrics: {},
-        nonCalculableFields: [],
-        period: '2024',
-        periodFrom: '2024-01-01',
-        periodTo: '2024-12-31',
-        sources: [],
-        taxpayerId: '44292a56-7e66-48ac-84f0-5f35aa5ec46d'
-      }
-    ]
+  it('maps resultados-cruces into planilla rows with contributor ids', () => {
+    const results: ICrossResultsListData = {
+      itemsPerPage: 20,
+      page: 1,
+      totalItems: 1,
+      totalPages: 1,
+      results: [
+        {
+          calculationStatus: 'Calculado',
+          createdAt: '2026-06-09T00:00:00.000Z',
+          crossCode: 'CRUCE',
+          crossVersion: '1',
+          cuit: '30504018845',
+          dynamicDetail: { razonSocial: 'Empresa SA' },
+          executionId: 1,
+          granularity: 'Anual',
+          id: '1',
+          metrics: { biPretendida: 1250 },
+          nonCalculableFields: [],
+          period: '2024',
+          periodFrom: '2024-01-01',
+          periodTo: '2024-12-31',
+          sources: [],
+          taxpayerId: '44292a56-7e66-48ac-84f0-5f35aa5ec46d'
+        }
+      ]
+    }
 
-    expect(enrichCrossPlanillaRowsWithTaxpayerIds(rows, results)[0]?.taxpayerId).toBe(
-      '44292a56-7e66-48ac-84f0-5f35aa5ec46d'
+    const planilla = mapCrossResultsToPlanillaData(results)
+    const previewRows = mapPlanillaRowsToPreview(
+      planilla.rows,
+      planilla.schema?.columns ?? []
     )
+
+    expect(previewRows[0]).toMatchObject({
+      businessName: 'Empresa SA',
+      cuit: '30-50401884-5',
+      taxpayerId: '44292a56-7e66-48ac-84f0-5f35aa5ec46d',
+      values: {
+        biEstimada: '1.250'
+      }
+    })
   })
 
   it('maps analysis rows and keeps estadoRelevancia outside dynamic dictionaries', () => {

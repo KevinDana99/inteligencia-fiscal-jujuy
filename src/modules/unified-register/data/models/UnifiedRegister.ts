@@ -283,6 +283,19 @@ export interface IUnifiedRegisterContributorCross {
   name: string;
 }
 
+export type UnifiedRegisterCrossCellValue = string | number | boolean | null;
+
+export type IUnifiedRegisterContributorCrossRow = Record<
+  string,
+  UnifiedRegisterCrossCellValue
+>;
+
+export interface IUnifiedRegisterContributorCrossColumnsData {
+  code: string;
+  columns: string[];
+  rows: IUnifiedRegisterContributorCrossRow[];
+}
+
 export interface IUnifiedRegisterContributorCrossesData {
   crosses: IUnifiedRegisterContributorCross[];
 }

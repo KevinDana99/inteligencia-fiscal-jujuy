@@ -28,11 +28,42 @@ function getContactValue(item: IUnifiedRegisterDetail, contactId: string) {
   );
 }
 
+function toDocumentCellValue(value: unknown): DocumentCellValue {
+  if (
+    value === null ||
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  ) {
+    return value;
+  }
+
+  if (value === undefined) {
+    return null;
+  }
+
+  try {
+    return JSON.stringify(value) ?? null;
+  } catch {
+    return String(value);
+  }
+}
+
+function resolveRowPeriod(row: Record<string, unknown>) {
+  const periodValue = row.periodo ?? row.anio ?? row.periodoFiscal ?? row.year;
+  const normalizedPeriod = toDocumentCellValue(periodValue);
+
+  return normalizedPeriod === null ? null : String(normalizedPeriod);
+}
+
 function cloneRows(
   cross: InformeCrossOption
 ): IInformeSelectedCross['columnasSeleccionadas']['filas'] {
   return cross.columnasSeleccionadas.filas
-    .filter((row) => String(row.periodo ?? '').trim().toUpperCase() !== 'TOTAL')
+    .filter(
+      (row) =>
+        String(resolveRowPeriod(row) ?? '').trim().toUpperCase() !== 'TOTAL'
+    )
     .map((row) => cloneSelectedColumnsRow(row, cross.columnasSeleccionadas.claves));
 }
 
@@ -40,9 +71,20 @@ function cloneSelectedColumnsRow(
   row: Record<string, DocumentCellValue>,
   columnKeys: string[]
 ) {
+  const selectedEntries = columnKeys.map(
+    (columnKey): [string, DocumentCellValue] => [
+      columnKey,
+      toDocumentCellValue(row[columnKey])
+    ]
+  );
+
+  if (columnKeys.includes('periodo')) {
+    return Object.fromEntries(selectedEntries);
+  }
+
   return Object.fromEntries([
-    ['periodo', row.periodo ?? null],
-    ...columnKeys.map((columnKey) => [columnKey, row[columnKey] ?? null])
+    ['periodo', resolveRowPeriod(row)] as [string, DocumentCellValue],
+    ...selectedEntries
   ]);
 }
 

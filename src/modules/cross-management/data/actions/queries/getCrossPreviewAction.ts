@@ -2,17 +2,16 @@
 
 import {
   DEFAULT_CROSS_PREVIEW_ITEMS_PER_PAGE,
-  DEFAULT_CROSS_PREVIEW_PAGE,
-  MAX_CROSS_PREVIEW_EXECUTIONS_FALLBACK_ITEMS
+  DEFAULT_CROSS_PREVIEW_PAGE
 } from '../../../constants/crossPreviewRequest'
-import { mapCrossPreviewContractToView } from '../../mappers/mapCrossPreviewContractToView'
+import {
+  mapCrossPreviewContractToView,
+  mapCrossResultsToPlanillaData
+} from '../../mappers/mapCrossPreviewContractToView'
 import type {
   ICrossManagementQueryResult,
   ICrossPreviewData
 } from '../../models/CrossManagement'
-import { enrichCrossPlanillaRowsWithTaxpayerIds } from '../../utils/enrichCrossPlanillaRowsWithTaxpayerIds'
-import { getCrossManagementAction } from './getCrossManagementAction'
-import { getCrossPlanillaAction } from './getCrossPlanillaAction'
 import { getCrossResumenAction } from './getCrossResumenAction'
 import { getCrossResultsAction } from './getCrossResultsAction'
 
@@ -28,13 +27,8 @@ export async function getCrossPreviewAction(
     }
   }
 
-  const [
-    planillaResponse,
-    resumenResponse,
-    executionsResponse,
-    resultsResponse
-  ] = await Promise.all([
-    getCrossPlanillaAction(executionId, {
+  const [resultsResponse, resumenResponse] = await Promise.all([
+    getCrossResultsAction(executionId, {
       itemsPerPage: DEFAULT_CROSS_PREVIEW_ITEMS_PER_PAGE,
       page: DEFAULT_CROSS_PREVIEW_PAGE
     }),
@@ -42,23 +36,15 @@ export async function getCrossPreviewAction(
       itemsPerPage: DEFAULT_CROSS_PREVIEW_ITEMS_PER_PAGE,
       page: DEFAULT_CROSS_PREVIEW_PAGE,
       columnFilters: []
-    }),
-    getCrossManagementAction({
-      itemsPerPage: MAX_CROSS_PREVIEW_EXECUTIONS_FALLBACK_ITEMS,
-      page: DEFAULT_CROSS_PREVIEW_PAGE
-    }),
-    getCrossResultsAction(executionId, {
-      itemsPerPage: MAX_CROSS_PREVIEW_EXECUTIONS_FALLBACK_ITEMS,
-      page: DEFAULT_CROSS_PREVIEW_PAGE
     })
   ])
 
-  if (!planillaResponse.data) {
+  if (!resultsResponse.data) {
     return {
       data: null,
-      error: planillaResponse.error,
-      code: planillaResponse.code,
-      status: planillaResponse.status
+      error: resultsResponse.error,
+      code: resultsResponse.code,
+      status: resultsResponse.status
     }
   }
 
@@ -71,22 +57,13 @@ export async function getCrossPreviewAction(
     }
   }
 
-  const execution =
-    executionsResponse.data?.items.find((item) => item.id === crossId) ?? null
-  const planillaData = {
-    ...planillaResponse.data,
-    rows: enrichCrossPlanillaRowsWithTaxpayerIds(
-      planillaResponse.data.rows,
-      resultsResponse.data?.results ?? []
-    )
-  }
+  const planillaData = mapCrossResultsToPlanillaData(resultsResponse.data)
 
   return {
     data: mapCrossPreviewContractToView(
       executionId,
       planillaData,
-      resumenResponse.data,
-      execution
+      resumenResponse.data
     )
   }
 }

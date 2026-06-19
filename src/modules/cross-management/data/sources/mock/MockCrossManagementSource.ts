@@ -313,15 +313,23 @@ export class MockCrossManagementSource implements ICrossManagementSource {
         executionId,
         crossCode: preview.id,
         crossVersion: 'mock',
-        taxpayerId: '',
+        taxpayerId: buildMockTaxpayerId(executionId, index),
         cuit: row.cuit,
         granularity: 'anual',
         period: preview.period,
         periodFrom: preview.period,
         periodTo: preview.period,
         calculationStatus: row.status,
-        metrics: {},
-        dynamicDetail: {},
+        metrics: {
+          bi910: parseMockNumber(row.declaredBase),
+          biPretendida: parseMockNumber(row.pretendedBase),
+          diferencia: parseMockNumber(row.difference),
+          impuesto: parseMockNumber(row.tax),
+          deudaNeta: parseMockNumber(row.netDebt)
+        },
+        dynamicDetail: {
+          razonSocial: row.businessName
+        },
         sources: [],
         nonCalculableFields: [],
         createdAt: preview.date
