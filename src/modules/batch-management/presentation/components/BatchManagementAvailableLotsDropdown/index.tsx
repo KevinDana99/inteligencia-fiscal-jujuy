@@ -1,18 +1,14 @@
 'use client';
 
-import { useMemo } from 'react';
 import { Text, TextInput } from '@mantine/core';
+import { BATCH_MANAGEMENT_AVAILABLE_LOTS_DROPDOWN_TEXTS } from '../../constants/batchManagementAvailableLotsDropdown';
+import { useBatchManagementAvailableLotsDropdown } from '../../hooks/batch-management/useBatchManagementAvailableLotsDropdown';
 import classes from './BatchManagementAvailableLotsDropdown.module.css';
 
 type BatchManagementAvailableLotOption = {
   id: string;
   label: string;
   cuitCount: number;
-};
-
-type BatchManagementAvailableLotsDropdownAnchor = {
-  bottom: number;
-  right: number;
 };
 
 type BatchManagementAvailableLotsDropdownProps = {
@@ -24,8 +20,6 @@ type BatchManagementAvailableLotsDropdownProps = {
   onClose: () => void;
   onSearchChange: (value: string) => void;
   onSelect: (lot: BatchManagementAvailableLotOption) => void;
-  mode?: 'inline-right' | 'fixed-anchor';
-  anchor?: BatchManagementAvailableLotsDropdownAnchor | null;
 };
 
 export function BatchManagementAvailableLotsDropdown({
@@ -36,29 +30,16 @@ export function BatchManagementAvailableLotsDropdown({
   error,
   onClose,
   onSearchChange,
-  onSelect,
-  mode = 'inline-right',
-  anchor = null
+  onSelect
 }: BatchManagementAvailableLotsDropdownProps) {
-  const fixedStyle = useMemo(() => {
-    if (mode !== 'fixed-anchor' || !anchor) {
-      return undefined;
-    }
+  const dropdown = useBatchManagementAvailableLotsDropdown({
+    opened,
+    options,
+    isPending,
+    error
+  });
 
-    const viewportWidth =
-      typeof window === 'undefined' ? anchor.right + 16 : window.innerWidth;
-
-    return {
-      top: anchor.bottom + 8,
-      right: Math.max(16, viewportWidth - anchor.right)
-    };
-  }, [anchor, mode]);
-
-  if (!opened) {
-    return null;
-  }
-
-  if (mode === 'fixed-anchor' && !anchor) {
+  if (!dropdown.shouldRender) {
     return null;
   }
 
@@ -66,32 +47,28 @@ export function BatchManagementAvailableLotsDropdown({
     <>
       <button
         type="button"
-        aria-label="Cerrar selector de lote"
+        aria-label={BATCH_MANAGEMENT_AVAILABLE_LOTS_DROPDOWN_TEXTS.closeAriaLabel}
         className={classes.backdrop}
         onClick={(event) => {
           event.stopPropagation();
           onClose();
         }}
       />
-      <div
-        className={`${classes.dropdown} ${
-          mode === 'fixed-anchor' ? classes.dropdownFixed : classes.dropdownInline
-        }`}
-        style={fixedStyle}
-        onClick={(event) => event.stopPropagation()}
-      >
+      <div className={classes.dropdown} onClick={(event) => event.stopPropagation()}>
         <TextInput
           classNames={{ input: classes.input }}
           value={search}
           onChange={(event) => onSearchChange(event.currentTarget.value)}
-          placeholder="Buscar lote..."
+          placeholder={BATCH_MANAGEMENT_AVAILABLE_LOTS_DROPDOWN_TEXTS.searchPlaceholder}
         />
         <div className={classes.list}>
-          {error ? (
-            <Text className={`${classes.state} ${classes.error}`}>{error}</Text>
-          ) : options.length === 0 ? (
-            <Text className={classes.state}>
-              {isPending ? 'Cargando lotes...' : 'No se encontraron lotes.'}
+          {dropdown.stateMessage ? (
+            <Text
+              className={`${classes.state} ${
+                dropdown.hasError ? classes.error : ''
+              }`}
+            >
+              {dropdown.stateMessage}
             </Text>
           ) : (
             options.map((lot) => (
@@ -102,7 +79,9 @@ export function BatchManagementAvailableLotsDropdown({
                 onClick={() => onSelect(lot)}
               >
                 <Text className={classes.optionTitle}>{lot.label}</Text>
-                <Text className={classes.optionMeta}>{lot.cuitCount} CUITs</Text>
+                <Text className={classes.optionMeta}>
+                  {lot.cuitCount} {BATCH_MANAGEMENT_AVAILABLE_LOTS_DROPDOWN_TEXTS.cuitCountSuffix}
+                </Text>
               </button>
             ))
           )}

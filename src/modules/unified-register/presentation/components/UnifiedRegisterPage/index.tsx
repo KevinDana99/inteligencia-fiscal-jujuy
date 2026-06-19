@@ -82,7 +82,6 @@ export function UnifiedRegisterPage({
           {pageError}
         </Text>
       ) : null}
-
       <SendToReprocessingModal
         opened={Boolean(selectedReprocessingItem)}
         onClose={closeReprocessingModal}

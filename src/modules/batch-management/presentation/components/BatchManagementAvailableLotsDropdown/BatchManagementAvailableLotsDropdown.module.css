@@ -8,6 +8,9 @@
 }
 
 .dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
   z-index: 9999;
   min-width: 280px;
   padding: 10px 12px 6px;
@@ -16,16 +19,6 @@
   background: var(--mantine-color-white);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   overflow: hidden;
-}
-
-.dropdownInline {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-}
-
-.dropdownFixed {
-  position: fixed;
 }
 
 .input {
