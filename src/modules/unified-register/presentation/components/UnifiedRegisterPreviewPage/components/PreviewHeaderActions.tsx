@@ -49,7 +49,6 @@ export function PreviewHeaderActions({ item, preview }: PreviewHeaderActionsProp
             onCrossTypeToggle: (_, section, crossType) =>
               preview.toggleCrossType(section, crossType),
             onConfirm: () => preview.confirmCrossExecution(),
-            navigateOnConfirm: false,
             onConfirmed: preview.closeHeaderModal
           }}
           target={<CrossMenuButton loading={preview.isAvailableCrossesHydrating} />}

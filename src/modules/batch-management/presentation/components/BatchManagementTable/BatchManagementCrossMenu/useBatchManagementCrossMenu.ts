@@ -59,6 +59,19 @@ export function useBatchManagementCrossMenu(
   )
 
   async function handleConfirm() {
+    console.log(
+      JSON.stringify(
+        {
+          action: 'useBatchManagementCrossMenu.handleConfirm',
+          batchId: controller.batchId,
+          canConfirm: controller.canConfirm,
+          isExecuting: controller.isExecuting
+        },
+        null,
+        2
+      )
+    )
+
     const wasConfirmed = await controller.onConfirm(controller.batchId)
 
     if (wasConfirmed) {

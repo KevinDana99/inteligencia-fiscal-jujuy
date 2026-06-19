@@ -84,6 +84,21 @@ export function usePreviewCrosses({
   };
 
   const confirmCrossExecution = async () => {
+    console.log(
+      JSON.stringify(
+        {
+          action: 'usePreviewCrosses.confirmCrossExecution',
+          contributorId,
+          crossValidationMessage,
+          canConfirmCrosses,
+          currentCrossFilters,
+          availableCrosses
+        },
+        null,
+        2
+      )
+    )
+
     if (crossValidationMessage) {
       setCrossExecutionError(crossValidationMessage);
       return false;
@@ -96,9 +111,32 @@ export function usePreviewCrosses({
     );
 
     if (!payloads.length) {
+      console.log(
+        JSON.stringify(
+          {
+            action: 'usePreviewCrosses.confirmCrossExecution',
+            contributorId,
+            payloads
+          },
+          null,
+          2
+        )
+      )
       setCrossExecutionError(getEmptyExecutableBatchCrossMessage(availableCrosses));
       return false;
     }
+
+    console.log(
+      JSON.stringify(
+        {
+          action: 'usePreviewCrosses.confirmCrossExecution',
+          contributorId,
+          payloads
+        },
+        null,
+        2
+      )
+    )
 
     clearCrossExecutionError();
     return await new Promise<boolean>((resolve) => {
