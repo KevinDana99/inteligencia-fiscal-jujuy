@@ -1,4 +1,5 @@
 .card {
+  position: relative;
   border: 1px solid var(--mantine-color-gray-2);
   border-radius: 14px;
   background: var(--mantine-color-white);
@@ -67,6 +68,7 @@
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+  position: relative;
 }
 
 .riskBadge {

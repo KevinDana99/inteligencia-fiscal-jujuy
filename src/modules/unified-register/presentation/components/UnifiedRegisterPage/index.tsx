@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
+import { Button, Group, Modal, Stack, Text } from '@mantine/core';
 import type { IUnifiedRegisterListData } from '../../../data/models/UnifiedRegister';
 import { SendToReprocessingModal } from '@/modules/reprocessing/presentation/components';
 import { UnifiedRegisterEmptyState } from '../UnifiedRegisterEmptyState';
@@ -54,6 +54,14 @@ export function UnifiedRegisterPage({
         <>
           <UnifiedRegisterList
             items={filteredItems}
+            selectedBatchItemId={selectedBatchItem?.contribuyenteId ?? null}
+            batchSearch={batchSearch}
+            filteredLotOptions={filteredLotOptions}
+            batchOptionsError={batchOptionsError}
+            isBatchOptionsPending={isBatchOptionsPending}
+            onCloseBatchDropdown={closeBatchModal}
+            onBatchSearchChange={setBatchSearch}
+            onSelectLotOption={selectLotOption}
             onAddToBatch={openBatchModal}
             onMarkReprocessing={openReprocessingModal}
           />
@@ -84,59 +92,6 @@ export function UnifiedRegisterPage({
         error={reprocessingActionError}
         onConfirm={confirmReprocessing}
       />
-
-      <Modal
-        opened={Boolean(selectedBatchItem) && !selectedLotOption}
-        onClose={closeBatchModal}
-        title="Agregar a lote"
-        centered
-        size={360}
-        zIndex={900}
-        classNames={{
-          overlay: classes.modalOverlay,
-          content: `${classes.modalContent} ${classes.batchModalContent}`,
-          header: classes.modalHeader,
-          body: `${classes.modalBody} ${classes.batchModalBody}`,
-          title: classes.modalTitle
-        }}
-      >
-        <Stack gap="sm" className={classes.batchModalStack}>
-          <TextInput
-            classNames={{ input: classes.batchDropdownInput }}
-            value={batchSearch}
-            onChange={(event) => setBatchSearch(event.currentTarget.value)}
-            placeholder="Buscar lote..."
-          />
-
-          <div className={classes.batchDropdownList}>
-            {batchOptionsError ? (
-              <Text className={`${classes.batchDropdownState} ${classes.batchDropdownError}`}>
-                {batchOptionsError}
-              </Text>
-            ) : filteredLotOptions.length === 0 ? (
-              <Text className={classes.batchDropdownState}>
-                {isBatchOptionsPending ? 'Cargando lotes...' : 'No se encontraron lotes.'}
-              </Text>
-            ) : (
-              filteredLotOptions.map((lot) => (
-                <button
-                  key={lot.id}
-                  type="button"
-                  className={classes.batchDropdownOption}
-                  onClick={() => selectLotOption(lot)}
-                >
-                  <Text className={classes.batchDropdownOptionTitle}>
-                    {lot.label}
-                  </Text>
-                  <Text className={classes.batchDropdownOptionMeta}>
-                    {lot.cuitCount} CUITs
-                  </Text>
-                </button>
-              ))
-            )}
-          </div>
-        </Stack>
-      </Modal>
 
       <Modal
         opened={Boolean(selectedLotOption)}

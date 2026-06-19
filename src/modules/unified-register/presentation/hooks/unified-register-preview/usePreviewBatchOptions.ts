@@ -23,8 +23,7 @@ export function usePreviewBatchOptions({
   setActiveHeaderModal
 }: UsePreviewBatchOptionsParams) {
   const [batchSearch, setBatchSearch] = useState('');
-  const [lotOptions, setLotOptions] =
-    useState<IUnifiedRegisterBatchOption[]>(item.lotOptions);
+  const [lotOptions, setLotOptions] = useState<IUnifiedRegisterBatchOption[]>([]);
   const [batchOptionsError, setBatchOptionsError] = useState<string | null>(null);
   const [addToBatchError, setAddToBatchError] = useState<string | null>(null);
   const [selectedLotOption, setSelectedLotOption] =
@@ -37,6 +36,15 @@ export function usePreviewBatchOptions({
     () => filterLotOptions(lotOptions, batchSearch),
     [batchSearch, lotOptions]
   );
+
+  useEffect(() => {
+    if (activeHeaderModal !== 'batch') {
+      return;
+    }
+
+    setLotOptions([]);
+    setBatchOptionsError(null);
+  }, [activeHeaderModal]);
 
   useEffect(() => {
     if (activeHeaderModal !== 'batch') {

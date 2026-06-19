@@ -1,10 +1,10 @@
 import { forwardRef, type ComponentPropsWithoutRef } from 'react';
 import { Button, Group } from '@mantine/core';
 import { IconChevronDown, IconFileText, IconListDetails } from '@tabler/icons-react';
+import { BatchManagementAvailableLotsDropdown } from '@/modules/batch-management/presentation/components/BatchManagementAvailableLotsDropdown';
 import { BatchManagementCrossMenu } from '@/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementCrossMenu';
 import type { IUnifiedRegisterDetail } from '../../../../data/models/UnifiedRegister';
 import type { PreviewController } from '../types';
-import { BatchLotDropdown } from './BatchLotDropdown';
 import classes from '../UnifiedRegisterPreviewPage.module.css';
 
 type PreviewHeaderActionsProps = {
@@ -78,7 +78,16 @@ export function PreviewHeaderActions({ item, preview }: PreviewHeaderActionsProp
         >
           Agregar a lote
         </Button>
-        <BatchLotDropdown preview={preview} />
+        <BatchManagementAvailableLotsDropdown
+          opened={preview.activeHeaderModal === 'batch' && !preview.selectedLotOption}
+          search={preview.batchSearch}
+          options={preview.filteredLotOptions}
+          isPending={preview.isBatchOptionsPending}
+          error={preview.batchOptionsError}
+          onClose={preview.closeHeaderModal}
+          onSearchChange={preview.setBatchSearch}
+          onSelect={preview.selectLotOption}
+        />
       </div>
     </div>
   );
