@@ -3,7 +3,7 @@
 import { Group, Select, Text } from '@mantine/core'
 import type { BatchManagementCrossSectionController } from '../BatchManagementCrossMenu/useBatchManagementCrossMenu'
 import styles from './BatchManagementCrossPeriodFields.module.css'
-import { IconArrowRight, IconArrowRightFromArc } from '@tabler/icons-react'
+import { IconArrowRight } from '@tabler/icons-react'
 
 type BatchManagementCrossPeriodFieldsProps = {
   section: BatchManagementCrossSectionController

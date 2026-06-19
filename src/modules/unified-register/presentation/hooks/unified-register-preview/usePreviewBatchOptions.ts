@@ -42,15 +42,6 @@ export function usePreviewBatchOptions({
       return;
     }
 
-    setLotOptions([]);
-    setBatchOptionsError(null);
-  }, [activeHeaderModal]);
-
-  useEffect(() => {
-    if (activeHeaderModal !== 'batch') {
-      return;
-    }
-
     const requestId = latestRequestIdRef.current + 1;
     latestRequestIdRef.current = requestId;
     const timeoutId = setTimeout(() => {
@@ -80,6 +71,13 @@ export function usePreviewBatchOptions({
 
   const resetBatchSearch = () => {
     setBatchSearch('');
+  };
+
+  const resetBatchOptions = () => {
+    latestRequestIdRef.current += 1;
+    setLotOptions([]);
+    setBatchOptionsError(null);
+    setAddToBatchError(null);
   };
 
   const selectLotOption = (lot: IUnifiedRegisterBatchOption) => {
@@ -141,6 +139,7 @@ export function usePreviewBatchOptions({
     setBatchSearch,
     clearBatchErrors,
     resetBatchSearch,
+    resetBatchOptions,
     selectLotOption,
     closeLotConfirmModal,
     confirmLotSelection

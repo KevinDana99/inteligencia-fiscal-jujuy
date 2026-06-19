@@ -8,7 +8,6 @@ import type {
 } from '../../models/CrossManagement'
 import { normalizeIntimationDocumentPayload } from '../../utils/normalizeIntimationDocumentPayload'
 import { resolveCrossManagementActionError } from '../shared/resolveCrossManagementActionError'
-import util from 'util'
 
 export async function generateIntimationDocumentAction(
   payload: IGenerateIntimationDocumentPayload

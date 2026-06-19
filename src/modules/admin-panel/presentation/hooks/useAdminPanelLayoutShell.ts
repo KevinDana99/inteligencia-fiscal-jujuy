@@ -14,7 +14,6 @@ import { buildAllowedDomainsKey } from '../utils/buildAllowedDomainsKey'
 import { getAdminPanelSectionFromPathname } from '../utils/getAdminPanelSectionFromPathname'
 
 export function useAdminPanelLayoutShell({
-  session,
   initialAllowedDomains
 }: UseAdminPanelLayoutShellOptions) {
   const pathname = usePathname()

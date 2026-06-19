@@ -1,7 +1,5 @@
-import { Suspense } from "react";
 import { getCrossPreviewAction } from "./data/actions";
 import { CrossPreviewPage } from "./presentation/components/CrossPreviewPage";
-import { CrossPreviewPageLoader } from "./presentation/components/CrossPreviewPage/CrossPreviewPageLoader";
 
 interface CrossPreviewModuleProps {
   params: Promise<{ crossId: string }>;

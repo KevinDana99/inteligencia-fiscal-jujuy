@@ -93,7 +93,7 @@ export function useUnifiedRegisterPreview({
 
   const openHeaderModal = (modal: HeaderModal) => {
     if (modal === 'reprocessing') reprocessing.clearReprocessingError();
-    if (modal === 'batch') batch.clearBatchErrors();
+    if (modal === 'batch') batch.resetBatchOptions();
     if (modal === 'crosses') crosses.clearCrossExecutionError();
     setActiveHeaderModal(modal);
   };
