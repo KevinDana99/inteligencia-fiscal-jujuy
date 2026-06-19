@@ -49,7 +49,8 @@ export function PreviewHeaderActions({ item, preview }: PreviewHeaderActionsProp
             onCrossTypeToggle: (_, section, crossType) =>
               preview.toggleCrossType(section, crossType),
             onConfirm: () => preview.confirmCrossExecution(),
-            onConfirmed: preview.closeHeaderModal
+            onConfirmed: preview.closeHeaderModal,
+            confirmRedirectHref: '/gestion-de-cruces'
           }}
           target={<CrossMenuButton loading={preview.isAvailableCrossesHydrating} />}
           position="bottom-start"
@@ -97,13 +98,14 @@ type CrossMenuButtonProps = ComponentPropsWithoutRef<'button'> & {
 };
 
 const CrossMenuButton = forwardRef<HTMLButtonElement, CrossMenuButtonProps>(
-  function CrossMenuButton({ loading, className, ...props }, ref) {
+  function CrossMenuButton({ loading, disabled, className, ...props }, ref) {
     return (
       <button
         {...props}
         ref={ref}
         type="button"
         className={[classes.secondaryAction, className].filter(Boolean).join(' ')}
+        disabled={disabled || loading}
       >
         <IconListDetails size={12} className={classes.secondaryActionIcon} />
         <span>{loading ? 'Cargando cruces...' : 'Cruces a realizar'}</span>

@@ -1,5 +1,25 @@
 # Unified Register Feature Story
 
+## Preview Cross Menu Target Fix - 2026-06-19
+
+### Summary
+
+Fixed the `/vista-previa-padron/[cuit]` header action `Cruces a realizar` so it opens the same cross execution menu used by `Gestión de Lotes`.
+
+### Main Changes
+
+- Updated the custom cross menu trigger to forward Mantine `Menu.Target` props and ref to the underlying button.
+- Kept the existing individual execution flow, which maps selected crosses to `POST /api/procesos-informacion/cruces/{codigoCruce}/ejecuciones` with `tipoOrigen: "individual"`, `loteId: null`, and `contribuyenteId`.
+- Disabled the trigger while the available-cross catalog is hydrating, preserving the existing `Cargando cruces...` feedback.
+
+### Validation
+
+- Reviewed local Swagger `http://localhost:5001/swagger/v1/swagger.json`: the endpoint uses `SolicitudEjecutarCruce` and supports nullable `loteId` and `contribuyenteId`.
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/components/PreviewHeaderActions.tsx`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit --incremental false`
+- `git diff --check`
+- Local private-route check: `http://localhost:3000/vista-previa-padron/20-10000944-8` and `http://localhost:3000/gestion-de-lotes` return `307 /login` with expired auth cookies without a valid session.
+
 ## Informe Cross Column Picker - 2026-06-17
 
 ### Summary
