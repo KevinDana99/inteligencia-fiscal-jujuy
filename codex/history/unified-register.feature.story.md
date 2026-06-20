@@ -600,3 +600,18 @@ Disabled the `/` Padrón Unificado search input while a search request is pendin
 
 - `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/.bin/eslint src/modules/unified-register/presentation/components/UnifiedRegisterPage/index.tsx src/modules/unified-register/presentation/components/UnifiedRegisterSearch/index.tsx`
 - `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+
+## Preview Activity Pills Vertical Alignment - 2026-06-20
+
+### Summary
+
+Adjusted the `/vista-previa-padron/[cuit]` activity pills so the badge text is vertically centered and aligned with each activity row.
+
+### Main Changes
+
+- Centered activity row items vertically.
+- Made activity badge roots and labels use inline flex alignment with a stable line height.
+
+### Validation
+
+- `git diff --check`

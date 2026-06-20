@@ -58,3 +58,18 @@ Added Mantine `Pagination` to `/reproceso` and connected it to the existing pagi
 - `bun x tsc --noEmit --incremental false`
 - `bun run lint`
 - `bun x jest src/modules/unified-register/data/utils/resolveUnifiedRegisterPreviewContributor.test.ts --runInBand`
+
+## 2026-06-20 Espaciado en modal quitar reproceso
+
+### Summary
+
+Added vertical spacing below the remove-from-reprocessing modal header.
+
+### Main Changes
+
+- Updated `ReprocessingRemoveModal.module.css` so the modal body starts 20px below the header divider.
+- Kept the modal structure, labels, Mantine usage, and destructive action behavior unchanged.
+
+### Validation
+
+- Verification with Bun was not run because `bun` is not available in the environment (`command not found`).
