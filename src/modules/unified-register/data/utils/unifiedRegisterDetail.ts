@@ -10,6 +10,60 @@ function getNullableText(value: string | null | undefined) {
   return value ?? '';
 }
 
+function parseHeaderCurrencyAmount(value: string | null | undefined) {
+  const rawValue = getNullableText(value).trim();
+
+  if (!rawValue || /[a-z]/i.test(rawValue.replace(/\bARS\b/gi, ''))) {
+    return null;
+  }
+
+  const sanitizedValue = rawValue.replace(/\bARS\b/gi, '').replace(/[^\d,.-]/g, '');
+
+  if (!/\d/.test(sanitizedValue)) {
+    return null;
+  }
+
+  const lastCommaIndex = sanitizedValue.lastIndexOf(',');
+  const lastDotIndex = sanitizedValue.lastIndexOf('.');
+  const hasComma = lastCommaIndex !== -1;
+  const hasDot = lastDotIndex !== -1;
+  let normalizedValue = sanitizedValue;
+
+  if (hasComma && hasDot) {
+    normalizedValue =
+      lastCommaIndex > lastDotIndex
+        ? sanitizedValue.replace(/\./g, '').replace(',', '.')
+        : sanitizedValue.replace(/,/g, '');
+  } else if (hasComma) {
+    normalizedValue = sanitizedValue.replace(/\./g, '').replace(',', '.');
+  } else if (/^-?\d{1,3}(?:\.\d{3})+$/.test(sanitizedValue)) {
+    normalizedValue = sanitizedValue.replace(/\./g, '');
+  }
+
+  const numericValue = Number(normalizedValue);
+
+  return Number.isFinite(numericValue) ? numericValue : null;
+}
+
+function formatHeaderCurrency(value: string | null | undefined) {
+  const numericValue = parseHeaderCurrencyAmount(value);
+
+  if (numericValue === null) {
+    return getNullableText(value);
+  }
+
+  const hasDecimals = !Number.isInteger(numericValue);
+
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    minimumFractionDigits: hasDecimals ? 2 : 0,
+    maximumFractionDigits: 2
+  })
+    .format(numericValue)
+    .replace(/\u00a0/g, ' ');
+}
+
 function formatHeaderDate(value: string | null | undefined) {
   const normalizedValue = getNullableText(value).trim();
 
@@ -52,15 +106,15 @@ function applyHeaderWidgetValues(
 ) {
   return widgets.map((widget) => {
     if (widget.id === 'declared-bi') {
-      return { ...widget, value: getNullableText(header.biDeclarada) };
+      return { ...widget, value: formatHeaderCurrency(header.biDeclarada) };
     }
 
     if (widget.id === 'declared-taxes') {
-      return { ...widget, value: getNullableText(header.impuestosDeclarados) };
+      return { ...widget, value: formatHeaderCurrency(header.impuestosDeclarados) };
     }
 
     if (widget.id === 'debt') {
-      return { ...widget, value: getNullableText(header.deuda) };
+      return { ...widget, value: formatHeaderCurrency(header.deuda) };
     }
 
     if (widget.id === 'returns') {

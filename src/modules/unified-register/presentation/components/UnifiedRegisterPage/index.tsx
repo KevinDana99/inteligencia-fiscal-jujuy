@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, Group, Modal, Stack, Text } from '@mantine/core';
+import { useCallback } from 'react';
 import type { IUnifiedRegisterListData } from '../../../data/models/UnifiedRegister';
 import { SendToReprocessingModal } from '@/modules/reprocessing/presentation/components';
 import { UnifiedRegisterEmptyState } from '../UnifiedRegisterEmptyState';
@@ -17,6 +18,7 @@ export function UnifiedRegisterPage({
 }) {
   const {
     search,
+    handleSearchBlur,
     handleSearchChange,
     filteredItems,
     hasResults,
@@ -24,6 +26,7 @@ export function UnifiedRegisterPage({
     setActivePage,
     totalPages,
     isPagePending,
+    isSearchPending,
     pageError,
     selectedReprocessingItem,
     selectedBatchItem,
@@ -46,9 +49,22 @@ export function UnifiedRegisterPage({
     confirmLotSelection
   } = useUnifiedRegisterPage(initialData);
 
+  const handlePageChange = useCallback(
+    (page: number) => {
+      setActivePage(page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    [setActivePage]
+  );
+
   return (
     <div className={classes.page}>
-      <UnifiedRegisterSearch value={search} onChange={handleSearchChange} />
+      <UnifiedRegisterSearch
+        disabled={isSearchPending}
+        value={search}
+        onBlur={handleSearchBlur}
+        onChange={handleSearchChange}
+      />
 
       {hasResults ? (
         <>
@@ -69,7 +85,7 @@ export function UnifiedRegisterPage({
           <UnifiedRegisterPagination
             totalPages={totalPages}
             activePage={activePage}
-            onChange={setActivePage}
+            onChange={handlePageChange}
             disabled={isPagePending}
           />
         </>

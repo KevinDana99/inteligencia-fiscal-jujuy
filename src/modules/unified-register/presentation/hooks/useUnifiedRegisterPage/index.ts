@@ -22,9 +22,9 @@ export function useUnifiedRegisterPage(initialData: IUnifiedRegisterListData | n
   });
   const setActivePage = useCallback(
     (page: number) => {
-      pagination.setActivePage(page, search.search);
+      pagination.setActivePage(page, search.appliedSearch);
     },
-    [pagination, search.search]
+    [pagination, search.appliedSearch]
   );
 
   return {

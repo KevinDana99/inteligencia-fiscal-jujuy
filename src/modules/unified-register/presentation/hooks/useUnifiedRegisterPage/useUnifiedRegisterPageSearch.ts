@@ -5,7 +5,8 @@ import {
   useRef,
   useState,
   useTransition,
-  type ChangeEvent
+  type ChangeEvent,
+  type FocusEvent
 } from 'react';
 import { getUnifiedRegisterListAction } from '../../../data/actions';
 import type {
@@ -31,23 +32,29 @@ export function useUnifiedRegisterPageSearch({
   onSearchResult
 }: UseUnifiedRegisterPageSearchParams) {
   const [search, setSearch] = useState('');
+  const [appliedSearch, setAppliedSearch] = useState('');
   const [isSearchPending, startSearchTransition] = useTransition();
   const searchRequestSequence = useRef(0);
 
-  const handlePageSearchChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const nextSearch = event.currentTarget.value;
+  const applySearch = useCallback(
+    (nextSearch: string) => {
+      const normalizedSearch = nextSearch.trim();
+
+      if (normalizedSearch === appliedSearch) {
+        return;
+      }
+
       const requestSequence = searchRequestSequence.current + 1;
 
       searchRequestSequence.current = requestSequence;
-      setSearch(nextSearch);
+      setAppliedSearch(normalizedSearch);
       onSearchChange();
 
       startSearchTransition(async () => {
         const result = await getUnifiedRegisterListAction(
           1,
           UNIFIED_REGISTER_PAGE_DEFAULT_ITEMS_PER_PAGE,
-          nextSearch
+          normalizedSearch
         );
 
         if (requestSequence !== searchRequestSequence.current) {
@@ -62,12 +69,28 @@ export function useUnifiedRegisterPageSearch({
         onSearchResult(result.data);
       });
     },
-    [onSearchChange, onSearchError, onSearchResult]
+    [appliedSearch, onSearchChange, onSearchError, onSearchResult]
+  );
+
+  const handlePageSearchChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setSearch(event.currentTarget.value);
+    },
+    []
+  );
+
+  const handlePageSearchBlur = useCallback(
+    (event: FocusEvent<HTMLInputElement>) => {
+      applySearch(event.currentTarget.value);
+    },
+    [applySearch]
   );
 
   return {
     search,
+    appliedSearch,
     filteredItems: items,
+    handleSearchBlur: handlePageSearchBlur,
     handleSearchChange: handlePageSearchChange,
     hasResults: items.length > 0,
     isSearchPending

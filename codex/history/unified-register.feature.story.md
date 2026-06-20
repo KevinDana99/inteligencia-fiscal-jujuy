@@ -535,3 +535,68 @@ Connected the report-generation cross column picker to `GET /api/contribuyentes/
 - `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/hooks/informe-generation/useInformeCrosses.ts src/modules/unified-register/presentation/components/InformeGenerationModal/components/CrossColumnsPickerModal.tsx`
 - `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/jest/bin/jest.js src/modules/unified-register/presentation/utils/buildInformeGenerationPayload.test.ts --runInBand`
 - `git diff --check`
+
+## Preview Declared Amount Currency Formatting - 2026-06-20
+
+### Summary
+
+Formatted the `/vista-previa-padron/[cuit]` preview KPI values for `BI Declarada`, `Impuestos declarados`, and `Deuda` as ARS currency when header data arrives as numeric strings.
+
+### Main Changes
+
+- Added numeric currency parsing and `es-AR` ARS formatting in `applyUnifiedRegisterHeaderToDetail` before assigning declared BI, declared taxes, and debt widget values.
+- Kept non-numeric compact mock labels unchanged so existing fixture-only values are not reinterpreted into unsupported magnitudes.
+- Added focused tests for numeric header values and compact mock labels across the amount widgets.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/.bin/jest src/modules/unified-register/data/utils/unifiedRegisterDetail.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/.bin/eslint src/modules/unified-register/data/utils/unifiedRegisterDetail.ts src/modules/unified-register/data/utils/unifiedRegisterDetail.test.ts`
+
+## Unified Register Search On Blur - 2026-06-20
+
+### Summary
+
+Changed the `/` Padrón Unificado search input so typing only updates the local field value, while the list request starts when the input loses focus.
+
+### Main Changes
+
+- Added an `onBlur` handler to `UnifiedRegisterSearch`.
+- Split typed search text from the applied search term in `useUnifiedRegisterPageSearch`.
+- Kept pagination requests tied to the last applied search value instead of the unconfirmed input value.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/.bin/eslint src/modules/unified-register/presentation/components/UnifiedRegisterPage/index.tsx src/modules/unified-register/presentation/components/UnifiedRegisterSearch/index.tsx src/modules/unified-register/presentation/hooks/useUnifiedRegisterPage/index.ts src/modules/unified-register/presentation/hooks/useUnifiedRegisterPage/useUnifiedRegisterPageSearch.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+
+## Unified Register Pagination Scroll Reset - 2026-06-20
+
+### Summary
+
+Updated the `/` Padrón Unificado pagination so changing pages scrolls the dashboard view back to the top.
+
+### Main Changes
+
+- Wrapped the pagination `onChange` handler in `UnifiedRegisterPage` to keep the existing page fetch behavior and call `window.scrollTo({ top: 0, behavior: 'smooth' })`.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/.bin/eslint src/modules/unified-register/presentation/components/UnifiedRegisterPage/index.tsx`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+
+## Unified Register Search Disabled Loading State - 2026-06-20
+
+### Summary
+
+Disabled the `/` Padrón Unificado search input while a search request is pending.
+
+### Main Changes
+
+- Added a `disabled` prop to `UnifiedRegisterSearch`.
+- Connected the input disabled state to `isSearchPending` from `useUnifiedRegisterPage`.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/.bin/eslint src/modules/unified-register/presentation/components/UnifiedRegisterPage/index.tsx src/modules/unified-register/presentation/components/UnifiedRegisterSearch/index.tsx`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
