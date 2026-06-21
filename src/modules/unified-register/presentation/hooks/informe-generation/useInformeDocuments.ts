@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import {
   type DocumentDownloadFormat,
   type IGeneratedInformeDocuments,
@@ -40,12 +40,16 @@ export function useInformeDocuments({
   const [downloadError, setDownloadError] = useState<string | null>(null);
   const [downloadingFormat, setDownloadingFormat] =
     useState<DocumentDownloadFormat | null>(null);
-  const [isGenerating, startGenerationTransition] = useTransition();
-  const [isDownloading, startDownloadTransition] = useTransition();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const clearGenerationError = () => setGenerationError(null);
 
   const generateDocuments = () => {
+    if (isGenerating) {
+      return;
+    }
+
     const validationError = validateGeneration(
       form,
       selectedCrossIds,
@@ -64,7 +68,8 @@ export function useInformeDocuments({
     );
     clearGenerationError();
     setDownloadError(null);
-    startGenerationTransition(async () => {
+    setIsGenerating(true);
+    void (async () => {
       try {
         const generatedInformeDocuments = await generateInformeDocuments(payload);
         setGeneratedDocuments(generatedInformeDocuments);
@@ -74,11 +79,17 @@ export function useInformeDocuments({
         setGenerationError(
           resolveInformeDocumentError(error, 'No fue posible generar el informe.')
         );
+      } finally {
+        setIsGenerating(false);
       }
-    });
+    })();
   };
 
   const downloadGeneratedDocument = (formato: DocumentDownloadFormat) => {
+    if (isDownloading) {
+      return;
+    }
+
     const documentToDownload = generatedDocuments?.[formato];
     if (!documentToDownload) {
       setDownloadError('Todavía no hay un documento generado para descargar.');
@@ -86,7 +97,8 @@ export function useInformeDocuments({
     }
     setDownloadError(null);
     setDownloadingFormat(formato);
-    startDownloadTransition(async () => {
+    setIsDownloading(true);
+    void (async () => {
       try {
         await downloadInformeDocument({
           documentId: documentToDownload.documentoId,
@@ -101,8 +113,9 @@ export function useInformeDocuments({
         );
       } finally {
         setDownloadingFormat(null);
+        setIsDownloading(false);
       }
-    });
+    })();
   };
 
   const backToForm = () => {
@@ -117,6 +130,8 @@ export function useInformeDocuments({
     setGenerationError(null);
     setDownloadError(null);
     setDownloadingFormat(null);
+    setIsGenerating(false);
+    setIsDownloading(false);
   };
 
   return {

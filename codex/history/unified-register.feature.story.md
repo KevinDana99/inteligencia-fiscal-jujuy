@@ -13,6 +13,7 @@ Moved the informe generation and download client flow away from client-invoked S
 - Updated informe downloads to fetch the existing document download BFF route directly, avoiding `downloadDocumentAction` hashes after redeploys.
 - Allowed the shared download BFF route to return mock document bytes when `NEXT_PUBLIC_USE_MOCK_DOCUMENTS=true`.
 - Added auth retry support to the documents REST client by carrying `refreshAccessToken` through `createServerDocumentsSource()` and using `fetchWithAuthRetry` for informe generation and binary downloads.
+- Replaced transition-derived loading flags with explicit generation/download state and request timeouts so the informe buttons cannot remain blocked indefinitely when production requests hang.
 
 ### Validation
 

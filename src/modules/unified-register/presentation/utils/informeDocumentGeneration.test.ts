@@ -117,4 +117,14 @@ describe('generateInformeDocuments', () => {
       }
     });
   });
+
+  test('returns a timeout message when informe generation is aborted', async () => {
+    const abortError = new DOMException('The operation was aborted.', 'AbortError');
+
+    fetchMock.mockRejectedValueOnce(abortError).mockRejectedValueOnce(abortError);
+
+    await expect(generateInformeDocuments(payload)).rejects.toThrow(
+      'La operación tardó demasiado. Intentá nuevamente en unos instantes.'
+    );
+  });
 });

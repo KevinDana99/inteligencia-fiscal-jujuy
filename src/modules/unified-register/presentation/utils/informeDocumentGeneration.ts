@@ -19,8 +19,25 @@ const INFORME_DOCUMENT_EXTENSIONS: Record<DocumentDownloadFormat, string> = {
 
 const INFORME_DOCUMENT_ERRORS = {
   generationFailed: 'No fue posible generar el informe.',
-  downloadFailed: 'No fue posible descargar el documento.'
+  downloadFailed: 'No fue posible descargar el documento.',
+  requestTimeout:
+    'La operación tardó demasiado. Intentá nuevamente en unos instantes.'
 } as const;
+
+const INFORME_DOCUMENT_REQUEST_TIMEOUT_MS = 180000;
+
+function createRequestTimeout() {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(
+    () => controller.abort(),
+    INFORME_DOCUMENT_REQUEST_TIMEOUT_MS
+  );
+
+  return {
+    signal: controller.signal,
+    clear: () => clearTimeout(timeoutId)
+  };
+}
 
 function resolveErrorMessage(errorData: unknown, fallbackMessage: string) {
   if (typeof errorData !== 'object' || errorData === null) {
@@ -70,6 +87,27 @@ async function parseResponseError(response: Response, fallbackMessage: string) {
   }
 }
 
+function resolveFetchErrorMessage(error: unknown, fallbackMessage: string) {
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'name' in error &&
+    error.name === 'AbortError'
+  ) {
+    return INFORME_DOCUMENT_ERRORS.requestTimeout;
+  }
+
+  if (error instanceof Error && error.name === 'AbortError') {
+    return INFORME_DOCUMENT_ERRORS.requestTimeout;
+  }
+
+  if (error instanceof Error && error.message.trim()) {
+    return error.message;
+  }
+
+  return fallbackMessage;
+}
+
 function buildDownloadFileName(
   documentId: string,
   format: DocumentDownloadFormat
@@ -80,13 +118,25 @@ function buildDownloadFileName(
 async function generateInformeDocument(
   payload: IGenerateInformeDocumentPayload
 ): Promise<IGeneratedDocument> {
-  const response = await fetch(INFORME_DOCUMENT_API_ENDPOINTS.generate, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(payload)
-  });
+  const timeout = createRequestTimeout();
+  let response: Response;
+
+  try {
+    response = await fetch(INFORME_DOCUMENT_API_ENDPOINTS.generate, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload),
+      signal: timeout.signal
+    });
+  } catch (error) {
+    throw new Error(
+      resolveFetchErrorMessage(error, INFORME_DOCUMENT_ERRORS.generationFailed)
+    );
+  } finally {
+    timeout.clear();
+  }
 
   if (!response.ok) {
     throw new Error(
@@ -138,7 +188,20 @@ export async function downloadInformeDocument({
     encodeURIComponent(documentId),
     format
   );
-  const response = await fetch(endpoint);
+  const timeout = createRequestTimeout();
+  let response: Response;
+
+  try {
+    response = await fetch(endpoint, {
+      signal: timeout.signal
+    });
+  } catch (error) {
+    throw new Error(
+      resolveFetchErrorMessage(error, INFORME_DOCUMENT_ERRORS.downloadFailed)
+    );
+  } finally {
+    timeout.clear();
+  }
 
   if (!response.ok) {
     throw new Error(
