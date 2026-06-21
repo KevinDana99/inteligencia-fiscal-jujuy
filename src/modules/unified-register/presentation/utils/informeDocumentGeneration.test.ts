@@ -1,0 +1,120 @@
+import type { IGenerateInformeDocumentsPayload } from '@/modules/documents';
+import { generateInformeDocuments } from './informeDocumentGeneration';
+
+const payload: IGenerateInformeDocumentsPayload = {
+  contribuyenteId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+  destinatario: 'CRA. MARCELA FIGUEROA',
+  titulo: 'INFORME DE INVESTIGACIÓN',
+  datosContribuyente: {
+    razonSocial: 'VOLKSWAGEN S.A.',
+    cuit: '30-50026913-4',
+    domicilioFiscal: 'Belgrano 890, S.S. de Jujuy',
+    domicilioFiscalElectronico: true,
+    emailInformado: 'contacto@volkswagen.com.ar',
+    riesgoFiscal: 'A',
+    actividadesDeclaradas: ['Fabricacion de automotores']
+  },
+  datosAccionFiscalizadora: {
+    origenPedido: 'DPTO. INTELIGENCIA FISCAL',
+    periodo: '01/2025 - 03/2026',
+    origenOI: null,
+    programa: 'VERIFICACION DE BASE IMPONIBLE',
+    tipoInstruccion: 'INVESTIGACION',
+    impuestoNeto: null,
+    impuestosAVerificar: 'INGRESOS BRUTOS'
+  },
+  crucesSeleccionados: [
+    {
+      nombre: 'Control de desvio de BI',
+      columnasSeleccionadas: {
+        claves: ['baseImponibleIngresosBrutos', 'diferenciaBI'],
+        filas: [
+          {
+            periodo: '2025',
+            baseImponibleIngresosBrutos: '$29.525.523',
+            diferenciaBI: '$207.204.355'
+          }
+        ]
+      }
+    }
+  ]
+};
+
+describe('generateInformeDocuments', () => {
+  const originalFetch = globalThis.fetch;
+  const fetchMock = jest.fn<Promise<Response>, Parameters<typeof fetch>>();
+
+  beforeEach(() => {
+    fetchMock.mockReset();
+    globalThis.fetch = fetchMock as typeof fetch;
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  test('requests both informe formats through the stable BFF route', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            documentoId: 'documento-pdf',
+            urlDescarga: '/api/documentos/documento-pdf/descargar'
+          }),
+          { status: 201 }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            documentoId: 'documento-docx',
+            urlDescarga: '/api/documentos/documento-docx/descargar'
+          }),
+          { status: 201 }
+        )
+      );
+
+    const result = await generateInformeDocuments(payload);
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      '/api/documentos/informe/generar',
+      expect.objectContaining({
+        method: 'POST'
+      })
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      '/api/documentos/informe/generar',
+      expect.objectContaining({
+        method: 'POST'
+      })
+    );
+
+    const requestBodies = fetchMock.mock.calls.map(([, requestInit]) =>
+      JSON.parse(String(requestInit?.body))
+    );
+
+    expect(requestBodies).toEqual([
+      {
+        ...payload,
+        formato: 'Pdf'
+      },
+      {
+        ...payload,
+        formato: 'Docx'
+      }
+    ]);
+    expect(result).toEqual({
+      pdf: {
+        documentoId: 'documento-pdf',
+        urlDescarga: '/api/documentos/documento-pdf/descargar'
+      },
+      docx: {
+        documentoId: 'documento-docx',
+        urlDescarga: '/api/documentos/documento-docx/descargar'
+      }
+    });
+  });
+});

@@ -122,7 +122,10 @@ export async function GET(
     )
   }
 
-  if (process.env.NEXT_PUBLIC_USE_MOCK_CROSS_MANAGEMENT === 'true') {
+  if (
+    process.env.NEXT_PUBLIC_USE_MOCK_CROSS_MANAGEMENT === 'true' ||
+    process.env.NEXT_PUBLIC_USE_MOCK_DOCUMENTS === 'true'
+  ) {
     console.info({
       action: 'downloadIntimationDocumentRoute.mock_response',
       documentId: documentoId,

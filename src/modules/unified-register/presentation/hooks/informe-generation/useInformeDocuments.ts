@@ -2,8 +2,6 @@
 
 import { useState, useTransition } from 'react';
 import {
-  downloadDocumentAction,
-  generateInformeDocumentsAction,
   type DocumentDownloadFormat,
   type IGeneratedInformeDocuments,
   type IGenerateInformeDocumentsPayload
@@ -11,7 +9,10 @@ import {
 import type { IUnifiedRegisterDetail } from '../../../data/models/UnifiedRegister';
 import type { InformeCrossOption, InformeGenerationForm } from '../../constants/informeGeneration';
 import { buildInformeGenerationPayload } from '../../utils/buildInformeGenerationPayload';
-import { downloadBase64File } from '../../utils/downloadBase64File';
+import {
+  downloadInformeDocument,
+  generateInformeDocuments
+} from '../../utils/informeDocumentGeneration';
 
 type InformeGenerationStep = 'form' | 'preview';
 
@@ -64,14 +65,16 @@ export function useInformeDocuments({
     clearGenerationError();
     setDownloadError(null);
     startGenerationTransition(async () => {
-      const result = await generateInformeDocumentsAction(payload);
-      if (!result.success || !result.data) {
-        setGenerationError(result.error ?? 'No fue posible generar el informe.');
-        return;
+      try {
+        const generatedInformeDocuments = await generateInformeDocuments(payload);
+        setGeneratedDocuments(generatedInformeDocuments);
+        setPreviewPayload(payload);
+        setStep('preview');
+      } catch (error) {
+        setGenerationError(
+          resolveInformeDocumentError(error, 'No fue posible generar el informe.')
+        );
       }
-      setGeneratedDocuments(result.data);
-      setPreviewPayload(payload);
-      setStep('preview');
     });
   };
 
@@ -84,16 +87,21 @@ export function useInformeDocuments({
     setDownloadError(null);
     setDownloadingFormat(formato);
     startDownloadTransition(async () => {
-      const result = await downloadDocumentAction(
-        documentToDownload.documentoId,
-        formato
-      );
-      setDownloadingFormat(null);
-      if (!result.success || !result.data) {
-        setDownloadError(result.error ?? 'No fue posible descargar el documento.');
-        return;
+      try {
+        await downloadInformeDocument({
+          documentId: documentToDownload.documentoId,
+          format: formato
+        });
+      } catch (error) {
+        setDownloadError(
+          resolveInformeDocumentError(
+            error,
+            'No fue posible descargar el documento.'
+          )
+        );
+      } finally {
+        setDownloadingFormat(null);
       }
-      downloadBase64File(result.data);
     });
   };
 
@@ -132,4 +140,10 @@ function validateGeneration(
     return 'Los cruces seleccionados no tienen datos suficientes para generar el informe.';
   }
   return null;
+}
+
+function resolveInformeDocumentError(error: unknown, fallbackMessage: string) {
+  return error instanceof Error && error.message.trim()
+    ? error.message
+    : fallbackMessage;
 }

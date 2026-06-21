@@ -1,5 +1,25 @@
 # Unified Register Feature Story
 
+## Informe Generation BFF Route - 2026-06-21
+
+### Summary
+
+Moved the informe generation and download client flow away from client-invoked Server Actions so production deployments do not fail when a browser tab has Server Action ids from an older build.
+
+### Main Changes
+
+- Added `POST /api/documentos/informe/generar` as a frontend BFF route that validates `contribuyenteId` and `formato`, reuses the documents source, and propagates backend-style error responses.
+- Updated the informe generation hook to call stable frontend API routes with explicit `formato: "Pdf"` and `formato: "Docx"` payloads instead of calling `generateInformeDocumentsAction` from the browser.
+- Updated informe downloads to fetch the existing document download BFF route directly, avoiding `downloadDocumentAction` hashes after redeploys.
+- Allowed the shared download BFF route to return mock document bytes when `NEXT_PUBLIC_USE_MOCK_DOCUMENTS=true`.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js app/api/documentos/informe/generar/route.ts 'app/api/documentos/[documentoId]/descargar/route.ts' src/modules/unified-register/presentation/hooks/informe-generation/useInformeDocuments.ts src/modules/unified-register/presentation/utils/informeDocumentGeneration.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js src/modules/documents/data/sources/rest/RestDocumentsSource.test.ts src/modules/unified-register/presentation/utils/informeDocumentGeneration.test.ts --runInBand`
+- `git diff --check`
+
 ## List To Preview Navigation Performance - 2026-06-21
 
 ### Summary
