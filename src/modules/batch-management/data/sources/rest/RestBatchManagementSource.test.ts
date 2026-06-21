@@ -1,4 +1,4 @@
-import { patchJson, postFormData } from '@/lib/api-client';
+import { getJson, patchJson, postFormData } from '@/lib/api-client';
 import { RestBatchManagementSource } from './RestBatchManagementSource';
 
 jest.mock('@/lib/api-client', () => ({
@@ -10,6 +10,7 @@ jest.mock('@/lib/api-client', () => ({
 
 const mockPostFormData = postFormData as jest.MockedFunction<typeof postFormData>;
 const mockPatchJson = patchJson as jest.MockedFunction<typeof patchJson>;
+const mockGetJson = getJson as jest.MockedFunction<typeof getJson>;
 
 function getFormDataValue(formData: FormData, key: string) {
   return Array.from(formData.entries()).find(([entryKey]) => entryKey === key)?.[1];
@@ -17,8 +18,32 @@ function getFormDataValue(formData: FormData, key: string) {
 
 describe('RestBatchManagementSource', () => {
   beforeEach(() => {
+    mockGetJson.mockReset();
     mockPostFormData.mockReset();
     mockPatchJson.mockReset();
+  });
+
+  it('serializes list search params with the backend contract casing', async () => {
+    mockGetJson.mockResolvedValueOnce({
+      pagina: 1,
+      itemsPagina: 20,
+      totalItems: 0,
+      totalPaginas: 0,
+      lotes: []
+    });
+
+    const source = new RestBatchManagementSource({});
+
+    await source.listBatches({
+      search: '  ANOVA  ',
+      page: 2,
+      itemsPerPage: 10
+    });
+
+    expect(mockGetJson).toHaveBeenCalledWith(
+      '/api/lotes?busqueda=ANOVA&pagina=2&itemsPagina=10',
+      {}
+    );
   });
 
   it('normalizes legacy CM when previewing a batch load', async () => {

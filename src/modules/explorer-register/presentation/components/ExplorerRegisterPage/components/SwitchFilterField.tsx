@@ -24,16 +24,9 @@ export function SwitchFilterField({
     <div className={classes.switchField}>
       <Text className={layoutClasses.filterLabel}>{filter.name}</Text>
       <Radio.Group
-        value={
-          filterValue.includes(EXPLORER_REGISTER_SWITCH_ACTIVE_VALUE)
-            ? EXPLORER_REGISTER_SWITCH_ACTIVE_VALUE
-            : EXPLORER_REGISTER_SWITCH_INACTIVE_VALUE
-        }
+        value={filterValue[0] ?? null}
         onChange={(value) =>
-          controller.updateSwitchFilterValue(
-            filter.code,
-            value === EXPLORER_REGISTER_SWITCH_ACTIVE_VALUE
-          )
+          controller.updateFilterValues(filter.code, value ? [value] : [])
         }
       >
         <Group className={classes.switchOptions} gap="xs">
@@ -56,7 +49,7 @@ export function SwitchFilterField({
             size="compact-xs"
             className={classes.switchClearButton}
             disabled={disabled}
-            onClick={() => controller.updateSwitchFilterValue(filter.code, false)}
+            onClick={() => controller.updateFilterValues(filter.code, [])}
           >
             {EXPLORER_REGISTER_TEXTS.clearFilter}
           </Button>

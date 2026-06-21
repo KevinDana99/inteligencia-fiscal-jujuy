@@ -18,13 +18,9 @@
 
 ## Estado inicial
 
-11. La pantalla debe iniciar con un set default activo de columnas/filtros:
-    - `CUIT`
-    - `Nombre / Razón Social`
-    - `Rubro`
-    - `Actividad`
-12. Las pills asociadas a ese set deben venir activas por defecto.
-13. Los filtros visibles por defecto deben corresponder a ese set inicial.
+11. La pantalla debe iniciar sin opciones de columnas/filtros seleccionadas.
+12. Ninguna pill debe venir activa por defecto.
+13. No deben mostrarse filtros dinamicos por defecto; solo aparecen al seleccionar una pill.
 14. Antes de ejecutar una búsqueda, la tabla debe mostrar el fallback inicial:
     - `Seleccioná columnas/filtros arriba y presioná Buscar para poblar el cuadro.`
 
@@ -40,7 +36,7 @@
     - debe ocultarse la columna asociada
     - debe ocultarse el filtro asociado
     - debe limpiarse el valor del filtro asociado
-19. El botón `Limpiar filtros` debe restablecer el estado default de columnas, pills y filtros.
+19. El botón `Limpiar filtros` debe restablecer el estado default sin columnas, pills ni filtros seleccionados.
 20. `Limpiar filtros` también debe limpiar el estado de resultados de tabla y volver al fallback inicial.
 21. Estos cambios deben actualizar el render inmediatamente a partir de estado derivado y render reactivo normal.
 22. No debe resolverse esta lógica con `useEffect`.

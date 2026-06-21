@@ -1,5 +1,12 @@
 # Explorer Register Feature Story
 
+## 2026-06-20 - Estado inicial sin opciones seleccionadas
+
+- La pantalla `/explorar-padron` ahora inicia sin pills/columnas seleccionadas por defecto.
+- `Limpiar filtros` vuelve al mismo estado inicial vacio, sin filtros dinamicos visibles y con el fallback inicial de tabla.
+- Se alinearon spec, reglas y prompt historico para reflejar que ya no hay set default activo.
+- Se agrego cobertura unitaria para validar que el default vacio no preselecciona columnas.
+
 ## 2026-06-11 - Integracion end-to-end con endpoints de Explorar Padron
 
 - Se agrego la capa de datos modular de `explorer-register`: constantes de endpoints/fallback, modelos de dominio, interfaz de source, source REST, source mock, DTOs, mappers y actions server-side.
@@ -36,8 +43,18 @@
 - El selector de fecha fin usa `minDate` a partir de fecha inicio, y el selector de fecha inicio usa `maxDate` cuando existe fecha fin para impedir rangos invertidos.
 - Se mantuvo Mantine como base del control y `@tabler/icons-react` como fuente de iconos, consistente con el resto del modulo.
 
+## 2026-06-20 - Locale español para calendarios
+
+- Se agrego `DatesProvider` en el provider raiz de la app con `locale: 'es'` para que los calendarios de Mantine rendericen meses y dias en español.
+- Se importo `dayjs/locale/es` en el provider client-side para que `@mantine/dates` pueda resolver correctamente el locale configurado.
+- El rango temporal de `/explorar-padron` conserva el formato de valor `YYYY-MM-DD` esperado por el backend, cambiando solo el idioma visible del calendario.
+
 ## Verificacion
 
+- `PATH="/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH" node ./node_modules/jest/bin/jest.js src/modules/explorer-register/presentation/utils/buildExplorerRegisterPayload.test.ts --runInBand`
+- `PATH="/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH" node ./node_modules/eslint/bin/eslint.js src/modules/explorer-register/presentation/constants/explorerRegisterPresentation.ts src/modules/explorer-register/presentation/utils/buildExplorerRegisterPayload.test.ts`
+- `PATH="/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH" ./node_modules/.bin/eslint src/components/core/providers.tsx src/modules/explorer-register/presentation/components/ExplorerRegisterPage/components/ExplorerRegisterTemporalFilters.tsx`
+- `PATH="/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH" ./node_modules/.bin/tsc --noEmit --pretty false`
 - `bun x jest src/modules/explorer-register --runInBand`
 - `bun x jest src/modules/explorer-register src/modules/batch-management/presentation/hooks --runInBand`
 - `bun x eslint app/layout.tsx app/'(private)'/explorar-padron/page.tsx src/modules/explorer-register`

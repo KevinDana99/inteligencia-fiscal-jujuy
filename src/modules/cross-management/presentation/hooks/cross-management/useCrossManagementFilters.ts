@@ -8,10 +8,17 @@ import {
 } from '../../constants/crossManagementFilters'
 import { filterCrossManagementItems } from '../../utils/filterCrossManagementItems'
 
-export function useCrossManagementFilters(
-  initialCrossData?: ICrossManagementListData | null
-) {
-  const [searchValue, setSearchValue] = useState('')
+interface UseCrossManagementFiltersParams {
+  crossData?: ICrossManagementListData | null
+  searchValue: string
+  setSearchValue: (value: string) => void
+}
+
+export function useCrossManagementFilters({
+  crossData,
+  searchValue,
+  setSearchValue
+}: UseCrossManagementFiltersParams) {
   const [periodValue, setPeriodValue] = useState('')
   const [dayRangeValue, setDayRangeValue] = useState('')
 
@@ -19,11 +26,11 @@ export function useCrossManagementFilters(
     () =>
       filterCrossManagementItems({
         dayRangeValue,
-        items: initialCrossData?.items ?? [],
+        items: crossData?.items ?? [],
         periodValue,
         searchValue
       }),
-    [dayRangeValue, initialCrossData, periodValue, searchValue]
+    [dayRangeValue, crossData, periodValue, searchValue]
   )
 
   return {

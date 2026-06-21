@@ -21,11 +21,7 @@ Construir la pantalla base de `Explorar Padrón` como un módulo independiente, 
    - sección pills
    - sección filtros
    - sección tabla resultados
-6. Dejar activos por defecto:
-   - `CUIT`
-   - `Nombre / Razón Social`
-   - `Rubro`
-   - `Actividad`
+6. Iniciar la pantalla sin columnas/filtros seleccionados por defecto.
 7. Hacer que las pills controlen:
    - qué filtros se muestran
    - qué columnas se renderizan
@@ -34,7 +30,7 @@ Construir la pantalla base de `Explorar Padrón` como un módulo independiente, 
    - ocultar filtro asociado
    - limpiar su valor
    - actualizar resultados inmediatamente
-9. Implementar botón `Limpiar filtros` para restaurar el estado default y volver al fallback inicial de tabla.
+9. Implementar botón `Limpiar filtros` para restaurar el estado default sin opciones seleccionadas y volver al fallback inicial de tabla.
 10. Implementar botón `Buscar` para poblar la tabla de resultados sobre data mock local.
 11. Antes de buscar, la tabla debe mostrar:
     - `Seleccioná columnas/filtros arriba y presioná Buscar para poblar el cuadro.`

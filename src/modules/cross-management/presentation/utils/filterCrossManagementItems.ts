@@ -1,4 +1,5 @@
 import type { ICrossManagementItems } from '../../data/models/CrossManagement'
+import { matchesCrossSearch } from '../../data/utils/crossSearch'
 import { matchesCrossManagementDayRange } from './matchesCrossManagementDayRange'
 import { matchesCrossManagementPeriod } from './matchesCrossManagementPeriod'
 
@@ -15,13 +16,7 @@ export function filterCrossManagementItems({
   periodValue,
   searchValue
 }: FilterCrossManagementItemsParams) {
-  const normalizedSearch = searchValue.trim().toLowerCase()
-
   return items.filter((item) => {
-    const matchesSearch =
-      !normalizedSearch ||
-      item.name.toLowerCase().includes(normalizedSearch) ||
-      item.sourceRef.toLowerCase().includes(normalizedSearch)
     const matchesDays = matchesCrossManagementDayRange({
       itemDate: item.date,
       selectedRange: dayRangeValue
@@ -30,7 +25,11 @@ export function filterCrossManagementItems({
       itemPeriod: item.period,
       selectedPeriod: periodValue
     })
+    const matchesSearch = matchesCrossSearch(
+      [item.name, item.source, item.sourceRef],
+      searchValue
+    )
 
-    return matchesSearch && matchesDays && matchesPeriod
+    return matchesDays && matchesPeriod && matchesSearch
   })
 }

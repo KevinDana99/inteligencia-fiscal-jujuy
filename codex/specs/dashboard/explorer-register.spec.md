@@ -88,7 +88,7 @@ En esta seccion se podran seleccionar los inputs select, se deben poder limpiar 
 1. Esta seccion es la mas simple, los resultados de los filtros deben mostrarse en la tabla, la tabla debe renderizar columnas condicionalmente y mostrar cada item en la columna respectiva.
    Si se deselecciona una pill, no debe renderizarse la columna respectiva
 
-2. Si se presiona el boton `Limpiar filtros`, deberia restablecerse los filtros default `CUIT`, `Nombre / Razón Social`, `Rubro`, `Actividad` y deberia borrarse el estado de la tabla osea que no encuentre nada ya que se borra la busqueda como si hicieras un reset.
+2. Si se presiona el boton `Limpiar filtros`, deberia restablecerse el estado inicial sin opciones de columnas/filtros seleccionadas y deberia borrarse el estado de la tabla osea que no encuentre nada ya que se borra la busqueda como si hicieras un reset.
 
 3. En caso que no haya busqueda ni filtro aplicado deberia haber un fallback en la tabla `Seleccioná columnas/filtros arriba y presioná Buscar para poblar el cuadro.`
 
@@ -104,8 +104,8 @@ En esta seccion se podran seleccionar los inputs select, se deben poder limpiar 
     <div style="margin-bottom:16px">
       <div style="font-size:10px;font-weight:700;color:var(--gray-5);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Columnas y filtros disponibles</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px" id="ep-pills">
-        <button class="ep-pill ep-pill-active" data-col="rubro" onclick="epTogglePill(this)">Rubro</button>
-        <button class="ep-pill ep-pill-active" data-col="actividad" onclick="epTogglePill(this)">Actividad</button>
+        <button class="ep-pill" data-col="rubro" onclick="epTogglePill(this)">Rubro</button>
+        <button class="ep-pill" data-col="actividad" onclick="epTogglePill(this)">Actividad</button>
         <button class="ep-pill" data-col="tipo" onclick="epTogglePill(this)">Tipo Contribuyente</button>
         <button class="ep-pill" data-col="domicilio" onclick="epTogglePill(this)">Domicilio</button>
         <button class="ep-pill" data-col="localidad" onclick="epTogglePill(this)">Localidad</button>
@@ -113,8 +113,8 @@ En esta seccion se podran seleccionar los inputs select, se deben poder limpiar 
         <button class="ep-pill" data-col="riesgo" onclick="epTogglePill(this)">Matriz de Riesgo</button>
         <button class="ep-pill" data-col="control" onclick="epTogglePill(this)">Sistema de Control</button>
         <button class="ep-pill" data-col="mercurio" onclick="epTogglePill(this)">Mercurio (Ruta)</button>
-        <button class="ep-pill ep-pill-active" data-col="trufa" onclick="epTogglePill(this)">Trufa (Operativos)</button>
-        <button class="ep-pill ep-pill-active" data-col="agente" onclick="epTogglePill(this)">Agente</button>
+        <button class="ep-pill" data-col="trufa" onclick="epTogglePill(this)">Trufa (Operativos)</button>
+        <button class="ep-pill" data-col="agente" onclick="epTogglePill(this)">Agente</button>
         <button class="ep-pill" data-col="retenido" onclick="epTogglePill(this)">Sujeto Retenido</button>
         <button class="ep-pill" data-col="convenio" onclick="epTogglePill(this)">Convenio Jurisdicción</button>
       </div>
@@ -134,7 +134,7 @@ En esta seccion se podran seleccionar los inputs select, se deben poder limpiar 
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end" id="ep-filtros-activos">
         <!-- filtros dinámicos según pills activos -->
-        <div id="ep-filtro-rubro" class="ep-filtro-group" style="">
+        <div id="ep-filtro-rubro" class="ep-filtro-group" style="display:none">
           <div style="font-size:12px;color:var(--gray-7);margin-bottom:5px;font-weight:500">Rubro</div>
           <select class="ep-select" onchange="epActualizarActividades(this.value)" style="min-width:160px">
             <option value="">Todas las opciones</option>
@@ -145,7 +145,7 @@ En esta seccion se podran seleccionar los inputs select, se deben poder limpiar 
             <option value="tecnologia">Tecnologia</option>
           </select>
         </div>
-        <div id="ep-filtro-actividad" class="ep-filtro-group" style="">
+        <div id="ep-filtro-actividad" class="ep-filtro-group" style="display:none">
           <div style="font-size:12px;color:var(--gray-7);margin-bottom:5px;font-weight:500">Actividad</div>
           <select class="ep-select" id="ep-sel-actividad" style="min-width:200px"><option value="">Todas las opciones</option></select>
         </div>
@@ -179,7 +179,7 @@ En esta seccion se podran seleccionar los inputs select, se deben poder limpiar 
           <div style="font-size:12px;color:var(--gray-7);margin-bottom:5px;font-weight:500">Provincia</div>
           <select class="ep-select" style="min-width:140px">
             <option value="">Todas las opciones</option>
-            <option selected="">Jujuy</option><option>Salta</option><option>Buenos Aires</option>
+            <option>Jujuy</option><option>Salta</option><option>Buenos Aires</option>
           </select>
         </div>
         <div id="ep-filtro-riesgo" class="ep-filtro-group" style="display:none">
@@ -203,14 +203,14 @@ En esta seccion se podran seleccionar los inputs select, se deben poder limpiar 
             <option>Ruta 9</option><option>Ruta 34</option><option>Ruta 52</option>
           </select>
         </div>
-        <div id="ep-filtro-trufa" class="ep-filtro-group" style="">
+        <div id="ep-filtro-trufa" class="ep-filtro-group" style="display:none">
           <div style="font-size:12px;color:var(--gray-7);margin-bottom:5px;font-weight:500">Trufa (Operativos)</div>
           <select class="ep-select" style="min-width:160px">
             <option value="">Todas las opciones</option>
             <option>Operativo 2024</option><option>Operativo 2025</option>
           </select>
         </div>
-        <div id="ep-filtro-agente" class="ep-filtro-group" style="">
+        <div id="ep-filtro-agente" class="ep-filtro-group" style="display:none">
           <div style="font-size:12px;color:var(--gray-7);margin-bottom:5px;font-weight:500">Agente</div>
           <select class="ep-select" style="min-width:160px">
             <option value="">Todas las opciones</option>

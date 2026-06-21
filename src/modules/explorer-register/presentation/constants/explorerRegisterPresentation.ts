@@ -1,7 +1,4 @@
-export const EXPLORER_REGISTER_DEFAULT_COLUMN_CODES = [
-  'rubro',
-  'actividad'
-] as const;
+export const EXPLORER_REGISTER_DEFAULT_COLUMN_CODES = [] as const;
 
 export const EXPLORER_REGISTER_ITEMS_PER_PAGE_OPTIONS = [20, 50, 100, 200];
 

@@ -337,3 +337,15 @@
 - `bun x eslint app/api/documentos/intimacion/generar/route.ts src/modules/cross-management/data/sources/rest/RestCrossManagementSource.ts src/modules/cross-management/data/sources/rest/mappers/mapIntimationDocumentDto.ts src/modules/cross-management/presentation/hooks/intimation-export/useIntimationDocumentDownload.ts src/modules/cross-management/presentation/utils/intimationDocumentGeneration.ts src/modules/cross-management/presentation/utils/intimationDocumentGeneration.test.ts`
 - `bun x tsc --noEmit`
 - `git diff --check`
+
+## 2026-06-20 Busqueda en listado de cruces
+
+- `filterCrossManagementItems` ahora aplica `searchValue` junto con los filtros de periodo y rango de dias, usando `matchesCrossSearch` para normalizar texto, acentos y CUITs con o sin formato.
+- La busqueda del listado de `/gestion-de-cruces` contempla nombre de cruce, origen y referencia de origen, por lo que funciona para nombres, numeros de lote y CUITs.
+- Se agrego una prueba de regresion para validar coincidencias por nombre, lote y CUIT normalizado.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js --runTestsByPath src/modules/cross-management/presentation/utils/filterCrossManagementItems.test.ts src/modules/cross-management/data/utils/crossSearch.test.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js src/modules/cross-management/presentation/utils/filterCrossManagementItems.ts src/modules/cross-management/presentation/utils/filterCrossManagementItems.test.ts src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementFilters.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts`

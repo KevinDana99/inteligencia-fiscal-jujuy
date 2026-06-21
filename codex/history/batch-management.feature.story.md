@@ -211,3 +211,15 @@
 
 - `bun x eslint src/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementCrossMenu/index.tsx src/modules/batch-management/presentation/constants/batchManagementCross.ts`
 - `bun x tsc --noEmit --incremental false`
+
+## 2026-06-20 Busqueda en listado de lotes
+
+- `RestBatchManagementSource.listBatches` ahora serializa los query params como `busqueda`, `pagina` e `itemsPagina`, alineado con el contrato de `GET /api/lotes`.
+- El log de request usa el mismo casing contractual para facilitar debugging cuando se revisa la URL enviada al backend.
+- Se agrego una prueba de regresion que verifica la URL generada con busqueda recortada y paginacion.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js --runTestsByPath src/modules/cross-management/presentation/utils/filterCrossManagementItems.test.ts src/modules/cross-management/data/utils/crossSearch.test.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js src/modules/cross-management/presentation/utils/filterCrossManagementItems.ts src/modules/cross-management/presentation/utils/filterCrossManagementItems.test.ts src/modules/cross-management/presentation/hooks/cross-management/useCrossManagementFilters.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts`

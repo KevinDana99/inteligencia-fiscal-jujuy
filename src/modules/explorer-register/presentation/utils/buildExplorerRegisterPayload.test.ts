@@ -1,6 +1,12 @@
 import type { IExplorerRegisterCatalog } from '../../data/models/ExplorerRegister';
-import { EXPLORER_REGISTER_TEXTS } from '../constants';
-import { buildExplorerRegisterPayload } from './buildExplorerRegisterPayload';
+import {
+  EXPLORER_REGISTER_SWITCH_INACTIVE_VALUE,
+  EXPLORER_REGISTER_TEXTS
+} from '../constants';
+import {
+  buildExplorerRegisterPayload,
+  getDefaultExplorerRegisterColumnCodes
+} from './buildExplorerRegisterPayload';
 
 const catalog: IExplorerRegisterCatalog = {
   fixedColumns: [
@@ -54,6 +60,10 @@ const catalog: IExplorerRegisterCatalog = {
 };
 
 describe('buildExplorerRegisterPayload', () => {
+  it('allows the explorer screen to start without preselected column options', () => {
+    expect(getDefaultExplorerRegisterColumnCodes(catalog, [])).toEqual([]);
+  });
+
   it('deduplicates columns, filters and values while omitting empty filters', () => {
     const result = buildExplorerRegisterPayload({
       catalog,
@@ -117,6 +127,23 @@ describe('buildExplorerRegisterPayload', () => {
       startDate: '2025-01-01',
       endDate: '2025-12-31'
     });
+  });
+
+  it('omits explicitly inactive switch filters', () => {
+    const result = buildExplorerRegisterPayload({
+      catalog,
+      selectedColumnCodes: ['controlInteligenciaFiscal'],
+      filterValues: {
+        controlInteligenciaFiscal: [EXPLORER_REGISTER_SWITCH_INACTIVE_VALUE]
+      },
+      temporalRange: {
+        startDate: '',
+        endDate: ''
+      }
+    });
+
+    expect(result.error).toBeNull();
+    expect(result.payload?.filters).toEqual([]);
   });
 
   it('rejects incomplete and invalid temporal ranges', () => {
