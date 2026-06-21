@@ -97,26 +97,32 @@ describe('resolveUnifiedRegisterPreviewRouteData', () => {
     expect(result?.isFixtureItem).toBe(true);
   });
 
-  it('ignores a stale legacy route id when backend resolves the CUIT', async () => {
-    mockBackendContributors([createBackendContributor()]);
+  it('uses the route id as a fast-path without querying the list endpoint', async () => {
+    const routeContributorId = 'route-contributor-id';
 
     const result = await resolveUnifiedRegisterPreviewRouteData({
       cuit: '30501685212',
-      id: FIXTURE_CONTRIBUTOR_ID
+      id: routeContributorId
     });
 
-    expect(result?.item.contribuyenteId).toBe(REAL_BACKEND_CONTRIBUTOR_ID);
-    expect(result?.item.contribuyenteId).not.toBe(FIXTURE_CONTRIBUTOR_ID);
+    expect(result?.item.contribuyenteId).toBe(routeContributorId);
+    expect(result?.item.cuit).toBe('30501685212');
+    expect(result?.item.businessName).toBe('');
+    expect(result?.cuitMatchedContribuyenteId).toBe(routeContributorId);
+    expect(result?.isFixtureItem).toBe(false);
+    expect(mockGetUnifiedRegisterListAction).not.toHaveBeenCalled();
   });
 
   it('uses fixture data without querying backend in explicit mock mode', async () => {
     process.env.NEXT_PUBLIC_USE_MOCK_UNIFIED_REGISTER = 'true';
 
     const result = await resolveUnifiedRegisterPreviewRouteData({
-      cuit: '30501685212'
+      cuit: '30501685212',
+      id: 'route-contributor-id'
     });
 
     expect(result?.item.contribuyenteId).toBe(FIXTURE_CONTRIBUTOR_ID);
+    expect(result?.item.contribuyenteId).not.toBe('route-contributor-id');
     expect(result?.isFixtureItem).toBe(true);
     expect(mockGetUnifiedRegisterListAction).not.toHaveBeenCalled();
   });

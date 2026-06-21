@@ -7,6 +7,16 @@ import type {
 } from '../../models/UnifiedRegister';
 import { resolveUnifiedRegisterActionError } from '../shared/resolveUnifiedRegisterActionError';
 
+const shouldLogUnifiedRegisterListAction = process.env.NODE_ENV === 'development';
+
+function logUnifiedRegisterListAction(event: unknown) {
+  if (!shouldLogUnifiedRegisterListAction) {
+    return;
+  }
+
+  console.log(JSON.stringify(event, null, 2))
+}
+
 export async function getUnifiedRegisterListAction(
   page = 1,
   itemsPerPage = 10,
@@ -23,17 +33,11 @@ export async function getUnifiedRegisterListAction(
     const data = await source.listContributors(page, itemsPerPage, search);
     const result = { data }
 
-    console.log(
-      JSON.stringify(
-        {
-          action: 'getUnifiedRegisterListAction',
-          payload,
-          result
-        },
-        null,
-        2
-      )
-    )
+    logUnifiedRegisterListAction({
+      action: 'getUnifiedRegisterListAction',
+      payload,
+      result
+    })
 
     return result;
   } catch (error) {
@@ -42,20 +46,14 @@ export async function getUnifiedRegisterListAction(
       'No fue posible listar los contribuyentes.'
     );
 
-    console.log(
-      JSON.stringify(
-        {
-          action: 'getUnifiedRegisterListAction',
-          payload,
-          result: {
-            data: null,
-            ...resolvedError
-          }
-        },
-        null,
-        2
-      )
-    )
+    logUnifiedRegisterListAction({
+      action: 'getUnifiedRegisterListAction',
+      payload,
+      result: {
+        data: null,
+        ...resolvedError
+      }
+    })
 
     return {
       data: null,

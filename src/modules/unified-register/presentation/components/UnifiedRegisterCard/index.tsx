@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback, useRef } from 'react';
 import type { Route } from 'next';
 import { ActionIcon, Badge, Card, Menu, Text } from '@mantine/core';
 import { BatchManagementAvailableLotsDropdown } from '@/modules/batch-management/presentation/components/BatchManagementAvailableLotsDropdown';
@@ -47,8 +48,24 @@ export function UnifiedRegisterCard({
   onMarkReprocessing
 }: UnifiedRegisterCardProps) {
   const router = useRouter();
+  const hasPrefetchedDetailRouteRef = useRef(false);
   const detailRoute =
-    `/vista-previa-padron/${encodeURIComponent(item.cuit)}` as Route;
+    `/vista-previa-padron/${encodeURIComponent(item.cuit)}?id=${encodeURIComponent(
+      item.contribuyenteId
+    )}` as Route;
+
+  const prefetchDetailRoute = useCallback(() => {
+    if (hasPrefetchedDetailRouteRef.current) {
+      return;
+    }
+
+    hasPrefetchedDetailRouteRef.current = true;
+    router.prefetch(detailRoute);
+  }, [detailRoute, router]);
+
+  const navigateToDetail = useCallback(() => {
+    router.push(detailRoute);
+  }, [detailRoute, router]);
 
   return (
     <Card
@@ -56,7 +73,10 @@ export function UnifiedRegisterCard({
       padding={0}
       radius={0}
       withBorder={false}
-      onClick={() => router.push(detailRoute)}
+      onClick={navigateToDetail}
+      onFocus={prefetchDetailRoute}
+      onMouseEnter={prefetchDetailRoute}
+      onTouchStart={prefetchDetailRoute}
     >
       <div className={classes.cardSection}>
         <div className={classes.content}>

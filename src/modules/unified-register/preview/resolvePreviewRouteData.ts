@@ -56,8 +56,27 @@ function buildUnifiedRegisterDetailFallback(
   };
 }
 
+function buildRouteContributorBase({
+  cuit,
+  id
+}: {
+  cuit: string;
+  id: string;
+}): IUnifiedRegisterItem {
+  return {
+    contribuyenteId: id,
+    cuit,
+    businessName: '',
+    activity: '',
+    regime: null,
+    riskLevel: null,
+    status: 'Activo'
+  };
+}
+
 export async function resolveUnifiedRegisterPreviewRouteData({
-  cuit
+  cuit,
+  id
 }: {
   cuit: string;
   id?: string;
@@ -74,6 +93,21 @@ export async function resolveUnifiedRegisterPreviewRouteData({
       cuitMatchedContribuyenteId: fixtureItem.contribuyenteId,
       isFixtureItem: true,
       item: fixtureItem
+    };
+  }
+
+  const routeContribuyenteId = id?.trim();
+
+  if (routeContribuyenteId) {
+    return {
+      cuitMatchedContribuyenteId: routeContribuyenteId,
+      isFixtureItem: false,
+      item: buildUnifiedRegisterDetailFallback(
+        buildRouteContributorBase({
+          cuit,
+          id: routeContribuyenteId
+        })
+      )
     };
   }
 

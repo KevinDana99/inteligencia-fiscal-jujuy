@@ -67,6 +67,16 @@ type RestRequestOptions<TBody = unknown> = {
   method?: 'GET' | 'POST' | 'PATCH';
 };
 
+const shouldLogUnifiedRegisterSource = process.env.NODE_ENV === 'development';
+
+function logUnifiedRegisterSourceEvent(event: unknown) {
+  if (!shouldLogUnifiedRegisterSource) {
+    return;
+  }
+
+  console.log(JSON.stringify(event, null, 2));
+}
+
 export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
   constructor(private readonly config: ApiClientConfig) {}
 
@@ -115,40 +125,28 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
       search
     )
 
-    console.log(
-      JSON.stringify(
-        {
-          endpoint: UNIFIED_REGISTER_API_ROUTES.contributors,
-          action: 'RestUnifiedRegisterSource.listContributors',
-          METHOD: 'GET',
-          REQUEST_RAW: {
-            page,
-            itemsPerPage,
-            search: search ?? null,
-            requestPath
-          }
-        },
-        null,
-        2
-      )
-    )
+    logUnifiedRegisterSourceEvent({
+      endpoint: UNIFIED_REGISTER_API_ROUTES.contributors,
+      action: 'RestUnifiedRegisterSource.listContributors',
+      METHOD: 'GET',
+      REQUEST_RAW: {
+        page,
+        itemsPerPage,
+        search: search ?? null,
+        requestPath
+      }
+    })
 
     const dto = await this.requestJson<ApiUnifiedRegisterListResponseDto>(
       requestPath
     );
 
-    console.log(
-      JSON.stringify(
-        {
-          endpoint: UNIFIED_REGISTER_API_ROUTES.contributors,
-          action: 'RestUnifiedRegisterSource.listContributors',
-          METHOD: 'GET',
-          RESPONSE_RAW: dto
-        },
-        null,
-        2
-      )
-    )
+    logUnifiedRegisterSourceEvent({
+      endpoint: UNIFIED_REGISTER_API_ROUTES.contributors,
+      action: 'RestUnifiedRegisterSource.listContributors',
+      METHOD: 'GET',
+      RESPONSE_RAW: dto
+    })
 
     return {
       pagina: dto.pagina,

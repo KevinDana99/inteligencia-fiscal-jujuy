@@ -1,5 +1,27 @@
 # Unified Register Feature Story
 
+## List To Preview Navigation Performance - 2026-06-21
+
+### Summary
+
+Optimized the `/` unified register list to `/vista-previa-padron/[cuit]` transition by removing unrelated sidebar prefetch pressure, adding intentional preview prefetch on card intent, and avoiding the redundant CUIT list lookup when the list already has the contributor id.
+
+### Main Changes
+
+- Disabled automatic prefetch on dashboard sidebar links so unrelated private routes do not enqueue competing `_rsc` requests while the user is moving from the list into a padron preview.
+- Updated `UnifiedRegisterCard` to keep `router.push` navigation, append `?id=<contribuyenteId>` to the preview URL, and prefetch that exact route once per card on hover, focus, or touch intent.
+- Added a fast-path in `resolveUnifiedRegisterPreviewRouteData` that builds a base detail item from route `cuit + id` without calling `getUnifiedRegisterListAction`; direct legacy CUIT URLs still use the previous backend lookup and fixture fallback behavior.
+- Gated raw list action/source request-response logs behind `NODE_ENV === 'development'` to avoid serializing large payloads during production SSR.
+- Added focused tests for resolver fast-path behavior and card route/prefetch/click propagation.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/jest/bin/jest.js src/modules/unified-register/preview/resolvePreviewRouteData.test.ts src/modules/unified-register/presentation/components/UnifiedRegisterCard/UnifiedRegisterCard.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/.bin/eslint src/modules/dashboard-layout/presentation/components/DashboardSidebar/index.tsx src/modules/unified-register/presentation/components/UnifiedRegisterCard/index.tsx src/modules/unified-register/presentation/components/UnifiedRegisterCard/UnifiedRegisterCard.test.ts src/modules/unified-register/preview/resolvePreviewRouteData.ts src/modules/unified-register/preview/resolvePreviewRouteData.test.ts src/modules/unified-register/data/actions/queries/getUnifiedRegisterListAction.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+- `git diff --check`
+- Browser verification on `http://localhost:3000` was blocked by local authentication: the local login form rejected the provided credentials, so the changed local navigation could not be exercised end-to-end against that dev environment.
+
 ## Preview Cross Menu Target Fix - 2026-06-19
 
 ### Summary

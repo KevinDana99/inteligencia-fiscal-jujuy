@@ -209,6 +209,7 @@ function SidebarNavItem({
   return (
     <Link
       href={item.href}
+      prefetch={false}
       className={`${classes.navItem} ${isActive ? classes.navItemActive : ''}`}
       aria-current={isActive ? 'page' : undefined}
       onClick={onNavigate}
