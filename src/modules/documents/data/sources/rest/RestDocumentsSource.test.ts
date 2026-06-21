@@ -119,19 +119,75 @@ describe('RestDocumentsSource', () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       'http://localhost:3000/api/documentos/d6c60e56-f594-48c3-b351-5c369afce906/descargar?formato=pdf',
-      {
+      expect.objectContaining({
         method: 'GET',
-        headers: {
+        headers: expect.objectContaining({
           Accept: 'application/octet-stream',
           Authorization: 'Bearer token-de-prueba'
-        }
-      }
+        })
+      })
     );
     expect(result).toEqual({
       base64: Buffer.from('pdf-content').toString('base64'),
       contentType: 'application/pdf',
       fileName: 'informe_20260611.pdf',
       formato: 'pdf'
+    });
+  });
+
+  test('refreshes the access token and retries informe generation on backend 401', async () => {
+    const refreshAccessToken = jest.fn().mockResolvedValue('token-refrescado');
+
+    fetchMock
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            codigo: 'auth.token_expirado',
+            mensaje: 'Token expirado.',
+            estado: 401
+          }),
+          {
+            status: 401,
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            documentoId: 'd6c60e56-f594-48c3-b351-5c369afce906',
+            urlDescarga: '/api/documentos/d6c60e56-f594-48c3-b351-5c369afce906/descargar'
+          }),
+          {
+            status: 201,
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        )
+      );
+
+    const source = new RestDocumentsSource({
+      baseUrl: 'http://localhost:3000',
+      refreshAccessToken,
+      token: 'token-vencido'
+    });
+
+    const result = await source.generateInformeDocument(payload);
+
+    expect(refreshAccessToken).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls[0]?.[1]?.headers).toMatchObject({
+      Authorization: 'Bearer token-vencido'
+    });
+    expect(fetchMock.mock.calls[1]?.[1]?.headers).toMatchObject({
+      Authorization: 'Bearer token-refrescado'
+    });
+    expect(result).toEqual({
+      documentoId: 'd6c60e56-f594-48c3-b351-5c369afce906',
+      urlDescarga: '/api/documentos/d6c60e56-f594-48c3-b351-5c369afce906/descargar'
     });
   });
 

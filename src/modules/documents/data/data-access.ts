@@ -33,7 +33,11 @@ export async function createServerDocumentsSource(): Promise<IDocumentsSource> {
 
   const config: ApiClientConfig = {
     baseUrl: process.env[DOCUMENTS_DATA_SOURCE_ENV.apiBaseUrl],
-    token: session.accessToken
+    token: session.accessToken,
+    refreshAccessToken: async () => {
+      const refreshedSession = await getServerAuthSession({ forceRefresh: true });
+      return refreshedSession?.accessToken ?? null;
+    }
   };
 
   return new RestDocumentsSource(config);

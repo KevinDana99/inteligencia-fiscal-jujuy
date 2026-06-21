@@ -12,11 +12,12 @@ Moved the informe generation and download client flow away from client-invoked S
 - Updated the informe generation hook to call stable frontend API routes with explicit `formato: "Pdf"` and `formato: "Docx"` payloads instead of calling `generateInformeDocumentsAction` from the browser.
 - Updated informe downloads to fetch the existing document download BFF route directly, avoiding `downloadDocumentAction` hashes after redeploys.
 - Allowed the shared download BFF route to return mock document bytes when `NEXT_PUBLIC_USE_MOCK_DOCUMENTS=true`.
+- Added auth retry support to the documents REST client by carrying `refreshAccessToken` through `createServerDocumentsSource()` and using `fetchWithAuthRetry` for informe generation and binary downloads.
 
 ### Validation
 
 - `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
-- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js app/api/documentos/informe/generar/route.ts 'app/api/documentos/[documentoId]/descargar/route.ts' src/modules/unified-register/presentation/hooks/informe-generation/useInformeDocuments.ts src/modules/unified-register/presentation/utils/informeDocumentGeneration.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js src/modules/documents/data/data-access.ts src/modules/documents/data/sources/rest/utils/documentRestClient.ts src/modules/documents/data/sources/rest/RestDocumentsSource.test.ts app/api/documentos/informe/generar/route.ts 'app/api/documentos/[documentoId]/descargar/route.ts' src/modules/unified-register/presentation/hooks/informe-generation/useInformeDocuments.ts src/modules/unified-register/presentation/utils/informeDocumentGeneration.ts src/modules/unified-register/presentation/utils/informeDocumentGeneration.test.ts`
 - `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js src/modules/documents/data/sources/rest/RestDocumentsSource.test.ts src/modules/unified-register/presentation/utils/informeDocumentGeneration.test.ts --runInBand`
 - `git diff --check`
 

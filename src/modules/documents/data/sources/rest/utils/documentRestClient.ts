@@ -1,4 +1,4 @@
-import { ApiClientError } from '@/lib/api-client';
+import { ApiClientError, fetchWithAuthRetry } from '@/lib/api-client';
 import type { ApiClientConfig } from '@/lib/api-client';
 import type { ApiDocumentErrorResponseDto } from '../dtos/ApiDocumentDtos';
 
@@ -18,22 +18,8 @@ export interface DocumentsFileResponse {
   fileName: string | null;
 }
 
-function buildDocumentsUrl(baseUrl: string | undefined, path: string) {
-  return `${baseUrl ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? ''}${path}`;
-}
-
-function buildDocumentsHeaders(token?: string, accept?: string) {
-  return {
-    ...(accept ? { Accept: accept } : {}),
-    ...(token ? { Authorization: `Bearer ${token}` } : {})
-  };
-}
-
-function buildDocumentsJsonHeaders(token?: string) {
-  return {
-    'Content-Type': 'application/json',
-    ...buildDocumentsHeaders(token)
-  };
+function buildDocumentsUrl(config: ApiClientConfig, path: string) {
+  return `${config.baseUrl ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? ''}${path}`;
 }
 
 function resolveErrorMessage(error: ApiDocumentErrorResponseDto | null) {
@@ -92,13 +78,18 @@ export async function requestDocumentsJson<TResponse, TBody = unknown>({
   body,
   method = 'GET',
   path,
+  refreshAccessToken,
   token
 }: DocumentsJsonRequestParams<TBody>): Promise<TResponse> {
-  const response = await fetch(buildDocumentsUrl(baseUrl, path), {
+  const config: ApiClientConfig = {
+    baseUrl,
+    refreshAccessToken,
+    token
+  };
+  const response = await fetchWithAuthRetry(buildDocumentsUrl(config, path), {
     method,
-    headers: buildDocumentsJsonHeaders(token),
     ...(body === undefined ? {} : { body: JSON.stringify(body) })
-  });
+  }, config);
 
   if (!response.ok) {
     await throwDocumentsResponseError(response);
@@ -114,12 +105,20 @@ export async function requestDocumentsJson<TResponse, TBody = unknown>({
 export async function requestDocumentsFile({
   baseUrl,
   path,
+  refreshAccessToken,
   token
 }: DocumentsFileRequestParams): Promise<DocumentsFileResponse> {
-  const response = await fetch(buildDocumentsUrl(baseUrl, path), {
+  const config: ApiClientConfig = {
+    baseUrl,
+    refreshAccessToken,
+    token
+  };
+  const response = await fetchWithAuthRetry(buildDocumentsUrl(config, path), {
     method: 'GET',
-    headers: buildDocumentsHeaders(token, 'application/octet-stream')
-  });
+    headers: {
+      Accept: 'application/octet-stream'
+    }
+  }, config);
 
   if (!response.ok) {
     await throwDocumentsResponseError(response);
