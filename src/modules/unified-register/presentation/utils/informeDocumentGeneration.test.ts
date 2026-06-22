@@ -79,14 +79,14 @@ describe('generateInformeDocuments', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
-      '/api/documentos/informe/generar',
+      '/bff/documentos/informe/generar',
       expect.objectContaining({
         method: 'POST'
       })
     );
     expect(fetchMock).toHaveBeenNthCalledWith(
       2,
-      '/api/documentos/informe/generar',
+      '/bff/documentos/informe/generar',
       expect.objectContaining({
         method: 'POST'
       })

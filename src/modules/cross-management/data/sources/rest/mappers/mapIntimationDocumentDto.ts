@@ -10,7 +10,7 @@ function extractDocumentIdFromUrl(url: string | null | undefined) {
     return null
   }
 
-  const match = url.match(/\/api\/documentos\/([^/]+)\/descargar/i)
+  const match = url.match(/\/(?:api|bff)\/documentos\/([^/]+)\/descargar/i)
 
   return match?.[1] ? decodeURIComponent(match[1]) : null
 }

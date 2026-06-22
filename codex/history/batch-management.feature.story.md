@@ -1,5 +1,19 @@
 # Batch Management Feature Story
 
+## 2026-06-22 Normalizacion de razon social placeholder
+
+- Se detecto que el modal `Vista previa - Importacion Excel` muestra `-`/`—` como fallback visual cuando `razonSocial` viene vacia o nula desde la previsualizacion.
+- El mapper REST ahora normaliza valores vacios, `-` y `—` como `null`, tanto al leer `razonSocial` de previsualizaciones/detalles como al serializar `razonSocial` en `addContributorToBatch`.
+- Se agrego cobertura para evitar que placeholders visuales viajen al backend como razon social real.
+
+### Validation
+
+- `bun run test -- src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts --runInBand` no pudo ejecutarse porque `bun` no esta disponible en este entorno (`command not found`).
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/.bin/jest src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/batch-management/data/sources/rest/mappers/mapBatchDto.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/typescript/bin/tsc --noEmit --pretty false`
+- `git diff --check`
+
 ## 2026-06-22 Paginador de CUITs en detalle de lote
 
 - Se agrego paginacion local al detalle expandido de cada lote para evitar renderizar completos los lotes con cientos de CUITs.

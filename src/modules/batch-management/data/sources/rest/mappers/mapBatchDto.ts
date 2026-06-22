@@ -42,12 +42,26 @@ function mapBatchAuthor(dto: ApiBatchAuthorDto): IBatchManagementAuthor {
   };
 }
 
+function normalizeBusinessName(value?: string | null) {
+  const trimmedValue = value?.trim();
+
+  if (!trimmedValue || trimmedValue === '-' || trimmedValue === '—') {
+    return null;
+  }
+
+  return trimmedValue;
+}
+
 function getBusinessName(dto: {
   razonSocial?: string | null;
   RazonSocial?: string | null;
   razon_social?: string | null;
 }) {
-  return dto.razonSocial ?? dto.RazonSocial ?? dto.razon_social ?? null;
+  return (
+    normalizeBusinessName(dto.razonSocial) ??
+    normalizeBusinessName(dto.RazonSocial) ??
+    normalizeBusinessName(dto.razon_social)
+  );
 }
 
 function isRecord(value: unknown): value is ApiRecord {
@@ -336,7 +350,7 @@ export function mapAddContributorToBatchRequestDto(
     loteId: payload.batchId,
     contribuyente: {
       cuit: payload.contributor.cuit,
-      razonSocial: payload.contributor.businessName,
+      razonSocial: normalizeBusinessName(payload.contributor.businessName),
       regimen: payload.contributor.regime
     }
   };

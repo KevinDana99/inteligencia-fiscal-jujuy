@@ -1,5 +1,24 @@
 # Unified Register Feature Story
 
+## Informe Generation BFF Route Prefix - 2026-06-22
+
+### Summary
+
+Moved browser-side informe document generation and download calls from `/api/documentos/...` to `/bff/documentos/...` so production ingress no longer routes those requests directly to the backend without the Next server-side auth bridge.
+
+### Main Changes
+
+- Added `/bff/documentos/informe/generar` and `/bff/documentos/{documentoId}/descargar` route aliases that reuse the existing Next route handlers.
+- Updated informe generation and download browser endpoints to call the stable BFF prefix.
+- Kept backend REST document routes under `/api/documentos/...` unchanged for server-side calls.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js src/modules/unified-register/presentation/utils/informeDocumentGeneration.test.ts src/modules/cross-management/presentation/utils/intimationDocumentGeneration.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js app/api/documentos/intimacion/generar/route.ts app/bff/documentos/informe/generar/route.ts app/bff/documentos/intimacion/generar/route.ts 'app/bff/documentos/[documentoId]/descargar/route.ts' src/modules/unified-register/presentation/utils/informeDocumentGeneration.ts src/modules/unified-register/presentation/utils/informeDocumentGeneration.test.ts src/modules/cross-management/data/constants/intimationDocumentContracts.ts src/modules/cross-management/data/sources/mock/MockCrossManagementSource.ts src/modules/cross-management/data/sources/rest/mappers/mapIntimationDocumentDto.ts src/modules/cross-management/presentation/utils/intimationDocumentDownload.ts src/modules/cross-management/presentation/utils/intimationDocumentGeneration.ts src/modules/cross-management/presentation/utils/intimationDocumentGeneration.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+- `PATH="/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH" NEXT_PUBLIC_API_BASE_URL=http://localhost:5001 NEXT_PUBLIC_USE_MOCK_AUTH=false NEXT_PUBLIC_USE_MOCK_ADMIN_PANEL=false NEXT_PUBLIC_USE_MOCK_BATCH_MANAGEMENT=false NEXT_PUBLIC_USE_MOCK_CROSS_MANAGEMENT=false NEXT_PUBLIC_USE_MOCK_CATALOG_SHOWCASE=false NEXT_PUBLIC_USE_MOCK_DOCUMENTS=false NEXT_PUBLIC_USE_MOCK_EXPLORER_REGISTER=false NEXT_PUBLIC_USE_MOCK_REPROCESSING=false NEXT_PUBLIC_USE_MOCK_UNIFIED_REGISTER=false /Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/next/dist/bin/next build`
+
 ## Informe Generation Auth Refresh Race Fix - 2026-06-22
 
 ### Summary

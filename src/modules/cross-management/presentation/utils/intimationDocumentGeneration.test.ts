@@ -44,7 +44,7 @@ describe('generateIntimationDocument', () => {
       new Response(
         JSON.stringify({
           documentId: 'documento-1',
-          downloadUrl: '/api/documentos/documento-1/descargar?formato=pdf'
+          downloadUrl: '/bff/documentos/documento-1/descargar?formato=pdf'
         }),
         { status: 201 }
       )
@@ -54,7 +54,7 @@ describe('generateIntimationDocument', () => {
     const requestInit = fetchMock.mock.calls[0][1] as RequestInit
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/documentos/intimacion/generar',
+      '/bff/documentos/intimacion/generar',
       expect.objectContaining({
         method: 'POST',
         headers: {
@@ -65,7 +65,7 @@ describe('generateIntimationDocument', () => {
     expect(JSON.parse(requestInit.body as string)).toEqual(payload)
     expect(result).toEqual({
       documentId: 'documento-1',
-      downloadUrl: '/api/documentos/documento-1/descargar?formato=pdf'
+      downloadUrl: '/bff/documentos/documento-1/descargar?formato=pdf'
     })
   })
 

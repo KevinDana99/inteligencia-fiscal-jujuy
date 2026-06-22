@@ -1,4 +1,4 @@
-import { INTIMATION_DOCUMENT_API_ENDPOINTS } from '../../data/constants/intimationDocumentContracts'
+import { INTIMATION_DOCUMENT_BFF_ENDPOINTS } from '../../data/constants/intimationDocumentContracts'
 import type {
   IGenerateIntimationDocumentPayload,
   IIntimationDocumentGeneratedSummary
@@ -47,7 +47,7 @@ async function parseGenerateError(response: Response) {
 export async function generateIntimationDocument(
   payload: IGenerateIntimationDocumentPayload
 ): Promise<IIntimationDocumentGeneratedSummary> {
-  const response = await fetch(INTIMATION_DOCUMENT_API_ENDPOINTS.generate, {
+  const response = await fetch(INTIMATION_DOCUMENT_BFF_ENDPOINTS.generate, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

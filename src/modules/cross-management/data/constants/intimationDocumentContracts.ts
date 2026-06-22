@@ -34,3 +34,9 @@ export const INTIMATION_DOCUMENT_API_ENDPOINTS = {
   download: (documentId: string, format: IIntimationDocumentFormat) =>
     `/api/documentos/${documentId}/descargar?formato=${INTIMATION_DOCUMENT_FORMAT_QUERY[format]}`
 } as const
+
+export const INTIMATION_DOCUMENT_BFF_ENDPOINTS = {
+  generate: '/bff/documentos/intimacion/generar',
+  download: (documentId: string, format: IIntimationDocumentFormat) =>
+    `/bff/documentos/${documentId}/descargar?formato=${INTIMATION_DOCUMENT_FORMAT_QUERY[format]}`
+} as const

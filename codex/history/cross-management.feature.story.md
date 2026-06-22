@@ -1,5 +1,19 @@
 # Cross Management Feature Story
 
+## 2026-06-22 Prefijo BFF para documentos de intimacion
+
+- Las llamadas de navegador para generar y descargar documentos de intimacion ahora usan `/bff/documentos/...`, evitando que el ingress productivo envie esas requests directo al backend sin la capa de auth server-side de Next.
+- `INTIMATION_DOCUMENT_API_ENDPOINTS` queda reservado para llamadas server-side al backend real en `/api/documentos/...`.
+- Se agrego `INTIMATION_DOCUMENT_BFF_ENDPOINTS` para los fetch de presentation y para URLs mock devueltas al browser.
+- El mapper de respuesta de generacion acepta URLs `/api` y `/bff` al extraer `documentId`.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js src/modules/unified-register/presentation/utils/informeDocumentGeneration.test.ts src/modules/cross-management/presentation/utils/intimationDocumentGeneration.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js app/api/documentos/intimacion/generar/route.ts app/bff/documentos/informe/generar/route.ts app/bff/documentos/intimacion/generar/route.ts 'app/bff/documentos/[documentoId]/descargar/route.ts' src/modules/unified-register/presentation/utils/informeDocumentGeneration.ts src/modules/unified-register/presentation/utils/informeDocumentGeneration.test.ts src/modules/cross-management/data/constants/intimationDocumentContracts.ts src/modules/cross-management/data/sources/mock/MockCrossManagementSource.ts src/modules/cross-management/data/sources/rest/mappers/mapIntimationDocumentDto.ts src/modules/cross-management/presentation/utils/intimationDocumentDownload.ts src/modules/cross-management/presentation/utils/intimationDocumentGeneration.ts src/modules/cross-management/presentation/utils/intimationDocumentGeneration.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+- `PATH="/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH" NEXT_PUBLIC_API_BASE_URL=http://localhost:5001 NEXT_PUBLIC_USE_MOCK_AUTH=false NEXT_PUBLIC_USE_MOCK_ADMIN_PANEL=false NEXT_PUBLIC_USE_MOCK_BATCH_MANAGEMENT=false NEXT_PUBLIC_USE_MOCK_CROSS_MANAGEMENT=false NEXT_PUBLIC_USE_MOCK_CATALOG_SHOWCASE=false NEXT_PUBLIC_USE_MOCK_DOCUMENTS=false NEXT_PUBLIC_USE_MOCK_EXPLORER_REGISTER=false NEXT_PUBLIC_USE_MOCK_REPROCESSING=false NEXT_PUBLIC_USE_MOCK_UNIFIED_REGISTER=false /Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/next/dist/bin/next build`
+
 ## 2026-06-18 Preview solo con resultados y resumen
 
 - La carga inicial de `/gestion-de-cruces/vista-previa-cruce/[crossId]` ahora consulta solo `resultados-cruces` y `resumen`.

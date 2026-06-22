@@ -117,6 +117,36 @@ describe('RestBatchManagementSource', () => {
     expect(getFormDataValue(formData, 'Regimen')).toBe('RegimenLocal');
   });
 
+  it('maps preview placeholder business names as missing data', async () => {
+    mockPostFormData.mockResolvedValueOnce({
+      nombreArchivo: 'cuits.xlsx',
+      registrosEncontrados: 1,
+      cantidadValidos: 1,
+      cantidadInvalidos: 0,
+      cantidadDuplicados: 0,
+      cantidadImportable: 1,
+      registros: [
+        {
+          registro: 1,
+          cuitOriginal: '30-70123456-8',
+          cuitNormalizado: '30701234568',
+          razonSocial: '-',
+          estado: 'valido',
+          motivo: null
+        }
+      ]
+    });
+
+    const source = new RestBatchManagementSource({});
+
+    const result = await source.previewBatchLoad({
+      regime: 'CM',
+      cuitsText: '30-70123456-8'
+    });
+
+    expect(result.records[0]?.businessName).toBeNull();
+  });
+
   it('maps add contributor to batch payload to the backend contract', async () => {
     mockPatchJson.mockResolvedValueOnce(null);
 
@@ -138,6 +168,34 @@ describe('RestBatchManagementSource', () => {
         contribuyente: {
           cuit: '30-70123456-8',
           razonSocial: 'DISTRIBUIDORA NORTE ANDINO S.A.',
+          regimen: 'Convenio Multilateral'
+        }
+      },
+      {}
+    );
+  });
+
+  it('does not send visual placeholders as contributor business names', async () => {
+    mockPatchJson.mockResolvedValueOnce(null);
+
+    const source = new RestBatchManagementSource({});
+
+    await source.addContributorToBatch({
+      batchId: '9de530a7-a9ac-4b91-80a7-4f3913900d41',
+      contributor: {
+        cuit: '30-70123456-8',
+        businessName: ' - ',
+        regime: 'Convenio Multilateral'
+      }
+    });
+
+    expect(mockPatchJson).toHaveBeenCalledWith(
+      '/api/lotes/contribuyentes',
+      {
+        loteId: '9de530a7-a9ac-4b91-80a7-4f3913900d41',
+        contribuyente: {
+          cuit: '30-70123456-8',
+          razonSocial: null,
           regimen: 'Convenio Multilateral'
         }
       },

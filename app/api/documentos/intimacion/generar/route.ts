@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { INTIMATION_DOCUMENT_API_ENDPOINTS } from '@/modules/cross-management/data/constants/intimationDocumentContracts'
+import {
+  INTIMATION_DOCUMENT_API_ENDPOINTS,
+  INTIMATION_DOCUMENT_BFF_ENDPOINTS
+} from '@/modules/cross-management/data/constants/intimationDocumentContracts'
 import type {
   IGenerateIntimationDocumentPayload,
   IIntimationDocumentGeneratedSummary
@@ -84,7 +87,7 @@ function createMockGenerationResponse(
 
   return {
     documentId,
-    downloadUrl: INTIMATION_DOCUMENT_API_ENDPOINTS.download(
+    downloadUrl: INTIMATION_DOCUMENT_BFF_ENDPOINTS.download(
       encodeURIComponent(documentId),
       payload.formato
     )
