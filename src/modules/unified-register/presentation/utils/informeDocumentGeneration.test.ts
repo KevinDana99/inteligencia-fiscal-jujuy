@@ -53,7 +53,7 @@ describe('generateInformeDocuments', () => {
     globalThis.fetch = originalFetch;
   });
 
-  test('requests both informe formats through the backend API route', async () => {
+  test('requests both informe formats through the stable BFF route', async () => {
     fetchMock
       .mockResolvedValueOnce(
         new Response(
@@ -79,14 +79,14 @@ describe('generateInformeDocuments', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
-      '/api/documentos/informe/generar',
+      '/bff/documentos/informe/generar',
       expect.objectContaining({
         method: 'POST'
       })
     );
     expect(fetchMock).toHaveBeenNthCalledWith(
       2,
-      '/api/documentos/informe/generar',
+      '/bff/documentos/informe/generar',
       expect.objectContaining({
         method: 'POST'
       })

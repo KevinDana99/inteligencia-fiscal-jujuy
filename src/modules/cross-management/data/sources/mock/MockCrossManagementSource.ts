@@ -20,7 +20,7 @@ import {
   matchesCrossSearch,
   normalizeCrossSearchText
 } from '../../utils/crossSearch'
-import { INTIMATION_DOCUMENT_API_ENDPOINTS } from '../../constants/intimationDocumentContracts'
+import { INTIMATION_DOCUMENT_BFF_ENDPOINTS } from '../../constants/intimationDocumentContracts'
 import { crossItemsMock, crossPreviewMockById } from './fixtures/crossItems'
 
 function normalizeSearchValue(value: string) {
@@ -92,7 +92,7 @@ export class MockCrossManagementSource implements ICrossManagementSource {
 
     return {
       documentId,
-      downloadUrl: INTIMATION_DOCUMENT_API_ENDPOINTS.download(
+      downloadUrl: INTIMATION_DOCUMENT_BFF_ENDPOINTS.download(
         encodeURIComponent(documentId),
         payload.formato
       )
