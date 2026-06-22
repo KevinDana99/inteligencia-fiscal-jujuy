@@ -1,5 +1,20 @@
 # Batch Management Feature Story
 
+## 2026-06-22 Paginador de CUITs en detalle de lote
+
+- Se agrego paginacion local al detalle expandido de cada lote para evitar renderizar completos los lotes con cientos de CUITs.
+- `BatchManagementBatchDetail` muestra ahora 50 CUITs por pagina por defecto y permite cambiar entre 25, 50 y 100 filas.
+- La numeracion de filas conserva el `order` del backend cuando esta disponible y el footer informa el rango visible.
+- La logica de rango y clamping quedo en un util testeado para cubrir lotes de mas de 300 CUITs.
+
+### Validation
+
+- `bun` no esta disponible en este entorno (`command not found`), por lo que se uso el Node empaquetado de Codex.
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js --runTestsByPath src/modules/batch-management/presentation/utils/batchManagementBatchDetail.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js src/modules/batch-management/presentation/constants/batchManagementPage.ts src/modules/batch-management/presentation/utils/index.ts src/modules/batch-management/presentation/utils/batchManagementBatchDetail.ts src/modules/batch-management/presentation/utils/batchManagementBatchDetail.test.ts src/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementBatchDetail/index.tsx src/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementBatchDetail/useBatchManagementBatchDetail.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false`
+- `git diff --check`
+
 ## 2026-06-19 Build type fixes
 
 - Se exporto el contrato estricto de `OpenCreateModalOptions` desde `useBatchManagementCreateForm` para que `useBatchManagementCreate` no redeclare una variante mas laxa con `value` y `label` nulleables.

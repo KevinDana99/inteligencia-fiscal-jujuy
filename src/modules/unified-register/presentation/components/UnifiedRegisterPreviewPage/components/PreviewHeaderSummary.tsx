@@ -1,14 +1,37 @@
 import { Text } from '@mantine/core';
 import type { IUnifiedRegisterDetail } from '../../../../data/models/UnifiedRegister';
-import { formatNullableDetailCell } from '../../../utils/unifiedRegisterDetailRecords';
 import { getRiskClass } from '../../../utils/unifiedRegisterPreviewStyles';
+import type { PreviewController } from '../types';
 import classes from '../UnifiedRegisterPreviewPage.module.css';
 
 type PreviewHeaderSummaryProps = {
   item: IUnifiedRegisterDetail;
+  preview: PreviewController;
 };
 
-export function PreviewHeaderSummary({ item }: PreviewHeaderSummaryProps) {
+function getHeaderAlternateAddress(
+  item: IUnifiedRegisterDetail,
+  preview: PreviewController
+) {
+  const hydratedAddress = preview.addresses.find((address) =>
+    address.address.trim()
+  )?.address;
+
+  if (hydratedAddress) {
+    return hydratedAddress;
+  }
+
+  if (preview.isAddressesHydrating || preview.addressActionError) {
+    return item.alternateAddress;
+  }
+
+  return '';
+}
+
+export function PreviewHeaderSummary({ item, preview }: PreviewHeaderSummaryProps) {
+  const alternateAddress = getHeaderAlternateAddress(item, preview);
+  const riskLevelLabel = item.riskLevel || '-';
+
   return (
     <div className={classes.headerTop}>
       <div className={classes.headerMain}>
@@ -51,14 +74,12 @@ export function PreviewHeaderSummary({ item }: PreviewHeaderSummaryProps) {
             <strong>Domicilio fiscal:</strong> {item.fiscalAddress}
           </Text>
           <Text className={classes.metaText}>
-            <strong>Domicilio alternativo:</strong> {item.alternateAddress}
+            <strong>Domicilio alternativo:</strong> {alternateAddress}
           </Text>
         </div>
       </div>
       <div className={`${classes.riskBox} ${getRiskClass(classes, item.riskLevel)}`}>
-        <Text className={classes.riskLevel}>
-          {formatNullableDetailCell(item.riskLevel)}
-        </Text>
+        <Text className={classes.riskLevel}>{riskLevelLabel}</Text>
         <Text className={classes.riskLabel}>Riesgo</Text>
       </div>
     </div>

@@ -8,7 +8,8 @@ import type {
   IUnifiedRegisterHeaderRecord,
   IUnifiedRegisterInterventionOrderRecord,
   IUnifiedRegisterItem,
-  IUnifiedRegisterNoteRecord
+  IUnifiedRegisterNoteRecord,
+  UnifiedRegisterRiskLevel
 } from '../../../models/UnifiedRegister';
 import type {
   ApiUnifiedRegisterAlternateAddressResponseDto,
@@ -35,6 +36,8 @@ const CONTRIBUTOR_CROSS_LABELS: Record<string, string> = {
   ContribuyentesMasDosInmuebles: 'Contribuyentes con más de dos inmuebles',
   CruceBiPapel: 'Cruce BI Papel'
 };
+
+const RISK_LEVELS = new Set<UnifiedRegisterRiskLevel>(['A', 'B', 'C', 'D']);
 
 function formatContributorCrossName(value: string) {
   return (
@@ -175,6 +178,18 @@ function mapContributorType(
   return normalizedValue as IUnifiedRegisterItem['regime'];
 }
 
+function mapRiskLevel(value: string | null | undefined) {
+  const normalizedValue = value?.trim().toUpperCase();
+
+  if (!normalizedValue) {
+    return null;
+  }
+
+  return RISK_LEVELS.has(normalizedValue as UnifiedRegisterRiskLevel)
+    ? (normalizedValue as UnifiedRegisterRiskLevel)
+    : null;
+}
+
 export function mapListItemDto(
   dto: ApiUnifiedRegisterListItemDto
 ): IUnifiedRegisterItem {
@@ -185,7 +200,7 @@ export function mapListItemDto(
     activity: dto.actividad,
     regime: mapContributorType(dto.tipoContribuyente) ?? 'No inscripto',
     status: dto.activo ? 'Activo' : 'Inactivo',
-    riskLevel: dto.riesgo
+    riskLevel: mapRiskLevel(dto.riesgo)
   };
 }
 
@@ -198,6 +213,7 @@ export function mapHeaderDto(
     activo: dto.activo,
     tipoContribuyente: mapContributorType(dto.tipoContribuyente),
     cantidadLotes: dto.cantidadLotes,
+    jurisdiccion: dto.jurisdiccion ?? null,
     actividadPrimaria: dto.actividadPrimaria,
     actividadSecundaria: dto.actividadSecundaria,
     inicioActividad: dto.inicioActividad,
@@ -210,7 +226,7 @@ export function mapHeaderDto(
         presentadas: 0,
         noPresentadas: 0
       },
-    riesgo: dto.riesgo
+    riesgo: mapRiskLevel(dto.riesgo)
   };
 }
 

@@ -144,9 +144,12 @@ export interface ApiCrossResumenBlockDto {
 }
 
 export interface ApiCrossAnalysisRowDto extends ApiCrossDynamicValuesRowDto {
+  contribuyenteId?: string | null
+  contribuyente_id?: string | null
   cuit: string
   razonSocial: string | null
   estadoRelevancia: string | null
+  taxpayerId?: string | null
 }
 
 export interface ApiCrossAnalysisPaginationDto {

@@ -2,6 +2,7 @@ import { Button, Modal } from '@mantine/core'
 import type { IntimationColumnOption } from '@/modules/configuration-module/presentation/constants'
 import { IntimationTemplate } from '@/modules/configuration-module/presentation/components/IntimationTemplate'
 import { SendToReprocessingModal } from '@/modules/reprocessing/presentation/components'
+import type { IReprocessingMarkPayload } from '@/modules/reprocessing/data/models/Reprocessing'
 import type {
   ICrossPreviewAnalysisRow
 } from '../../../data/models/CrossManagement'
@@ -22,11 +23,14 @@ interface CrossPreviewModalsProps {
   onCloseExportModal: () => void
   onCloseIntimationModal: () => void
   onCloseReprocessingModal: () => void
-  onConfirmReprocessingModal: () => void
+  onConfirmReprocessingModal: (
+    payload: IReprocessingMarkPayload
+  ) => void | Promise<void>
   onGoToNextPreview: () => void
   onGoToPreviousPreview: () => void
   onOpenExportModal: () => void
   pendingReprocessingRow: ICrossPreviewAnalysisRow | null
+  reprocessingActionError?: string | null
 }
 
 export function CrossPreviewModals({
@@ -42,7 +46,8 @@ export function CrossPreviewModals({
   onGoToNextPreview,
   onGoToPreviousPreview,
   onOpenExportModal,
-  pendingReprocessingRow
+  pendingReprocessingRow,
+  reprocessingActionError
 }: CrossPreviewModalsProps) {
   const {
     downloadDocx,
@@ -114,9 +119,10 @@ export function CrossPreviewModals({
       <SendToReprocessingModal
         opened={Boolean(pendingReprocessingRow)}
         onClose={onCloseReprocessingModal}
-        contribuyenteId={pendingReprocessingRow?.cuit ?? ''}
+        contribuyenteId={pendingReprocessingRow?.taxpayerId ?? ''}
         cuit={pendingReprocessingRow?.cuit ?? ''}
         razonSocial={pendingReprocessingRow?.businessName ?? ''}
+        error={reprocessingActionError}
         onConfirm={handleConfirmReprocessing}
       />
     </>

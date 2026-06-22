@@ -1,4 +1,5 @@
 export * from './batchCrossPeriods'
+export * from './batchManagementBatchDetail'
 export * from './batchManagementBatches'
 export * from './batchManagementCross'
 export * from './batchManagementFormatters'

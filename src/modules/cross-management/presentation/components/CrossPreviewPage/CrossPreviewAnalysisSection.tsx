@@ -9,6 +9,7 @@ import {
   CROSS_PREVIEW_ANALYSIS_TABLE_TITLE,
   CROSS_PREVIEW_SEARCH_EMPTY_MESSAGE
 } from '../../constants/crossPreviewLabels'
+import { sortCrossPreviewAnalysisRowsByRankingValue } from '../../utils/sortCrossPreviewAnalysisRowsByRankingValue'
 import type {
   CrossFilterColumnConfig
 } from '../../hooks/cross-preview/useCrossPreviewResumenQuery'
@@ -51,6 +52,7 @@ export function CrossPreviewAnalysisSection({
   rows,
   statusByCuit
 }: CrossPreviewAnalysisSectionProps) {
+  const rankedRows = sortCrossPreviewAnalysisRowsByRankingValue(rows)
   const firstVisibleResult =
     pagination.totalItems > 0
       ? (pagination.page - 1) * pagination.itemsPerPage + 1
@@ -117,8 +119,8 @@ export function CrossPreviewAnalysisSection({
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {rows.length ? (
-              rows.map((row, index) => (
+            {rankedRows.length ? (
+              rankedRows.map((row, index) => (
                 <CrossPreviewAnalysisRow
                   key={row.id}
                   columns={analysisColumns}

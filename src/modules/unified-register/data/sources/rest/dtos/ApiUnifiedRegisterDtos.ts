@@ -11,7 +11,7 @@ export interface ApiUnifiedRegisterListItemDto {
   actividad: string;
   tipoContribuyente: string;
   activo: boolean;
-  riesgo: 'A' | 'B' | 'C' | 'D';
+  riesgo: string | null;
 }
 
 export interface ApiUnifiedRegisterListResponseDto {
@@ -37,6 +37,7 @@ export interface ApiUnifiedRegisterHeaderResponseDto {
   activo: boolean;
   tipoContribuyente: string | null;
   cantidadLotes: number;
+  jurisdiccion?: string | null;
   actividadPrimaria: ApiUnifiedRegisterHeaderActivityDto | null;
   actividadSecundaria: ApiUnifiedRegisterHeaderActivityDto | null;
   inicioActividad: string | null;
@@ -56,7 +57,7 @@ export interface ApiUnifiedRegisterHeaderResponseDto {
     presentadas: number;
     noPresentadas: number;
   };
-  riesgo: 'A' | 'B' | 'C' | 'D' | null;
+  riesgo: string | null;
 }
 
 export interface ApiUnifiedRegisterFineResponseDto {

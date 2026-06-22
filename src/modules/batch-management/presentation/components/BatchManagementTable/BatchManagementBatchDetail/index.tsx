@@ -1,13 +1,15 @@
 'use client'
 
-import { Badge, Stack, Table, Text } from '@mantine/core'
+import { Badge, Group, Pagination, Select, Stack, Table, Text } from '@mantine/core'
 import type { IBatchManagementItem } from '../../../../data/models/BatchManagement'
+import { BATCH_MANAGEMENT_DETAIL_ITEMS_PER_PAGE_OPTIONS } from '../../../constants'
 import {
   formatBatchCuit,
   getBatchContributorTypeLabel
 } from '../../../utils'
 import tableClasses from '../BatchManagementTable.module.css'
 import classes from './BatchManagementBatchDetail.module.css'
+import { useBatchManagementBatchDetail } from './useBatchManagementBatchDetail'
 
 type BatchManagementBatchDetailProps = {
   batch: IBatchManagementItem
@@ -17,6 +19,7 @@ export function BatchManagementBatchDetail({
   batch
 }: BatchManagementBatchDetailProps) {
   const detailRegime = batch.cuits[0]?.regime
+  const detail = useBatchManagementBatchDetail(batch)
 
   return (
     <div className={classes.detailInner}>
@@ -26,7 +29,7 @@ export function BatchManagementBatchDetail({
           {detailRegime ? ` - Régimen ${detailRegime}` : ''}
         </Text>
 
-        {batch.cuits.length ? (
+        {detail.totalItems ? (
           <>
             <Table
               withTableBorder={false}
@@ -42,9 +45,11 @@ export function BatchManagementBatchDetail({
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
-                {batch.cuits.map((cuit, index) => (
+                {detail.cuits.map((cuit, index) => (
                   <Table.Tr key={cuit.id}>
-                    <Table.Td className={classes.batchDate}>{index + 1}</Table.Td>
+                    <Table.Td className={classes.batchDate}>
+                      {cuit.order || detail.firstItemNumber + index}
+                    </Table.Td>
                     <Table.Td className={classes.monoText}>
                       {formatBatchCuit(cuit.cuit)}
                     </Table.Td>
@@ -63,17 +68,39 @@ export function BatchManagementBatchDetail({
               </Table.Tbody>
             </Table>
 
-            <Text size="xs" className={classes.expandHint}>
-              Mostrando {batch.cuits.length} de {batch.cuitCount} CUITs
-              {batch.cuits.length < batch.cuitCount ? (
-                <>
-                  {' · '}
-                  <button type="button" className={classes.expandActionButton}>
-                    Ver todos
-                  </button>
-                </>
+            <div className={classes.detailFooter}>
+              <Text size="xs" className={classes.expandHint}>
+                {detail.rangeLabel}
+              </Text>
+              {detail.shouldShowPaginationControls ? (
+                <Group gap="sm" className={classes.detailPaginationControls}>
+                  <Select
+                    aria-label="CUITs por pagina"
+                    value={String(detail.itemsPerPage)}
+                    data={BATCH_MANAGEMENT_DETAIL_ITEMS_PER_PAGE_OPTIONS.map(
+                      (option) => ({
+                        value: String(option),
+                        label: String(option)
+                      })
+                    )}
+                    className={classes.detailPageSizeSelect}
+                    onChange={(value) => {
+                      if (value) {
+                        detail.onItemsPerPageChange(Number(value))
+                      }
+                    }}
+                  />
+                  <Pagination
+                    size="sm"
+                    value={detail.page}
+                    total={detail.totalPages}
+                    disabled={detail.totalPages <= 1}
+                    onChange={detail.onPageChange}
+                    aria-label="Paginacion de CUITs del lote"
+                  />
+                </Group>
               ) : null}
-            </Text>
+            </div>
           </>
         ) : (
           <Text size="sm" className={classes.emptyState}>

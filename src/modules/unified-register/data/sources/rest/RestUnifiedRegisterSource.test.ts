@@ -46,7 +46,7 @@ describe('RestUnifiedRegisterSource', () => {
             actividad: 'DESARROLLO DE SOFTWARE',
             tipoContribuyente: 'LOCAL',
             activo: true,
-            riesgo: 'B'
+            riesgo: ''
           }
         ]
       })
@@ -78,7 +78,7 @@ describe('RestUnifiedRegisterSource', () => {
           activity: 'DESARROLLO DE SOFTWARE',
           regime: 'Regimen Local',
           status: 'Activo',
-          riskLevel: 'B'
+          riskLevel: null
         }
       ]
     });
@@ -100,6 +100,7 @@ describe('RestUnifiedRegisterSource', () => {
         activo: true,
         tipoContribuyente: 'CONVENIO',
         cantidadLotes: 2,
+        jurisdiccion: 'Jujuy (J.910)',
         actividadPrimaria: {
           nombre: 'DESARROLLO DE SOFTWARE',
           numero: '620100'
@@ -107,7 +108,13 @@ describe('RestUnifiedRegisterSource', () => {
         actividadSecundaria: null,
         inicioActividad: null,
         domicilios: {
-          fiscal: null
+          fiscal: null,
+          alternativo: [
+            {
+              id: 'alternate-address-1',
+              nombre: 'Belgrano 890, S.S. de Jujuy'
+            }
+          ]
         },
         biDeclarada: null,
         impuestosDeclarados: '120.05',
@@ -116,7 +123,7 @@ describe('RestUnifiedRegisterSource', () => {
           presentadas: 1,
           noPresentadas: 0
         },
-        riesgo: 'D'
+        riesgo: ''
       })
     );
 
@@ -131,6 +138,7 @@ describe('RestUnifiedRegisterSource', () => {
       activo: true,
       tipoContribuyente: 'Convenio Multilateral',
       cantidadLotes: 2,
+      jurisdiccion: 'Jujuy (J.910)',
       actividadPrimaria: {
         nombre: 'DESARROLLO DE SOFTWARE',
         numero: '620100'
@@ -138,7 +146,13 @@ describe('RestUnifiedRegisterSource', () => {
       actividadSecundaria: null,
       inicioActividad: null,
       domicilios: {
-        fiscal: null
+        fiscal: null,
+        alternativo: [
+          {
+            id: 'alternate-address-1',
+            nombre: 'Belgrano 890, S.S. de Jujuy'
+          }
+        ]
       },
       biDeclarada: null,
       impuestosDeclarados: '120.05',
@@ -147,7 +161,7 @@ describe('RestUnifiedRegisterSource', () => {
         presentadas: 1,
         noPresentadas: 0
       },
-      riesgo: 'D'
+      riesgo: null
     });
     expect(fetchMock.mock.calls[0][0]).toBe(
       'http://api.test/api/procesos-informacion/padron/unificado/contributor-1/encabezado'

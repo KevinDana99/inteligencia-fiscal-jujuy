@@ -13,7 +13,7 @@ type PreviewHeaderProps = {
 export function PreviewHeader({ item, preview }: PreviewHeaderProps) {
   return (
     <Card className={classes.headerCard} padding={0} radius="xl">
-      <PreviewHeaderSummary item={item} />
+      <PreviewHeaderSummary item={item} preview={preview} />
       <PreviewHeaderActions item={item} preview={preview} />
     </Card>
   );

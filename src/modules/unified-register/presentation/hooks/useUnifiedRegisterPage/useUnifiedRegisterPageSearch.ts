@@ -6,7 +6,8 @@ import {
   useState,
   useTransition,
   type ChangeEvent,
-  type FocusEvent
+  type FocusEvent,
+  type KeyboardEvent
 } from 'react';
 import { getUnifiedRegisterListAction } from '../../../data/actions';
 import type {
@@ -86,12 +87,25 @@ export function useUnifiedRegisterPageSearch({
     [applySearch]
   );
 
+  const handlePageSearchKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLInputElement>) => {
+      if (event.key !== 'Enter') {
+        return;
+      }
+
+      event.preventDefault();
+      applySearch(event.currentTarget.value);
+    },
+    [applySearch]
+  );
+
   return {
     search,
     appliedSearch,
     filteredItems: items,
     handleSearchBlur: handlePageSearchBlur,
     handleSearchChange: handlePageSearchChange,
+    handleSearchKeyDown: handlePageSearchKeyDown,
     hasResults: items.length > 0,
     isSearchPending
   };

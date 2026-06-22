@@ -46,12 +46,35 @@
   color: var(--mantine-color-gray-5);
 }
 
-.expandActionButton {
-  border: 0;
-  background: transparent;
-  color: var(--mantine-color-blue-5);
-  cursor: pointer;
-  font: inherit;
-  font-weight: 600;
-  padding: 0;
+.detailFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--mantine-color-gray-1);
+  padding-top: 10px;
+}
+
+.detailPaginationControls {
+  flex-shrink: 0;
+}
+
+.detailPageSizeSelect {
+  width: 76px;
+}
+
+@media (max-width: 768px) {
+  .detailInner {
+    padding: 12px 12px 14px;
+  }
+
+  .detailFooter {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .detailPaginationControls {
+    width: 100%;
+    justify-content: space-between;
+  }
 }

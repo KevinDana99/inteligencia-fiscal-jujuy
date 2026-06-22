@@ -238,6 +238,7 @@ function mapCrossAnalysisRowDto(dto: ApiCrossAnalysisRowDto): ICrossAnalysisRow 
   return {
     cuit: dto.cuit,
     businessName: dto.razonSocial,
+    taxpayerId: dto.contribuyenteId ?? dto.contribuyente_id ?? dto.taxpayerId ?? null,
     relevanceStatus: dto.estadoRelevancia,
     ...mapCrossDynamicValuesRowDto(dto)
   }

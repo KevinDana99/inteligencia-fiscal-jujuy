@@ -90,6 +90,7 @@ export function CrossPreviewPageContent({ cross }: CrossPreviewPageContentProps)
         onGoToPreviousPreview={preview.goToPreviousPreview}
         onOpenExportModal={preview.openExportModal}
         pendingReprocessingRow={preview.pendingReprocessingRow}
+        reprocessingActionError={preview.reprocessingActionError}
       />
     </div>
   )

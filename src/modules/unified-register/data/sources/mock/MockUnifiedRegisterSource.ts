@@ -767,6 +767,7 @@ export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
       activo: item.status === 'Activo',
       tipoContribuyente: item.regime,
       cantidadLotes: Number(item.controlLotsLabel.split(' ')[0]) || 0,
+      jurisdiccion: item.jurisdiction,
       actividadPrimaria: {
         nombre: item.activities[0]?.label ?? item.activity,
         numero: '001'

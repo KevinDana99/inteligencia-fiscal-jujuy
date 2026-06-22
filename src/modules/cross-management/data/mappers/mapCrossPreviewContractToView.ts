@@ -663,6 +663,7 @@ export function mapAnalysisRowsToPreview(
       id: `${row.cuit}-${rowIndex}`,
       cuit: formatCuit(row.cuit),
       businessName: normalizeText(row.businessName),
+      taxpayerId: row.taxpayerId ?? null,
       values,
       status: mapRelevanceStatus(row.relevanceStatus)
     }

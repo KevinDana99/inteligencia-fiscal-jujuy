@@ -1,5 +1,44 @@
 # Unified Register Feature Story
 
+## Preview Header Backend Field Fixes - 2026-06-22
+
+### Summary
+
+Fixed `/vista-previa-padron/[cuit]` header rendering so backend header fields drive risk, jurisdiction, and alternate address values correctly.
+
+### Main Changes
+
+- Normalized empty or unsupported `riesgo` values from the REST adapter to `null` and rendered the header risk value as `-` when no letter is available.
+- Added `jurisdiccion` to the unified register header DTO/domain model and applied it to the preview header detail.
+- Applied the first alternate address from `domicilios.alternativo` in the header endpoint instead of clearing the preview header value.
+- Connected the preview header alternate address display to hydrated `preview.addresses`, preserving the header value as fallback until the alternate-address module resolves.
+- Updated mock header data and focused tests for the new field mapping.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js src/modules/unified-register/data/utils/unifiedRegisterDetail.test.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js src/modules/unified-register/data/models/UnifiedRegister.ts src/modules/unified-register/data/sources/rest/dtos/ApiUnifiedRegisterDtos.ts src/modules/unified-register/data/sources/rest/mappers/unifiedRegisterMappers.ts src/modules/unified-register/data/sources/mock/MockUnifiedRegisterSource.ts src/modules/unified-register/data/utils/unifiedRegisterDetail.ts src/modules/unified-register/data/utils/unifiedRegisterDetail.test.ts src/modules/unified-register/data/sources/rest/RestUnifiedRegisterSource.test.ts src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/components/PreviewHeader.tsx src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/components/PreviewHeaderSummary.tsx`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+- `git diff --check`
+
+## Unified Register Search Enter Apply - 2026-06-22
+
+### Summary
+
+Updated the `/` Padrón Unificado search input so pressing Enter applies the current search, in addition to the existing blur behavior.
+
+### Main Changes
+
+- Added an `onKeyDown` handler contract to `UnifiedRegisterSearch`.
+- Reused the existing `applySearch` path from `useUnifiedRegisterPageSearch` when the key is Enter.
+- Kept the applied-search guard so a later blur after Enter does not trigger a duplicate request.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/components/UnifiedRegisterPage/index.tsx src/modules/unified-register/presentation/components/UnifiedRegisterSearch/index.tsx src/modules/unified-register/presentation/hooks/useUnifiedRegisterPage/useUnifiedRegisterPageSearch.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+- `git diff --check`
+
 ## Informe Generation BFF Route - 2026-06-21
 
 ### Summary

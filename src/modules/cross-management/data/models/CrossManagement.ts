@@ -175,6 +175,7 @@ export interface ICrossResumenBlock {
 export interface ICrossAnalysisRow extends ICrossDynamicValuesRow {
   cuit: string
   businessName: string | null
+  taxpayerId?: string | null
   relevanceStatus: string | null
 }
 
@@ -220,6 +221,7 @@ export interface ICrossPreviewAnalysisRow {
   id: string
   cuit: string
   businessName: string
+  taxpayerId?: string | null
   values: Record<string, string>
   status: 'estado' | 'relevante' | 'reproceso'
 }

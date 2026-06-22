@@ -172,12 +172,14 @@ describe('cross preview dynamic contract mapping', () => {
         dates: {},
         metrics: {},
         relevanceStatus: 'Relevante',
+        taxpayerId: '44292a56-7e66-48ac-84f0-5f35aa5ec46d',
         texts: {}
       }
     ]
 
     expect(mapAnalysisRowsToPreview(rows, columns)[0]).toMatchObject({
       status: 'relevante',
+      taxpayerId: '44292a56-7e66-48ac-84f0-5f35aa5ec46d',
       values: {
         estadoRelevancia: 'Relevante'
       }

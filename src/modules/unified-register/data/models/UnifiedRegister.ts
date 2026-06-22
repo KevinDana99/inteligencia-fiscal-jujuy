@@ -217,6 +217,7 @@ export interface IUnifiedRegisterHeaderRecord {
   activo: boolean;
   tipoContribuyente: UnifiedRegisterContributorType | null;
   cantidadLotes: number;
+  jurisdiccion: string | null;
   actividadPrimaria: IUnifiedRegisterHeaderActivity | null;
   actividadSecundaria: IUnifiedRegisterHeaderActivity | null;
   inicioActividad: string | null;

@@ -82,6 +82,12 @@ function formatHeaderDate(value: string | null | undefined) {
   return `${day}/${month}/${year}`;
 }
 
+function getHeaderAlternateAddress(
+  alternativo: IUnifiedRegisterHeaderRecord['domicilios']['alternativo']
+) {
+  return alternativo?.find((address) => address.nombre.trim())?.nombre ?? '';
+}
+
 function buildActivityEntry(
   activity: IUnifiedRegisterHeaderActivity | null,
   fallback: Partial<IUnifiedRegisterActivityEntry>,
@@ -155,10 +161,10 @@ export function applyUnifiedRegisterHeaderToDetail(
     activity: getNullableText(header.actividadPrimaria?.nombre),
     riskLevel: header.riesgo,
     startedAt: formatHeaderDate(header.inicioActividad),
-    jurisdiction: '',
+    jurisdiction: getNullableText(header.jurisdiccion),
     fiscalAddress: getNullableText(header.domicilios.fiscal),
     commercialAddress: getNullableText(header.domicilios.comercial),
-    alternateAddress: '',
+    alternateAddress: getHeaderAlternateAddress(header.domicilios.alternativo),
     controlLotsLabel: `${header.cantidadLotes} lotes`,
     secondaryActivity: getNullableText(header.actividadSecundaria?.nombre),
     widgets: applyHeaderWidgetValues(item.widgets, header),

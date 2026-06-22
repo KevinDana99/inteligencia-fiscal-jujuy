@@ -13,6 +13,7 @@ function createHeader(
     activo: true,
     tipoContribuyente: 'Convenio Multilateral',
     cantidadLotes: 3,
+    jurisdiccion: item.jurisdiction,
     actividadPrimaria: {
       nombre: item.activity,
       numero: '451111'
@@ -53,6 +54,32 @@ describe('applyUnifiedRegisterHeaderToDetail', () => {
     const detail = applyUnifiedRegisterHeaderToDetail(item, header);
 
     expect(detail.startedAt).toBe('01/01/2020');
+  });
+
+  it('uses jurisdiction and alternate address values from the header response', () => {
+    const item = unifiedRegisterDetailsFixture[0];
+    const header = createHeader({
+      jurisdiccion: 'Salta (J.917)',
+      domicilios: {
+        fiscal: item.fiscalAddress,
+        comercial: item.commercialAddress,
+        alternativo: [
+          {
+            id: 'alternate-address-1',
+            nombre: 'España 456, San Salvador de Jujuy'
+          },
+          {
+            id: 'alternate-address-2',
+            nombre: 'Belgrano 890, San Salvador de Jujuy'
+          }
+        ]
+      }
+    });
+
+    const detail = applyUnifiedRegisterHeaderToDetail(item, header);
+
+    expect(detail.jurisdiction).toBe('Salta (J.917)');
+    expect(detail.alternateAddress).toBe('España 456, San Salvador de Jujuy');
   });
 
   it('formats numeric header amount values as ARS currency', () => {
