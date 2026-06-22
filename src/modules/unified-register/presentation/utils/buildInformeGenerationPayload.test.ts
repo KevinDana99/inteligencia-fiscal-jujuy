@@ -13,7 +13,7 @@ import {
 describe('buildInformeGenerationPayload', () => {
   const item = unifiedRegisterDetailsFixture[0];
 
-  test('maps contributor data from unified register detail and applies temporary defaults', () => {
+  test('maps contributor data from unified register detail', () => {
     const contributorData = buildInformeContributorData(item);
 
     expect(contributorData).toEqual({
@@ -25,16 +25,6 @@ describe('buildInformeGenerationPayload', () => {
       riesgoFiscal: item.riskLevel,
       actividadesDeclaradas: item.activities.map((activity) => activity.label)
     });
-  });
-
-  test('uses temporary fiscal address fallback when contributor has no fiscal address', () => {
-    const contributorData = buildInformeContributorData({
-      ...item,
-      fiscalAddress: '',
-      alternateAddress: ''
-    });
-
-    expect(contributorData.domicilioFiscal).toBe('calle falsa 123');
   });
 
   test('normalizes optional fields and includes selected crosses with periodo plus claves', () => {

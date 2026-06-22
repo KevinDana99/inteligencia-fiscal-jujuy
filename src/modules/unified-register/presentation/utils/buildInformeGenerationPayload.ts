@@ -13,19 +13,9 @@ import {
 } from '../constants/informeGeneration';
 export { mapContributorCrossesToInformeOptions } from './mapContributorCrossesToInformeOptions';
 
-const TEMPORARY_FISCAL_ADDRESS_FALLBACK = 'calle falsa 123';
-
 function normalizeOptionalText(value: string) {
   const normalizedValue = value.trim();
   return normalizedValue ? normalizedValue : null;
-}
-
-function resolveFiscalAddress(item: IUnifiedRegisterDetail) {
-  return (
-    item.fiscalAddress.trim() ||
-    item.alternateAddress.trim() ||
-    TEMPORARY_FISCAL_ADDRESS_FALLBACK
-  );
 }
 
 function getContactValue(item: IUnifiedRegisterDetail, contactId: string) {
@@ -110,7 +100,7 @@ export function buildInformeContributorData(
   return {
     razonSocial: item.businessName,
     cuit: item.cuit,
-    domicilioFiscal: resolveFiscalAddress(item),
+    domicilioFiscal: item.fiscalAddress || item.alternateAddress,
     domicilioFiscalElectronico: true,
     emailInformado: getContactValue(item, 'mail'),
     riesgoFiscal: item.riskLevel ?? '',
