@@ -1,5 +1,5 @@
 import {
-  INTIMATION_DOCUMENT_BFF_ENDPOINTS,
+  INTIMATION_DOCUMENT_API_ENDPOINTS,
   INTIMATION_DOCUMENT_EXTENSIONS
 } from '../../data/constants/intimationDocumentContracts'
 import type { IIntimationDocumentFormat } from '../../data/models/CrossManagement'
@@ -52,7 +52,7 @@ export async function downloadIntimationDocument({
     throw new Error(INTIMATION_DOCUMENT_DOWNLOAD_ERRORS.generationFailed)
   }
 
-  const endpoint = INTIMATION_DOCUMENT_BFF_ENDPOINTS.download(
+  const endpoint = INTIMATION_DOCUMENT_API_ENDPOINTS.download(
     encodeURIComponent(documentId),
     format
   )

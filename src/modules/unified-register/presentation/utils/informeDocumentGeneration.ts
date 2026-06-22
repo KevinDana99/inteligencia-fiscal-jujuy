@@ -7,9 +7,9 @@ import type {
 } from '@/modules/documents';
 
 const INFORME_DOCUMENT_API_ENDPOINTS = {
-  generate: '/bff/documentos/informe/generar',
+  generate: '/api/documentos/informe/generar',
   download: (documentId: string, format: DocumentDownloadFormat) =>
-    `/bff/documentos/${documentId}/descargar?formato=${format}`
+    `/api/documentos/${documentId}/descargar?formato=${format}`
 } as const;
 
 const INFORME_DOCUMENT_EXTENSIONS: Record<DocumentDownloadFormat, string> = {
@@ -156,8 +156,8 @@ async function generateInformeDocument(
 export async function generateInformeDocuments(
   payload: IGenerateInformeDocumentsPayload
 ): Promise<IGeneratedInformeDocuments> {
-  // Keep the requests sequential so a refreshed auth cookie from the first
-  // generation is available before the second request starts.
+  // Keep the requests sequential to preserve the current document generation
+  // flow and avoid running two long backend renders in parallel.
   const pdf = await generateInformeDocument({
     ...payload,
     formato: 'Pdf'

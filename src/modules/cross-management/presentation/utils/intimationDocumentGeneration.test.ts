@@ -39,12 +39,12 @@ describe('generateIntimationDocument', () => {
     globalThis.fetch = fetchMock as unknown as typeof fetch
   })
 
-  it('posts the intimation payload to the frontend generation route', async () => {
+  it('posts the intimation payload to the backend API route', async () => {
     fetchMock.mockResolvedValue(
       new Response(
         JSON.stringify({
-          documentId: 'documento-1',
-          downloadUrl: '/bff/documentos/documento-1/descargar?formato=pdf'
+          documentoId: 'documento-1',
+          urlDescarga: '/api/documentos/documento-1/descargar?formato=pdf'
         }),
         { status: 201 }
       )
@@ -54,7 +54,7 @@ describe('generateIntimationDocument', () => {
     const requestInit = fetchMock.mock.calls[0][1] as RequestInit
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/bff/documentos/intimacion/generar',
+      '/api/documentos/intimacion/generar',
       expect.objectContaining({
         method: 'POST',
         headers: {
@@ -65,7 +65,7 @@ describe('generateIntimationDocument', () => {
     expect(JSON.parse(requestInit.body as string)).toEqual(payload)
     expect(result).toEqual({
       documentId: 'documento-1',
-      downloadUrl: '/bff/documentos/documento-1/descargar?formato=pdf'
+      downloadUrl: '/api/documentos/documento-1/descargar?formato=pdf'
     })
   })
 
