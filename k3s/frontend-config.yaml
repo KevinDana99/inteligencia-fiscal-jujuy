@@ -15,4 +15,4 @@ data:
   NEXT_PUBLIC_USE_MOCK_REPROCESSING: "false"
   NEXT_PUBLIC_USE_MOCK_UNIFIED_REGISTER: "false"
   DOCUMENTS_API_BASE_URL: http://rentas-if-backend.rentas-if.svc.cluster.local
-  NEXT_PUBLIC_API_BASE_URL: http://rentas-if-backend.rentas-if.svc.cluster.local
+  NEXT_PUBLIC_API_BASE_URL: "https://rentasif.jujuy.gob.ar"
