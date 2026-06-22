@@ -11,16 +11,10 @@ import type {
   IExplorerRegisterTemporalRange
 } from '../../utils';
 import {
+  getDefaultExplorerRegisterTemporalRange,
   getDefaultExplorerRegisterColumnCodes,
   getExplorerRegisterActiveFilters
 } from '../../utils';
-
-function getEmptyTemporalRange(): IExplorerRegisterTemporalRange {
-  return {
-    startDate: '',
-    endDate: ''
-  };
-}
 
 function clearInactiveFilterValues(
   values: ExplorerRegisterFilterValues,
@@ -52,7 +46,9 @@ export function useExplorerRegisterForm(catalog: IExplorerRegisterCatalog) {
   const [filterValues, setFilterValues] =
     useState<ExplorerRegisterFilterValues>({});
   const [temporalRange, setTemporalRange] =
-    useState<IExplorerRegisterTemporalRange>(getEmptyTemporalRange);
+    useState<IExplorerRegisterTemporalRange>(
+      getDefaultExplorerRegisterTemporalRange
+    );
 
   const activeFilters = useMemo(
     () => getExplorerRegisterActiveFilters(catalog, selectedColumnCodes),
@@ -107,7 +103,7 @@ export function useExplorerRegisterForm(catalog: IExplorerRegisterCatalog) {
   function resetForm() {
     setSelectedColumnCodes(defaultColumnCodes);
     setFilterValues({});
-    setTemporalRange(getEmptyTemporalRange());
+    setTemporalRange(getDefaultExplorerRegisterTemporalRange());
   }
 
   return {

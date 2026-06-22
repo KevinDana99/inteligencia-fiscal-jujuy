@@ -49,8 +49,18 @@
 - Se importo `dayjs/locale/es` en el provider client-side para que `@mantine/dates` pueda resolver correctamente el locale configurado.
 - El rango temporal de `/explorar-padron` conserva el formato de valor `YYYY-MM-DD` esperado por el backend, cambiando solo el idioma visible del calendario.
 
+## 2026-06-22 - Periodo explicito para exploraciones
+
+- El bloque `Periodo de busqueda` ahora se muestra siempre en `/explorar-padron`, incluso cuando los filtros seleccionados no son temporales.
+- El formulario inicia y reinicia el rango temporal con un periodo default explicito de hasta 36 meses, desde el primer dia del mes inicial hasta la fecha actual.
+- El payload de exploracion siempre envia `startDate` y `endDate`; si por estado previo llegan vacios, el builder completa el mismo rango default antes de llamar al backend.
+- La validacion de fechas pasa a aplicar para cualquier busqueda, evitando depender de la resolucion de periodo default del backend en prod.
+
 ## Verificacion
 
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node node_modules/jest/bin/jest.js src/modules/explorer-register`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node node_modules/typescript/bin/tsc --noEmit`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node node_modules/eslint/bin/eslint.js src/modules/explorer-register/presentation/utils/dateExplorerRegisterRange.ts src/modules/explorer-register/presentation/utils/buildExplorerRegisterPayload.ts src/modules/explorer-register/presentation/utils/buildExplorerRegisterPayload.test.ts src/modules/explorer-register/presentation/hooks/explorer-register/useExplorerRegisterForm.ts src/modules/explorer-register/presentation/components/ExplorerRegisterPage/components/ExplorerRegisterTemporalFilters.tsx src/modules/explorer-register/presentation/constants/explorerRegisterPresentation.ts`
 - `PATH="/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH" node ./node_modules/jest/bin/jest.js src/modules/explorer-register/presentation/utils/buildExplorerRegisterPayload.test.ts --runInBand`
 - `PATH="/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH" node ./node_modules/eslint/bin/eslint.js src/modules/explorer-register/presentation/constants/explorerRegisterPresentation.ts src/modules/explorer-register/presentation/utils/buildExplorerRegisterPayload.test.ts`
 - `PATH="/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH" ./node_modules/.bin/eslint src/components/core/providers.tsx src/modules/explorer-register/presentation/components/ExplorerRegisterPage/components/ExplorerRegisterTemporalFilters.tsx`

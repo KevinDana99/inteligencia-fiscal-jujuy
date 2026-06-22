@@ -10,7 +10,10 @@ import type {
 } from '../../data/models/ExplorerRegister';
 import { EXPLORER_REGISTER_SWITCH_ACTIVE_VALUE } from '../constants';
 import type { IExplorerRegisterTemporalRange } from './dateExplorerRegisterRange';
-import { validateExplorerRegisterTemporalRange } from './dateExplorerRegisterRange';
+import {
+  getDefaultExplorerRegisterTemporalRange,
+  validateExplorerRegisterTemporalRange
+} from './dateExplorerRegisterRange';
 
 export type ExplorerRegisterFilterValues = Record<string, string[]>;
 
@@ -118,10 +121,14 @@ export function buildExplorerRegisterPayload({
     catalog,
     selectedColumnCodes
   );
-  const usesTemporalFilters = activeFilters.some((filter) => filter.temporal);
+  const shouldUseDefaultTemporalRange =
+    !temporalRange.startDate && !temporalRange.endDate;
+  const effectiveTemporalRange = shouldUseDefaultTemporalRange
+    ? getDefaultExplorerRegisterTemporalRange()
+    : temporalRange;
   const temporalError = validateExplorerRegisterTemporalRange(
-    temporalRange,
-    usesTemporalFilters && (Boolean(temporalRange.startDate) || Boolean(temporalRange.endDate))
+    effectiveTemporalRange,
+    true
   );
 
   if (temporalError) {
@@ -152,12 +159,8 @@ export function buildExplorerRegisterPayload({
       ),
       columns,
       filters,
-      ...(temporalRange.startDate && temporalRange.endDate
-        ? {
-            startDate: temporalRange.startDate,
-            endDate: temporalRange.endDate
-          }
-        : {})
+      startDate: effectiveTemporalRange.startDate,
+      endDate: effectiveTemporalRange.endDate
     }
   };
 }

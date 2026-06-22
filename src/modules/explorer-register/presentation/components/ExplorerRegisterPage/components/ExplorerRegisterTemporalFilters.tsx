@@ -9,10 +9,6 @@ export function ExplorerRegisterTemporalFilters({
 }: {
   controller: ExplorerRegisterController;
 }) {
-  if (!controller.hasActiveTemporalFilters) {
-    return null;
-  }
-
   const startDate = controller.temporalRange.startDate;
   const endDate = controller.temporalRange.endDate;
 
@@ -53,7 +49,6 @@ export function ExplorerRegisterTemporalFilters({
             id="explorer-register-start-date"
             aria-label={EXPLORER_REGISTER_TEXTS.temporalStart}
             value={startDate || null}
-            clearable
             disabled={controller.isPending}
             maxDate={getDatePickerLimit(endDate)}
             valueFormat="YYYY-MM-DD"
@@ -81,7 +76,6 @@ export function ExplorerRegisterTemporalFilters({
             id="explorer-register-end-date"
             aria-label={EXPLORER_REGISTER_TEXTS.temporalEnd}
             value={endDate || null}
-            clearable
             disabled={controller.isPending}
             minDate={getDatePickerLimit(startDate)}
             valueFormat="YYYY-MM-DD"

@@ -60,6 +60,10 @@ const catalog: IExplorerRegisterCatalog = {
 };
 
 describe('buildExplorerRegisterPayload', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('allows the explorer screen to start without preselected column options', () => {
     expect(getDefaultExplorerRegisterColumnCodes(catalog, [])).toEqual([]);
   });
@@ -182,7 +186,10 @@ describe('buildExplorerRegisterPayload', () => {
     expect(overLimit.error).toBe(EXPLORER_REGISTER_TEXTS.temporalRangeLimit);
   });
 
-  it('allows temporal filters without explicit dates so the backend can apply the default range', () => {
+  it('fills an explicit default range when no dates were selected', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-06-22T12:00:00'));
+
     const result = buildExplorerRegisterPayload({
       catalog,
       selectedColumnCodes: ['controlInteligenciaFiscal'],
@@ -196,7 +203,9 @@ describe('buildExplorerRegisterPayload', () => {
     });
 
     expect(result.error).toBeNull();
-    expect(result.payload?.startDate).toBeUndefined();
-    expect(result.payload?.endDate).toBeUndefined();
+    expect(result.payload).toMatchObject({
+      startDate: '2023-07-01',
+      endDate: '2026-06-22'
+    });
   });
 });

@@ -6,11 +6,35 @@ export interface IExplorerRegisterTemporalRange {
   endDate: string;
 }
 
+function formatExplorerRegisterDate(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
 function getMonthDistance(startDate: Date, endDate: Date) {
   return (
     (endDate.getFullYear() - startDate.getFullYear()) * 12 +
     (endDate.getMonth() - startDate.getMonth())
   );
+}
+
+export function getDefaultExplorerRegisterTemporalRange(
+  referenceDate = new Date()
+): IExplorerRegisterTemporalRange {
+  const startDate = new Date(
+    referenceDate.getFullYear(),
+    referenceDate.getMonth() -
+      (EXPLORER_REGISTER_REQUEST_LIMITS.maxTemporalRangeMonths - 1),
+    1
+  );
+
+  return {
+    startDate: formatExplorerRegisterDate(startDate),
+    endDate: formatExplorerRegisterDate(referenceDate)
+  };
 }
 
 export function validateExplorerRegisterTemporalRange(

@@ -36,7 +36,7 @@ export const EXPLORER_REGISTER_TEXTS = {
   catalogFallback:
     'No fue posible cargar el catalogo de filtros para Explorar Padron.',
   temporalRangeRequired:
-    'Para usar filtros temporales, completa fecha inicio y fecha fin.',
+    'Para buscar, completa fecha inicio y fecha fin.',
   temporalRangeOrder:
     'La fecha inicio no puede ser posterior a la fecha fin.',
   temporalRangeLimit: 'El rango temporal no puede superar 36 meses.'
