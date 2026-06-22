@@ -1,5 +1,16 @@
 # Cross Management Feature Story
 
+## 2026-06-22 Ranking ordenado por backend
+
+- La tabla `Ranking` de `/gestion-de-cruces/vista-previa-cruce/[crossId]` dejo de reordenar filas en frontend.
+- `CrossPreviewAnalysisSection` ahora renderiza las filas en el orden recibido desde `/resumen`, conservando solo el calculo visual del numero de ranking por pagina.
+- Se removio el helper y test local que ordenaban por `netoAPagar`.
+
+### Validation
+
+- `PATH=/Users/gastonmorales/.bun/bin:$PATH bun x eslint src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewAnalysisSection.tsx`
+- `PATH=/Users/gastonmorales/.bun/bin:$PATH bun x tsc --noEmit --incremental false`
+
 ## 2026-06-22 Prefijo BFF para documentos de intimacion
 
 - Las llamadas de navegador para generar y descargar documentos de intimacion ahora usan `/bff/documentos/...`, evitando que el ingress productivo envie esas requests directo al backend sin la capa de auth server-side de Next.
