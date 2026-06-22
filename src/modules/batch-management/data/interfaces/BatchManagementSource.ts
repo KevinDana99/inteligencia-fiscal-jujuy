@@ -3,6 +3,7 @@ import type {
   IBatchAvailableCrosses,
   IBatchCrossExecutionPayload,
   IBatchCrossExecutionSummary,
+  IBatchDetailParams,
   IBatchCreatePayload,
   IBatchCreatedSummary,
   IBatchListData,
@@ -15,7 +16,10 @@ import type {
 export interface IBatchManagementQueryPort {
   listAvailableCrosses(): Promise<IBatchAvailableCrosses>;
   listBatches(params?: IBatchListParams): Promise<IBatchListData>;
-  getBatch(batchId: string): Promise<IBatchManagementItem>;
+  getBatch(
+    batchId: string,
+    params?: IBatchDetailParams
+  ): Promise<IBatchManagementItem>;
 }
 
 export interface IBatchManagementCommandPort {

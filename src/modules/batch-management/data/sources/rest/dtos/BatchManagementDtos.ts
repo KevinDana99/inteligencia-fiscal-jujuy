@@ -47,10 +47,14 @@ export interface ApiBatchDetailResponseDto {
   nombre: string;
   descripcion: string | null;
   regimen: ApiBatchRegime;
+  pagina: number;
+  itemsPagina: number;
+  totalItems: number;
+  totalPaginas: number;
+  cantidadCuits: number;
   fechaGeneracion: string;
   creadoPor: ApiBatchAuthorDto;
   cuits: ApiBatchCuitDto[];
-  cantidadCuits: number;
 }
 
 export type ApiPreviewStatusDto = 'valido' | 'invalido' | 'duplicado';

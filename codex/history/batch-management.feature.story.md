@@ -1,5 +1,23 @@
 # Batch Management Feature Story
 
+## 2026-06-22 Paginacion backend en detalle de CUITs
+
+- `GET /api/lotes/{loteId}` acepta ahora paginacion de detalle desde frontend con `Pagina` e `ItemsPagina`, usando `1/10` como default.
+- El contrato `ApiBatchDetailResponseDto` y el modelo de lote incorporan `pagina`, `itemsPagina`, `totalItems`, `totalPaginas` y conservan `cantidadCuits` como total visual del lote.
+- El detalle expandido de CUITs ya no pagina en memoria; el cambio de pagina o de cantidad de filas dispara una nueva consulta del lote.
+- El contador del detalle usa metadata del backend, por ejemplo `Mostrando 21-40 de 10000 CUITs`, sin inferir totales desde `cuits.length`.
+- El mock conserva el slice solo para simular paginas locales, mientras la implementacion REST delega el corte al backend.
+- Se actualizo el contrato local de `Consultar lote` para documentar que `cuits` contiene solo la pagina visible.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js --runTestsByPath src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts src/modules/batch-management/data/sources/rest/mappers/mapBatchDto.test.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementBatches.test.ts src/modules/batch-management/presentation/utils/batchManagementBatchDetail.test.ts src/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementBatchDetail/useBatchManagementBatchDetail.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js src/modules/batch-management --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js src/modules/batch-management/constants/batchManagementRequest.ts src/modules/batch-management/data/models/BatchManagement.ts src/modules/batch-management/data/interfaces/BatchManagementSource.ts src/modules/batch-management/data/actions/queries/getBatchDetailAction.ts src/modules/batch-management/data/sources/rest/dtos/BatchManagementDtos.ts src/modules/batch-management/data/sources/rest/mappers/mapBatchDto.ts src/modules/batch-management/data/sources/rest/mappers/mapBatchDto.test.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts src/modules/batch-management/data/sources/mock/MockBatchManagementSource.ts src/modules/batch-management/data/sources/mock/fixtures/batches.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementBatches.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementBatches.test.ts src/modules/batch-management/presentation/hooks/useBatchManagement.ts src/modules/batch-management/presentation/components/BatchManagementTable/useBatchManagementTable.ts src/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementTableRow/index.tsx src/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementBatchDetail/index.tsx src/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementBatchDetail/useBatchManagementBatchDetail.ts src/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementBatchDetail/useBatchManagementBatchDetail.test.ts src/modules/batch-management/presentation/utils/batchManagementBatchDetail.ts src/modules/batch-management/presentation/utils/batchManagementBatchDetail.test.ts src/modules/batch-management/presentation/utils/batchManagementBatches.ts`
+- `curl -I -s --max-time 5 http://localhost:3001/gestion-de-lotes` respondio `307 /login`, esperado para ruta privada sin sesion.
+- `curl -s --max-time 5 http://localhost:5001/swagger/v1/swagger.json` confirmo `Busqueda`, `Pagina` e `ItemsPagina` en `GET /api/lotes`; el swagger local todavia expone solo `loteId` para el detalle, por lo que la paginacion de detalle se implemento siguiendo el contrato de prod informado.
+
 ## 2026-06-22 Opcion de 10 filas en tablas de lotes y CUITs
 
 - Se agrego `10` al selector de cantidad de filas por pagina en la tabla de CUITs del detalle expandido de cada lote.

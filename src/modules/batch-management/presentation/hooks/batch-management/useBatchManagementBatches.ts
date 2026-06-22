@@ -2,9 +2,13 @@
 
 import { useState } from 'react'
 import { getBatchDetailAction, getBatchManagementAction } from '../../../data/actions'
-import { DEFAULT_BATCH_MANAGEMENT_LIST_QUERY } from '../../../constants'
+import {
+  DEFAULT_BATCH_DETAIL_QUERY,
+  DEFAULT_BATCH_MANAGEMENT_LIST_QUERY
+} from '../../../constants'
 import type {
   IBatchCreatedSummary,
+  IBatchDetailParams,
   IBatchListData,
   IBatchManagementItems
 } from '../../../data/models/BatchManagement'
@@ -30,8 +34,11 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
   const [expandedBatchId, setExpandedBatchId] = useState<string | null>(null)
   const [loadingBatchId, setLoadingBatchId] = useState<string | null>(null)
 
-  async function hydrateBatchDetail(batchId: string) {
-    const result = await getBatchDetailAction(batchId)
+  async function hydrateBatchDetail(
+    batchId: string,
+    params: IBatchDetailParams = DEFAULT_BATCH_DETAIL_QUERY
+  ) {
+    const result = await getBatchDetailAction(batchId, params)
     const batchDetail = result.data
 
     if (!batchDetail) {
@@ -39,6 +46,16 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
     }
 
     setBatches((current) => applyBatchDetailToList(current, batchId, batchDetail))
+  }
+
+  async function loadBatchCuitPage(batchId: string, params: IBatchDetailParams) {
+    setLoadingBatchId(batchId)
+
+    try {
+      await hydrateBatchDetail(batchId, params)
+    } finally {
+      setLoadingBatchId((current) => (current === batchId ? null : current))
+    }
   }
 
   function applyBatchListData(batchListData: IBatchListData) {
@@ -61,13 +78,14 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
       return
     }
 
-    setLoadingBatchId(batchId)
+    await loadBatchCuitPage(batchId, DEFAULT_BATCH_DETAIL_QUERY)
+  }
 
-    try {
-      await hydrateBatchDetail(batchId)
-    } finally {
-      setLoadingBatchId((current) => (current === batchId ? null : current))
-    }
+  async function changeBatchCuitPage(
+    batchId: string,
+    params: Required<IBatchDetailParams>
+  ) {
+    await loadBatchCuitPage(batchId, params)
   }
 
   async function handleBatchCreated(
@@ -124,6 +142,7 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
     loadingBatchId,
     applyBatchListData,
     toggleExpandedBatch,
+    changeBatchCuitPage,
     handleBatchCreated
   }
 }

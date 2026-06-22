@@ -11,6 +11,8 @@ export function useBatchManagementTable(controller: BatchManagementTableControll
       isExpanded: controller.expandedBatchId === batch.id,
       isLoading: controller.loadingBatchId === batch.id,
       onToggle: () => controller.onToggleBatch(batch.id),
+      onCuitPageChange: (page: number, itemsPerPage: number) =>
+        controller.onBatchCuitPageChange(batch.id, { page, itemsPerPage }),
       crossMenu: {
         batchId: batch.id,
         availableCrosses: controller.availableCrosses,

@@ -1,51 +1,51 @@
-import type { IBatchManagementCuit } from '../../data/models/BatchManagement'
 import {
-  getBatchDetailCuitPage,
+  getBatchDetailCuitRange,
   getBatchDetailCuitRangeLabel
 } from './batchManagementBatchDetail'
 
-function buildCuits(count: number): IBatchManagementCuit[] {
-  return Array.from({ length: count }, (_, index) => ({
-    id: `cuit-${index + 1}`,
-    cuit: `2030405${String(index + 1).padStart(4, '0')}`,
-    businessName: `Contribuyente ${index + 1}`,
-    regime: 'Convenio Multilateral',
-    order: index + 1
-  }))
-}
-
 describe('batchManagementBatchDetail', () => {
-  it('paginates long CUIT lists without rendering every row at once', () => {
-    const page = getBatchDetailCuitPage({
-      cuits: buildCuits(301),
-      page: 7,
-      itemsPerPage: 50
+  it('reports the visible backend page range using backend totals', () => {
+    const range = getBatchDetailCuitRange({
+      page: 1,
+      itemsPerPage: 20,
+      visibleItems: 20,
+      totalItems: 10000
     })
 
-    expect(page.totalPages).toBe(7)
-    expect(page.cuits).toHaveLength(1)
-    expect(page.firstItemNumber).toBe(301)
-    expect(page.lastItemNumber).toBe(301)
+    expect(range.firstItemNumber).toBe(1)
+    expect(range.lastItemNumber).toBe(20)
+    expect(getBatchDetailCuitRangeLabel(1, 20, 10000)).toBe(
+      'Mostrando 1-20 de 10000 CUITs'
+    )
   })
 
-  it('clamps invalid pages and reports empty ranges', () => {
-    const overflowPage = getBatchDetailCuitPage({
-      cuits: buildCuits(51),
-      page: 99,
-      itemsPerPage: 25
-    })
-    const emptyPage = getBatchDetailCuitPage({
-      cuits: [],
-      page: 3,
-      itemsPerPage: 25
+  it('does not use the visible CUIT count as the real total', () => {
+    const range = getBatchDetailCuitRange({
+      page: 2,
+      itemsPerPage: 20,
+      visibleItems: 20,
+      totalItems: 10000
     })
 
-    expect(overflowPage.page).toBe(3)
-    expect(overflowPage.firstItemNumber).toBe(51)
-    expect(getBatchDetailCuitRangeLabel(51, 51, 51)).toBe(
-      'Mostrando 51-51 de 51 CUITs'
+    expect(range.firstItemNumber).toBe(21)
+    expect(range.lastItemNumber).toBe(40)
+    expect(range.totalItems).toBe(10000)
+    expect(getBatchDetailCuitRangeLabel(21, 40, 10000)).toBe(
+      'Mostrando 21-40 de 10000 CUITs'
     )
-    expect(emptyPage.page).toBe(1)
+  })
+
+  it('reports empty ranges when the backend page has no visible CUITs', () => {
+    const emptyPage = getBatchDetailCuitRange({
+      page: 3,
+      itemsPerPage: 20,
+      visibleItems: 0,
+      totalItems: 0
+    })
+
+    expect(emptyPage.page).toBe(3)
+    expect(emptyPage.firstItemNumber).toBe(0)
+    expect(emptyPage.lastItemNumber).toBe(0)
     expect(getBatchDetailCuitRangeLabel(0, 0, 0)).toBe(
       'Mostrando 0 de 0 CUITs'
     )

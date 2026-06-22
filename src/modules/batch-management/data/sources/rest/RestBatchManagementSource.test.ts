@@ -46,6 +46,39 @@ describe('RestBatchManagementSource', () => {
     );
   });
 
+  it('serializes batch detail pagination params with the backend contract casing', async () => {
+    mockGetJson.mockResolvedValueOnce({
+      id: 'batch-1',
+      numeroLote: '000001',
+      nombre: 'Lote grande',
+      descripcion: null,
+      regimen: 'Convenio Multilateral',
+      pagina: 2,
+      itemsPagina: 20,
+      totalItems: 10000,
+      totalPaginas: 500,
+      cantidadCuits: 10000,
+      fechaGeneracion: '2026-06-15T00:00:00.000Z',
+      creadoPor: {
+        id: 'user-1',
+        nombre: 'Ada Lovelace'
+      },
+      cuits: []
+    });
+
+    const source = new RestBatchManagementSource({});
+
+    await source.getBatch('batch-1', {
+      page: 2,
+      itemsPerPage: 20
+    });
+
+    expect(mockGetJson).toHaveBeenCalledWith(
+      '/api/lotes/batch-1?Pagina=2&ItemsPagina=20',
+      {}
+    );
+  });
+
   it('normalizes legacy CM when previewing a batch load', async () => {
     mockPostFormData.mockResolvedValueOnce({
       nombreArchivo: null,

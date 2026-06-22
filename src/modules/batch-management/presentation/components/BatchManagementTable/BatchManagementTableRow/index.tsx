@@ -59,7 +59,10 @@ export function BatchManagementTableRow({ row }: BatchManagementTableRowProps) {
                 <Loader size="sm" />
               </div>
             ) : (
-              <BatchManagementBatchDetail batch={row.batch} />
+              <BatchManagementBatchDetail
+                batch={row.batch}
+                onCuitPageChange={row.onCuitPageChange}
+              />
             )}
           </Table.Td>
         </Table.Tr>

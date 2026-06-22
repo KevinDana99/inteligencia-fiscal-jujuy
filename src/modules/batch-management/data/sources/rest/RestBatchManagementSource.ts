@@ -1,11 +1,13 @@
 import { getJson, patchJson, postFormData, postJson } from '@/lib/api-client';
 import type { ApiClientConfig } from '@/lib/api-client';
+import { DEFAULT_BATCH_DETAIL_QUERY } from '../../../constants';
 import type { IBatchManagementSource } from '../../interfaces/BatchManagementSource';
 import type {
   IBatchAddContributorPayload,
   IBatchAvailableCrosses,
   IBatchCrossExecutionPayload,
   IBatchCrossExecutionSummary,
+  IBatchDetailParams,
   BatchRequestRegime,
   IBatchCreatePayload,
   IBatchCreatedSummary,
@@ -144,14 +146,26 @@ export class RestBatchManagementSource implements IBatchManagementSource {
     return mapBatchListResponseDto(response);
   }
 
-  async getBatch(batchId: string): Promise<IBatchManagementItem> {
-    const path = `/api/lotes/${batchId}`;
+  async getBatch(
+    batchId: string,
+    params: IBatchDetailParams = {}
+  ): Promise<IBatchManagementItem> {
+    const page = params.page ?? DEFAULT_BATCH_DETAIL_QUERY.page;
+    const itemsPerPage =
+      params.itemsPerPage ?? DEFAULT_BATCH_DETAIL_QUERY.itemsPerPage;
+    const searchParams = new URLSearchParams({
+      Pagina: String(page),
+      ItemsPagina: String(itemsPerPage)
+    });
+    const path = `/api/lotes/${batchId}?${searchParams.toString()}`;
     logRestBatchManagementEvent({
-      endpoint: path,
+      endpoint: `/api/lotes/${batchId}`,
       action: 'RestBatchManagementSource.getBatch',
       METHOD: 'GET',
       REQUEST_RAW: {
         loteId: batchId,
+        Pagina: page,
+        ItemsPagina: itemsPerPage,
         requestUrl: path
       }
     });
@@ -160,7 +174,7 @@ export class RestBatchManagementSource implements IBatchManagementSource {
       this.config
     );
     logRestBatchManagementEvent({
-      endpoint: path,
+      endpoint: `/api/lotes/${batchId}`,
       action: 'RestBatchManagementSource.getBatch',
       METHOD: 'GET',
       RESPONSE_RAW: response

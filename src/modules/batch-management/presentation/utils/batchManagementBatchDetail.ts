@@ -1,32 +1,32 @@
-import type { IBatchManagementCuit } from '../../data/models/BatchManagement'
-
-type GetBatchDetailCuitPageParams = {
-  cuits: IBatchManagementCuit[]
+type GetBatchDetailCuitRangeParams = {
   page: number
   itemsPerPage: number
+  visibleItems: number
+  totalItems: number
 }
 
-export function getBatchDetailCuitPage({
-  cuits,
+export function getBatchDetailCuitRange({
   page,
-  itemsPerPage
-}: GetBatchDetailCuitPageParams) {
-  const totalItems = cuits.length
+  itemsPerPage,
+  visibleItems,
+  totalItems
+}: GetBatchDetailCuitRangeParams) {
+  const safeTotalItems = Math.max(0, totalItems)
+  const safeVisibleItems = Math.max(0, visibleItems)
   const safeItemsPerPage = Math.max(1, itemsPerPage)
-  const totalPages = Math.max(1, Math.ceil(totalItems / safeItemsPerPage))
-  const safePage = Math.min(Math.max(1, page), totalPages)
-  const firstItemIndex = totalItems ? (safePage - 1) * safeItemsPerPage : 0
-  const visibleCuits = cuits.slice(firstItemIndex, firstItemIndex + safeItemsPerPage)
-  const firstItemNumber = totalItems ? firstItemIndex + 1 : 0
-  const lastItemNumber = totalItems ? firstItemIndex + visibleCuits.length : 0
+  const safePage = Math.max(1, page)
+  const firstItemNumber =
+    safeTotalItems && safeVisibleItems ? (safePage - 1) * safeItemsPerPage + 1 : 0
+  const lastItemNumber =
+    safeTotalItems && safeVisibleItems
+      ? Math.min(firstItemNumber + safeVisibleItems - 1, safeTotalItems)
+      : 0
 
   return {
-    cuits: visibleCuits,
     firstItemNumber,
     lastItemNumber,
     page: safePage,
-    totalItems,
-    totalPages
+    totalItems: safeTotalItems
   }
 }
 

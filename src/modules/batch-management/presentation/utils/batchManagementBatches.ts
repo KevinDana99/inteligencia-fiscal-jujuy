@@ -5,6 +5,7 @@ import type {
   IBatchManagementItem,
   IBatchManagementItems
 } from '../../data/models/BatchManagement'
+import { DEFAULT_BATCH_DETAIL_QUERY } from '../../constants'
 import { formatBatchDateLabel } from './batchManagementFormatters'
 
 export function mapBatchForPresentation(
@@ -57,6 +58,11 @@ export function buildFallbackCreatedBatch(
   createdSummary: IBatchCreatedSummary,
   parsedCuits: string[]
 ): IBatchManagementItem {
+  const totalItems = createdSummary.cuitCount
+  const totalPages = totalItems
+    ? Math.ceil(totalItems / DEFAULT_BATCH_DETAIL_QUERY.itemsPerPage)
+    : 0
+
   return {
     id: createdSummary.id,
     batchNumber: createdSummary.formattedNumber,
@@ -64,15 +70,21 @@ export function buildFallbackCreatedBatch(
     description: createdSummary.description ?? '',
     regime: createdSummary.regime,
     cuitCount: createdSummary.cuitCount,
+    cuitPage: DEFAULT_BATCH_DETAIL_QUERY.page,
+    cuitItemsPerPage: DEFAULT_BATCH_DETAIL_QUERY.itemsPerPage,
+    cuitTotalItems: totalItems,
+    cuitTotalPages: totalPages,
     createdAt: formatBatchDateLabel(createdSummary.createdAt),
     createdBy: null,
-    cuits: parsedCuits.map((cuit, index) => ({
-      id: `${createdSummary.id}-${index + 1}`,
-      cuit: cuit.replace(/\D/g, ''),
-      businessName: null,
-      regime: createdSummary.regime,
-      order: index + 1
-    }))
+    cuits: parsedCuits
+      .slice(0, DEFAULT_BATCH_DETAIL_QUERY.itemsPerPage)
+      .map((cuit, index) => ({
+        id: `${createdSummary.id}-${index + 1}`,
+        cuit: cuit.replace(/\D/g, ''),
+        businessName: null,
+        regime: createdSummary.regime,
+        order: index + 1
+      }))
   }
 }
 

@@ -58,6 +58,10 @@ export interface IBatchManagementItem {
   description: string;
   regime: BatchRegime;
   cuitCount: number;
+  cuitPage: number;
+  cuitItemsPerPage: number;
+  cuitTotalItems: number;
+  cuitTotalPages: number;
   createdAt: string;
   createdBy: IBatchManagementAuthor | null;
   cuits: IBatchManagementCuit[];
@@ -67,6 +71,11 @@ export type IBatchManagementItems = Array<IBatchManagementItem>;
 
 export interface IBatchListParams {
   search?: string | null;
+  page?: number;
+  itemsPerPage?: number;
+}
+
+export interface IBatchDetailParams {
   page?: number;
   itemsPerPage?: number;
 }

@@ -13,13 +13,18 @@ import { useBatchManagementBatchDetail } from './useBatchManagementBatchDetail'
 
 type BatchManagementBatchDetailProps = {
   batch: IBatchManagementItem
+  onCuitPageChange: (page: number, itemsPerPage: number) => void
 }
 
 export function BatchManagementBatchDetail({
-  batch
+  batch,
+  onCuitPageChange
 }: BatchManagementBatchDetailProps) {
   const detailRegime = batch.cuits[0]?.regime
-  const detail = useBatchManagementBatchDetail(batch)
+  const detail = useBatchManagementBatchDetail({
+    batch,
+    onCuitPageChange
+  })
 
   return (
     <div className={classes.detailInner}>

@@ -1,62 +1,54 @@
-import { useMemo, useState } from 'react'
 import type { IBatchManagementItem } from '../../../../data/models/BatchManagement'
 import {
   BATCH_MANAGEMENT_DETAIL_DEFAULT_ITEMS_PER_PAGE,
   BATCH_MANAGEMENT_DETAIL_ITEMS_PER_PAGE_OPTIONS
 } from '../../../constants'
 import {
-  getBatchDetailCuitPage,
+  getBatchDetailCuitRange,
   getBatchDetailCuitRangeLabel
 } from '../../../utils'
 
-export function useBatchManagementBatchDetail(batch: IBatchManagementItem) {
-  const [pagination, setPagination] = useState({
-    batchId: batch.id,
-    itemsPerPage: BATCH_MANAGEMENT_DETAIL_DEFAULT_ITEMS_PER_PAGE,
-    page: 1
-  })
-  const isCurrentBatch = pagination.batchId === batch.id
-  const page = isCurrentBatch ? pagination.page : 1
-  const itemsPerPage = isCurrentBatch
-    ? pagination.itemsPerPage
-    : BATCH_MANAGEMENT_DETAIL_DEFAULT_ITEMS_PER_PAGE
+type UseBatchManagementBatchDetailParams = {
+  batch: IBatchManagementItem
+  onCuitPageChange: (page: number, itemsPerPage: number) => void
+}
 
-  const cuitPage = useMemo(
-    () =>
-      getBatchDetailCuitPage({
-        cuits: batch.cuits,
-        page,
-        itemsPerPage
-      }),
-    [batch.cuits, itemsPerPage, page]
-  )
+export function useBatchManagementBatchDetail({
+  batch,
+  onCuitPageChange
+}: UseBatchManagementBatchDetailParams) {
+  const page = batch.cuitPage || 1
+  const itemsPerPage =
+    batch.cuitItemsPerPage || BATCH_MANAGEMENT_DETAIL_DEFAULT_ITEMS_PER_PAGE
+  const totalItems = batch.cuitTotalItems
+  const totalPages =
+    batch.cuitTotalPages ||
+    (totalItems ? Math.ceil(totalItems / Math.max(1, itemsPerPage)) : 0)
+  const cuitRange = getBatchDetailCuitRange({
+    page,
+    itemsPerPage,
+    visibleItems: batch.cuits.length,
+    totalItems
+  })
 
   return {
-    ...cuitPage,
+    ...cuitRange,
+    cuits: batch.cuits,
+    page,
     itemsPerPage,
+    totalPages,
     rangeLabel: getBatchDetailCuitRangeLabel(
-      cuitPage.firstItemNumber,
-      cuitPage.lastItemNumber,
-      cuitPage.totalItems
+      cuitRange.firstItemNumber,
+      cuitRange.lastItemNumber,
+      cuitRange.totalItems
     ),
     shouldShowPaginationControls:
-      cuitPage.totalItems > BATCH_MANAGEMENT_DETAIL_ITEMS_PER_PAGE_OPTIONS[0],
+      totalItems > BATCH_MANAGEMENT_DETAIL_ITEMS_PER_PAGE_OPTIONS[0],
     onItemsPerPageChange: (nextItemsPerPage: number) => {
-      setPagination({
-        batchId: batch.id,
-        itemsPerPage: nextItemsPerPage,
-        page: 1
-      })
+      onCuitPageChange(1, nextItemsPerPage)
     },
     onPageChange: (nextPage: number) => {
-      setPagination((currentPagination) => ({
-        batchId: batch.id,
-        itemsPerPage:
-          currentPagination.batchId === batch.id
-            ? currentPagination.itemsPerPage
-            : BATCH_MANAGEMENT_DETAIL_DEFAULT_ITEMS_PER_PAGE,
-        page: nextPage
-      }))
+      onCuitPageChange(nextPage, itemsPerPage)
     }
   }
 }

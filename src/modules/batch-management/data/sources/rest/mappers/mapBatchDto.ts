@@ -28,6 +28,7 @@ import type {
   ApiExecuteBatchCrossRequestDto,
   ApiExecuteBatchCrossResponseDto
 } from '../dtos/BatchManagementDtos';
+import { DEFAULT_BATCH_DETAIL_QUERY } from '../../../../constants';
 
 type ApiRecord = Record<string, unknown>;
 
@@ -236,6 +237,14 @@ function mapBatchCuit(batchId: string, dto: ApiBatchCuitDto): IBatchManagementCu
   };
 }
 
+function getDefaultBatchDetailTotalPages(totalItems: number) {
+  if (!totalItems) {
+    return 0;
+  }
+
+  return Math.ceil(totalItems / DEFAULT_BATCH_DETAIL_QUERY.itemsPerPage);
+}
+
 export function mapBatchListItemDto(dto: ApiBatchListItemDto): IBatchManagementItem {
   return {
     id: dto.id,
@@ -244,6 +253,10 @@ export function mapBatchListItemDto(dto: ApiBatchListItemDto): IBatchManagementI
     description: dto.descripcion ?? '',
     regime: dto.regimen,
     cuitCount: dto.cantidadCuits,
+    cuitPage: DEFAULT_BATCH_DETAIL_QUERY.page,
+    cuitItemsPerPage: DEFAULT_BATCH_DETAIL_QUERY.itemsPerPage,
+    cuitTotalItems: dto.cantidadCuits,
+    cuitTotalPages: getDefaultBatchDetailTotalPages(dto.cantidadCuits),
     createdAt: dto.fechaGeneracion,
     createdBy: mapBatchAuthor(dto.creadoPor),
     cuits: []
@@ -287,6 +300,10 @@ export function mapBatchDetailResponseDto(dto: ApiBatchDetailResponseDto): IBatc
     description: dto.descripcion ?? '',
     regime: dto.regimen,
     cuitCount: dto.cantidadCuits,
+    cuitPage: dto.pagina,
+    cuitItemsPerPage: dto.itemsPagina,
+    cuitTotalItems: dto.totalItems,
+    cuitTotalPages: dto.totalPaginas,
     createdAt: dto.fechaGeneracion,
     createdBy: mapBatchAuthor(dto.creadoPor),
     cuits: dto.cuits.map((cuit) => mapBatchCuit(dto.id, cuit))

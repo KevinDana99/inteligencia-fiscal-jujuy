@@ -2,14 +2,19 @@
 
 import { ApiClientError } from '@/lib/api-client';
 import { createServerBatchManagementSource } from '../../data-access';
-import type { IBatchManagementItem, IBatchQueryResult } from '../../models/BatchManagement';
+import type {
+  IBatchDetailParams,
+  IBatchManagementItem,
+  IBatchQueryResult
+} from '../../models/BatchManagement';
 
 export async function getBatchDetailAction(
-  batchId: string
+  batchId: string,
+  params?: IBatchDetailParams
 ): Promise<IBatchQueryResult<IBatchManagementItem>> {
   try {
     const source = await createServerBatchManagementSource();
-    const data = await source.getBatch(batchId);
+    const data = await source.getBatch(batchId, params);
 
     return { data };
   } catch (error) {

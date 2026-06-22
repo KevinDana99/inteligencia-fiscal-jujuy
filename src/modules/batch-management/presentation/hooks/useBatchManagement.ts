@@ -56,6 +56,7 @@ export function useBatchManagement(
       expandedBatchId: batches.expandedBatchId,
       loadingBatchId: batches.loadingBatchId,
       onToggleBatch: batches.toggleExpandedBatch,
+      onBatchCuitPageChange: batches.changeBatchCuitPage,
       onPageChange: search.changePage,
       onItemsPerPageChange: search.changeItemsPerPage,
       ...cross

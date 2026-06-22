@@ -88,10 +88,14 @@ type RespuestaDetalleLote = {
   nombre: string;
   descripcion: string | null;
   regimen: RegimenLote;
+  pagina: number;
+  itemsPagina: number;
+  totalItems: number;
+  totalPaginas: number;
+  cantidadCuits: number;
   fechaGeneracion: FechaIso;
   creadoPor: AutorLote;
   cuits: RespuestaCuitLote[];
-  cantidadCuits: number;
 };
 
 type RespuestaResumenLoteCreado = {
@@ -219,14 +223,31 @@ type SolicitudConsultarLote = {
 };
 ```
 
+**Query params**
+
+```ts
+type SolicitudConsultarLoteQuery = {
+  Pagina?: number;
+  ItemsPagina?: number;
+};
+```
+
+Valores por defecto:
+
+- `Pagina`: `1`
+- `ItemsPagina`: `10`
+
 Reglas:
 
 - `loteId` debe ser un UUID valido.
+- `Pagina` debe ser mayor a `0`.
+- `ItemsPagina` debe estar entre `1` y `100`.
 - Solo se puede consultar un lote activo.
 - `numeroLote` es el identificador visible del lote para UI y se envia como `string`.
 - `creadoPor` representa al usuario que creo el lote; se deriva del token usado al momento de la creacion.
-- `cantidadCuits` debe coincidir con la cantidad de elementos de `cuits`.
-- `cuits` contiene los CUITs asociados al lote.
+- `cantidadCuits` representa el total visual del lote.
+- `totalItems` representa el total real de CUITs paginables para el detalle.
+- `cuits` contiene solamente los CUITs de la pagina solicitada; `cuits.length` no debe usarse como total del lote.
 - `orden` representa la posicion del CUIT dentro de la respuesta.
 - No se exponen `contribuyenteId` ni el identificador interno de `lotes_contribuyentes`.
 
@@ -244,7 +265,7 @@ null
 
 Ejemplo:
 
-- `GET /api/lotes/019f21f7-3f52-7c51-a70a-4f9cc63c8f35`
+- `GET /api/lotes/019f21f7-3f52-7c51-a70a-4f9cc63c8f35?Pagina=1&ItemsPagina=20`
 
 **Response 200**
 
@@ -255,6 +276,11 @@ Ejemplo:
   "nombre": "ANOVA-623",
   "descripcion": "Comercio mayorista con variacion negativa",
   "regimen": "Convenio Multilateral",
+  "pagina": 1,
+  "itemsPagina": 20,
+  "totalItems": 10000,
+  "totalPaginas": 500,
+  "cantidadCuits": 10000,
   "fechaGeneracion": "2026-04-12T15:30:00+00:00",
   "creadoPor": {
     "id": "0795e889-9d73-4126-a3d4-5d5441c4c6af",
@@ -267,8 +293,7 @@ Ejemplo:
       "regimen": "Convenio Multilateral",
       "orden": 1
     }
-  ],
-  "cantidadCuits": 1
+  ]
 }
 ```
 

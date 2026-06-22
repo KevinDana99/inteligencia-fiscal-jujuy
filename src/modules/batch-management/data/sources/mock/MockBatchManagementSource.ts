@@ -1,9 +1,11 @@
 import type { IBatchManagementSource } from '../../interfaces/BatchManagementSource';
+import { DEFAULT_BATCH_DETAIL_QUERY } from '../../../constants';
 import type {
   IBatchAddContributorPayload,
   IBatchAvailableCrosses,
   IBatchCrossExecutionPayload,
   IBatchCrossExecutionSummary,
+  IBatchDetailParams,
   IBatchCreatePayload,
   IBatchCreatedSummary,
   IBatchListData,
@@ -101,6 +103,14 @@ function toRawPreviewRecord(record: IBatchPreviewData['records'][number]) {
   };
 }
 
+function getTotalPages(totalItems: number, itemsPerPage: number) {
+  if (!totalItems) {
+    return 0;
+  }
+
+  return Math.ceil(totalItems / itemsPerPage);
+}
+
 export class MockBatchManagementSource implements IBatchManagementSource {
   async listAvailableCrosses(): Promise<IBatchAvailableCrosses> {
     console.log(
@@ -179,12 +189,24 @@ export class MockBatchManagementSource implements IBatchManagementSource {
     };
   }
 
-  async getBatch(batchId: string): Promise<IBatchManagementItem> {
+  async getBatch(
+    batchId: string,
+    params: IBatchDetailParams = {}
+  ): Promise<IBatchManagementItem> {
     const batch = batchManagementMock.find((item) => item.id === batchId);
 
     if (!batch) {
       throw new Error('Batch not found');
     }
+
+    const page = params.page ?? DEFAULT_BATCH_DETAIL_QUERY.page;
+    const itemsPerPage =
+      params.itemsPerPage ?? DEFAULT_BATCH_DETAIL_QUERY.itemsPerPage;
+    const start = (page - 1) * itemsPerPage;
+    const paginatedCuits = batch.cuits.slice(start, start + itemsPerPage);
+    const totalItems = batch.cuitCount;
+    const totalPages = getTotalPages(totalItems, itemsPerPage);
+    const requestUrl = `/api/lotes/${batchId}?Pagina=${page}&ItemsPagina=${itemsPerPage}`;
 
     console.log(
       JSON.stringify(
@@ -194,11 +216,17 @@ export class MockBatchManagementSource implements IBatchManagementSource {
           METHOD: 'GET',
           REQUEST_RAW: {
             loteId: batchId,
-            requestUrl: `/api/lotes/${batchId}`
+            Pagina: page,
+            ItemsPagina: itemsPerPage,
+            requestUrl
           },
           RESPONSE_RAW: {
             ...toRawListItem(batch),
-            cuits: batch.cuits.map(toRawDetailCuit)
+            pagina: page,
+            itemsPagina: itemsPerPage,
+            totalItems,
+            totalPaginas: totalPages,
+            cuits: paginatedCuits.map(toRawDetailCuit)
           }
         },
         null,
@@ -206,7 +234,14 @@ export class MockBatchManagementSource implements IBatchManagementSource {
       )
     );
 
-    return batch;
+    return {
+      ...batch,
+      cuitPage: page,
+      cuitItemsPerPage: itemsPerPage,
+      cuitTotalItems: totalItems,
+      cuitTotalPages: totalPages,
+      cuits: paginatedCuits
+    };
   }
 
   async previewBatchLoad(payload: IBatchPreviewPayload): Promise<IBatchPreviewData> {
@@ -450,6 +485,11 @@ export class MockBatchManagementSource implements IBatchManagementSource {
     }
 
     batch.cuitCount += 1;
+    batch.cuitTotalItems = batch.cuitCount;
+    batch.cuitTotalPages = getTotalPages(
+      batch.cuitTotalItems,
+      batch.cuitItemsPerPage
+    );
     batch.cuits = [
       ...batch.cuits,
       {
