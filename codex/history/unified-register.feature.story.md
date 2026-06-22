@@ -1,5 +1,24 @@
 # Unified Register Feature Story
 
+## Unified Register Search Reset Button - 2026-06-22
+
+### Summary
+
+Added a clear `X` action to the `/` unified register search so users can reset the current search back to an empty string and immediately restore the default list.
+
+### Main Changes
+
+- Added a dedicated search reset handler in `useUnifiedRegisterPageSearch` that clears the input state and reapplies the search with `""`.
+- Updated `UnifiedRegisterSearch` to render a Mantine `CloseButton` inside the input only when there is text to clear.
+- Prevented mouse-triggered blur from firing before the clear action so the reset does not briefly reapply the previous search term.
+- Added a focused jsdom regression test that exercises Enter search followed by reset.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js src/modules/unified-register/presentation/hooks/useUnifiedRegisterPage/useUnifiedRegisterPageSearch.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/components/UnifiedRegisterPage/index.tsx src/modules/unified-register/presentation/components/UnifiedRegisterSearch/index.tsx src/modules/unified-register/presentation/hooks/useUnifiedRegisterPage/useUnifiedRegisterPageSearch.ts src/modules/unified-register/presentation/hooks/useUnifiedRegisterPage/useUnifiedRegisterPageSearch.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+
 ## Informe Documents Internal API Base URL - 2026-06-22
 
 ### Summary

@@ -21,6 +21,7 @@ export function UnifiedRegisterPage({
     handleSearchBlur,
     handleSearchChange,
     handleSearchKeyDown,
+    handleSearchReset,
     filteredItems,
     hasResults,
     activePage,
@@ -66,6 +67,7 @@ export function UnifiedRegisterPage({
         onBlur={handleSearchBlur}
         onChange={handleSearchChange}
         onKeyDown={handleSearchKeyDown}
+        onReset={handleSearchReset}
       />
 
       {hasResults ? (

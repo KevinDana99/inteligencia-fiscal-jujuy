@@ -99,6 +99,11 @@ export function useUnifiedRegisterPageSearch({
     [applySearch]
   );
 
+  const handlePageSearchReset = useCallback(() => {
+    setSearch('');
+    applySearch('');
+  }, [applySearch]);
+
   return {
     search,
     appliedSearch,
@@ -106,6 +111,7 @@ export function useUnifiedRegisterPageSearch({
     handleSearchBlur: handlePageSearchBlur,
     handleSearchChange: handlePageSearchChange,
     handleSearchKeyDown: handlePageSearchKeyDown,
+    handleSearchReset: handlePageSearchReset,
     hasResults: items.length > 0,
     isSearchPending
   };
