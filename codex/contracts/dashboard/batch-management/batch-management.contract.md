@@ -116,26 +116,26 @@ type RespuestaResumenLoteCreado = {
 
 ```ts
 type SolicitudListarLotes = {
-  busqueda?: string | null;
-  fechaDesde?: FechaIso | null;
-  fechaHasta?: FechaIso | null;
-  pagina?: number;
-  itemsPagina?: number;
+  Busqueda?: string | null;
+  FechaDesde?: FechaIso | null;
+  FechaHasta?: FechaIso | null;
+  Pagina?: number;
+  ItemsPagina?: number;
 };
 ```
 
 Valores por defecto:
 
-- `pagina`: `1`
-- `itemsPagina`: `20`
+- `Pagina`: `1`
+- `ItemsPagina`: `10`
 
 Reglas:
 
-- `pagina` debe ser mayor a `0`.
-- `itemsPagina` debe estar entre `1` y `100`.
-- Si se informan `fechaDesde` y `fechaHasta`, `fechaDesde` no puede ser posterior a `fechaHasta`.
-- `busqueda` filtra por nombre.
-- Si `busqueda` es numerica, tambien filtra por numero de lote exacto.
+- `Pagina` debe ser mayor a `0`.
+- `ItemsPagina` debe estar entre `1` y `100`.
+- Si se informan `FechaDesde` y `FechaHasta`, `FechaDesde` no puede ser posterior a `FechaHasta`.
+- `Busqueda` filtra por nombre.
+- Si `Busqueda` es numerica, tambien filtra por numero de lote exacto.
 - Solo se listan lotes activos.
 - El listado se ordena por `fechaGeneracion` descendente y luego por numero de lote descendente.
 - `numeroLote` es el identificador visible del lote para UI y se envia como `string`.
@@ -161,7 +161,7 @@ null
 
 Ejemplo:
 
-- `GET /api/lotes?busqueda=ANOVA&fechaDesde=2026-04-01T00:00:00.000-03:00&fechaHasta=2026-04-30T23:59:59.999-03:00&pagina=1&itemsPagina=10`
+- `GET /api/lotes?Busqueda=ANOVA&FechaDesde=2026-04-01T00:00:00.000-03:00&FechaHasta=2026-04-30T23:59:59.999-03:00&Pagina=1&ItemsPagina=10`
 
 **Response 200**
 

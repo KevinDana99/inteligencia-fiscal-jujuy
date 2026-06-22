@@ -1,5 +1,32 @@
 # Batch Management Feature Story
 
+## 2026-06-22 Opcion de 10 filas en tablas de lotes y CUITs
+
+- Se agrego `10` al selector de cantidad de filas por pagina en la tabla de CUITs del detalle expandido de cada lote.
+- Se agrego `10` al selector de cantidad de filas por pagina en la tabla principal de `Gestion de Lotes`.
+- La tabla principal de lotes y la tabla de CUITs del detalle expandido arrancan ahora en 10 filas por pagina.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js --runTestsByPath src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementSearch.test.ts src/modules/batch-management/presentation/utils/batchManagementBatchDetail.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js src/modules/batch-management/constants/batchManagementRequest.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.ts src/modules/batch-management/data/sources/mock/MockBatchManagementSource.ts src/modules/batch-management/presentation/constants/batchManagementPage.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementBatches.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementSearch.test.ts`
+- `git diff --check`
+
+## 2026-06-22 Busqueda manual y casing Swagger en listado de lotes
+
+- Se reviso `http://localhost:5001/swagger/index.html` via `swagger/v1/swagger.json`; `GET /api/lotes` expone query params `Busqueda`, `Pagina` e `ItemsPagina`.
+- `RestBatchManagementSource.listBatches` serializa ahora los parametros de listado con el casing publicado por Swagger.
+- El mock del modulo alinea sus logs/URL simulada con `Busqueda`, `Pagina` e `ItemsPagina`.
+- El buscador de `Gestion de Lotes` deja de consultar en cada escritura; actualiza el input localmente y dispara la busqueda solo con `onBlur` o tecla `Enter`.
+- La paginacion del listado reutiliza el ultimo termino efectivamente enviado al backend, evitando aplicar texto tipeado pero no confirmado.
+- Se actualizo el contrato local de `GET /api/lotes` para no contradecir Swagger.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js --runTestsByPath src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementSearch.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js src/modules/batch-management/data/sources/rest/RestBatchManagementSource.ts src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts src/modules/batch-management/data/sources/mock/MockBatchManagementSource.ts src/modules/batch-management/presentation/constants/batchManagementPage.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementSearch.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementSearch.test.ts src/modules/batch-management/presentation/hooks/useBatchManagement.ts src/modules/batch-management/presentation/components/BatchManagementPage/BatchManagementSearchBar/index.tsx src/modules/batch-management/presentation/components/BatchManagementPage/BatchManagementSearchBar/useBatchManagementSearchBar.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+
 ## 2026-06-22 Normalizacion de razon social placeholder
 
 - Se detecto que el modal `Vista previa - Importacion Excel` muestra `-`/`—` como fallback visual cuando `razonSocial` viene vacia o nula desde la previsualizacion.

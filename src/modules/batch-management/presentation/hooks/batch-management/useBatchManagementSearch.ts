@@ -1,10 +1,9 @@
 'use client'
 
-import { useEffect, useRef, useState, useTransition } from 'react'
+import { useRef, useState, useTransition } from 'react'
 import { getBatchManagementAction } from '../../../data/actions'
 import { DEFAULT_BATCH_MANAGEMENT_LIST_QUERY } from '../../../constants'
 import type { IBatchListData } from '../../../data/models/BatchManagement'
-import { BATCH_MANAGEMENT_SEARCH_DEBOUNCE_MS } from '../../constants'
 
 type UseBatchManagementSearchParams = {
   itemsPerPage: number
@@ -17,15 +16,8 @@ export function useBatchManagementSearch({
 }: UseBatchManagementSearchParams) {
   const [searchValue, setSearchValue] = useState('')
   const [isSearchPending, startSearchTransition] = useTransition()
-  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const appliedSearchValueRef = useRef('')
   const latestSearchRequestIdRef = useRef(0)
-
-  function clearSearchTimeout() {
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current)
-      searchTimeoutRef.current = null
-    }
-  }
 
   function requestBatchListData(params: {
     page: number
@@ -53,42 +45,38 @@ export function useBatchManagementSearch({
     })
   }
 
-  useEffect(() => {
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current)
-      }
-    }
-  }, [])
-
   function updateSearchValue(value: string) {
     setSearchValue(value)
-    clearSearchTimeout()
+  }
 
-    searchTimeoutRef.current = setTimeout(() => {
-      requestBatchListData({
-        page: 1,
-        itemsPerPage,
-        search: value
-      })
-    }, BATCH_MANAGEMENT_SEARCH_DEBOUNCE_MS)
+  function submitSearchValue() {
+    const nextSearchValue = searchValue.trim()
+
+    if (nextSearchValue === appliedSearchValueRef.current) {
+      return
+    }
+
+    appliedSearchValueRef.current = nextSearchValue
+    requestBatchListData({
+      page: 1,
+      itemsPerPage,
+      search: nextSearchValue
+    })
   }
 
   function changePage(page: number) {
-    clearSearchTimeout()
     requestBatchListData({
       page,
       itemsPerPage,
-      search: searchValue
+      search: appliedSearchValueRef.current
     })
   }
 
   function changeItemsPerPage(nextItemsPerPage: number) {
-    clearSearchTimeout()
     requestBatchListData({
       page: 1,
       itemsPerPage: nextItemsPerPage,
-      search: searchValue
+      search: appliedSearchValueRef.current
     })
   }
 
@@ -96,6 +84,7 @@ export function useBatchManagementSearch({
     searchValue,
     isSearchPending,
     updateSearchValue,
+    submitSearchValue,
     changePage,
     changeItemsPerPage
   }

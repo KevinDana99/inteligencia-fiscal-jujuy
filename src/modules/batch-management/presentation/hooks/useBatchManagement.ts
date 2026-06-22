@@ -37,7 +37,8 @@ export function useBatchManagement(
         batches.batches.length,
         batches.totalBatches
       ),
-      onSearchValueChange: search.updateSearchValue
+      onSearchValueChange: search.updateSearchValue,
+      onSearchSubmit: search.submitSearchValue
     },
     table: {
       batches: batches.batches,

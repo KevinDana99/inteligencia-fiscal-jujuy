@@ -115,11 +115,11 @@ export class RestBatchManagementSource implements IBatchManagementSource {
     const searchParams = new URLSearchParams();
 
     if (params.search?.trim()) {
-      searchParams.set('busqueda', params.search.trim());
+      searchParams.set('Busqueda', params.search.trim());
     }
 
-    searchParams.set('pagina', String(params.page ?? 1));
-    searchParams.set('itemsPagina', String(params.itemsPerPage ?? 20));
+    searchParams.set('Pagina', String(params.page ?? 1));
+    searchParams.set('ItemsPagina', String(params.itemsPerPage ?? 10));
 
     const path = searchParams.size ? `/api/lotes?${searchParams.toString()}` : '/api/lotes';
     logRestBatchManagementEvent({
@@ -127,9 +127,9 @@ export class RestBatchManagementSource implements IBatchManagementSource {
       action: 'RestBatchManagementSource.listBatches',
       METHOD: 'GET',
       REQUEST_RAW: {
-        busqueda: params.search ?? null,
-        pagina: params.page ?? 1,
-        itemsPagina: params.itemsPerPage ?? 20,
+        Busqueda: params.search ?? null,
+        Pagina: params.page ?? 1,
+        ItemsPagina: params.itemsPerPage ?? 10,
         requestUrl: path
       }
     });

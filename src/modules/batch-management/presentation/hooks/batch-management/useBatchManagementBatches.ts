@@ -23,7 +23,7 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
   )
   const [page, setPage] = useState(initialBatchData?.page ?? 1)
   const [itemsPerPage, setItemsPerPage] = useState(
-    initialBatchData?.itemsPerPage ?? DEFAULT_BATCH_MANAGEMENT_LIST_QUERY.itemsPerPage ?? 20
+    initialBatchData?.itemsPerPage ?? DEFAULT_BATCH_MANAGEMENT_LIST_QUERY.itemsPerPage ?? 10
   )
   const [totalBatches, setTotalBatches] = useState(initialBatchData?.totalItems ?? 0)
   const [totalPages, setTotalPages] = useState(initialBatchData?.totalPages ?? 1)

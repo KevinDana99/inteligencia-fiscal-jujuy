@@ -10,6 +10,7 @@ type BatchManagementSearchBarProps = {
   isSearchPending: boolean
   resultCountLabel: string
   onSearchValueChange: (value: string) => void
+  onSearchSubmit: () => void
 }
 
 export function BatchManagementSearchBar(props: BatchManagementSearchBarProps) {

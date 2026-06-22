@@ -136,13 +136,13 @@ export class MockBatchManagementSource implements IBatchManagementSource {
         )
       : batchManagementMock;
     const page = params.page ?? 1;
-    const itemsPerPage = params.itemsPerPage ?? 20;
+    const itemsPerPage = params.itemsPerPage ?? 10;
     const totalPages = Math.ceil(items.length / itemsPerPage);
     const start = (page - 1) * itemsPerPage;
     const paginatedItems = totalPages === 0 ? [] : items.slice(start, start + itemsPerPage);
 
-    const requestUrl = `/api/lotes?pagina=${page}&itemsPagina=${itemsPerPage}${
-      params.search?.trim() ? `&busqueda=${encodeURIComponent(params.search.trim())}` : ''
+    const requestUrl = `/api/lotes?Pagina=${page}&ItemsPagina=${itemsPerPage}${
+      params.search?.trim() ? `&Busqueda=${encodeURIComponent(params.search.trim())}` : ''
     }`;
 
     console.log(
@@ -152,9 +152,9 @@ export class MockBatchManagementSource implements IBatchManagementSource {
           action: 'MockBatchManagementSource.listBatches',
           METHOD: 'GET',
           REQUEST_RAW: {
-            busqueda: params.search ?? null,
-            pagina: page,
-            itemsPagina: itemsPerPage,
+            Busqueda: params.search ?? null,
+            Pagina: page,
+            ItemsPagina: itemsPerPage,
             requestUrl
           },
           RESPONSE_RAW: {

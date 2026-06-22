@@ -41,7 +41,7 @@ describe('RestBatchManagementSource', () => {
     });
 
     expect(mockGetJson).toHaveBeenCalledWith(
-      '/api/lotes?busqueda=ANOVA&pagina=2&itemsPagina=10',
+      '/api/lotes?Busqueda=ANOVA&Pagina=2&ItemsPagina=10',
       {}
     );
   });
