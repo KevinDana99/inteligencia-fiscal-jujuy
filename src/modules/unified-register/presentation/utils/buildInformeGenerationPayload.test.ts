@@ -27,6 +27,16 @@ describe('buildInformeGenerationPayload', () => {
     });
   });
 
+  test('uses temporary fiscal address fallback when contributor has no fiscal address', () => {
+    const contributorData = buildInformeContributorData({
+      ...item,
+      fiscalAddress: '',
+      alternateAddress: ''
+    });
+
+    expect(contributorData.domicilioFiscal).toBe('calle falsa 123');
+  });
+
   test('normalizes optional fields and includes selected crosses with periodo plus claves', () => {
     const payload = buildInformeGenerationPayload(
       item,
