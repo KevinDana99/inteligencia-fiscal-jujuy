@@ -15,7 +15,6 @@ import {
 
 const BATCH_CROSS_EXECUTION_CONFIG_BY_CODE = {
   'cruce-bi-papel': {
-    label: 'cruce-bi-papel',
     parameters: {
       jurisdiccion: '910',
       umbralAnalisisDeudaTotal: '1',
@@ -23,7 +22,6 @@ const BATCH_CROSS_EXECUTION_CONFIG_BY_CODE = {
     }
   },
   'desvio-bi-convenio-multilateral': {
-    label: 'Control de desvio de BI - Regimen CM',
     parameters: {
       jurisdiccion: '910',
       jurisdiccionesExcluidasTotalIngresos: '923'
@@ -42,7 +40,7 @@ function getBatchCrossExecutionConfig(publicCode: string) {
 function getBatchCrossDisplayLabel(
   cross: IBatchAvailableCrosses[number]
 ): string {
-  return getBatchCrossExecutionConfig(cross.publicCode)?.label ?? cross.label
+  return cross.label
 }
 
 function getCurrentBatchCrossDate() {

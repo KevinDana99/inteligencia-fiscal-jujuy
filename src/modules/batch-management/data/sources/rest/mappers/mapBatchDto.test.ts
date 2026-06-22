@@ -40,7 +40,7 @@ describe('mapBatchAvailableCrossesResponseDto', () => {
       cruces: [
         {
           codigoCruce: 'desvio-bi-convenio-multilateral',
-          nombreCruce: 'Control de desvio de BI - Regimen CM',
+          nombreCruce: 'Desvio de base imponible - Convenio Multilateral',
           versionCruce: '2.0.0',
           periodicidad: 'Mensual'
         },
@@ -56,7 +56,7 @@ describe('mapBatchAvailableCrossesResponseDto', () => {
     expect(result).toEqual([
       {
         id: 'desvio-bi-convenio-multilateral:2.0.0',
-        label: 'Control de desvio de BI - Regimen CM',
+        label: 'Desvio de base imponible - Convenio Multilateral',
         publicCode: 'desvio-bi-convenio-multilateral',
         version: '2.0.0',
         periodicity: 'monthly'

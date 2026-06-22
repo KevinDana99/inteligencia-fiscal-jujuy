@@ -10,14 +10,14 @@ import {
 const availableCrosses: IBatchAvailableCrosses = [
   {
     id: 'cruce-bi-papel:1.0.0',
-    label: 'cruce-bi-papel',
+    label: 'Cruce BI Papel',
     publicCode: 'cruce-bi-papel',
     version: '1.0.0',
     periodicity: 'annual'
   },
   {
     id: 'desvio-bi-convenio-multilateral:1.0.0',
-    label: 'Control de desvio de BI - Regimen CM',
+    label: 'Desvio de base imponible - Convenio Multilateral',
     publicCode: 'desvio-bi-convenio-multilateral',
     version: '1.0.0',
     periodicity: 'annual'
@@ -47,7 +47,7 @@ function createFilters(): IBatchCrossFilters {
       toYear: '2025',
       fromMonth: null,
       toMonth: null,
-      crossTypes: ['Control de desvio de BI - Regimen CM']
+      crossTypes: ['Desvio de base imponible - Convenio Multilateral']
     }
   }
 }
@@ -55,8 +55,8 @@ function createFilters(): IBatchCrossFilters {
 describe('batchManagementCross', () => {
   it('groups visible option labels by periodicity', () => {
     expect(getBatchCrossOptionLabels(availableCrosses, 'annual')).toEqual([
-      'cruce-bi-papel',
-      'Control de desvio de BI - Regimen CM'
+      'Cruce BI Papel',
+      'Desvio de base imponible - Convenio Multilateral'
     ])
     expect(getBatchCrossOptionLabels(availableCrosses, 'monthly')).toEqual([
       'Control mensual'
@@ -83,7 +83,7 @@ describe('batchManagementCross', () => {
 
   it('builds execution payloads for any backend catalog cross', () => {
     const filters = createFilters()
-    filters.annual.crossTypes = ['cruce-bi-papel']
+    filters.annual.crossTypes = ['Cruce BI Papel']
 
     expect(
       buildBatchCrossExecutionPayloads('batch-1', filters, availableCrosses)
@@ -93,7 +93,12 @@ describe('batchManagementCross', () => {
         crossCode: 'cruce-bi-papel',
         crossVersion: '1.0.0',
         periodFrom: '2024-01-01',
-        periodTo: '2025-12-31'
+        periodTo: '2025-12-31',
+        parameters: {
+          jurisdiccion: '910',
+          umbralAnalisisDeudaTotal: '1',
+          jurisdiccionesExcluidasTotalIngresos: '923'
+        }
       }
     ])
   })
