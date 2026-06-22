@@ -2,36 +2,22 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { TOAST_DASHBOARD_MESSAGES, toast } from '@/components/core/toasts';
-import {
-  addContributorToBatchAction,
-  getBatchManagementAction
-} from '@/modules/batch-management/data/actions';
-import type { IBatchManagementItem } from '@/modules/batch-management/data/models/BatchManagement';
 import { markReprocessingAction } from '@/modules/reprocessing/data/actions';
 import type { IReprocessingMarkPayload } from '@/modules/reprocessing/data/models/Reprocessing';
 import type {
   IUnifiedRegisterBatchOption,
   IUnifiedRegisterItem
 } from '../../../data/models/UnifiedRegister';
-
-const BATCH_OPTIONS_SEARCH_DEBOUNCE_MS = 250;
-
-function mapBatchItemToLotOption(
-  batch: IBatchManagementItem
-): IUnifiedRegisterBatchOption {
-  return {
-    id: batch.id,
-    label: batch.name,
-    batchNumber: batch.batchNumber,
-    regime: batch.regime,
-    cuitCount: batch.cuitCount
-  };
-}
+import { addContributorToLot, getLotOptions } from '../unified-register-preview/batchOperations';
+import { BATCH_OPTIONS_SEARCH_DEBOUNCE_MS } from '../unified-register-preview/constants';
+import { filterLotOptions } from '../unified-register-preview/utils';
 
 export function useUnifiedRegisterPageActions() {
   const [selectedReprocessingItem, setSelectedReprocessingItem] =
     useState<IUnifiedRegisterItem | null>(null);
   const [selectedBatchItem, setSelectedBatchItem] =
+    useState<IUnifiedRegisterItem | null>(null);
+  const [pendingBatchContributor, setPendingBatchContributor] =
     useState<IUnifiedRegisterItem | null>(null);
   const [selectedLotOption, setSelectedLotOption] =
     useState<IUnifiedRegisterBatchOption | null>(null);
@@ -53,19 +39,7 @@ export function useUnifiedRegisterPageActions() {
   const latestBatchOptionsRequestIdRef = useRef(0);
 
   const filteredLotOptions = useMemo(() => {
-    const normalizedSearch = batchSearch.trim().toLowerCase();
-
-    if (!normalizedSearch) {
-      return lotOptions;
-    }
-
-    return lotOptions.filter((lot) => {
-      return (
-        lot.label.toLowerCase().includes(normalizedSearch) ||
-        lot.batchNumber?.toLowerCase().includes(normalizedSearch) ||
-        lot.regime.toLowerCase().includes(normalizedSearch)
-      );
-    });
+    return filterLotOptions(lotOptions, batchSearch);
   }, [batchSearch, lotOptions]);
 
   useEffect(() => {
@@ -80,24 +54,18 @@ export function useUnifiedRegisterPageActions() {
       () => {
         startBatchOptionsTransition(() => {
           void (async () => {
-            const result = await getBatchManagementAction({
-              search: batchSearch.trim() || null,
-              page: 1,
-              itemsPerPage: 20
-            });
+            const result = await getLotOptions(batchSearch);
 
             if (latestBatchOptionsRequestIdRef.current !== requestId) {
               return;
             }
 
-            if (!result.data) {
-              setBatchOptionsError(
-                result.error ?? 'No fue posible listar los lotes.'
-              );
+            if (!result.options) {
+              setBatchOptionsError(result.error);
               return;
             }
 
-            setLotOptions(result.data.batches.map(mapBatchItemToLotOption));
+            setLotOptions(result.options);
             setBatchOptionsError(null);
           })();
         });
@@ -126,6 +94,7 @@ export function useUnifiedRegisterPageActions() {
 
   function openBatchModal(item: IUnifiedRegisterItem) {
     setSelectedBatchItem(item);
+    setPendingBatchContributor(null);
     setSelectedLotOption(null);
     setBatchSearch('');
     setLotOptions([]);
@@ -142,7 +111,13 @@ export function useUnifiedRegisterPageActions() {
   }
 
   function selectLotOption(lot: IUnifiedRegisterBatchOption) {
+    if (!selectedBatchItem) {
+      return;
+    }
+
+    setPendingBatchContributor(selectedBatchItem);
     setSelectedLotOption(lot);
+    setSelectedBatchItem(null);
     setBatchSearch('');
   }
 
@@ -153,6 +128,7 @@ export function useUnifiedRegisterPageActions() {
 
     setSelectedLotOption(null);
     setSelectedBatchItem(null);
+    setPendingBatchContributor(null);
     setAddToBatchError(null);
   }
 
@@ -189,25 +165,18 @@ export function useUnifiedRegisterPageActions() {
   };
 
   function confirmLotSelection() {
-    if (!selectedLotOption || !selectedBatchItem || isAddToBatchPending) {
+    if (!selectedLotOption || !pendingBatchContributor || isAddToBatchPending) {
       return;
     }
 
     const lotOption = selectedLotOption;
-    const batchItem = selectedBatchItem;
+    const batchItem = pendingBatchContributor;
 
     setAddToBatchError(null);
 
     startAddToBatchTransition(() => {
       void (async () => {
-        const result = await addContributorToBatchAction({
-          batchId: lotOption.id,
-          contributor: {
-            cuit: batchItem.cuit,
-            businessName: batchItem.businessName,
-            regime: batchItem.regime
-          }
-        });
+        const result = await addContributorToLot(batchItem, lotOption);
 
         if (!result.success) {
           setAddToBatchError(
@@ -228,6 +197,7 @@ export function useUnifiedRegisterPageActions() {
         });
         setSelectedLotOption(null);
         setSelectedBatchItem(null);
+        setPendingBatchContributor(null);
       })();
     });
   }

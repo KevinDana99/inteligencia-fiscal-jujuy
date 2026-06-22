@@ -4,9 +4,14 @@ import {
 } from '@/modules/batch-management/data/actions';
 import type {
   IUnifiedRegisterBatchOption,
-  IUnifiedRegisterDetail
+  IUnifiedRegisterItem
 } from '../../../data/models/UnifiedRegister';
 import { mapBatchItemToLotOption } from './utils';
+
+type AddContributorToLotItem = Pick<
+  IUnifiedRegisterItem,
+  'businessName' | 'cuit' | 'regime'
+>;
 
 export async function getLotOptions(search: string) {
   const result = await getBatchManagementAction({
@@ -29,7 +34,7 @@ export async function getLotOptions(search: string) {
 }
 
 export async function addContributorToLot(
-  item: IUnifiedRegisterDetail,
+  item: AddContributorToLotItem,
   lotOption: IUnifiedRegisterBatchOption
 ) {
   return addContributorToBatchAction({

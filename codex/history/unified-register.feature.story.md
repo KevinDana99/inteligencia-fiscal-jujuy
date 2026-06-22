@@ -1,5 +1,45 @@
 # Unified Register Feature Story
 
+## Unified Register List Add To Batch Modal Fix - 2026-06-22
+
+### Summary
+
+Fixed the `/` unified register list add-to-batch confirmation flow so the lot dropdown closes before the confirm modal opens and no longer blocks the Confirmar action.
+
+### Main Changes
+
+- Added a pending contributor state for the selected lot confirmation.
+- Closed the available-lots dropdown immediately after selecting a lot to remove its fixed backdrop from the page.
+- Updated `confirmLotSelection` to use the pending contributor captured before the dropdown closes, preserving the backend `PATCH /api/lotes/contribuyentes` call.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/hooks/useUnifiedRegisterPage/useUnifiedRegisterPageActions.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/hooks/useUnifiedRegisterPage/useUnifiedRegisterPageActions.ts src/modules/unified-register/presentation/hooks/unified-register-preview/batchOperations.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts --runInBand`
+- `git diff --check`
+
+## Unified Register List Add To Batch Endpoint - 2026-06-22
+
+### Summary
+
+Aligned the `/` unified register list `Agregar a lote` flow with the same backend-connected batch operations used by the preview header.
+
+### Main Changes
+
+- Reused `getLotOptions` for list lot search so the dropdown queries `GET /api/lotes` through the existing batch action.
+- Reused `addContributorToLot` for list confirmation so adding a card contributor calls `PATCH /api/lotes/contribuyentes`.
+- Broadened the shared add-to-lot helper input type so it accepts both preview detail records and list items.
+- Verified the live Swagger schema for `SolicitudAgregarContribuyenteALote` still expects `{ loteId, contribuyente: { cuit, razonSocial, regimen } }`.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/hooks/useUnifiedRegisterPage/useUnifiedRegisterPageActions.ts src/modules/unified-register/presentation/hooks/unified-register-preview/batchOperations.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js src/modules/batch-management/data/sources/rest/RestBatchManagementSource.test.ts --runInBand`
+- `git diff --check`
+
 ## Preview Header Backend Field Fixes - 2026-06-22
 
 ### Summary
