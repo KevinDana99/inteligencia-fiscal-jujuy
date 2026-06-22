@@ -1,5 +1,24 @@
 # Unified Register Feature Story
 
+## Informe Generation Auth Refresh Race Fix - 2026-06-22
+
+### Summary
+
+Serialized informe PDF and DOCX generation so production auth refreshes cannot race when both document requests start with an expired or stale access token.
+
+### Main Changes
+
+- Replaced the parallel `Promise.all` informe generation with sequential PDF then DOCX requests through the stable BFF route.
+- Preserved the existing request timeout and BFF error propagation behavior.
+- Added a regression test that ensures DOCX generation waits until the PDF request has resolved.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js src/modules/unified-register/presentation/utils/informeDocumentGeneration.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/utils/informeDocumentGeneration.ts src/modules/unified-register/presentation/utils/informeDocumentGeneration.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+- `git diff --check`
+
 ## Unified Register List Add To Batch Modal Fix - 2026-06-22
 
 ### Summary

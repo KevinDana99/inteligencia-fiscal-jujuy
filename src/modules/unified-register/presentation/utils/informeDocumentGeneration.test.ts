@@ -118,6 +118,47 @@ describe('generateInformeDocuments', () => {
     });
   });
 
+  test('waits for the PDF generation before requesting DOCX', async () => {
+    let resolvePdfResponse: (response: Response) => void = () => undefined;
+    const pdfResponse = new Promise<Response>((resolve) => {
+      resolvePdfResponse = resolve;
+    });
+
+    fetchMock.mockReturnValueOnce(pdfResponse).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          documentoId: 'documento-docx',
+          urlDescarga: '/api/documentos/documento-docx/descargar'
+        }),
+        { status: 201 }
+      )
+    );
+
+    const generationPromise = generateInformeDocuments(payload);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body))).toMatchObject({
+      formato: 'Pdf'
+    });
+
+    resolvePdfResponse(
+      new Response(
+        JSON.stringify({
+          documentoId: 'documento-pdf',
+          urlDescarga: '/api/documentos/documento-pdf/descargar'
+        }),
+        { status: 201 }
+      )
+    );
+
+    await generationPromise;
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(JSON.parse(String(fetchMock.mock.calls[1]?.[1]?.body))).toMatchObject({
+      formato: 'Docx'
+    });
+  });
+
   test('returns a timeout message when informe generation is aborted', async () => {
     const abortError = new DOMException('The operation was aborted.', 'AbortError');
 

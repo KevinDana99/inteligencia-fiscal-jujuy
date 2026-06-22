@@ -156,16 +156,16 @@ async function generateInformeDocument(
 export async function generateInformeDocuments(
   payload: IGenerateInformeDocumentsPayload
 ): Promise<IGeneratedInformeDocuments> {
-  const [pdf, docx] = await Promise.all([
-    generateInformeDocument({
-      ...payload,
-      formato: 'Pdf'
-    }),
-    generateInformeDocument({
-      ...payload,
-      formato: 'Docx'
-    })
-  ]);
+  // Keep the requests sequential so a refreshed auth cookie from the first
+  // generation is available before the second request starts.
+  const pdf = await generateInformeDocument({
+    ...payload,
+    formato: 'Pdf'
+  });
+  const docx = await generateInformeDocument({
+    ...payload,
+    formato: 'Docx'
+  });
 
   return {
     pdf,
