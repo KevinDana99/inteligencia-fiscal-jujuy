@@ -1,5 +1,24 @@
 # Unified Register Feature Story
 
+## Informe Documents Internal API Base URL - 2026-06-22
+
+### Summary
+
+Routed informe document generation through a server-side documents API base URL so production BFF requests can use the Kubernetes internal backend Service instead of the external HTTPS host.
+
+### Main Changes
+
+- Added `DOCUMENTS_API_BASE_URL` as a documents-specific server-side override with fallback to `NEXT_PUBLIC_API_BASE_URL`.
+- Updated the documents data source and REST client URL resolution to prefer that internal documents URL.
+- Added the internal backend Service URL to the frontend Kubernetes ConfigMap and documented the variable.
+- Updated the prod/staging infra ConfigMaps in the diagnosed k3s overlay copy to use `http://rentas-if-backend.rentas-if.svc.cluster.local`.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/jest/bin/jest.js src/modules/documents/data/constants/documentsDataSource.test.ts src/modules/documents/data/sources/rest/RestDocumentsSource.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/documents/data/constants/documentsDataSource.ts src/modules/documents/data/constants/documentsDataSource.test.ts src/modules/documents/data/data-access.ts src/modules/documents/data/sources/rest/utils/documentRestClient.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/typescript/bin/tsc --noEmit`
+
 ## Informe Generation BFF Route Prefix - 2026-06-22
 
 ### Summary

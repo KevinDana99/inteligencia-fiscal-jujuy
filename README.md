@@ -16,6 +16,7 @@ Copiá `.env.example` a `.env.local`.
 - `NEXT_PUBLIC_USE_MOCK_CATALOG_SHOWCASE=false`: usa `RestCatalogShowcaseSource`
 - Las builds de despliegue deben mantener todos los `NEXT_PUBLIC_USE_MOCK_*` en `false`
 - `NEXT_PUBLIC_API_BASE_URL`: base URL para la fuente REST
+- `DOCUMENTS_API_BASE_URL`: base URL server-side para documentos/informes; en Kubernetes debe usar el Service interno del backend
 
 ## Estructura
 

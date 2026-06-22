@@ -2,7 +2,8 @@ import { ApiClientError, type ApiClientConfig } from '@/lib/api-client';
 import { getServerAuthSession } from '@/lib/auth/get-server-session';
 import {
   DOCUMENTS_AUTH_ERROR,
-  DOCUMENTS_DATA_SOURCE_ENV
+  DOCUMENTS_DATA_SOURCE_ENV,
+  resolveDocumentsApiBaseUrl
 } from './constants/documentsDataSource';
 import type { IDocumentsSource } from './interfaces/DocumentsSource';
 import { MockDocumentsSource } from './sources/mock/MockDocumentsSource';
@@ -32,7 +33,7 @@ export async function createServerDocumentsSource(): Promise<IDocumentsSource> {
   }
 
   const config: ApiClientConfig = {
-    baseUrl: process.env[DOCUMENTS_DATA_SOURCE_ENV.apiBaseUrl],
+    baseUrl: resolveDocumentsApiBaseUrl(),
     token: session.accessToken,
     refreshAccessToken: async () => {
       const refreshedSession = await getServerAuthSession({ forceRefresh: true });

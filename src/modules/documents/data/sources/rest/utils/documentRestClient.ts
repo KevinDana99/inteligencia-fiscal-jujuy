@@ -1,5 +1,6 @@
 import { ApiClientError, fetchWithAuthRetry } from '@/lib/api-client';
 import type { ApiClientConfig } from '@/lib/api-client';
+import { resolveDocumentsApiBaseUrl } from '../../../constants/documentsDataSource';
 import type { ApiDocumentErrorResponseDto } from '../dtos/ApiDocumentDtos';
 
 type DocumentsJsonRequestParams<TBody = unknown> = ApiClientConfig & {
@@ -19,7 +20,7 @@ export interface DocumentsFileResponse {
 }
 
 function buildDocumentsUrl(config: ApiClientConfig, path: string) {
-  return `${config.baseUrl ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? ''}${path}`;
+  return `${config.baseUrl ?? resolveDocumentsApiBaseUrl() ?? ''}${path}`;
 }
 
 function resolveErrorMessage(error: ApiDocumentErrorResponseDto | null) {
