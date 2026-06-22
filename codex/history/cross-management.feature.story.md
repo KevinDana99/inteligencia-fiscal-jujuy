@@ -1,5 +1,19 @@
 # Cross Management Feature Story
 
+## 2026-06-22 Columna de estado siempre visible
+
+- La tabla `Ranking` de `/gestion-de-cruces/vista-previa-cruce/[crossId]` ahora normaliza sus columnas para que `estadoRelevancia` exista siempre, incluso si el esquema del backend no la incluye.
+- La columna de estado se fuerza como ultima columna no filtrable para conservar el control de marcado `Estado / Relevante / Reproceso` en una posicion estable.
+- Las recargas de resumen, busqueda, filtros y paginacion aplican la misma normalizacion de columnas antes de remapear filas.
+- El header y las celdas de estado quedaron sticky a la derecha, con ancho estable y fondo propio para permanecer visibles durante el scroll horizontal.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.test.ts --runInBand`
+- `/Users/gastonmorales/.bun/bin/bun x eslint src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.ts src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.test.ts src/modules/cross-management/presentation/hooks/cross-preview/useCrossPreviewResumenQuery.ts src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewAnalysisSection.tsx src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewAnalysisRow.tsx`
+- `/Users/gastonmorales/.bun/bin/bun x tsc --noEmit --pretty false --incremental false`
+- `curl -sS -o /tmp/cross-preview-login-check.html -w '%{http_code} %{redirect_url}\n' --max-time 8 http://localhost:3001/gestion-de-cruces/vista-previa-cruce/92` responde `307 http://localhost:3001/login` con el dev server local.
+
 ## 2026-06-22 Ranking ordenado por backend
 
 - La tabla `Ranking` de `/gestion-de-cruces/vista-previa-cruce/[crossId]` dejo de reordenar filas en frontend.

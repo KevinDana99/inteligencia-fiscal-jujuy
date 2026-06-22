@@ -20,6 +20,16 @@ import {
   mapDynamicRowValues
 } from '../utils/crossPreviewDynamicValues'
 
+const CROSS_PREVIEW_STATUS_COLUMN_KEY = 'estadoRelevancia'
+
+const CROSS_PREVIEW_STATUS_COLUMN: ICrossDynamicColumn = {
+  key: CROSS_PREVIEW_STATUS_COLUMN_KEY,
+  type: 'string',
+  label: 'ESTADO',
+  isFilterable: false,
+  allowedOperators: []
+}
+
 function formatCuit(value: string) {
   const digits = value.replace(/\D/g, '')
 
@@ -580,6 +590,29 @@ function mapRelevanceStatus(value: string | null): ICrossPreviewAnalysisRow['sta
   return 'estado'
 }
 
+export function ensureCrossPreviewStatusColumn(
+  columns: ICrossDynamicColumn[]
+): ICrossDynamicColumn[] {
+  const statusColumn = columns.find(
+    (column) => column.key === CROSS_PREVIEW_STATUS_COLUMN_KEY
+  )
+  const columnsWithoutStatus = columns.filter(
+    (column) => column.key !== CROSS_PREVIEW_STATUS_COLUMN_KEY
+  )
+
+  return [
+    ...columnsWithoutStatus,
+    {
+      ...CROSS_PREVIEW_STATUS_COLUMN,
+      ...statusColumn,
+      key: CROSS_PREVIEW_STATUS_COLUMN_KEY,
+      type: 'string',
+      isFilterable: false,
+      allowedOperators: []
+    }
+  ]
+}
+
 function resolvePlanillaCellValue(
   row: ICrossPlanillaRow,
   column: ICrossDynamicColumn
@@ -695,7 +728,9 @@ export function mapCrossPreviewContractToView(
   execution?: ICrossManagementItem | null
 ): ICrossPreviewData {
   const planColumns = planilla.schema?.columns ?? []
-  const analysisColumns = resumen.analysisSchema?.columns ?? []
+  const analysisColumns = ensureCrossPreviewStatusColumn(
+    resumen.analysisSchema?.columns ?? []
+  )
   const totalCuits =
     resumen.metadata.totalCuits ||
     execution?.cuitCount ||

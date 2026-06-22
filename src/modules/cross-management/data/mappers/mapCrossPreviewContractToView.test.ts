@@ -1,4 +1,5 @@
 import {
+  ensureCrossPreviewStatusColumn,
   mapAnalysisRowsToPreview,
   mapCrossResultsToPlanillaData,
   mapPlanillaRowsToPreview
@@ -25,6 +26,42 @@ const numberColumn: ICrossDynamicColumn = {
 }
 
 describe('cross preview dynamic contract mapping', () => {
+  it('keeps the status column always available as the trailing analysis column', () => {
+    expect(ensureCrossPreviewStatusColumn([numberColumn])).toEqual([
+      numberColumn,
+      {
+        allowedOperators: [],
+        isFilterable: false,
+        key: 'estadoRelevancia',
+        label: 'ESTADO',
+        type: 'string'
+      }
+    ])
+  })
+
+  it('normalizes an existing status column and moves it to the end', () => {
+    const customStatusColumn: ICrossDynamicColumn = {
+      allowedOperators: ['igualA'],
+      isFilterable: true,
+      key: 'estadoRelevancia',
+      label: 'ESTADO ACTUAL',
+      type: 'numero'
+    }
+
+    expect(
+      ensureCrossPreviewStatusColumn([customStatusColumn, numberColumn])
+    ).toEqual([
+      numberColumn,
+      {
+        allowedOperators: [],
+        isFilterable: false,
+        key: 'estadoRelevancia',
+        label: 'ESTADO ACTUAL',
+        type: 'string'
+      }
+    ])
+  })
+
   it('keeps null and zero semantics when formatting values', () => {
     expect(formatCrossPreviewValue(null, numberColumn)).toBe('-')
     expect(formatCrossPreviewValue(0, numberColumn)).toBe('0')

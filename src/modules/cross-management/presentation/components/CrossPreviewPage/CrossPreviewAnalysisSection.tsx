@@ -76,7 +76,7 @@ export function CrossPreviewAnalysisSection({
       <div className={classes.simpleTableWrap}>
         <LoadingOverlay
           visible={isLoading}
-          zIndex={2}
+          zIndex={4}
           overlayProps={{ radius: 'sm', blur: 1 }}
         />
         <Table className={classes.analysisTable} withTableBorder={false} withColumnBorders={false}>
@@ -107,6 +107,10 @@ export function CrossPreviewAnalysisSection({
                     className={`${classes.analysisHeaderCell} ${
                       column.key === 'cuit' || column.key === 'razonSocial'
                         ? classes.analysisHeaderCellLeft
+                        : ''
+                    } ${
+                      column.key === 'estadoRelevancia'
+                        ? classes.analysisStatusHeaderCell
                         : ''
                     }`}
                   >

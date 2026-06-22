@@ -606,6 +606,22 @@ Restored vertical scrolling in the `Informe de Investigación — Previsualizaci
 ### Validation
 
 - `git diff --check`
+
+## Preview Header Empty Values Dash - 2026-06-22
+
+### Summary
+
+Fixed `/vista-previa-padron/[cuit]` header rendering so empty header information is shown as `-`.
+
+### Main Changes
+
+- Added `formatUnifiedRegisterHeaderText` to normalize null, undefined, blank, and whitespace-only header values.
+- Applied the fallback to the visible preview header fields, including title, CUIT, regime, control label, activities, metadata addresses, and risk.
+
+### Validation
+
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/eslint/bin/eslint.js src/modules/unified-register/presentation/components/UnifiedRegisterPreviewPage/components/PreviewHeaderSummary.tsx src/modules/unified-register/presentation/utils/formatUnifiedRegisterHeaderText.ts src/modules/unified-register/presentation/utils/formatUnifiedRegisterHeaderText.test.ts`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/jest/bin/jest.js src/modules/unified-register/presentation/utils/formatUnifiedRegisterHeaderText.test.ts`
 - `bun x eslint 'src/modules/unified-register/presentation/components/InformePreviewModal/**/*.tsx' 'src/modules/unified-register/presentation/components/InformePreviewModal/*.tsx'`
 - `bun x tsc --noEmit --incremental false`
 - Browser verification against `http://localhost:3000/vista-previa-padron/20123456789`: unauthenticated flow redirects to `/login`, renders content, and shows no console errors.

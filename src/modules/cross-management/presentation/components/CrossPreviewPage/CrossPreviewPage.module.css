@@ -550,6 +550,33 @@
   text-align: center;
 }
 
+.analysisStatusHeaderCell,
+.analysisStatusBodyCell {
+  position: sticky;
+  right: 0;
+  width: 156px;
+  min-width: 156px;
+  max-width: 156px;
+  text-align: center;
+  box-shadow: -12px 0 16px -16px rgb(15 23 42 / 0.45);
+}
+
+.analysisStatusHeaderCell {
+  z-index: 3;
+  background: var(--mantine-color-gray-0);
+}
+
+.analysisStatusBodyCell {
+  z-index: 2;
+  background: var(--mantine-color-white);
+}
+
+.analysisTable th.analysisStatusHeaderCell,
+.analysisTable td.analysisStatusBodyCell {
+  padding-right: 12px;
+  padding-left: 12px;
+}
+
 .analysisTable th.analysisHeaderCell.analysisHeaderCellLeft {
   text-align: left;
 }
@@ -694,8 +721,10 @@
 }
 
 .statusSelect {
+  box-sizing: border-box;
   border: none;
   border-radius: 999px;
+  min-width: 116px;
   padding: 4px 10px;
   font-family: var(--font-dm-sans), sans-serif;
   font-size: 11px;

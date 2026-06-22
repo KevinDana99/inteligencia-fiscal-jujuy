@@ -44,6 +44,10 @@ export function CrossPreviewAnalysisRow({
           } ${
             column.key === 'razonSocial' ? classes.analysisBodyCellLeft : ''
           } ${
+            column.key === 'estadoRelevancia'
+              ? classes.analysisStatusBodyCell
+              : ''
+          } ${
             isAnalysisDangerColumn(column.key) ? classes.analysisDangerCell : ''
           }`}
         >

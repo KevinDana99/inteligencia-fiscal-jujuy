@@ -1,6 +1,7 @@
 import { Text } from '@mantine/core';
 import type { IUnifiedRegisterDetail } from '../../../../data/models/UnifiedRegister';
 import { getRiskClass } from '../../../utils/unifiedRegisterPreviewStyles';
+import { formatUnifiedRegisterHeaderText } from '../../../utils/formatUnifiedRegisterHeaderText';
 import type { PreviewController } from '../types';
 import classes from '../UnifiedRegisterPreviewPage.module.css';
 
@@ -29,49 +30,62 @@ function getHeaderAlternateAddress(
 }
 
 export function PreviewHeaderSummary({ item, preview }: PreviewHeaderSummaryProps) {
-  const alternateAddress = getHeaderAlternateAddress(item, preview);
-  const riskLevelLabel = item.riskLevel || '-';
+  const alternateAddress = formatUnifiedRegisterHeaderText(
+    getHeaderAlternateAddress(item, preview)
+  );
+  const riskLevelLabel = formatUnifiedRegisterHeaderText(item.riskLevel);
 
   return (
     <div className={classes.headerTop}>
       <div className={classes.headerMain}>
-        <Text className={classes.cuit}>CUIT {item.cuit}</Text>
-        <Text className={classes.title}>{item.businessName}</Text>
+        <Text className={classes.cuit}>
+          CUIT {formatUnifiedRegisterHeaderText(item.cuit)}
+        </Text>
+        <Text className={classes.title}>
+          {formatUnifiedRegisterHeaderText(item.businessName)}
+        </Text>
         <div className={classes.pillRow}>
           <span className={`${classes.pill} ${classes.statusPill}`}>
             <span className={classes.statusDot} />
-            {item.status}
+            {formatUnifiedRegisterHeaderText(item.status)}
           </span>
-          {item.regime ? (
-            <span className={`${classes.pill} ${classes.regimeText}`}>
-              {item.regime}
-            </span>
-          ) : null}
+          <span className={`${classes.pill} ${classes.regimeText}`}>
+            {formatUnifiedRegisterHeaderText(item.regime)}
+          </span>
           <span className={`${classes.pill} ${classes.controlPill}`}>
-            Control IF: {item.controlLotsLabel}
+            Control IF: {formatUnifiedRegisterHeaderText(item.controlLotsLabel)}
           </span>
-          {item.activities.map((activity) => (
-            <span
-              key={activity.id}
-              className={`${classes.pill} ${
-                activity.type === 'Primaria'
-                  ? classes.activityPrimaryPill
-                  : classes.activitySecondaryPill
-              }`}
-            >
-              {activity.label}
+          {item.activities.length > 0 ? (
+            item.activities.map((activity) => (
+              <span
+                key={activity.id}
+                className={`${classes.pill} ${
+                  activity.type === 'Primaria'
+                    ? classes.activityPrimaryPill
+                    : classes.activitySecondaryPill
+                }`}
+              >
+                {formatUnifiedRegisterHeaderText(activity.label)}
+              </span>
+            ))
+          ) : (
+            <span className={`${classes.pill} ${classes.activityPrimaryPill}`}>
+              {formatUnifiedRegisterHeaderText(null)}
             </span>
-          ))}
+          )}
         </div>
         <div className={classes.metaRow}>
           <Text className={classes.metaText}>
-            <strong>Inicio actividad:</strong> {item.startedAt}
+            <strong>Inicio actividad:</strong>{' '}
+            {formatUnifiedRegisterHeaderText(item.startedAt)}
           </Text>
           <Text className={classes.metaText}>
-            <strong>Jurisdicción:</strong> {item.jurisdiction}
+            <strong>Jurisdicción:</strong>{' '}
+            {formatUnifiedRegisterHeaderText(item.jurisdiction)}
           </Text>
           <Text className={classes.metaText}>
-            <strong>Domicilio fiscal:</strong> {item.fiscalAddress}
+            <strong>Domicilio fiscal:</strong>{' '}
+            {formatUnifiedRegisterHeaderText(item.fiscalAddress)}
           </Text>
           <Text className={classes.metaText}>
             <strong>Domicilio alternativo:</strong> {alternateAddress}

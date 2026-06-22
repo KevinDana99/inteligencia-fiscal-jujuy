@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { getCrossResumenAction } from '../../../data/actions'
 import {
+  ensureCrossPreviewStatusColumn,
   mapAnalysisRowsToPreview,
   mapSummaryBlocksToPreview
 } from '../../../data/mappers/mapCrossPreviewContractToView'
@@ -110,10 +111,11 @@ export function useCrossPreviewResumenQuery({
         return
       }
 
-      const resolvedColumns =
+      const resolvedColumns = ensureCrossPreviewStatusColumn(
         response.data.analysisSchema?.columns ??
         nextAnalysisColumns ??
         analysisColumns
+      )
 
       if (response.data.summaryBlocks) {
         setSummaryBlocks(mapSummaryBlocksToPreview(response.data.summaryBlocks))
