@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { Button, Group, Modal, Stack, Text } from '@mantine/core';
-import { useCallback } from 'react';
-import type { IUnifiedRegisterListData } from '../../../data/models/UnifiedRegister';
-import { SendToReprocessingModal } from '@/modules/reprocessing/presentation/components';
-import { UnifiedRegisterEmptyState } from '../UnifiedRegisterEmptyState';
-import { UnifiedRegisterList } from '../UnifiedRegisterList';
-import { UnifiedRegisterPagination } from '../UnifiedRegisterPagination';
-import { UnifiedRegisterSearch } from '../UnifiedRegisterSearch';
-import { useUnifiedRegisterPage } from '../../hooks/useUnifiedRegisterPage';
-import classes from './UnifiedRegisterPage.module.css';
+import { Button, Group, Modal, Stack, Text } from "@mantine/core";
+import { useCallback } from "react";
+import type { IUnifiedRegisterListData } from "../../../data/models/UnifiedRegister";
+import { SendToReprocessingModal } from "@/modules/reprocessing/presentation/components";
+import { UnifiedRegisterEmptyState } from "../UnifiedRegisterEmptyState";
+import { UnifiedRegisterList } from "../UnifiedRegisterList";
+import { UnifiedRegisterPagination } from "../UnifiedRegisterPagination";
+import { UnifiedRegisterSearch } from "../UnifiedRegisterSearch";
+import { useUnifiedRegisterPage } from "../../hooks/useUnifiedRegisterPage";
+import classes from "./UnifiedRegisterPage.module.css";
 
 export function UnifiedRegisterPage({
-  initialData
+  initialData,
 }: {
   initialData: IUnifiedRegisterListData | null;
 }) {
@@ -26,6 +26,7 @@ export function UnifiedRegisterPage({
     hasResults,
     activePage,
     setActivePage,
+    totalItems,
     totalPages,
     isPagePending,
     isSearchPending,
@@ -48,13 +49,13 @@ export function UnifiedRegisterPage({
     selectLotOption,
     closeLotConfirmModal,
     confirmReprocessing,
-    confirmLotSelection
+    confirmLotSelection,
   } = useUnifiedRegisterPage(initialData);
 
   const handlePageChange = useCallback(
     (page: number) => {
       setActivePage(page);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     },
     [setActivePage]
   );
@@ -68,6 +69,8 @@ export function UnifiedRegisterPage({
         onChange={handleSearchChange}
         onKeyDown={handleSearchKeyDown}
         onReset={handleSearchReset}
+        totalItems={totalItems}
+        onChange={handleSearchChange}
       />
 
       {hasResults ? (
@@ -105,9 +108,9 @@ export function UnifiedRegisterPage({
       <SendToReprocessingModal
         opened={Boolean(selectedReprocessingItem)}
         onClose={closeReprocessingModal}
-        contribuyenteId={selectedReprocessingItem?.contribuyenteId ?? ''}
-        cuit={selectedReprocessingItem?.cuit ?? ''}
-        razonSocial={selectedReprocessingItem?.businessName ?? ''}
+        contribuyenteId={selectedReprocessingItem?.contribuyenteId ?? ""}
+        cuit={selectedReprocessingItem?.cuit ?? ""}
+        razonSocial={selectedReprocessingItem?.businessName ?? ""}
         error={reprocessingActionError}
         onConfirm={confirmReprocessing}
       />
@@ -124,7 +127,7 @@ export function UnifiedRegisterPage({
           content: `${classes.modalContent} ${classes.lotConfirmModalContent}`,
           header: `${classes.modalHeader} ${classes.lotConfirmModalHeader}`,
           body: `${classes.modalBody} ${classes.lotConfirmModalBody}`,
-          title: classes.modalTitle
+          title: classes.modalTitle,
         }}
       >
         {selectedLotOption ? (

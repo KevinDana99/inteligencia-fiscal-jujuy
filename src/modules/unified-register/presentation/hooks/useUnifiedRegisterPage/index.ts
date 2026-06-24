@@ -32,6 +32,7 @@ export function useUnifiedRegisterPage(initialData: IUnifiedRegisterListData | n
     ...search,
     activePage: pagination.activePage,
     setActivePage,
+    totalItems: pagination.totalItems,
     totalPages: pagination.totalPages,
     isPagePending: pagination.isPagePending || search.isSearchPending,
     pageError: pagination.pageError

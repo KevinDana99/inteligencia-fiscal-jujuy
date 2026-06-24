@@ -31,6 +31,7 @@ function mockBackendContributors(contribuyentes: IUnifiedRegisterItem[]) {
     data: {
       pagina: 1,
       itemsPagina: 50,
+      totalItems: contribuyentes.length,
       totalPaginas: contribuyentes.length ? 1 : 0,
       contribuyentes
     }

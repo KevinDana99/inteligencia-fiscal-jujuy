@@ -28,6 +28,7 @@ describe('RestUnifiedRegisterSource', () => {
       jsonResponse({
         pagina: 2,
         itemsPagina: 25,
+        totalItems: 92,
         totalPaginas: 4,
         contribuyentes: [
           {
@@ -60,6 +61,7 @@ describe('RestUnifiedRegisterSource', () => {
     await expect(source.listContributors(2, 25, ' ANOVA ')).resolves.toEqual({
       pagina: 2,
       itemsPagina: 25,
+      totalItems: 92,
       totalPaginas: 4,
       contribuyentes: [
         {

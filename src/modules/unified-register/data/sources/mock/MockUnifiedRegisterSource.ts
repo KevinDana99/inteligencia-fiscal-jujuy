@@ -743,6 +743,7 @@ export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
     return {
       pagina: page,
       itemsPagina: itemsPerPage,
+      totalItems: items.length,
       totalPaginas,
       contribuyentes: items.slice(start, start + itemsPerPage)
     };

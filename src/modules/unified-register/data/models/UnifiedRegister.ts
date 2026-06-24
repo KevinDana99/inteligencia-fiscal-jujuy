@@ -20,6 +20,7 @@ export type IUnifiedRegisterItems = IUnifiedRegisterItem[];
 export interface IUnifiedRegisterListData {
   pagina: number;
   itemsPagina: number;
+  totalItems: number;
   totalPaginas: number;
   contribuyentes: IUnifiedRegisterItems;
 }

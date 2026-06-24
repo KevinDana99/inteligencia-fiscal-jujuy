@@ -27,6 +27,7 @@ export function useUnifiedRegisterPagePagination({
   setItems
 }: UseUnifiedRegisterPagePaginationParams) {
   const [activePage, setActivePageState] = useState(initialData?.pagina ?? 1);
+  const [totalItems, setTotalItems] = useState(initialData?.totalItems ?? 0);
   const [totalPages, setTotalPages] = useState(initialData?.totalPaginas ?? 0);
   const [isPagePending, startPageTransition] = useTransition();
   const [pageError, setPageError] = useState<string | null>(null);
@@ -35,6 +36,7 @@ export function useUnifiedRegisterPagePagination({
     (data: IUnifiedRegisterListData) => {
       setItems(data.contribuyentes);
       setActivePageState(data.pagina);
+      setTotalItems(data.totalItems);
       setTotalPages(data.totalPaginas);
       setPageError(null);
     },
@@ -75,6 +77,7 @@ export function useUnifiedRegisterPagePagination({
     resetActivePage,
     applyPageData,
     setPageErrorMessage,
+    totalItems,
     totalPages,
     isPagePending,
     pageError
