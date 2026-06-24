@@ -1,9 +1,9 @@
-import { Text } from '@mantine/core';
-import type { IUnifiedRegisterDetail } from '../../../../data/models/UnifiedRegister';
-import { getRiskClass } from '../../../utils/unifiedRegisterPreviewStyles';
-import { formatUnifiedRegisterHeaderText } from '../../../utils/formatUnifiedRegisterHeaderText';
-import type { PreviewController } from '../types';
-import classes from '../UnifiedRegisterPreviewPage.module.css';
+import { Text } from "@mantine/core";
+import type { IUnifiedRegisterDetail } from "../../../../data/models/UnifiedRegister";
+import { getRiskClass } from "../../../utils/unifiedRegisterPreviewStyles";
+import { formatUnifiedRegisterHeaderText } from "../../../utils/formatUnifiedRegisterHeaderText";
+import type { PreviewController } from "../types";
+import classes from "../UnifiedRegisterPreviewPage.module.css";
 
 type PreviewHeaderSummaryProps = {
   item: IUnifiedRegisterDetail;
@@ -26,10 +26,13 @@ function getHeaderAlternateAddress(
     return item.alternateAddress;
   }
 
-  return '';
+  return "";
 }
 
-export function PreviewHeaderSummary({ item, preview }: PreviewHeaderSummaryProps) {
+export function PreviewHeaderSummary({
+  item,
+  preview,
+}: PreviewHeaderSummaryProps) {
   const alternateAddress = formatUnifiedRegisterHeaderText(
     getHeaderAlternateAddress(item, preview)
   );
@@ -60,7 +63,7 @@ export function PreviewHeaderSummary({ item, preview }: PreviewHeaderSummaryProp
               <span
                 key={activity.id}
                 className={`${classes.pill} ${
-                  activity.type === 'Primaria'
+                  activity.type === "Primaria"
                     ? classes.activityPrimaryPill
                     : classes.activitySecondaryPill
                 }`}
@@ -76,23 +79,36 @@ export function PreviewHeaderSummary({ item, preview }: PreviewHeaderSummaryProp
         </div>
         <div className={classes.metaRow}>
           <Text className={classes.metaText}>
-            <strong>Inicio actividad:</strong>{' '}
+            <strong>Inicio actividad:</strong>{" "}
             {formatUnifiedRegisterHeaderText(item.startedAt)}
           </Text>
           <Text className={classes.metaText}>
-            <strong>Jurisdicción:</strong>{' '}
+            <strong>Jurisdicción:</strong>{" "}
             {formatUnifiedRegisterHeaderText(item.jurisdiction)}
           </Text>
           <Text className={classes.metaText}>
-            <strong>Domicilio fiscal:</strong>{' '}
+            <strong>Domicilio fiscal:</strong>{" "}
             {formatUnifiedRegisterHeaderText(item.fiscalAddress)}
+            <strong>Jurisdicción sede:</strong> {item.headquartersJurisdiction}
+          </Text>
+          <Text className={classes.metaText}>
+            <strong>Jurisdicciones extrañas:</strong>{" "}
+            {item.strangeJurisdictions}
+          </Text>
+          <Text className={classes.metaText}>
+            <strong>Domicilio fiscal:</strong> {item.fiscalAddress}
           </Text>
           <Text className={classes.metaText}>
             <strong>Domicilio alternativo:</strong> {alternateAddress}
           </Text>
         </div>
       </div>
-      <div className={`${classes.riskBox} ${getRiskClass(classes, item.riskLevel)}`}>
+      <div
+        className={`${classes.riskBox} ${getRiskClass(
+          classes,
+          item.riskLevel
+        )}`}
+      >
         <Text className={classes.riskLevel}>{riskLevelLabel}</Text>
         <Text className={classes.riskLabel}>Riesgo</Text>
       </div>

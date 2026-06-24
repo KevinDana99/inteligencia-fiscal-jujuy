@@ -190,6 +190,8 @@ export interface IUnifiedRegisterSourceTable {
 export interface IUnifiedRegisterDetail extends IUnifiedRegisterItem {
   startedAt: string;
   jurisdiction: string;
+  headquartersJurisdiction: string;
+  strangeJurisdictions: string;
   fiscalAddress: string;
   commercialAddress: string;
   alternateAddress: string;
