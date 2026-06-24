@@ -139,6 +139,7 @@ export interface IUnifiedRegisterNotesListData {
 export interface IUnifiedRegisterFine {
   id: string | null;
   issuedAt: string | null;
+  type?: 'Destinatario' | 'Remitente' | null;
   description: string | null;
   amount: string | null;
   status: string | null;
@@ -245,6 +246,7 @@ export interface IUnifiedRegisterFinesListParams {
 export interface IUnifiedRegisterFineRecord {
   numero: string | null;
   fecha: string | null;
+  tipo?: 'Destinatario' | 'Remitente' | null;
   descripcion: string | null;
   monto: string | null;
   estado: string | null;

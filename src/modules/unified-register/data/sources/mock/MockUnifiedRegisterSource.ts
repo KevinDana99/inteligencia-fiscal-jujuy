@@ -849,6 +849,7 @@ export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
       multas: item.fines.slice(start, start + itemsPerPage).map((fine) => ({
         numero: fine.id,
         fecha: fine.issuedAt,
+        tipo: fine.type ?? null,
         descripcion: fine.description,
         monto: fine.amount,
         estado: fine.status

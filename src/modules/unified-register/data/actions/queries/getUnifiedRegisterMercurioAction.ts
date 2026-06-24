@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import { createServerUnifiedRegisterSource } from '../../data-access';
+import { createServerUnifiedRegisterSource } from "../../data-access";
 import type {
   IUnifiedRegisterFinesListData,
   IUnifiedRegisterFinesListParams,
-  IUnifiedRegisterQueryResult
-} from '../../models/UnifiedRegister';
-import { resolveUnifiedRegisterActionError } from '../shared/resolveUnifiedRegisterActionError';
+  IUnifiedRegisterQueryResult,
+} from "../../models/UnifiedRegister";
+import { resolveUnifiedRegisterActionError } from "../shared/resolveUnifiedRegisterActionError";
 
 export async function getUnifiedRegisterMercurioAction(
   contribuyenteId: string,
@@ -20,12 +20,12 @@ export async function getUnifiedRegisterMercurioAction(
   } catch (error) {
     const resolvedError = resolveUnifiedRegisterActionError(
       error,
-      'No fue posible listar las multas Mercurio.'
+      "No fue posible listar las Pases Mercurio."
     );
 
     return {
       data: null,
-      ...resolvedError
+      ...resolvedError,
     };
   }
 }

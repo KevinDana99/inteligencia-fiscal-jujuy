@@ -12,6 +12,7 @@ export function mapFineRecordToViewModel(
   return {
     id: fine.numero,
     issuedAt: fine.fecha,
+    type: fine.tipo,
     description: fine.descripcion,
     amount: fine.monto,
     status: fine.estado

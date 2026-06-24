@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
-import { getUnifiedRegisterMercurioAction } from '../../data/actions';
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { getUnifiedRegisterMercurioAction } from "../../data/actions";
 import type {
   IUnifiedRegisterFine,
-  IUnifiedRegisterFinesListData
-} from '../../data/models/UnifiedRegister';
-import { UNIFIED_REGISTER_DETAIL_TABLE_ITEMS_PER_PAGE } from '../constants/unifiedRegisterDetail';
-import { mapFineRecordToViewModel } from '../utils/unifiedRegisterDetailRecords';
+  IUnifiedRegisterFinesListData,
+} from "../../data/models/UnifiedRegister";
+import { UNIFIED_REGISTER_DETAIL_TABLE_ITEMS_PER_PAGE } from "../constants/unifiedRegisterDetail";
+import { mapFineRecordToViewModel } from "../utils/unifiedRegisterDetailRecords";
 
 type UseUnifiedRegisterMercurioParams = {
   contribuyenteId: string;
@@ -22,7 +22,7 @@ export function useUnifiedRegisterMercurio({
   initialData,
   initialFines,
   loadInitialPage = false,
-  waitForInitialPage = false
+  waitForInitialPage = false,
 }: UseUnifiedRegisterMercurioParams) {
   const hasInitialData = Boolean(initialData) || initialFines.length > 0;
   const [fines, setFines] = useState(initialFines);
@@ -59,20 +59,25 @@ export function useUnifiedRegisterMercurio({
     setHasLoadedInitialPage(true);
   }, []);
 
-  const refreshPage = useCallback(async (page: number) => {
-    const result = await getUnifiedRegisterMercurioAction(contribuyenteId, {
-      pagina: page,
-      itemsPagina: UNIFIED_REGISTER_DETAIL_TABLE_ITEMS_PER_PAGE
-    });
+  const refreshPage = useCallback(
+    async (page: number) => {
+      const result = await getUnifiedRegisterMercurioAction(contribuyenteId, {
+        pagina: page,
+        itemsPagina: UNIFIED_REGISTER_DETAIL_TABLE_ITEMS_PER_PAGE,
+      });
 
-    if (!result.data) {
-      applyListError(result.error ?? 'No fue posible listar las multas Mercurio.');
-      return false;
-    }
+      if (!result.data) {
+        applyListError(
+          result.error ?? "No fue posible listar las Pases Mercurio."
+        );
+        return false;
+      }
 
-    applyListData(result.data);
-    return true;
-  }, [applyListData, applyListError, contribuyenteId]);
+      applyListData(result.data);
+      return true;
+    },
+    [applyListData, applyListError, contribuyenteId]
+  );
 
   useEffect(() => {
     if (
@@ -125,6 +130,6 @@ export function useUnifiedRegisterMercurio({
     hydratePage: applyListData,
     hydrateError: applyListError,
     goToPreviousPage,
-    goToNextPage
+    goToNextPage,
   };
 }

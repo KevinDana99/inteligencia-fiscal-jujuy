@@ -143,6 +143,7 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
       {
         id: 'MER-001',
         issuedAt: '12/03/2025',
+        type: 'Destinatario',
         description: 'Exceso de carga — Ruta 9 km 34',
         amount: '$180.000',
         status: 'Impaga'
@@ -150,6 +151,7 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
       {
         id: 'MER-002',
         issuedAt: '08/09/2024',
+        type: 'Remitente',
         description: 'Documentación incompleta — Ruta 9',
         amount: '$95.000',
         status: 'Pagada'
@@ -157,6 +159,7 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
       {
         id: 'MER-003',
         issuedAt: '15/04/2024',
+        type: 'Destinatario',
         description: 'Mercadería sin remito — Ruta 34',
         amount: '$220.000',
         status: 'En gestión'
@@ -388,6 +391,7 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
       {
         id: 'MER-2026-014',
         issuedAt: '18/04/2026',
+        type: 'Destinatario',
         description: 'Mercaderia con documentacion incompleta',
         amount: '$140.000',
         status: 'En gestión'
@@ -395,6 +399,7 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
       {
         id: 'MER-2025-221',
         issuedAt: '03/11/2025',
+        type: 'Remitente',
         description: 'Diferencia en remito de transporte',
         amount: '$85.000',
         status: 'Impaga'
@@ -402,6 +407,7 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
       {
         id: 'MER-2025-118',
         issuedAt: '12/06/2025',
+        type: 'Destinatario',
         description: 'Control de ruta regularizado',
         amount: '$52.000',
         status: 'Pagada'
