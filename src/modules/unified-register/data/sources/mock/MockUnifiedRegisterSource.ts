@@ -884,7 +884,11 @@ export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
         .slice(start, start + itemsPerPage)
         .map((order) => ({
           numero: order.id,
+          origen: order.origin ?? null,
+          instruccion: order.instruction ?? order.reason,
           periodo: order.period,
+          deuda: order.debt ?? order.amount,
+          bi: order.declaredBi ?? null,
           motivo: order.reason,
           monto: order.amount,
           estado: order.status

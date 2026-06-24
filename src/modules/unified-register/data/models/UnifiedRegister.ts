@@ -147,7 +147,11 @@ export interface IUnifiedRegisterFine {
 
 export interface IUnifiedRegisterInterventionOrder {
   id: string | null;
+  origin?: string | null;
+  instruction?: string | null;
   period: string | null;
+  debt?: string | null;
+  declaredBi?: string | null;
   reason: string | null;
   amount: string | null;
   status: string | null;
@@ -267,7 +271,11 @@ export interface IUnifiedRegisterInterventionOrdersListParams {
 
 export interface IUnifiedRegisterInterventionOrderRecord {
   numero: string | null;
+  origen?: string | null;
+  instruccion?: string | null;
   periodo: string | null;
+  deuda?: string | null;
+  bi?: string | null;
   motivo: string | null;
   monto: string | null;
   estado: string | null;

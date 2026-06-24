@@ -168,14 +168,22 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
     interventionOrders: [
       {
         id: 'OI-2025-0341',
+        origin: 'Cruce SIF',
+        instruction: 'Desvío de BI — Régimen CM',
         period: '2023 — 2024',
+        debt: '$253.194.844',
+        declaredBi: '$1.840.000.000',
         reason: 'Desvío de BI — Régimen CM',
         amount: '$253.194.844',
         status: 'En curso'
       },
       {
         id: 'OI-2022-0187',
+        origin: 'Manual',
+        instruction: 'Control de créditos — Local',
         period: '2020 — 2021',
+        debt: '$38.450.000',
+        declaredBi: '$320.000.000',
         reason: 'Control de créditos — Local',
         amount: '$38.450.000',
         status: 'Cerrada'
@@ -416,14 +424,22 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
     interventionOrders: [
       {
         id: 'OI-2026-0098',
+        origin: 'Cruce SIF',
+        instruction: 'Cruce ARCA contra BI declarada',
         period: '2024 - 2025',
+        debt: '$126.380.000',
+        declaredBi: '$910.000.000',
         reason: 'Cruce ARCA contra BI declarada',
         amount: '$126.380.000',
         status: 'En curso'
       },
       {
         id: 'OI-2023-0412',
+        origin: 'Manual',
+        instruction: 'Control de actividad industrial',
         period: '2022 - 2023',
+        debt: '$14.800.000',
+        declaredBi: '$180.000.000',
         reason: 'Control de actividad industrial',
         amount: '$14.800.000',
         status: 'Cerrada'

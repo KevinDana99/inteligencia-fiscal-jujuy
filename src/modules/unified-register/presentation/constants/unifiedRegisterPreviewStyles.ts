@@ -31,13 +31,13 @@ export const ORDER_STATUS_CLASS_KEYS: Record<string, string> = {
 };
 
 export const ORDER_AMOUNT_CLASS_KEYS: Record<string, string> = {
-  'En curso': 'amountWarning',
-  Cerrada: 'amountPositive'
+  'En curso': 'amountCritical',
+  Cerrada: 'amountDefault'
 };
 
 export const ORDER_AMOUNT_COLOR: Record<string, string> = {
-  'En curso': '#d97706',
-  Cerrada: '#059669'
+  'En curso': '#DC2626',
+  Cerrada: 'var(--mantine-color-gray-7)'
 };
 
 export const SOURCE_STATUS_CLASS_KEYS: Record<string, string> = {
