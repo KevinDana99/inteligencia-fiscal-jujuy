@@ -32,7 +32,24 @@ export function InterventionOrdersTable({ preview }: InterventionOrdersTableProp
             <Text className={classes.sectionTitle}>
               {UNIFIED_REGISTER_INTERVENTION_ORDERS_TITLE}
             </Text>
-            <Badge className={classes.tableCountBadge} radius="xl">
+            <Badge
+              className={classes.tableCountBadge}
+              radius="xl"
+              styles={{
+                root: {
+                  background: 'var(--mantine-color-blue-1)',
+                  color: 'var(--mantine-color-blue-5)',
+                  padding: '2px 8px',
+                  borderRadius: '999px'
+                },
+                label: {
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  lineHeight: 1,
+                  textTransform: 'none'
+                }
+              }}
+            >
               {preview.isInterventionOrdersPagePending &&
               !preview.interventionOrders.length
                 ? UNIFIED_REGISTER_INTERVENTION_ORDERS_LOADING_BADGE

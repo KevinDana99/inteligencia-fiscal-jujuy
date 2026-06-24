@@ -2267,6 +2267,12 @@
 .interventionRow:hover {
   background: var(--mantine-color-gray-0);
 }
+<<<<<<< HEAD
+=======
+.interventionRow td {
+  padding: 8px 10px;
+}
+>>>>>>> d7e49be (implement correction to intervention order table)
 .interventionDebtCell {
   padding: 8px 10px;
   border-bottom: 1px solid var(--mantine-color-gray-1);
@@ -2287,3 +2293,10 @@
   padding: 8px 10px;
   border-bottom: 1px solid var(--mantine-color-gray-1);
 }
+<<<<<<< HEAD
+=======
+.orderCodeCell {
+  padding: 0;
+  border-bottom: 0;
+}
+>>>>>>> d7e49be (implement correction to intervention order table)
