@@ -12,6 +12,39 @@
   min-width: max-content;
 }
 
+.localToolbar {
+  min-width: max-content;
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  padding: 10px 14px;
+  background: var(--mantine-color-white);
+}
+
+.localSearchInput {
+  width: min(330px, 100%);
+}
+
+.localSearchField {
+  min-height: 34px;
+  border-color: var(--mantine-color-gray-2);
+  border-radius: 8px;
+  color: var(--mantine-color-gray-7);
+  font-size: 13px;
+}
+
+.localSearchField::placeholder {
+  color: var(--mantine-color-gray-5);
+}
+
+.localSearchSection {
+  color: var(--mantine-color-gray-6);
+}
+
+.localResultsCount {
+  color: var(--mantine-color-gray-6);
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .thead {
   background: var(--mantine-color-gray-0);
 }
@@ -26,8 +59,9 @@
   white-space: nowrap;
 }
 
-.xHeader {
-  width: 40px;
+.selectionHeader {
+  width: 44px;
+  text-align: center;
 }
 
 .td {
@@ -36,14 +70,31 @@
   font-size: 14px;
 }
 
-.removeButton {
-  width: 28px;
-  height: 28px;
-  color: var(--mantine-color-red-6);
+.selectionCell {
+  width: 44px;
+  text-align: center;
 }
 
-.removeButton:hover {
-  background: #fff5f5;
+.cuitCell {
+  color: var(--mantine-color-blue-6);
+  font-family: var(--mantine-font-family-monospace, monospace);
+  font-weight: 700;
+}
+
+.businessNameCell {
+  color: var(--mantine-color-gray-8);
+  font-weight: 700;
+}
+
+.localEmptyCell {
+  padding: 28px 14px;
+}
+
+.localEmptyText {
+  color: var(--mantine-color-gray-6);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
 }
 
 .fallbackCard {

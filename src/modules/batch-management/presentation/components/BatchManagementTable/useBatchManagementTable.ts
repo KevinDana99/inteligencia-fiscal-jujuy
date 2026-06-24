@@ -4,12 +4,18 @@ import type { BatchManagementTableController } from '../../hooks/useBatchManagem
 
 export function useBatchManagementTable(controller: BatchManagementTableController) {
   return {
-    isEmpty: !controller.batches.length,
+    isEmpty: !controller.batches.length && !controller.isPending,
+    isPending: controller.isPending,
+    skeletonRowCount: controller.pendingItemsPerPage ?? controller.itemsPerPage,
     rows: controller.batches.map((batch) => ({
       id: batch.id,
       batch,
       isExpanded: controller.expandedBatchId === batch.id,
       isLoading: controller.loadingBatchId === batch.id,
+      loadingCuitItemsPerPage:
+        controller.loadingBatchId === batch.id
+          ? controller.loadingBatchCuitItemsPerPage ?? batch.cuitItemsPerPage
+          : batch.cuitItemsPerPage,
       onToggle: () => controller.onToggleBatch(batch.id),
       onCuitPageChange: (page: number, itemsPerPage: number) =>
         controller.onBatchCuitPageChange(batch.id, { page, itemsPerPage }),

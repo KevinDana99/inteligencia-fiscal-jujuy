@@ -1,5 +1,22 @@
 # Batch Management Feature Story
 
+## 2026-06-22 Skeletons durante paginacion de tablas
+
+- La paginacion de la tabla principal de lotes ahora mantiene un estado pending real durante toda la request async, en lugar de depender de `useTransition` para un trabajo asincronico.
+- Durante la carga de pagina o cambio de cantidad, la tabla principal reemplaza sus filas por skeleton rows con las mismas 8 columnas, padding y cantidad de filas solicitada.
+- El footer de la tabla principal muestra skeleton para el texto de rango y conserva los controles deshabilitados con el page size/pagina objetivo.
+- El detalle expandido de CUITs reemplaza el spinner por un skeleton que replica la tabla interna, su header, footer y cantidad de filas pedida.
+- Se removieron los estilos de loader viejo y se agrego proteccion contra respuestas fuera de orden al paginar CUITs rapidamente.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/jest/bin/jest.js src/modules/batch-management --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/typescript/bin/tsc --noEmit --pretty false --incremental false`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node ./node_modules/eslint/bin/eslint.js src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementSearch.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementSearch.test.ts src/modules/batch-management/presentation/hooks/batch-management/useBatchManagementBatches.ts src/modules/batch-management/presentation/hooks/useBatchManagement.ts src/modules/batch-management/presentation/components/BatchManagementTable/index.tsx src/modules/batch-management/presentation/components/BatchManagementTable/useBatchManagementTable.ts src/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementTableSkeletonRows.tsx src/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementTableRow/index.tsx src/modules/batch-management/presentation/components/BatchManagementTable/BatchManagementBatchDetail/BatchManagementBatchDetailSkeleton.tsx`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/next/dist/bin/next dev -p 3001` levanto el dev server en `http://localhost:3001`.
+- `curl -I -s --max-time 5 http://localhost:3001/gestion-de-lotes` respondio `307 /login`, esperado para ruta privada sin sesion.
+- `agent-browser` no esta disponible en esta sesion (`agent-browser not found`), por lo que no se pudo capturar screenshot automatizado.
+
 ## 2026-06-22 Paginacion backend en detalle de CUITs
 
 - `GET /api/lotes/{loteId}` acepta ahora paginacion de detalle desde frontend con `Pagina` e `ItemsPagina`, usando `1/10` como default.

@@ -136,4 +136,34 @@ describe('useBatchManagementSearch', () => {
       search: 'ANOVA'
     })
   })
+
+  it('keeps pending pagination metadata until the request settles', async () => {
+    let resolveBatchList: (value: { data: IBatchListData }) => void = () => {}
+    const batchListPromise = new Promise<{ data: IBatchListData }>((resolve) => {
+      resolveBatchList = resolve
+    })
+    mockGetBatchManagementAction.mockReturnValue(batchListPromise)
+
+    await act(async () => {
+      latestValue?.changeItemsPerPage(20)
+    })
+
+    expect(latestValue?.isSearchPending).toBe(true)
+    expect(latestValue?.pendingPage).toBe(1)
+    expect(latestValue?.pendingItemsPerPage).toBe(20)
+
+    await act(async () => {
+      resolveBatchList({
+        data: {
+          ...EMPTY_BATCH_LIST,
+          itemsPerPage: 20
+        }
+      })
+      await batchListPromise
+    })
+
+    expect(latestValue?.isSearchPending).toBe(false)
+    expect(latestValue?.pendingPage).toBeNull()
+    expect(latestValue?.pendingItemsPerPage).toBeNull()
+  })
 })

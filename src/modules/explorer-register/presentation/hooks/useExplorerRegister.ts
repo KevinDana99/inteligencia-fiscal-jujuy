@@ -5,6 +5,7 @@ import {
   useExplorerRegisterBatchCreation,
   useExplorerRegisterCatalog,
   useExplorerRegisterForm,
+  useExplorerRegisterLocalFilter,
   useExplorerRegisterSearch,
   useExplorerRegisterSelection,
 } from "./explorer-register";
@@ -22,12 +23,24 @@ export function useExplorerRegister(
     selectedColumnCodes: form.selectedColumnCodes,
     temporalRange: form.temporalRange,
   });
-  const selectionState = selection.getSelectionState(search.data);
-  const batchCreation = useExplorerRegisterBatchCreation(selectionState.visibleRows);
+  const localFilter = useExplorerRegisterLocalFilter(search.data?.rows ?? []);
+  const selectionState = selection.getSelectionState(
+    search.data,
+    localFilter.filteredRows
+  );
+  const batchCreation = useExplorerRegisterBatchCreation(
+    selectionState.selectedRows
+  );
 
   function resetSearchAndSelection() {
     search.resetSearch();
     selection.resetSelection();
+    localFilter.resetLocalSearch();
+  }
+
+  function runSearch() {
+    localFilter.resetLocalSearch();
+    search.search();
   }
 
   function toggleColumn(code: string) {
@@ -77,11 +90,19 @@ export function useExplorerRegister(
     createBatchModal: batchCreation.createModal,
     openCreateBatchModal: batchCreation.openCreateBatchModal,
     result: search.data,
-    search: search.search,
+    search: runSearch,
     searchError: search.error,
     searchStatus: search.status,
     selectedColumnCodes: form.selectedColumnCodes,
     selectedCount: selectionState.selectedCount,
+    localSearchValue: localFilter.searchValue,
+    localSearchResultsCount: selectionState.visibleRows.length,
+    setLocalSearchValue: localFilter.setSearchValue,
+    setRowsSelected: selection.setRowsSelected,
+    setRowSelected: selection.setRowSelected,
+    allVisibleRowsSelected: selectionState.allVisibleRowsSelected,
+    someVisibleRowsSelected: selectionState.someVisibleRowsSelected,
+    isRowSelected: selectionState.isRowSelected,
     temporalRange: form.temporalRange,
     toggleColumn,
     updateFilterValues,
@@ -89,6 +110,5 @@ export function useExplorerRegister(
     updateTemporalRange,
     updateTextFilterValue,
     visibleRows: selectionState.visibleRows,
-    deselectRow: selection.deselectRow,
   };
 }

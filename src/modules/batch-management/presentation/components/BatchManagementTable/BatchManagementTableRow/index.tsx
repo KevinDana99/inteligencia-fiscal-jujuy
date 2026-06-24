@@ -1,9 +1,10 @@
 'use client'
 
 import { Fragment } from 'react'
-import { Loader, Table } from '@mantine/core'
+import { Skeleton, Table } from '@mantine/core'
 import { IconChevronRight } from '@tabler/icons-react'
 import { BatchManagementBatchDetail } from '../BatchManagementBatchDetail'
+import { BatchManagementBatchDetailSkeleton } from '../BatchManagementBatchDetail/BatchManagementBatchDetailSkeleton'
 import { BatchManagementCrossMenu } from '../BatchManagementCrossMenu'
 import classes from '../BatchManagementTable.module.css'
 
@@ -20,7 +21,7 @@ export function BatchManagementTableRow({ row }: BatchManagementTableRowProps) {
       >
         <Table.Td className={classes.chevronCell}>
           {row.isLoading ? (
-            <Loader size={13} className={classes.rowLoader} />
+            <Skeleton height={14} width={14} radius="sm" />
           ) : (
             <span
               className={`${classes.chevron} ${row.isExpanded ? classes.chevronOpen : ''}`}
@@ -55,9 +56,9 @@ export function BatchManagementTableRow({ row }: BatchManagementTableRowProps) {
         <Table.Tr>
           <Table.Td colSpan={8} className={classes.detailCell}>
             {row.isLoading ? (
-              <div className={classes.detailLoader}>
-                <Loader size="sm" />
-              </div>
+              <BatchManagementBatchDetailSkeleton
+                rowCount={row.loadingCuitItemsPerPage}
+              />
             ) : (
               <BatchManagementBatchDetail
                 batch={row.batch}

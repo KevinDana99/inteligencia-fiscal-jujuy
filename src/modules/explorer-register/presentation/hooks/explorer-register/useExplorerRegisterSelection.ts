@@ -1,7 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { IExplorerRegisterExploreData } from '../../../data/models/ExplorerRegister';
+import type {
+  IExplorerRegisterExploreData,
+  IExplorerRegisterRow
+} from '../../../data/models/ExplorerRegister';
 
 export function useExplorerRegisterSelection() {
   const [deselectedCuits, setDeselectedCuits] = useState<string[]>([]);
@@ -10,23 +13,54 @@ export function useExplorerRegisterSelection() {
     setDeselectedCuits([]);
   }
 
-  function deselectRow(cuit: string) {
-    setDeselectedCuits((current) =>
-      current.includes(cuit) ? current : [...current, cuit]
-    );
+  function setRowSelected(cuit: string, selected: boolean) {
+    setDeselectedCuits((current) => {
+      if (selected) {
+        return current.filter((currentCuit) => currentCuit !== cuit);
+      }
+
+      return current.includes(cuit) ? current : [...current, cuit];
+    });
   }
 
-  function getSelectionState(data: IExplorerRegisterExploreData | null) {
+  function setRowsSelected(cuits: string[], selected: boolean) {
+    setDeselectedCuits((current) => {
+      const nextDeselectedCuits = new Set(current);
+
+      cuits.forEach((cuit) => {
+        if (selected) {
+          nextDeselectedCuits.delete(cuit);
+          return;
+        }
+
+        nextDeselectedCuits.add(cuit);
+      });
+
+      return Array.from(nextDeselectedCuits);
+    });
+  }
+
+  function getSelectionState(
+    data: IExplorerRegisterExploreData | null,
+    visibleRows: IExplorerRegisterRow[]
+  ) {
     const deselectedSet = new Set(deselectedCuits);
-    const visibleRows =
-      data?.rows.filter((row) => !deselectedSet.has(row.cuit)) ?? [];
-    const selectedCount = Math.max(
-      (data?.totalItems ?? 0) - deselectedCuits.length,
-      0
+    const rows = data?.rows ?? [];
+    const selectedRows = rows.filter((row) => !deselectedSet.has(row.cuit));
+    const selectedVisibleRows = visibleRows.filter(
+      (row) => !deselectedSet.has(row.cuit)
     );
 
     return {
-      selectedCount,
+      allVisibleRowsSelected:
+        visibleRows.length > 0 &&
+        selectedVisibleRows.length === visibleRows.length,
+      isRowSelected: (cuit: string) => !deselectedSet.has(cuit),
+      selectedCount: selectedRows.length,
+      selectedRows,
+      someVisibleRowsSelected:
+        selectedVisibleRows.length > 0 &&
+        selectedVisibleRows.length < visibleRows.length,
       visibleRows
     };
   }
@@ -34,9 +68,10 @@ export function useExplorerRegisterSelection() {
   const selectedCuits = useMemo(() => deselectedCuits, [deselectedCuits]);
 
   return {
-    deselectRow,
     deselectedCuits: selectedCuits,
     getSelectionState,
-    resetSelection
+    resetSelection,
+    setRowsSelected,
+    setRowSelected
   };
 }

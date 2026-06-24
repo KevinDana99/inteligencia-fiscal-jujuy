@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { getBatchDetailAction, getBatchManagementAction } from '../../../data/actions'
 import {
   DEFAULT_BATCH_DETAIL_QUERY,
@@ -33,15 +33,22 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
   const [totalPages, setTotalPages] = useState(initialBatchData?.totalPages ?? 1)
   const [expandedBatchId, setExpandedBatchId] = useState<string | null>(null)
   const [loadingBatchId, setLoadingBatchId] = useState<string | null>(null)
+  const [loadingBatchCuitItemsPerPage, setLoadingBatchCuitItemsPerPage] =
+    useState<number | null>(null)
+  const latestBatchDetailRequestIdRef = useRef(0)
 
   async function hydrateBatchDetail(
     batchId: string,
-    params: IBatchDetailParams = DEFAULT_BATCH_DETAIL_QUERY
+    params: IBatchDetailParams = DEFAULT_BATCH_DETAIL_QUERY,
+    requestId?: number
   ) {
     const result = await getBatchDetailAction(batchId, params)
     const batchDetail = result.data
 
-    if (!batchDetail) {
+    if (
+      !batchDetail ||
+      (requestId && latestBatchDetailRequestIdRef.current !== requestId)
+    ) {
       return
     }
 
@@ -49,12 +56,21 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
   }
 
   async function loadBatchCuitPage(batchId: string, params: IBatchDetailParams) {
+    const requestId = latestBatchDetailRequestIdRef.current + 1
+    const loadingItemsPerPage =
+      params.itemsPerPage ?? DEFAULT_BATCH_DETAIL_QUERY.itemsPerPage
+
+    latestBatchDetailRequestIdRef.current = requestId
     setLoadingBatchId(batchId)
+    setLoadingBatchCuitItemsPerPage(loadingItemsPerPage)
 
     try {
-      await hydrateBatchDetail(batchId, params)
+      await hydrateBatchDetail(batchId, params, requestId)
     } finally {
-      setLoadingBatchId((current) => (current === batchId ? null : current))
+      if (latestBatchDetailRequestIdRef.current === requestId) {
+        setLoadingBatchId((current) => (current === batchId ? null : current))
+        setLoadingBatchCuitItemsPerPage(null)
+      }
     }
   }
 
@@ -140,6 +156,7 @@ export function useBatchManagementBatches(initialBatchData?: IBatchListData | nu
     totalPages,
     expandedBatchId,
     loadingBatchId,
+    loadingBatchCuitItemsPerPage,
     applyBatchListData,
     toggleExpandedBatch,
     changeBatchCuitPage,

@@ -1,5 +1,13 @@
 # Explorer Register Feature Story
 
+## 2026-06-24 - Seleccion por checkbox y filtro local de CUITs
+
+- La tabla de resultados de `/explorar-padron` reemplaza la accion `X` por checkboxes Mantine, con seleccion individual y checkbox de encabezado para seleccionar o deseleccionar los resultados visibles.
+- Las filas deseleccionadas permanecen visibles y el contador del boton de creacion de lote se alimenta de las filas seleccionadas cargadas.
+- Se agrego un buscador local sobre la lista cargada que filtra por CUIT con o sin separadores y por razon social, ignorando mayusculas y acentos.
+- La tabla conserva el estado de resultados base y muestra un vacio local cuando el buscador interno no encuentra coincidencias.
+- Se agrego cobertura unitaria para la utilidad `filterExplorerRegisterRowsByLocalSearch`.
+
 ## 2026-06-20 - Estado inicial sin opciones seleccionadas
 
 - La pantalla `/explorar-padron` ahora inicia sin pills/columnas seleccionadas por defecto.
@@ -76,5 +84,9 @@
 - `bun x tsc --noEmit`
 - `bun x jest src/modules/explorer-register --runInBand`
 - `bun run build`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/explorer-register/presentation/components/ExplorerRegisterPage/components/ExplorerRegisterResultsSection.tsx src/modules/explorer-register/presentation/components/ExplorerRegisterPage/components/ExplorerRegisterResultsTable.tsx src/modules/explorer-register/presentation/hooks/useExplorerRegister.ts src/modules/explorer-register/presentation/hooks/explorer-register/useExplorerRegisterSelection.ts src/modules/explorer-register/presentation/hooks/explorer-register/useExplorerRegisterLocalFilter.ts src/modules/explorer-register/presentation/utils/filterExplorerRegisterRowsByLocalSearch.ts src/modules/explorer-register/presentation/utils/filterExplorerRegisterRowsByLocalSearch.test.ts src/modules/explorer-register/presentation/utils/index.ts src/modules/explorer-register/presentation/hooks/explorer-register/index.ts src/modules/explorer-register/presentation/constants/explorerRegisterPresentation.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/jest/bin/jest.js src/modules/explorer-register/presentation/utils/filterExplorerRegisterRowsByLocalSearch.test.ts --runInBand`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/typescript/bin/tsc --noEmit --pretty false`
+- `curl -I -sS http://127.0.0.1:3001/explorar-padron` respondio `307` hacia `/login`, esperado para la ruta privada sin sesion.
 - `curl -I http://127.0.0.1:3000/explorar-padron` respondio `307` hacia `/login`, esperado para la ruta privada sin sesion.
 - Browser interno: `/explorar-padron` redirige a `/login`, sin errores de consola ni overlay real de Next.

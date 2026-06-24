@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useTransition } from 'react'
+import { useRef, useState } from 'react'
 import { getBatchManagementAction } from '../../../data/actions'
 import { DEFAULT_BATCH_MANAGEMENT_LIST_QUERY } from '../../../constants'
 import type { IBatchListData } from '../../../data/models/BatchManagement'
@@ -15,7 +15,9 @@ export function useBatchManagementSearch({
   onBatchListDataChange
 }: UseBatchManagementSearchParams) {
   const [searchValue, setSearchValue] = useState('')
-  const [isSearchPending, startSearchTransition] = useTransition()
+  const [isSearchPending, setIsSearchPending] = useState(false)
+  const [pendingPage, setPendingPage] = useState<number | null>(null)
+  const [pendingItemsPerPage, setPendingItemsPerPage] = useState<number | null>(null)
   const appliedSearchValueRef = useRef('')
   const latestSearchRequestIdRef = useRef(0)
 
@@ -26,9 +28,12 @@ export function useBatchManagementSearch({
   }) {
     const requestId = latestSearchRequestIdRef.current + 1
     latestSearchRequestIdRef.current = requestId
+    setIsSearchPending(true)
+    setPendingPage(params.page)
+    setPendingItemsPerPage(params.itemsPerPage)
 
-    startSearchTransition(() => {
-      void (async () => {
+    void (async () => {
+      try {
         const result = await getBatchManagementAction({
           ...DEFAULT_BATCH_MANAGEMENT_LIST_QUERY,
           page: params.page,
@@ -41,8 +46,14 @@ export function useBatchManagementSearch({
         }
 
         onBatchListDataChange(result.data)
-      })()
-    })
+      } finally {
+        if (latestSearchRequestIdRef.current === requestId) {
+          setIsSearchPending(false)
+          setPendingPage(null)
+          setPendingItemsPerPage(null)
+        }
+      }
+    })()
   }
 
   function updateSearchValue(value: string) {
@@ -83,6 +94,8 @@ export function useBatchManagementSearch({
   return {
     searchValue,
     isSearchPending,
+    pendingPage,
+    pendingItemsPerPage,
     updateSearchValue,
     submitSearchValue,
     changePage,

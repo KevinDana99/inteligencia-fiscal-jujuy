@@ -66,6 +66,10 @@
   cursor: pointer;
 }
 
+.skeletonRow {
+  pointer-events: none;
+}
+
 .rowExpanded td {
   background: var(--mantine-color-blue-1) !important;
 }
@@ -80,10 +84,6 @@
 
 .chevronOpen {
   transform: rotate(90deg);
-}
-
-.rowLoader {
-  color: var(--mantine-color-blue-5);
 }
 
 .batchCell {
@@ -130,14 +130,6 @@
 .detailCell {
   padding: 0 !important;
   background: transparent;
-}
-
-.detailLoader {
-  display: flex;
-  min-height: 92px;
-  align-items: center;
-  justify-content: center;
-  background: var(--mantine-color-white);
 }
 
 .emptyStateIcon {

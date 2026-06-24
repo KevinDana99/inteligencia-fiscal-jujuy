@@ -11,7 +11,7 @@ export function ExplorerRegisterResultsSection({
   if (
     controller.hasSearched &&
     controller.result &&
-    controller.visibleRows.length > 0
+    controller.result.rows.length > 0
   ) {
     return <ExplorerRegisterResultsTable controller={controller} />;
   }

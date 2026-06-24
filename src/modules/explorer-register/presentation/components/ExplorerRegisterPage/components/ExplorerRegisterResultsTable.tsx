@@ -1,5 +1,6 @@
-import { ActionIcon, Table } from '@mantine/core';
-import { IconX } from '@tabler/icons-react';
+import { Checkbox, Group, Table, Text, TextInput } from '@mantine/core';
+import { IconSearch } from '@tabler/icons-react';
+import { EXPLORER_REGISTER_TEXTS } from '../../../constants';
 import {
   formatExplorerRegisterCellValue,
   resolveExplorerRegisterRowValue
@@ -19,12 +20,47 @@ export function ExplorerRegisterResultsTable({
     return null;
   }
 
+  const visibleCuits = controller.visibleRows.map((row) => row.cuit);
+  const columnCount = result.columns.length + 1;
+
   return (
     <div className={classes.tableWrap}>
+      <Group className={classes.localToolbar} gap="sm">
+        <TextInput
+          value={controller.localSearchValue}
+          onChange={(event) =>
+            controller.setLocalSearchValue(event.currentTarget.value)
+          }
+          placeholder={EXPLORER_REGISTER_TEXTS.resultsSearchPlaceholder}
+          leftSection={<IconSearch size={16} />}
+          className={classes.localSearchInput}
+          classNames={{
+            input: classes.localSearchField,
+            section: classes.localSearchSection
+          }}
+        />
+        <Text className={classes.localResultsCount}>
+          {controller.localSearchResultsCount}{' '}
+          {EXPLORER_REGISTER_TEXTS.localResults}
+        </Text>
+      </Group>
       <Table withColumnBorders={false} className={classes.table}>
         <Table.Thead className={classes.thead}>
           <Table.Tr>
-            <Table.Th className={`${classes.th} ${classes.xHeader}`} />
+            <Table.Th className={`${classes.th} ${classes.selectionHeader}`}>
+              <Checkbox
+                checked={controller.allVisibleRowsSelected}
+                indeterminate={controller.someVisibleRowsSelected}
+                disabled={visibleCuits.length === 0}
+                aria-label="Seleccionar resultados visibles"
+                onChange={(event) =>
+                  controller.setRowsSelected(
+                    visibleCuits,
+                    event.currentTarget.checked
+                  )
+                }
+              />
+            </Table.Th>
             {result.columns.map((column) => (
               <Table.Th key={column.code} className={classes.th}>
                 {column.name}
@@ -33,28 +69,48 @@ export function ExplorerRegisterResultsTable({
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {controller.visibleRows.map((row) => (
-            <Table.Tr key={row.cuit}>
-              <Table.Td className={classes.td}>
-                <ActionIcon
-                  variant="subtle"
-                  radius="xl"
-                  className={classes.removeButton}
-                  onClick={() => controller.deselectRow(row.cuit)}
-                  aria-label={`Deseleccionar ${row.businessName}`}
-                >
-                  <IconX size={16} />
-                </ActionIcon>
-              </Table.Td>
-              {result.columns.map((column) => (
-                <Table.Td key={column.code} className={classes.td}>
-                  {formatExplorerRegisterCellValue(
-                    resolveExplorerRegisterRowValue(row, column)
-                  )}
+          {controller.visibleRows.length > 0 ? (
+            controller.visibleRows.map((row) => (
+              <Table.Tr key={row.cuit}>
+                <Table.Td className={`${classes.td} ${classes.selectionCell}`}>
+                  <Checkbox
+                    checked={controller.isRowSelected(row.cuit)}
+                    aria-label={`Seleccionar ${row.businessName}`}
+                    onChange={(event) =>
+                      controller.setRowSelected(
+                        row.cuit,
+                        event.currentTarget.checked
+                      )
+                    }
+                  />
                 </Table.Td>
-              ))}
+                {result.columns.map((column) => (
+                  <Table.Td
+                    key={column.code}
+                    className={`${classes.td} ${
+                      column.code === 'cuit' ? classes.cuitCell : ''
+                    } ${
+                      column.code === 'razonSocial'
+                        ? classes.businessNameCell
+                        : ''
+                    }`}
+                  >
+                    {formatExplorerRegisterCellValue(
+                      resolveExplorerRegisterRowValue(row, column)
+                    )}
+                  </Table.Td>
+                ))}
+              </Table.Tr>
+            ))
+          ) : (
+            <Table.Tr>
+              <Table.Td colSpan={columnCount} className={classes.localEmptyCell}>
+                <Text className={classes.localEmptyText}>
+                  {EXPLORER_REGISTER_TEXTS.localEmptyFallback}
+                </Text>
+              </Table.Td>
             </Table.Tr>
-          ))}
+          )}
         </Table.Tbody>
       </Table>
       <ExplorerRegisterPaginationBar controller={controller} />

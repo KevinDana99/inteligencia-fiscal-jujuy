@@ -1,10 +1,11 @@
 'use client'
 
-import { Group, Pagination, Select, Table, Text } from '@mantine/core'
+import { Group, Pagination, Select, Skeleton, Table, Text } from '@mantine/core'
 import type { BatchManagementTableController } from '../../hooks/useBatchManagement'
 import { BATCH_MANAGEMENT_ITEMS_PER_PAGE_OPTIONS } from '../../constants'
 import { BatchManagementTableEmptyState } from './BatchManagementTableEmptyState'
 import { BatchManagementTableRow } from './BatchManagementTableRow'
+import { BatchManagementTableSkeletonRows } from './BatchManagementTableSkeletonRows'
 import { useBatchManagementTable } from './useBatchManagementTable'
 import classes from './BatchManagementTable.module.css'
 
@@ -37,13 +38,21 @@ export function BatchManagementTable({ controller }: BatchManagementTableProps) 
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {table.rows.map((row) => (
-            <BatchManagementTableRow key={row.id} row={row} />
-          ))}
+          {table.isPending ? (
+            <BatchManagementTableSkeletonRows rowCount={table.skeletonRowCount} />
+          ) : (
+            table.rows.map((row) => (
+              <BatchManagementTableRow key={row.id} row={row} />
+            ))
+          )}
         </Table.Tbody>
       </Table>
       <div className={classes.tableFooter}>
-        <Text className={classes.tableResultsText}>{controller.rangeLabel}</Text>
+        {table.isPending ? (
+          <Skeleton height={16} width={210} radius="sm" />
+        ) : (
+          <Text className={classes.tableResultsText}>{controller.rangeLabel}</Text>
+        )}
         <Group gap="sm" className={classes.paginationControls}>
           <Select
             aria-label="Filas por pagina"
