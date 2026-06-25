@@ -2,6 +2,8 @@ import { Badge, Card, Text } from '@mantine/core';
 import type { IUnifiedRegisterDetail } from '../../../../data/models/UnifiedRegister';
 import classes from '../UnifiedRegisterPreviewPage.module.css';
 
+const EMPTY_METRIC_VALUE = '-';
+
 type PreviewMetricsProps = {
   item: IUnifiedRegisterDetail;
 };
@@ -16,7 +18,7 @@ export function PreviewMetrics({ item }: PreviewMetricsProps) {
             <div className={classes.metricSplit}>
               <div>
                 <Text className={classes.metricSplitPrimaryValue}>
-                  {widget.splitValue.primaryValue}
+                  {formatMetricValue(widget.splitValue.primaryValue)}
                 </Text>
                 <Text className={classes.metricSplitPrimaryLabel}>
                   {widget.splitValue.primaryLabel}
@@ -25,7 +27,7 @@ export function PreviewMetrics({ item }: PreviewMetricsProps) {
               <Text className={classes.metricSplitDivider}>/</Text>
               <div>
                 <Text className={classes.metricSplitSecondaryValue}>
-                  {widget.splitValue.secondaryValue}
+                  {formatMetricValue(widget.splitValue.secondaryValue)}
                 </Text>
                 <Text className={classes.metricSplitSecondaryLabel}>
                   {widget.splitValue.secondaryLabel}
@@ -49,7 +51,7 @@ function MetricValue({ widget }: { widget: IUnifiedRegisterDetail['widgets'][num
           widget.id === 'debt' ? classes.metricValueCritical : ''
         }`}
       >
-        {widget.value}
+        {formatMetricValue(widget.value)}
       </Text>
       {widget.badgeLabel ? (
         <Badge className={classes.metricBadge} classNames={{ label: classes.metricBadgeLabel }} radius="xl">
@@ -67,4 +69,8 @@ function MetricValue({ widget }: { widget: IUnifiedRegisterDetail['widgets'][num
       ) : null}
     </>
   );
+}
+
+function formatMetricValue(value: string) {
+  return value.trim() || EMPTY_METRIC_VALUE;
 }
