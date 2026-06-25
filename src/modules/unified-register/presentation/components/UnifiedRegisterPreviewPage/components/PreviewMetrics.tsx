@@ -1,6 +1,5 @@
 import { Badge, Card, Text } from '@mantine/core';
 import type { IUnifiedRegisterDetail } from '../../../../data/models/UnifiedRegister';
-import { UNIFIED_REGISTER_WIDGET_PERIOD_LABEL } from '../../../constants/unifiedRegisterMetrics';
 import classes from '../UnifiedRegisterPreviewPage.module.css';
 
 type PreviewMetricsProps = {
@@ -34,9 +33,9 @@ export function PreviewMetrics({ item }: PreviewMetricsProps) {
                   </Text>
                 </div>
               </div>
-              <Text className={classes.metricPeriodLabel}>
-                {UNIFIED_REGISTER_WIDGET_PERIOD_LABEL}
-              </Text>
+              {widget.periodLabel ? (
+                <Text className={classes.metricPeriodLabel}>{widget.periodLabel}</Text>
+              ) : null}
             </>
           ) : (
             <MetricValue widget={widget} />
@@ -71,9 +70,9 @@ function MetricValue({ widget }: { widget: IUnifiedRegisterDetail['widgets'][num
           {widget.subtitle}
         </Text>
       ) : null}
-      <Text className={classes.metricPeriodLabel}>
-        {UNIFIED_REGISTER_WIDGET_PERIOD_LABEL}
-      </Text>
+      {widget.periodLabel ? (
+        <Text className={classes.metricPeriodLabel}>{widget.periodLabel}</Text>
+      ) : null}
     </>
   );
 }

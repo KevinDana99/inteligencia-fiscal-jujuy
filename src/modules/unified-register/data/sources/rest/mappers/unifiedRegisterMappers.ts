@@ -214,6 +214,8 @@ export function mapHeaderDto(
     tipoContribuyente: mapContributorType(dto.tipoContribuyente),
     cantidadLotes: dto.cantidadLotes,
     jurisdiccion: dto.jurisdiccion ?? null,
+    jurisdiccionSede: dto.jurisdiccionSede ?? null,
+    jurisdiccionesExternas: dto.jurisdiccionesExternas ?? null,
     actividadPrimaria: dto.actividadPrimaria,
     actividadSecundaria: dto.actividadSecundaria,
     inicioActividad: dto.inicioActividad,
@@ -221,6 +223,8 @@ export function mapHeaderDto(
     biDeclarada: dto.biDeclarada,
     impuestosDeclarados: dto.impuestosDeclarados,
     deuda: dto.deuda,
+    periodoCalculo: dto.periodoCalculo ?? null,
+    periodosCalculo: dto.periodosCalculo ?? null,
     declaracionesJuradas:
       dto.declaracionesJuradas ?? dto.declaraionesJuradas ?? {
         presentadas: 0,
