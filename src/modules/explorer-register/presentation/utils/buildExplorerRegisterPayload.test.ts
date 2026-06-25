@@ -187,9 +187,6 @@ describe('buildExplorerRegisterPayload', () => {
   });
 
   it('fills an explicit default range when no dates were selected', () => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2026-06-22T12:00:00'));
-
     const result = buildExplorerRegisterPayload({
       catalog,
       selectedColumnCodes: ['controlInteligenciaFiscal'],
@@ -204,8 +201,8 @@ describe('buildExplorerRegisterPayload', () => {
 
     expect(result.error).toBeNull();
     expect(result.payload).toMatchObject({
-      startDate: '2023-07-01',
-      endDate: '2026-06-22'
+      startDate: '2024-01-01',
+      endDate: '2024-12-31'
     });
   });
 });

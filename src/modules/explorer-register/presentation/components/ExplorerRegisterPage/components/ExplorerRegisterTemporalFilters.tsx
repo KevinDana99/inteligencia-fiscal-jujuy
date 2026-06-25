@@ -9,6 +9,10 @@ export function ExplorerRegisterTemporalFilters({
 }: {
   controller: ExplorerRegisterController;
 }) {
+  if (!controller.hasActiveTemporalFilters) {
+    return null;
+  }
+
   const startDate = controller.temporalRange.startDate;
   const endDate = controller.temporalRange.endDate;
 
