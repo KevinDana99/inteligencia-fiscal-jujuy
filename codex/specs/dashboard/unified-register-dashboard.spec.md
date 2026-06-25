@@ -33,7 +33,7 @@
    - `Cruces a realizar`
    - `Generar informe`
    - `Agregar lote`
-   deben abrir sus modales/paneles correspondientes, pero todavía no deben ejecutar la acción final de negocio.
+     deben abrir sus modales/paneles correspondientes, pero todavía no deben ejecutar la acción final de negocio.
 6. En esta iteración, esos modales/paneles deben trabajar con mock local.
 7. `AddressCard`, `ContactCard` y `NotesCard` deben usar mock local y sus acciones de agregar, editar y eliminar deben actualizar estado mock reactivo.
 8. La ruta `/vista-previa-padron/[CUIT]` debe resolverse usando el mismo universo mock que hoy alimenta el listado de cards de `Padrón Unificado`.
@@ -43,7 +43,7 @@
 12. `Marcar reproceso` en el header del dashboard detalle solo debe abrir su modal mock y no debe manejar un estado toggle funcional local dentro de la pantalla.
 13. `Agregar lote` debe abrir un selector/modal mock, listar lotes mock e incluir un buscador mock dentro del selector.
 
-2. Cards:
+14. Cards:
 
 - AddressCard: el usuario debe poder agregar, modificar y elimninar una direccion.
 - ContactCard: el usuario debe poder agregar, modificar y eliminar un contacto.
@@ -373,7 +373,7 @@
 
               <div style="background:white;border:1px solid var(--gray-2);border-radius:12px;padding:16px">
                 <div style="font-size:13px;font-weight:700;color:var(--gray-9);margin-bottom:12px;display:flex;align-items:center;gap:8px">
-                  Multas Mercurio
+                  Pases Mercurio
                   <span style="background:#FEF2F2;color:#DC2626;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px">3 registros</span>
                 </div>
                 <table style="width:100%;border-collapse:collapse;font-size:12px">

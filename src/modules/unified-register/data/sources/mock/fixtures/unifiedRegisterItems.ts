@@ -83,6 +83,8 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
     ...item,
     startedAt: '01/06/2005',
     jurisdiction: 'Jujuy (J.910)',
+    headquartersJurisdiction: '902',
+    strangeJurisdictions: '903, 904, 905, 906',
     fiscalAddress: 'Av. San Martín 1234, S.S. de Jujuy',
     commercialAddress: 'Ruta Nac. 9 km 12, Palpalá',
     alternateAddress: 'Belgrano 890, S.S. de Jujuy',
@@ -143,6 +145,7 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
       {
         id: 'MER-001',
         issuedAt: '12/03/2025',
+        type: 'Destinatario',
         description: 'Exceso de carga — Ruta 9 km 34',
         amount: '$180.000',
         status: 'Impaga'
@@ -150,6 +153,7 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
       {
         id: 'MER-002',
         issuedAt: '08/09/2024',
+        type: 'Remitente',
         description: 'Documentación incompleta — Ruta 9',
         amount: '$95.000',
         status: 'Pagada'
@@ -157,6 +161,7 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
       {
         id: 'MER-003',
         issuedAt: '15/04/2024',
+        type: 'Destinatario',
         description: 'Mercadería sin remito — Ruta 34',
         amount: '$220.000',
         status: 'En gestión'
@@ -165,14 +170,22 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
     interventionOrders: [
       {
         id: 'OI-2025-0341',
+        origin: 'Cruce SIF',
+        instruction: 'Desvío de BI — Régimen CM',
         period: '2023 — 2024',
+        debt: '$253.194.844',
+        declaredBi: '$1.840.000.000',
         reason: 'Desvío de BI — Régimen CM',
         amount: '$253.194.844',
         status: 'En curso'
       },
       {
         id: 'OI-2022-0187',
+        origin: 'Manual',
+        instruction: 'Control de créditos — Local',
         period: '2020 — 2021',
+        debt: '$38.450.000',
+        declaredBi: '$320.000.000',
         reason: 'Control de créditos — Local',
         amount: '$38.450.000',
         status: 'Cerrada'
@@ -328,6 +341,8 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
     ...detail,
     startedAt: '10/02/2012',
     jurisdiction: 'Jujuy (J.910)',
+    headquartersJurisdiction: '902',
+    strangeJurisdictions: '903, 904, 905, 906',
     fiscalAddress: 'Ruta 66 Km 4, Perico, Jujuy',
     commercialAddress: 'Ruta 66 Km 4, Parque Industrial Perico',
     alternateAddress: 'San Martin 420, Perico',
@@ -388,6 +403,7 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
       {
         id: 'MER-2026-014',
         issuedAt: '18/04/2026',
+        type: 'Destinatario',
         description: 'Mercaderia con documentacion incompleta',
         amount: '$140.000',
         status: 'En gestión'
@@ -395,6 +411,7 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
       {
         id: 'MER-2025-221',
         issuedAt: '03/11/2025',
+        type: 'Remitente',
         description: 'Diferencia en remito de transporte',
         amount: '$85.000',
         status: 'Impaga'
@@ -402,6 +419,7 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
       {
         id: 'MER-2025-118',
         issuedAt: '12/06/2025',
+        type: 'Destinatario',
         description: 'Control de ruta regularizado',
         amount: '$52.000',
         status: 'Pagada'
@@ -410,14 +428,22 @@ function buildDefaultDetail(item: (typeof unifiedRegisterItemsFixture)[number]):
     interventionOrders: [
       {
         id: 'OI-2026-0098',
+        origin: 'Cruce SIF',
+        instruction: 'Cruce ARCA contra BI declarada',
         period: '2024 - 2025',
+        debt: '$126.380.000',
+        declaredBi: '$910.000.000',
         reason: 'Cruce ARCA contra BI declarada',
         amount: '$126.380.000',
         status: 'En curso'
       },
       {
         id: 'OI-2023-0412',
+        origin: 'Manual',
+        instruction: 'Control de actividad industrial',
         period: '2022 - 2023',
+        debt: '$14.800.000',
+        declaredBi: '$180.000.000',
         reason: 'Control de actividad industrial',
         amount: '$14.800.000',
         status: 'Cerrada'

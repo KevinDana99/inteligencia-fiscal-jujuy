@@ -743,6 +743,7 @@ export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
     return {
       pagina: page,
       itemsPagina: itemsPerPage,
+      totalItems: items.length,
       totalPaginas,
       contribuyentes: items.slice(start, start + itemsPerPage)
     };
@@ -848,6 +849,7 @@ export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
       multas: item.fines.slice(start, start + itemsPerPage).map((fine) => ({
         numero: fine.id,
         fecha: fine.issuedAt,
+        tipo: fine.type ?? null,
         descripcion: fine.description,
         monto: fine.amount,
         estado: fine.status
@@ -882,7 +884,11 @@ export class MockUnifiedRegisterSource implements IUnifiedRegisterSource {
         .slice(start, start + itemsPerPage)
         .map((order) => ({
           numero: order.id,
+          origen: order.origin ?? null,
+          instruccion: order.instruction ?? order.reason,
           periodo: order.period,
+          deuda: order.debt ?? order.amount,
+          bi: order.declaredBi ?? null,
           motivo: order.reason,
           monto: order.amount,
           estado: order.status

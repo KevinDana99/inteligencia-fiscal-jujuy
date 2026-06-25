@@ -20,6 +20,7 @@ export type IUnifiedRegisterItems = IUnifiedRegisterItem[];
 export interface IUnifiedRegisterListData {
   pagina: number;
   itemsPagina: number;
+  totalItems: number;
   totalPaginas: number;
   contribuyentes: IUnifiedRegisterItems;
 }
@@ -138,6 +139,7 @@ export interface IUnifiedRegisterNotesListData {
 export interface IUnifiedRegisterFine {
   id: string | null;
   issuedAt: string | null;
+  type?: 'Destinatario' | 'Remitente' | null;
   description: string | null;
   amount: string | null;
   status: string | null;
@@ -145,7 +147,11 @@ export interface IUnifiedRegisterFine {
 
 export interface IUnifiedRegisterInterventionOrder {
   id: string | null;
+  origin?: string | null;
+  instruction?: string | null;
   period: string | null;
+  debt?: string | null;
+  declaredBi?: string | null;
   reason: string | null;
   amount: string | null;
   status: string | null;
@@ -184,6 +190,8 @@ export interface IUnifiedRegisterSourceTable {
 export interface IUnifiedRegisterDetail extends IUnifiedRegisterItem {
   startedAt: string;
   jurisdiction: string;
+  headquartersJurisdiction: string;
+  strangeJurisdictions: string;
   fiscalAddress: string;
   commercialAddress: string;
   alternateAddress: string;
@@ -244,6 +252,7 @@ export interface IUnifiedRegisterFinesListParams {
 export interface IUnifiedRegisterFineRecord {
   numero: string | null;
   fecha: string | null;
+  tipo?: 'Destinatario' | 'Remitente' | null;
   descripcion: string | null;
   monto: string | null;
   estado: string | null;
@@ -264,7 +273,11 @@ export interface IUnifiedRegisterInterventionOrdersListParams {
 
 export interface IUnifiedRegisterInterventionOrderRecord {
   numero: string | null;
+  origen?: string | null;
+  instruccion?: string | null;
   periodo: string | null;
+  deuda?: string | null;
+  bi?: string | null;
   motivo: string | null;
   monto: string | null;
   estado: string | null;

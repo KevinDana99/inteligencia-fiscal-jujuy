@@ -17,6 +17,7 @@ export interface ApiUnifiedRegisterListItemDto {
 export interface ApiUnifiedRegisterListResponseDto {
   pagina: number;
   itemsPagina: number;
+  totalItems?: number;
   totalPaginas: number;
   contribuyentes: ApiUnifiedRegisterListItemDto[];
 }

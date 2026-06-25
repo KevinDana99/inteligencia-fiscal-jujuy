@@ -1,18 +1,16 @@
-'use client';
+"use client";
 
-import { CloseButton, TextInput } from '@mantine/core';
-import { IconSearch } from '@tabler/icons-react';
-import type {
-  ChangeEvent,
-  FocusEvent,
-  KeyboardEvent,
-  MouseEvent
-} from 'react';
-import classes from '../UnifiedRegisterPage/UnifiedRegisterPage.module.css';
-
+import { CloseButton, TextInput, Group, Text } from "@mantine/core";
+import { IconSearch } from "@tabler/icons-react";
+import type { FocusEvent, KeyboardEvent, MouseEvent } from "react";
+import type { ChangeEvent } from "react";
+import { UNIFIED_REGISTER_SEARCH_PLACEHOLDER } from "../../constants/unifiedRegisterPage";
+import { formatUnifiedRegisterContributorsCount } from "../../utils/formatUnifiedRegisterContributorsCount";
+import classes from "../UnifiedRegisterPage/UnifiedRegisterPage.module.css";
 interface UnifiedRegisterSearchProps {
   disabled: boolean;
   onBlur: (event: FocusEvent<HTMLInputElement>) => void;
+  totalItems: number;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void;
   onReset: () => void;
@@ -22,24 +20,25 @@ interface UnifiedRegisterSearchProps {
 export function UnifiedRegisterSearch({
   disabled,
   onBlur,
+  totalItems,
   onChange,
   onKeyDown,
   onReset,
-  value
+  value,
 }: UnifiedRegisterSearchProps) {
   const handleResetMouseDown = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
 
   return (
-    <div className={classes.searchRow}>
+    <Group gap={8} align="center" wrap="nowrap" className={classes.searchRow}>
       <TextInput
         disabled={disabled}
         value={value}
         onBlur={onBlur}
         onChange={onChange}
         onKeyDown={onKeyDown}
-        placeholder="Buscar por CUIT o razón social..."
+        placeholder={UNIFIED_REGISTER_SEARCH_PLACEHOLDER}
         leftSection={<IconSearch size={16} stroke={2} />}
         rightSection={
           value ? (
@@ -52,9 +51,12 @@ export function UnifiedRegisterSearch({
             />
           ) : null
         }
-        rightSectionPointerEvents={value ? 'all' : 'none'}
+        rightSectionPointerEvents={value ? "all" : "none"}
         className={classes.searchInput}
       />
-    </div>
+      <Text component="span" className={classes.searchCount}>
+        {formatUnifiedRegisterContributorsCount(totalItems)}
+      </Text>
+    </Group>
   );
 }

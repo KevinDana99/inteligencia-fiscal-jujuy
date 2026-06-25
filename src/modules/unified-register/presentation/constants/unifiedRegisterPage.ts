@@ -17,3 +17,10 @@ export const UNIFIED_REGISTER_EMPTY_SEARCH_MESSAGE =
 
 export const UNIFIED_REGISTER_LIST_ERROR_MESSAGE =
   'No fue posible listar los contribuyentes.';
+
+export const UNIFIED_REGISTER_SEARCH_PLACEHOLDER =
+  'Buscar por CUIT o razón social...';
+
+export const UNIFIED_REGISTER_COUNT_SINGULAR_LABEL = 'CUIT';
+
+export const UNIFIED_REGISTER_COUNT_PLURAL_LABEL = 'CUITs';

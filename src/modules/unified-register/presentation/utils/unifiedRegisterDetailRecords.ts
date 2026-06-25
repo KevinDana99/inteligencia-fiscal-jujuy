@@ -12,6 +12,7 @@ export function mapFineRecordToViewModel(
   return {
     id: fine.numero,
     issuedAt: fine.fecha,
+    type: fine.tipo,
     description: fine.descripcion,
     amount: fine.monto,
     status: fine.estado
@@ -23,7 +24,11 @@ export function mapInterventionOrderRecordToViewModel(
 ): IUnifiedRegisterInterventionOrder {
   return {
     id: order.numero,
+    origin: order.origen,
+    instruction: order.instruccion,
     period: order.periodo,
+    debt: order.deuda,
+    declaredBi: order.bi,
     reason: order.motivo,
     amount: order.monto,
     status: order.estado
