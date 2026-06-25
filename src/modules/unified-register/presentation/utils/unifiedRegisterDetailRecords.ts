@@ -6,6 +6,39 @@ import type {
 } from '../../data/models/UnifiedRegister';
 import { UNIFIED_REGISTER_DETAIL_EMPTY_CELL_VALUE } from '../constants/unifiedRegisterDetail';
 
+const INTERVENTION_ORDER_STATUS_LABELS: Record<string, string> = {
+  ABIERTA: 'Abierta',
+  EN_ANALISIS: 'En análisis',
+  EN_CURSO: 'En curso',
+  CERRADA: 'Cerrada'
+};
+
+const FINE_STATUS_LABELS: Record<string, string> = {
+  BAJA: 'Impaga'
+};
+
+function mapFineStatus(value: string | null) {
+  const normalizedValue = value?.trim().toUpperCase();
+
+  if (!normalizedValue) {
+    return null;
+  }
+
+  return FINE_STATUS_LABELS[normalizedValue] ?? value?.trim() ?? null;
+}
+
+function mapInterventionOrderStatus(value: string | null) {
+  const normalizedValue = value?.trim().toUpperCase();
+
+  if (!normalizedValue) {
+    return null;
+  }
+
+  return (
+    INTERVENTION_ORDER_STATUS_LABELS[normalizedValue] ?? value?.trim() ?? null
+  );
+}
+
 export function mapFineRecordToViewModel(
   fine: IUnifiedRegisterFineRecord
 ): IUnifiedRegisterFine {
@@ -15,7 +48,7 @@ export function mapFineRecordToViewModel(
     type: fine.tipo,
     description: fine.descripcion,
     amount: fine.monto,
-    status: fine.estado
+    status: mapFineStatus(fine.estado)
   };
 }
 
@@ -31,7 +64,7 @@ export function mapInterventionOrderRecordToViewModel(
     declaredBi: order.bi,
     reason: order.motivo,
     amount: order.monto,
-    status: order.estado
+    status: mapInterventionOrderStatus(order.estado)
   };
 }
 

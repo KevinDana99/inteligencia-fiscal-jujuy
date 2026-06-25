@@ -365,6 +365,11 @@
 .metricSubtitleCritical {
   color: #dc2626;
 }
+.metricPeriodLabel {
+  margin-top: 4px;
+  color: var(--mantine-color-gray-6);
+  font-size: 11px;
+}
 .metricBadge {
   margin-top: 8px;
   background: var(--mantine-color-blue-1);
@@ -770,6 +775,10 @@
   background: #fff7ed;
   color: #d97706;
 }
+.badgeInfo {
+  background: var(--mantine-color-blue-1);
+  color: var(--mantine-color-blue-5);
+}
 .badgeNeutral {
   background: var(--mantine-color-gray-0);
   color: var(--mantine-color-gray-7);
@@ -793,6 +802,7 @@
   text-transform: none;
 }
 .badgeCritical,
+.badgeInfo,
 .badgePositive,
 .badgeWarning,
 .badgeNeutral {

@@ -1,5 +1,6 @@
 import { Badge, Card, Text } from '@mantine/core';
 import type { IUnifiedRegisterDetail } from '../../../../data/models/UnifiedRegister';
+import { UNIFIED_REGISTER_WIDGET_PERIOD_LABEL } from '../../../constants/unifiedRegisterMetrics';
 import classes from '../UnifiedRegisterPreviewPage.module.css';
 
 type PreviewMetricsProps = {
@@ -13,25 +14,30 @@ export function PreviewMetrics({ item }: PreviewMetricsProps) {
         <Card key={widget.id} className={classes.metricCard} padding={0} radius="lg">
           <Text className={classes.metricLabel}>{widget.label}</Text>
           {widget.splitValue ? (
-            <div className={classes.metricSplit}>
-              <div>
-                <Text className={classes.metricSplitPrimaryValue}>
-                  {widget.splitValue.primaryValue}
-                </Text>
-                <Text className={classes.metricSplitPrimaryLabel}>
-                  {widget.splitValue.primaryLabel}
-                </Text>
+            <>
+              <div className={classes.metricSplit}>
+                <div>
+                  <Text className={classes.metricSplitPrimaryValue}>
+                    {widget.splitValue.primaryValue}
+                  </Text>
+                  <Text className={classes.metricSplitPrimaryLabel}>
+                    {widget.splitValue.primaryLabel}
+                  </Text>
+                </div>
+                <Text className={classes.metricSplitDivider}>/</Text>
+                <div>
+                  <Text className={classes.metricSplitSecondaryValue}>
+                    {widget.splitValue.secondaryValue}
+                  </Text>
+                  <Text className={classes.metricSplitSecondaryLabel}>
+                    {widget.splitValue.secondaryLabel}
+                  </Text>
+                </div>
               </div>
-              <Text className={classes.metricSplitDivider}>/</Text>
-              <div>
-                <Text className={classes.metricSplitSecondaryValue}>
-                  {widget.splitValue.secondaryValue}
-                </Text>
-                <Text className={classes.metricSplitSecondaryLabel}>
-                  {widget.splitValue.secondaryLabel}
-                </Text>
-              </div>
-            </div>
+              <Text className={classes.metricPeriodLabel}>
+                {UNIFIED_REGISTER_WIDGET_PERIOD_LABEL}
+              </Text>
+            </>
           ) : (
             <MetricValue widget={widget} />
           )}
@@ -65,6 +71,9 @@ function MetricValue({ widget }: { widget: IUnifiedRegisterDetail['widgets'][num
           {widget.subtitle}
         </Text>
       ) : null}
+      <Text className={classes.metricPeriodLabel}>
+        {UNIFIED_REGISTER_WIDGET_PERIOD_LABEL}
+      </Text>
     </>
   );
 }
