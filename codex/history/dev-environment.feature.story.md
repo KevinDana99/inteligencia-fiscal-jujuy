@@ -1,5 +1,11 @@
 # Dev environment API base URL fix
 
+## 2026-06-25 Next build prerender fix
+
+- Removed a duplicated `onChange` prop in `UnifiedRegisterPage` that failed JSX type checking.
+- Added request-bound `connection()` guards before the `/admin` and `/reproceso` module data loads so auth cookies are not read during build prerender.
+- Verified with `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/next/dist/bin/next build` because `bun` is not available in the local shell.
+
 ## 2026-06-19 GitLab lint fix
 
 - Removed unused imports reported by GitLab ESLint in admin panel, batch management, cross management, and cross preview files.

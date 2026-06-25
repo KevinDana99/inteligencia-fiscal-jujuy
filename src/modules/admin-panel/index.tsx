@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { connection } from 'next/server';
 import { getAdminPanelAction } from './data/actions';
 import {
   AdminPanelHomeSection,
@@ -16,6 +17,7 @@ export default function AdminPanelModule() {
 }
 
 async function AdminPanelHomeSectionContent() {
+  await connection();
   const { data, error } = await getAdminPanelAction();
 
   if (error || !data) {

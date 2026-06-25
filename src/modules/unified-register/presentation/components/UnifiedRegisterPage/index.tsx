@@ -70,7 +70,6 @@ export function UnifiedRegisterPage({
         onKeyDown={handleSearchKeyDown}
         onReset={handleSearchReset}
         totalItems={totalItems}
-        onChange={handleSearchChange}
       />
 
       {hasResults ? (
