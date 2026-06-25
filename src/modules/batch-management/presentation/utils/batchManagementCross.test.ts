@@ -13,21 +13,24 @@ const availableCrosses: IBatchAvailableCrosses = [
     label: 'Cruce BI Papel',
     publicCode: 'cruce-bi-papel',
     version: '1.0.0',
-    periodicity: 'annual'
+    periodicity: 'annual',
+    viewsAvailable: ['resumen', 'planilla']
   },
   {
     id: 'desvio-bi-convenio-multilateral:1.0.0',
     label: 'Desvio de base imponible - Convenio Multilateral',
     publicCode: 'desvio-bi-convenio-multilateral',
     version: '1.0.0',
-    periodicity: 'annual'
+    periodicity: 'annual',
+    viewsAvailable: ['resumen', 'planilla']
   },
   {
     id: 'control-mensual:1.0.0',
     label: 'Control mensual',
     publicCode: 'control-mensual',
     version: '1.0.0',
-    periodicity: 'monthly'
+    periodicity: 'monthly',
+    viewsAvailable: ['resumen']
   }
 ]
 

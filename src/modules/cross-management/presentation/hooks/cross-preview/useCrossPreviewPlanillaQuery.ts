@@ -1,9 +1,8 @@
 'use client'
 
 import { useCallback, useMemo, useRef, useState } from 'react'
-import { getCrossResultsAction } from '../../../data/actions'
+import { getCrossPlanillaAction } from '../../../data/actions'
 import {
-  mapCrossResultsToPlanillaData,
   mapPlanillaRowsToPreview
 } from '../../../data/mappers/mapCrossPreviewContractToView'
 import type {
@@ -12,7 +11,6 @@ import type {
   ICrossPreviewData,
   ICrossPreviewPlanRow
 } from '../../../data/models/CrossManagement'
-import { matchesCrossSearch } from '../../../data/utils/crossSearch'
 
 interface UseCrossPreviewPlanillaQueryParams {
   cross: ICrossPreviewData
@@ -22,6 +20,7 @@ export function useCrossPreviewPlanillaQuery({
   cross
 }: UseCrossPreviewPlanillaQueryParams) {
   const latestRequestRef = useRef(0)
+  const hasPlanilla = cross.viewsAvailable.includes('planilla')
   const [columns, setColumns] = useState<ICrossDynamicColumn[]>(cross.planColumns)
   const [rows, setRows] = useState<ICrossPreviewPlanRow[]>(cross.planRows)
   const [pagination, setPagination] = useState<ICrossPaginationData>(
@@ -34,18 +33,25 @@ export function useCrossPreviewPlanillaQuery({
   const loadPlanilla = useCallback(
     async ({
       nextColumns,
-      nextPage
+      nextPage,
+      nextSearch
     }: {
       nextColumns?: ICrossDynamicColumn[]
       nextPage: number
+      nextSearch: string
     }) => {
+      if (!hasPlanilla) {
+        return
+      }
+
       const requestId = latestRequestRef.current + 1
       latestRequestRef.current = requestId
       setIsLoading(true)
 
-      const response = await getCrossResultsAction(cross.executionId, {
+      const response = await getCrossPlanillaAction(cross.executionId, {
         page: nextPage,
-        itemsPerPage: pagination.itemsPerPage
+        itemsPerPage: pagination.itemsPerPage,
+        search: nextSearch
       })
 
       if (requestId !== latestRequestRef.current) {
@@ -58,7 +64,7 @@ export function useCrossPreviewPlanillaQuery({
         return
       }
 
-      const planillaData = mapCrossResultsToPlanillaData(response.data)
+      const planillaData = response.data
       const resolvedColumns =
         planillaData.schema?.columns ?? nextColumns ?? columns
 
@@ -77,44 +83,35 @@ export function useCrossPreviewPlanillaQuery({
       setError(null)
       setIsLoading(false)
     },
-    [columns, cross.executionId, pagination.itemsPerPage]
+    [columns, cross.executionId, hasPlanilla, pagination.itemsPerPage]
   )
 
   const setSearch = useCallback(
     (value: string) => {
       setSearchState(value)
+      void loadPlanilla({
+        nextColumns: columns,
+        nextPage: 1,
+        nextSearch: value
+      })
     },
-    []
+    [columns, loadPlanilla]
   )
 
   const setPage = useCallback(
     (page: number) => {
       void loadPlanilla({
         nextColumns: columns,
-        nextPage: page
+        nextPage: page,
+        nextSearch: search
       })
     },
-    [columns, loadPlanilla]
+    [columns, loadPlanilla, search]
   )
 
-  const visibleRows = useMemo(
-    () =>
-      rows.filter((row) =>
-        matchesCrossSearch([row.cuit, row.businessName], search)
-      ),
-    [rows, search]
-  )
   const visiblePagination = useMemo(
-    () =>
-      search
-        ? {
-            ...pagination,
-            page: 1,
-            totalItems: visibleRows.length,
-            totalPages: 1
-          }
-        : pagination,
-    [pagination, search, visibleRows.length]
+    () => pagination,
+    [pagination]
   )
 
   return {
@@ -122,7 +119,7 @@ export function useCrossPreviewPlanillaQuery({
     error,
     isLoading,
     pagination: visiblePagination,
-    rows: visibleRows,
+    rows,
     search,
     setPage,
     setSearch

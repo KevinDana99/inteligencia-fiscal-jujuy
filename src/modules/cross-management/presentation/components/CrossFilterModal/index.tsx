@@ -13,7 +13,10 @@ import {
 } from '@mantine/core'
 import { IconInfoCircle, IconX } from '@tabler/icons-react'
 import { useMemo } from 'react'
-import type { ICrossFilterOperator } from '../../../data/models/CrossManagement'
+import type {
+  ICrossDynamicColumnType,
+  ICrossFilterOperator
+} from '../../../data/models/CrossManagement'
 import {
   CROSS_PREVIEW_FILTER_OPERATOR_LABELS
 } from '../../constants/crossPreviewFilterOperators'
@@ -23,6 +26,11 @@ import {
   type ICrossFilterModalProps
 } from './useCrossFilterModal'
 import classes from './CrossFilterModal.module.css'
+
+const VALUELESS_FILTER_OPERATORS = new Set<ICrossFilterOperator>([
+  'esNulo',
+  'noEsNulo'
+])
 
 export function CrossFilterModal(props: ICrossFilterModalProps) {
   const {
@@ -37,7 +45,6 @@ export function CrossFilterModal(props: ICrossFilterModalProps) {
     handleApply,
     handleClose
   } = useCrossFilterModal(props)
-  const isTextColumn = props.columnType === 'string'
   const operatorOptions = useMemo<
     Array<{ value: ICrossFilterOperator | ''; label: string }>
   >(
@@ -98,13 +105,17 @@ export function CrossFilterModal(props: ICrossFilterModalProps) {
               allowDeselect={false}
             />
             <CrossFilterValueInput
-              isTextColumn={isTextColumn}
+              columnType={props.columnType}
+              disabled={Boolean(
+                value.primary.operator &&
+                  VALUELESS_FILTER_OPERATORS.has(value.primary.operator)
+              )}
               value={value.primary.value}
               onChange={setPrimaryValue}
             />
           </div>
           <Text className={classes.exampleText}>
-            {isTextColumn ? 'Ejemplo: 27-30606839-9, LOAYZA' : 'Ejemplo: 900.000,42, 25,5, -10'}
+            {resolveFilterExample(props.columnType)}
           </Text>
         </div>
 
@@ -178,13 +189,17 @@ export function CrossFilterModal(props: ICrossFilterModalProps) {
               allowDeselect={false}
             />
             <CrossFilterValueInput
-              isTextColumn={isTextColumn}
+              columnType={props.columnType}
+              disabled={Boolean(
+                value.secondary.operator &&
+                  VALUELESS_FILTER_OPERATORS.has(value.secondary.operator)
+              )}
               value={value.secondary.value}
               onChange={setSecondaryValue}
             />
           </div>
           <Text className={classes.exampleText}>
-            {isTextColumn ? 'Ejemplo: 27-30606839-9, LOAYZA' : 'Ejemplo: 900.000,42, 25,5, -10'}
+            {resolveFilterExample(props.columnType)}
           </Text>
         </div>
 
@@ -222,20 +237,36 @@ export function CrossFilterModal(props: ICrossFilterModalProps) {
 }
 
 function CrossFilterValueInput({
-  isTextColumn,
+  columnType,
+  disabled,
   onChange,
   value
 }: {
-  isTextColumn: boolean
+  columnType: ICrossDynamicColumnType
+  disabled: boolean
   onChange: (value: string) => void
   value: string
 }) {
-  if (isTextColumn) {
+  if (disabled) {
     return (
       <TextInput
+        value=''
+        onChange={() => undefined}
+        placeholder='Sin valor'
+        disabled
+        className={classes.fieldGrow}
+        classNames={{ input: classes.fieldInput }}
+      />
+    )
+  }
+
+  if (columnType === 'string' || columnType === 'fecha') {
+    return (
+      <TextInput
+        type={columnType === 'fecha' ? 'date' : 'text'}
         value={value}
         onChange={(event) => onChange(event.currentTarget.value)}
-        placeholder='Valor'
+        placeholder={columnType === 'fecha' ? 'aaaa-mm-dd' : 'Valor'}
         className={classes.fieldGrow}
         classNames={{ input: classes.fieldInput }}
       />
@@ -265,4 +296,16 @@ function CrossFilterValueInput({
       trimLeadingZeroesOnBlur={false}
     />
   )
+}
+
+function resolveFilterExample(columnType: ICrossDynamicColumnType) {
+  if (columnType === 'fecha') {
+    return 'Ejemplo: 2024-12-31'
+  }
+
+  if (columnType === 'string') {
+    return 'Ejemplo: 27-30606839-9, LOAYZA'
+  }
+
+  return 'Ejemplo: 900.000,42, 25,5, -10'
 }

@@ -1,10 +1,8 @@
 import type {
   ICrossColumnFilters,
-  ICrossDynamicColumn,
-  ICrossPaginationData,
   ICrossPreviewAnalysisRow,
   ICrossPreviewData,
-  ICrossPreviewSummaryBlock
+  ICrossPreviewResumenSection
 } from '../../../data/models/CrossManagement'
 import type {
   CrossFilterColumnConfig
@@ -15,61 +13,79 @@ import { CrossPreviewSummarySection } from './CrossPreviewSummarySection'
 import classes from './CrossPreviewPage.module.css'
 
 interface CrossPreviewResumenSectionProps {
-  analysisColumns: ICrossDynamicColumn[]
-  columnFilters: ICrossColumnFilters
   cross: ICrossPreviewData
   error?: string | null
-  isLoading: boolean
+  gridStateBySection: Record<
+    string,
+    {
+      columnFilters: ICrossColumnFilters
+      search: string
+    }
+  >
+  loadingSectionKey: string | null
   onOpenFilterModal: (column: CrossFilterColumnConfig) => void
-  onSetPage: (page: number) => void
   onRequestStatusChange: (
     row: ICrossPreviewAnalysisRow,
     status: CrossPreviewStatus
   ) => void
-  onSetResumenSearch: (value: string) => void
-  pagination: ICrossPaginationData
-  resumenSearch: string
-  rows: ICrossPreviewAnalysisRow[]
+  onSetSectionPage: (sectionKey: string, page: number) => void
+  onSetSectionSearch: (sectionKey: string, value: string) => void
+  sections: ICrossPreviewResumenSection[]
   statusByCuit: Record<string, CrossPreviewStatus>
-  summaryBlocks: ICrossPreviewSummaryBlock[]
 }
 
 export function CrossPreviewResumenSection({
-  analysisColumns,
-  columnFilters,
   cross,
   error,
-  isLoading,
+  gridStateBySection,
+  loadingSectionKey,
   onOpenFilterModal,
-  onSetPage,
   onRequestStatusChange,
-  onSetResumenSearch,
-  pagination,
-  resumenSearch,
-  rows,
-  statusByCuit,
-  summaryBlocks
+  onSetSectionPage,
+  onSetSectionSearch,
+  sections,
+  statusByCuit
 }: CrossPreviewResumenSectionProps) {
   return (
     <div className={classes.contentStack}>
-      <CrossPreviewSummarySection
-        cross={cross}
-        summaryBlocks={summaryBlocks}
-      />
-      <CrossPreviewAnalysisSection
-        analysisColumns={analysisColumns}
-        columnFilters={columnFilters}
-        error={error}
-        isLoading={isLoading}
-        onOpenFilterModal={onOpenFilterModal}
-        onSetPage={onSetPage}
-        onRequestStatusChange={onRequestStatusChange}
-        onSetResumenSearch={onSetResumenSearch}
-        pagination={pagination}
-        resumenSearch={resumenSearch}
-        rows={rows}
-        statusByCuit={statusByCuit}
-      />
+      {sections.map((section) => {
+        if (section.type === 'resumen') {
+          return (
+            <CrossPreviewSummarySection
+              key={section.id}
+              cross={cross}
+              summaryBlocks={[section]}
+            />
+          )
+        }
+
+        const sectionState = gridStateBySection[section.id] ?? {
+          columnFilters: {},
+          search: ''
+        }
+
+        return (
+          <CrossPreviewAnalysisSection
+            key={section.id}
+            analysisColumns={section.columns}
+            columnFilters={sectionState.columnFilters}
+            error={loadingSectionKey === section.id ? null : error}
+            isLoading={loadingSectionKey === section.id}
+            onOpenFilterModal={onOpenFilterModal}
+            onSetPage={(page) => onSetSectionPage(section.id, page)}
+            onRequestStatusChange={onRequestStatusChange}
+            onSetResumenSearch={(value) =>
+              onSetSectionSearch(section.id, value)
+            }
+            pagination={section.pagination}
+            resumenSearch={sectionState.search}
+            rows={section.rows}
+            sectionKey={section.id}
+            statusByCuit={statusByCuit}
+            title={section.title}
+          />
+        )
+      })}
     </div>
   )
 }

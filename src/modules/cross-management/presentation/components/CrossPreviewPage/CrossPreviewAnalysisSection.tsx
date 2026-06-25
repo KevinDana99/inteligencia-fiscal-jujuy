@@ -34,7 +34,9 @@ interface CrossPreviewAnalysisSectionProps {
   pagination: ICrossPaginationData
   resumenSearch: string
   rows: ICrossPreviewAnalysisRow[]
+  sectionKey: string
   statusByCuit: Record<string, CrossPreviewStatus>
+  title?: string
 }
 
 export function CrossPreviewAnalysisSection({
@@ -49,7 +51,9 @@ export function CrossPreviewAnalysisSection({
   pagination,
   resumenSearch,
   rows,
-  statusByCuit
+  sectionKey,
+  statusByCuit,
+  title = CROSS_PREVIEW_ANALYSIS_TABLE_TITLE
 }: CrossPreviewAnalysisSectionProps) {
   const firstVisibleResult =
     pagination.totalItems > 0
@@ -64,7 +68,7 @@ export function CrossPreviewAnalysisSection({
     <Card className={classes.tableCard} radius="lg" padding={0}>
       <div className={`${classes.tableToolbar} ${classes.tableToolbarTall}`}>
         <Text className={classes.tableToolbarTitle}>
-          {CROSS_PREVIEW_ANALYSIS_TABLE_TITLE}
+          {title}
         </Text>
         <CrossPreviewToolbarSearch
           value={resumenSearch}
@@ -95,6 +99,7 @@ export function CrossPreviewAnalysisSection({
                       allowedOperators: column.allowedOperators,
                       key: column.key,
                       label: column.label,
+                      sectionKey,
                       title: column.label,
                       type: column.type
                     }}

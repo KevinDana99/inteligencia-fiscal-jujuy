@@ -1,4 +1,5 @@
 import type {
+  BatchAvailableCrossView,
   BatchCrossPeriodicity,
   IBatchAvailableCross,
   IBatchAvailableCrosses,
@@ -35,6 +36,26 @@ type ApiRecord = Record<string, unknown>;
 const BATCH_CROSS_LABELS_BY_PUBLIC_CODE: Record<string, string> = {
   'desvio-bi-convenio-multilateral': 'Control de desvio de BI - Regimen CM'
 };
+
+const DEFAULT_BATCH_CROSS_VIEWS: BatchAvailableCrossView[] = [
+  'resumen',
+  'planilla'
+];
+const SUPPORTED_BATCH_CROSS_VIEWS = new Set<BatchAvailableCrossView>([
+  'resumen',
+  'planilla'
+]);
+
+function mapBatchAvailableCrossViews(
+  value: string[] | null | undefined
+): BatchAvailableCrossView[] {
+  const views =
+    value?.filter((view): view is BatchAvailableCrossView =>
+      SUPPORTED_BATCH_CROSS_VIEWS.has(view as BatchAvailableCrossView)
+    ) ?? [];
+
+  return views.length ? views : DEFAULT_BATCH_CROSS_VIEWS;
+}
 
 function mapBatchAuthor(dto: ApiBatchAuthorDto): IBatchManagementAuthor {
   return {
@@ -223,7 +244,8 @@ function mapAvailableCrossDto(dto: ApiBatchAvailableCrossDto): IBatchAvailableCr
         'periodo',
         'tipoPeriodo'
       ])
-    )
+    ),
+    viewsAvailable: mapBatchAvailableCrossViews(dto.vistasDisponibles)
   };
 }
 

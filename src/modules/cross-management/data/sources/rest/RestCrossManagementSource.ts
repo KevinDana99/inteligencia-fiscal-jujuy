@@ -26,6 +26,7 @@ import type {
   ApiCrossPlanillaRequestDto,
   ApiCrossPlanillaResponseDto,
   ApiCrossResumenRequestDto,
+  ApiCrossResumenSectionRequestDto,
   ApiCrossResumenResponseDto,
   ApiCrossResultsListResponseDto
 } from './dtos/ApiCrossManagementDtos'
@@ -79,19 +80,43 @@ function mapPlanillaRequestParams(
 function mapResumenRequestParams(
   params: ICrossResumenRequestParams = {}
 ): ApiCrossResumenRequestDto {
+  const mapColumnFilters = (
+    columnFilters: ICrossResumenRequestParams['columnFilters']
+  ) =>
+    columnFilters?.map((filter) => ({
+      campo: filter.field,
+      conector: filter.connector,
+      condiciones: filter.conditions.map((condition) => ({
+        operador: condition.operator,
+        valor: condition.value
+      }))
+    })) ?? []
+
+  const mapSectionParams = (
+    sectionParams: NonNullable<ICrossResumenRequestParams['sections']>[string]
+  ): ApiCrossResumenSectionRequestDto => ({
+    pagina: sectionParams.page ?? params.page ?? 1,
+    itemsPagina: sectionParams.itemsPerPage ?? params.itemsPerPage ?? 20,
+    busqueda: normalizeCrossSearchRequest(
+      sectionParams.search ?? params.search
+    ),
+    filtrosColumnas: mapColumnFilters(sectionParams.columnFilters)
+  })
+  const sections = params.sections
+    ? Object.fromEntries(
+        Object.entries(params.sections).map(([key, sectionParams]) => [
+          key,
+          mapSectionParams(sectionParams)
+        ])
+      )
+    : undefined
+
   return {
     pagina: params.page ?? 1,
     itemsPagina: params.itemsPerPage ?? 20,
     busqueda: normalizeCrossSearchRequest(params.search),
-    filtrosColumnas:
-      params.columnFilters?.map((filter) => ({
-        campo: filter.field,
-        conector: filter.connector,
-        condiciones: filter.conditions.map((condition) => ({
-          operador: condition.operator,
-          valor: condition.value
-        }))
-      })) ?? []
+    filtrosColumnas: mapColumnFilters(params.columnFilters),
+    ...(sections ? { secciones: sections } : {})
   }
 }
 

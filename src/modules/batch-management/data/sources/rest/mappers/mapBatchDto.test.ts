@@ -66,7 +66,8 @@ describe('mapBatchAvailableCrossesResponseDto', () => {
       crucesMensuales: [
         {
           codigoCruce: 'control-mensual',
-          versionCruce: '1.0.0'
+          versionCruce: '1.0.0',
+          vistasDisponibles: ['resumen']
         }
       ],
       crucesAnuales: [
@@ -83,14 +84,16 @@ describe('mapBatchAvailableCrossesResponseDto', () => {
         label: 'control-mensual',
         publicCode: 'control-mensual',
         version: '1.0.0',
-        periodicity: 'monthly'
+        periodicity: 'monthly',
+        viewsAvailable: ['resumen']
       },
       {
         id: 'desvio-bi-convenio-multilateral:1.0.0',
         label: 'Control de desvio de BI - Regimen CM',
         publicCode: 'desvio-bi-convenio-multilateral',
         version: '1.0.0',
-        periodicity: 'annual'
+        periodicity: 'annual',
+        viewsAvailable: ['resumen', 'planilla']
       }
     ]);
   });
@@ -102,7 +105,8 @@ describe('mapBatchAvailableCrossesResponseDto', () => {
           codigoCruce: 'desvio-bi-convenio-multilateral',
           nombreCruce: 'Desvio de base imponible - Convenio Multilateral',
           versionCruce: '2.0.0',
-          periodicidad: 'Mensual'
+          periodicidad: 'Mensual',
+          vistasDisponibles: ['resumen', 'planilla']
         },
         {
           codigo: 'control-anual',
@@ -119,14 +123,16 @@ describe('mapBatchAvailableCrossesResponseDto', () => {
         label: 'Desvio de base imponible - Convenio Multilateral',
         publicCode: 'desvio-bi-convenio-multilateral',
         version: '2.0.0',
-        periodicity: 'monthly'
+        periodicity: 'monthly',
+        viewsAvailable: ['resumen', 'planilla']
       },
       {
         id: 'control-anual:1',
         label: 'Control anual',
         publicCode: 'control-anual',
         version: '1',
-        periodicity: 'annual'
+        periodicity: 'annual',
+        viewsAvailable: ['resumen', 'planilla']
       }
     ]);
   });
@@ -155,7 +161,8 @@ describe('mapBatchAvailableCrossesResponseDto', () => {
         label: 'Control duplicado',
         publicCode: 'control-duplicado',
         version: '1.0.0',
-        periodicity: 'annual'
+        periodicity: 'annual',
+        viewsAvailable: ['resumen', 'planilla']
       }
     ]);
   });

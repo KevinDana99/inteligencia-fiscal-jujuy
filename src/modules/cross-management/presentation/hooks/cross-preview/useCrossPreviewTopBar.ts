@@ -5,14 +5,17 @@ import type { CrossPreviewTab } from './useCrossPreviewTabs'
 
 interface UseCrossPreviewTopBarParams {
   activeTab: CrossPreviewTab
+  availableTabs: CrossPreviewTab[]
   onUpdateTab: (tab: CrossPreviewTab) => void
 }
 
 export function useCrossPreviewTopBar({
   activeTab,
+  availableTabs,
   onUpdateTab
 }: UseCrossPreviewTopBarParams) {
   const isPlanilla = activeTab === 'planilla'
+  const hasPlanilla = availableTabs.includes('planilla')
   const handleShowPlanilla = useCallback(() => {
     onUpdateTab('planilla')
   }, [onUpdateTab])
@@ -23,7 +26,8 @@ export function useCrossPreviewTopBar({
   return {
     handleShowPlanilla,
     handleShowResumen,
+    hasPlanilla,
     isPlanilla,
-    shouldShowIntimationButton: !isPlanilla
+    shouldShowIntimationButton: !isPlanilla && hasPlanilla
   }
 }

@@ -126,7 +126,7 @@ export class MockCrossManagementSource implements ICrossManagementSource {
     const page = params.page ?? 1
     const itemsPerPage = params.itemsPerPage ?? 20
 
-    if (!preview) {
+    if (!preview || !preview.viewsAvailable.includes('planilla')) {
       return {
         schema: page === 1 ? { columns: [] } : null,
         page,
@@ -175,8 +175,12 @@ export class MockCrossManagementSource implements ICrossManagementSource {
     params: ICrossResumenRequestParams = {}
   ): Promise<ICrossResumenData> {
     const preview = findPreview(executionId)
-    const page = params.page ?? 1
-    const itemsPerPage = params.itemsPerPage ?? 20
+    const sectionParams =
+      params.sections?.['analisis-sistemico'] ??
+      Object.values(params.sections ?? {})[0]
+    const page = sectionParams?.page ?? params.page ?? 1
+    const itemsPerPage = sectionParams?.itemsPerPage ?? params.itemsPerPage ?? 20
+    const search = sectionParams?.search ?? params.search
     const analysisColumns: ICrossDynamicColumn[] = [
       { key: 'cuit', type: 'string', label: 'CUIT', isFilterable: true, allowedOperators: ['igualA', 'distintoDe'] },
       { key: 'razonSocial', type: 'string', label: 'RAZÓN SOCIAL', isFilterable: true, allowedOperators: ['igualA', 'distintoDe'] },
@@ -231,6 +235,7 @@ export class MockCrossManagementSource implements ICrossManagementSource {
           totalCuits: 0,
           relevantCuits: 0
         },
+        sections: [],
         summaryBlocks: page === 1 ? [] : null,
         analysisSchema: page === 1 ? { columns: analysisColumns } : null,
         analysis: { page, itemsPerPage, totalItems: 0, totalPages: 0, rows: [] }
@@ -238,7 +243,7 @@ export class MockCrossManagementSource implements ICrossManagementSource {
     }
 
     const filteredRows = preview.analysisRows.filter((row) =>
-      matchesSearch(row.cuit, row.businessName, params.search)
+      matchesSearch(row.cuit, row.businessName, search)
     )
     const rows: ICrossAnalysisRow[] = filteredRows.map((row) => ({
       cuit: row.cuit,
@@ -255,6 +260,41 @@ export class MockCrossManagementSource implements ICrossManagementSource {
       }
     }))
 
+    const summaryBlocks = [
+      {
+        key: 'resumen',
+        title: preview.viewsAvailable.includes('planilla')
+          ? 'Resumen'
+          : 'Modelo Control de Agentes',
+        columns: [
+          { key: 'regimen', type: 'string' as const, label: 'CATEGORÍA', isFilterable: false, allowedOperators: [] },
+          { key: 'bi910', type: 'numero' as const, label: 'ING. BRUTOS', isFilterable: false, allowedOperators: [] },
+          { key: 'biPretendida', type: 'numero' as const, label: 'MAYOR BASE IMP.', isFilterable: false, allowedOperators: [] },
+          { key: 'diferenciaAFavorDpr', type: 'numero' as const, label: 'DIF A FAVOR DPR', isFilterable: false, allowedOperators: [] },
+          { key: 'impuesto', type: 'numero' as const, label: 'IMPUESTO', isFilterable: false, allowedOperators: [] },
+          { key: 'deudaNeta', type: 'numero' as const, label: 'DEUDA NETA', isFilterable: false, allowedOperators: [] }
+        ],
+        rows: preview.summaryRows.map((row) => ({
+          texts: { regimen: row.regime },
+          dates: {},
+          metrics: {
+            bi910: parseMockNumber(row.declaredBase),
+            biPretendida: parseMockNumber(row.pretendedBase),
+            diferenciaAFavorDpr: parseMockNumber(row.difference),
+            impuesto: parseMockNumber(row.tax),
+            deudaNeta: parseMockNumber(row.netDebt)
+          }
+        }))
+      }
+    ]
+    const analysis = {
+      page,
+      itemsPerPage,
+      totalItems: rows.length,
+      totalPages: Math.max(Math.ceil(rows.length / itemsPerPage), 1),
+      rows: rows.slice((page - 1) * itemsPerPage, page * itemsPerPage)
+    }
+
     return {
       metadata: {
         executionId,
@@ -267,42 +307,29 @@ export class MockCrossManagementSource implements ICrossManagementSource {
         totalCuits: preview.cuitCount,
         relevantCuits: rows.filter((row) => row.relevanceStatus).length
       },
-      summaryBlocks:
-        page === 1
-          ? [
-              {
-                key: 'resumen',
-                title: 'Resumen',
-                columns: [
-                  { key: 'regimen', type: 'string', label: 'CATEGORÍA', isFilterable: false, allowedOperators: [] },
-                  { key: 'bi910', type: 'numero', label: 'ING. BRUTOS', isFilterable: false, allowedOperators: [] },
-                  { key: 'biPretendida', type: 'numero', label: 'MAYOR BASE IMP.', isFilterable: false, allowedOperators: [] },
-                  { key: 'diferenciaAFavorDpr', type: 'numero', label: 'DIF A FAVOR DPR', isFilterable: false, allowedOperators: [] },
-                  { key: 'impuesto', type: 'numero', label: 'IMPUESTO', isFilterable: false, allowedOperators: [] },
-                  { key: 'deudaNeta', type: 'numero', label: 'DEUDA NETA', isFilterable: false, allowedOperators: [] }
-                ],
-                rows: preview.summaryRows.map((row) => ({
-                  texts: { regimen: row.regime },
-                  dates: {},
-                  metrics: {
-                    bi910: parseMockNumber(row.declaredBase),
-                    biPretendida: parseMockNumber(row.pretendedBase),
-                    diferenciaAFavorDpr: parseMockNumber(row.difference),
-                    impuesto: parseMockNumber(row.tax),
-                    deudaNeta: parseMockNumber(row.netDebt)
-                  }
-                }))
-              }
-            ]
-          : null,
+      sections: [
+        {
+          key: summaryBlocks[0].key,
+          title: summaryBlocks[0].title,
+          type: 'resumen',
+          columns: summaryBlocks[0].columns,
+          summaryRows: summaryBlocks[0].rows,
+          grid: null
+        },
+        {
+          key: 'analisis-sistemico',
+          title: preview.viewsAvailable.includes('planilla')
+            ? 'Análisis sistémico por CUIT'
+            : 'Análisis Sistemico de Créditos',
+          type: 'grilla',
+          columns: analysisColumns,
+          summaryRows: null,
+          grid: analysis
+        }
+      ],
+      summaryBlocks: page === 1 ? summaryBlocks : null,
       analysisSchema: page === 1 ? { columns: analysisColumns } : null,
-      analysis: {
-        page,
-        itemsPerPage,
-        totalItems: rows.length,
-        totalPages: Math.max(Math.ceil(rows.length / itemsPerPage), 1),
-        rows: rows.slice((page - 1) * itemsPerPage, page * itemsPerPage)
-      }
+      analysis
     }
   }
 

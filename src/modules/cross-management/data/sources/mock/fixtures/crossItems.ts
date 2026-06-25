@@ -49,7 +49,8 @@ export const crossItemsMock: ICrossManagementItems = [
     period: '2022–2025',
     cuitCount: 3,
     date: '27/04/2026',
-    status: 'completada'
+    status: 'completada',
+    viewsAvailable: ['resumen', 'planilla']
   },
   {
     id: 'cross-2',
@@ -59,17 +60,19 @@ export const crossItemsMock: ICrossManagementItems = [
     period: '2024–2025',
     cuitCount: 1,
     date: '26/04/2026',
-    status: 'completada'
+    status: 'completada',
+    viewsAvailable: ['resumen', 'planilla']
   },
   {
     id: 'cross-3',
-    name: 'Control de créditos',
+    name: 'Control de Agentes',
     source: 'Lote',
     sourceRef: 'TRUFA-589',
     period: '2023',
     cuitCount: 83,
     date: '20/04/2026',
-    status: 'en_proceso'
+    status: 'en_proceso',
+    viewsAvailable: ['resumen']
   },
   {
     id: 'cross-4',
@@ -79,7 +82,8 @@ export const crossItemsMock: ICrossManagementItems = [
     period: '2022',
     cuitCount: 22,
     date: '15/04/2026',
-    status: 'fallida'
+    status: 'fallida',
+    viewsAvailable: ['resumen', 'planilla']
   }
 ]
 

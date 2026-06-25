@@ -19,21 +19,31 @@ import classes from './CrossPreviewPage.module.css'
 
 interface CrossPreviewTopBarProps {
   activeTab: CrossPreviewTab
+  availableTabs: CrossPreviewTab[]
   onOpenIntimationModal: () => void
   onUpdateTab: (tab: CrossPreviewTab) => void
 }
 
+const TAB_CONFIG = {
+  planilla: {
+    Icon: IconList,
+    label: CROSS_PREVIEW_PLAN_TAB_LABEL
+  },
+  resumen: {
+    Icon: IconChartBar,
+    label: CROSS_PREVIEW_SUMMARY_TAB_LABEL
+  }
+} satisfies Record<CrossPreviewTab, { Icon: typeof IconList; label: string }>
+
 export function CrossPreviewTopBar({
   activeTab,
+  availableTabs,
   onOpenIntimationModal,
   onUpdateTab
 }: CrossPreviewTopBarProps) {
   const {
-    handleShowPlanilla,
-    handleShowResumen,
-    isPlanilla,
     shouldShowIntimationButton
-  } = useCrossPreviewTopBar({ activeTab, onUpdateTab })
+  } = useCrossPreviewTopBar({ activeTab, availableTabs, onUpdateTab })
 
   return (
     <div className={classes.topBar}>
@@ -44,26 +54,24 @@ export function CrossPreviewTopBar({
         </Link>
 
         <div className={classes.viewToggle}>
-          <button
-            type="button"
-            className={`${classes.viewToggleButton} ${
-              isPlanilla ? classes.viewToggleButtonActive : ''
-            }`}
-            onClick={handleShowPlanilla}
-          >
-            <IconList size={13} />
-            {CROSS_PREVIEW_PLAN_TAB_LABEL}
-          </button>
-          <button
-            type="button"
-            className={`${classes.viewToggleButton} ${
-              !isPlanilla ? classes.viewToggleButtonActive : ''
-            }`}
-            onClick={handleShowResumen}
-          >
-            <IconChartBar size={13} />
-            {CROSS_PREVIEW_SUMMARY_TAB_LABEL}
-          </button>
+          {availableTabs.map((tab) => {
+            const { Icon, label } = TAB_CONFIG[tab]
+            const isActive = activeTab === tab
+
+            return (
+              <button
+                key={tab}
+                type="button"
+                className={`${classes.viewToggleButton} ${
+                  isActive ? classes.viewToggleButtonActive : ''
+                }`}
+                onClick={() => onUpdateTab(tab)}
+              >
+                <Icon size={13} />
+                {label}
+              </button>
+            )
+          })}
         </div>
       </div>
 

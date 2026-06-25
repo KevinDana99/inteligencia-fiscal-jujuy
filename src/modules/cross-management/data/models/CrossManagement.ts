@@ -1,3 +1,5 @@
+export type ICrossAvailableView = 'resumen' | 'planilla'
+
 export interface ICrossManagementItem {
   id: string
   name: string
@@ -7,6 +9,7 @@ export interface ICrossManagementItem {
   cuitCount: number
   date: string
   status: string
+  viewsAvailable: ICrossAvailableView[]
 }
 
 export type ICrossManagementItems = Array<ICrossManagementItem>
@@ -73,6 +76,16 @@ export type ICrossFilterOperator =
   | 'menorOIgualQue'
   | 'igualA'
   | 'distintoDe'
+  | 'contiene'
+  | 'noContiene'
+  | 'empiezaCon'
+  | 'terminaCon'
+  | 'esNulo'
+  | 'noEsNulo'
+  | 'posteriorA'
+  | 'posteriorOIgualA'
+  | 'anteriorA'
+  | 'anteriorOIgualA'
 
 export type ICrossFilterConnector = 'Y' | 'O'
 
@@ -146,11 +159,19 @@ export interface ICrossResumenColumnFilter {
   conditions: ICrossResumenFilterCondition[]
 }
 
+export interface ICrossResumenSectionRequestParams {
+  page?: number
+  itemsPerPage?: number
+  search?: string | null
+  columnFilters?: ICrossResumenColumnFilter[]
+}
+
 export interface ICrossResumenRequestParams {
   page?: number
   itemsPerPage?: number
   search?: string | null
   columnFilters?: ICrossResumenColumnFilter[]
+  sections?: Record<string, ICrossResumenSectionRequestParams>
 }
 
 export interface ICrossResumenMetadata {
@@ -183,8 +204,20 @@ export interface ICrossAnalysisData extends ICrossPaginationData {
   rows: ICrossAnalysisRow[]
 }
 
+export type ICrossResumenSectionType = 'resumen' | 'grilla'
+
+export interface ICrossResumenSection {
+  key: string
+  title: string
+  type: ICrossResumenSectionType
+  columns: ICrossDynamicColumn[]
+  summaryRows: ICrossDynamicValuesRow[] | null
+  grid: ICrossAnalysisData | null
+}
+
 export interface ICrossResumenData {
   metadata: ICrossResumenMetadata
+  sections: ICrossResumenSection[]
   summaryBlocks: ICrossResumenBlock[] | null
   analysisSchema: ICrossPlanillaSchema | null
   analysis: ICrossAnalysisData
@@ -225,6 +258,27 @@ export interface ICrossPreviewAnalysisRow {
   values: Record<string, string>
   status: 'estado' | 'relevante' | 'reproceso'
 }
+
+export interface ICrossPreviewResumenSummarySection {
+  id: string
+  title: string
+  type: 'resumen'
+  columns: ICrossDynamicColumn[]
+  rows: ICrossPreviewSummaryRow[]
+}
+
+export interface ICrossPreviewResumenGridSection {
+  id: string
+  title: string
+  type: 'grilla'
+  columns: ICrossDynamicColumn[]
+  rows: ICrossPreviewAnalysisRow[]
+  pagination: ICrossPaginationData
+}
+
+export type ICrossPreviewResumenSection =
+  | ICrossPreviewResumenSummarySection
+  | ICrossPreviewResumenGridSection
 
 export interface ICrossAnalysisFilterPayload {
   crossId: string
@@ -322,6 +376,7 @@ export interface ICrossPreviewData extends ICrossManagementItem {
   planColumns: ICrossDynamicColumn[]
   planRows: ICrossPreviewPlanRow[]
   planPagination: ICrossPaginationData
+  resumenSections: ICrossPreviewResumenSection[]
   summaryBlocks: ICrossPreviewSummaryBlock[]
   analysisColumns: ICrossDynamicColumn[]
   analysisRows: ICrossPreviewAnalysisRow[]

@@ -40,6 +40,7 @@ export interface IBatchCrossFilters {
 }
 
 export type BatchCrossPeriodicity = 'monthly' | 'annual';
+export type BatchAvailableCrossView = 'resumen' | 'planilla';
 
 export interface IBatchAvailableCross {
   id: string;
@@ -47,6 +48,7 @@ export interface IBatchAvailableCross {
   publicCode: string;
   version: string;
   periodicity: BatchCrossPeriodicity;
+  viewsAvailable: BatchAvailableCrossView[];
 }
 
 export type IBatchAvailableCrosses = Array<IBatchAvailableCross>;

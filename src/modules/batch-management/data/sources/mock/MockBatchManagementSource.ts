@@ -22,7 +22,8 @@ const availableBatchCrossesMock: IBatchAvailableCrosses = [
     label: 'Control de desvio de BI - Regimen CM',
     publicCode: 'desvio-bi-convenio-multilateral',
     version: '1.0.0',
-    periodicity: 'annual'
+    periodicity: 'annual',
+    viewsAvailable: ['resumen', 'planilla']
   }
 ];
 

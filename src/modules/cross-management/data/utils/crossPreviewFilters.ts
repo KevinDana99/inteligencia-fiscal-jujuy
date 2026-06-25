@@ -1,7 +1,13 @@
 import type {
   ICrossColumnFilters,
+  ICrossFilterOperator,
   ICrossResumenColumnFilter
 } from '../models/CrossManagement'
+
+const VALUELESS_FILTER_OPERATORS = new Set<ICrossFilterOperator>([
+  'esNulo',
+  'noEsNulo'
+])
 
 export function mapCrossColumnFiltersToResumenRequest(
   filters: ICrossColumnFilters
@@ -12,7 +18,8 @@ export function mapCrossColumnFiltersToResumenRequest(
     }
 
     const conditions = [filter.primary, filter.secondary].flatMap((condition) =>
-      condition.operator && condition.value.trim()
+      condition.operator &&
+      (condition.value.trim() || VALUELESS_FILTER_OPERATORS.has(condition.operator))
         ? [
             {
               operator: condition.operator,

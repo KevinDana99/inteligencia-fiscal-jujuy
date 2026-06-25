@@ -21,6 +21,7 @@ export function CrossPreviewPageContent({ cross }: CrossPreviewPageContentProps)
     <div className={classes.root}>
       <CrossPreviewTopBar
         activeTab={preview.activeTab}
+        availableTabs={preview.availableTabs}
         onOpenIntimationModal={preview.openIntimationModal}
         onUpdateTab={preview.updateTab}
       />
@@ -40,25 +41,25 @@ export function CrossPreviewPageContent({ cross }: CrossPreviewPageContentProps)
         />
       ) : (
         <CrossPreviewResumenSection
-          analysisColumns={preview.analysisColumns}
-          columnFilters={preview.columnFilters}
           cross={cross}
           error={preview.resumenError}
-          isLoading={preview.resumenIsLoading}
+          gridStateBySection={preview.gridStateBySection}
+          loadingSectionKey={preview.loadingResumenSectionKey}
           onOpenFilterModal={preview.openFilterModal}
-          onSetPage={preview.setResumenPage}
           onRequestStatusChange={preview.requestAnalysisStatusChange}
-          onSetResumenSearch={preview.setResumenSearch}
-          pagination={preview.resumenPagination}
-          resumenSearch={preview.resumenSearch}
-          rows={preview.resumenRows}
+          onSetSectionPage={preview.setResumenSectionPage}
+          onSetSectionSearch={preview.setResumenSectionSearch}
+          sections={preview.resumenSections}
           statusByCuit={preview.statusByCuit}
-          summaryBlocks={preview.summaryBlocks}
         />
       )}
 
       <CrossFilterModal
-        key={preview.activeFilterColumn?.key ?? 'closed'}
+        key={
+          preview.activeFilterColumn
+            ? `${preview.activeFilterColumn.sectionKey}-${preview.activeFilterColumn.key}`
+            : 'closed'
+        }
         allowedOperators={preview.activeFilterColumn?.allowedOperators ?? []}
         columnKey={preview.activeFilterColumn?.key ?? null}
         columnLabel={preview.activeFilterColumn?.label ?? ''}
@@ -66,7 +67,8 @@ export function CrossPreviewPageContent({ cross }: CrossPreviewPageContentProps)
         error={preview.resumenError}
         initialValue={
           preview.activeFilterColumn
-            ? preview.columnFilters[preview.activeFilterColumn.key] ?? null
+            ? (preview.gridStateBySection[preview.activeFilterColumn.sectionKey]
+                ?.columnFilters[preview.activeFilterColumn.key] ?? null)
             : null
         }
         isPending={preview.resumenIsLoading}

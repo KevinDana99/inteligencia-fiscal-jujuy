@@ -1,4 +1,5 @@
 import type {
+  ICrossAvailableView,
   ICrossManagementItem,
   ICrossManagementListData,
   ICrossAnalysisData,
@@ -10,6 +11,7 @@ import type {
   ICrossResumenBlock,
   ICrossResumenData,
   ICrossResumenMetadata,
+  ICrossResumenSection,
   ICrossResultItem,
   ICrossResultSource,
   ICrossResultsListData
@@ -28,8 +30,24 @@ import type {
   ApiCrossResultSourceDto,
   ApiCrossResumenBlockDto,
   ApiCrossResumenMetadataDto,
-  ApiCrossResumenResponseDto
+  ApiCrossResumenResponseDto,
+  ApiCrossResumenSectionDto
 } from '../dtos/ApiCrossManagementDtos'
+
+const DEFAULT_AVAILABLE_VIEWS: ICrossAvailableView[] = ['resumen', 'planilla']
+const SUPPORTED_AVAILABLE_VIEWS = new Set<ICrossAvailableView>([
+  'resumen',
+  'planilla'
+])
+
+function mapAvailableViews(value: string[] | null | undefined): ICrossAvailableView[] {
+  const views =
+    value?.filter((view): view is ICrossAvailableView =>
+      SUPPORTED_AVAILABLE_VIEWS.has(view as ICrossAvailableView)
+    ) ?? []
+
+  return views.length ? views : DEFAULT_AVAILABLE_VIEWS
+}
 
 function formatDateLabel(value: string) {
   const parsedDate = new Date(value)
@@ -88,7 +106,8 @@ export function mapCrossExecutionDto(dto: ApiCrossExecutionDto): ICrossManagemen
     period: formatPeriodLabel(dto.periodoInicio, dto.periodoFin),
     cuitCount: dto.cantidadTotalCuits,
     date: formatDateLabel(dto.fechaEjecucion),
-    status: dto.estado
+    status: dto.estado,
+    viewsAvailable: mapAvailableViews(dto.vistasDisponibles)
   }
 }
 
@@ -245,8 +264,18 @@ function mapCrossAnalysisRowDto(dto: ApiCrossAnalysisRowDto): ICrossAnalysisRow 
 }
 
 function mapCrossAnalysisPaginationDto(
-  dto: ApiCrossAnalysisPaginationDto
+  dto: ApiCrossAnalysisPaginationDto | null | undefined
 ): ICrossAnalysisData {
+  if (!dto) {
+    return {
+      page: 1,
+      itemsPerPage: 20,
+      totalItems: 0,
+      totalPages: 0,
+      rows: []
+    }
+  }
+
   return {
     page: dto.pagina,
     itemsPerPage: dto.itemsPagina,
@@ -256,19 +285,85 @@ function mapCrossAnalysisPaginationDto(
   }
 }
 
+function mapCrossResumenSectionDto(
+  dto: ApiCrossResumenSectionDto
+): ICrossResumenSection {
+  return {
+    key: dto.clave,
+    title: dto.titulo,
+    type: dto.tipo,
+    columns: (dto.esquema?.columnas ?? []).map(mapCrossDynamicColumnDto),
+    summaryRows: dto.filasResumen?.map(mapCrossDynamicValuesRowDto) ?? null,
+    grid: dto.grilla ? mapCrossAnalysisPaginationDto(dto.grilla) : null
+  }
+}
+
+function buildLegacyResumenSections({
+  analysis,
+  analysisSchema,
+  summaryBlocks
+}: {
+  analysis: ICrossAnalysisData
+  analysisSchema: ICrossDynamicColumn[]
+  summaryBlocks: ICrossResumenBlock[] | null
+}): ICrossResumenSection[] {
+  const summarySections =
+    summaryBlocks?.map((block) => ({
+      key: block.key,
+      title: block.title,
+      type: 'resumen' as const,
+      columns: block.columns,
+      summaryRows: block.rows,
+      grid: null
+    })) ?? []
+
+  const analysisSections =
+    analysisSchema.length || analysis.rows.length
+      ? [
+          {
+            key: 'analisis-sistemico',
+            title: 'Análisis sistémico por CUIT',
+            type: 'grilla' as const,
+            columns: analysisSchema,
+            summaryRows: null,
+            grid: analysis
+          }
+        ]
+      : []
+
+  return [...summarySections, ...analysisSections]
+}
+
 export function mapCrossResumenResponseDto(
   dto: ApiCrossResumenResponseDto
 ): ICrossResumenData {
+  const metadata = mapCrossResumenMetadataDto(dto.metadatos ?? {})
+  const summaryBlocks = dto.bloquesResumen?.map(mapCrossResumenBlockDto) ?? null
+  const analysisSchema =
+    dto.esquemaAnalisisSistemico?.columnas.map(mapCrossDynamicColumnDto) ?? []
+  const analysis = mapCrossAnalysisPaginationDto(dto.analisisSistemico)
+  const mappedSections = dto.secciones?.map(mapCrossResumenSectionDto) ?? []
+  const sections = mappedSections.length
+    ? mappedSections
+    : buildLegacyResumenSections({
+        analysis,
+        analysisSchema,
+        summaryBlocks
+      })
+  const firstGridSection = sections.find((section) => section.type === 'grilla')
+  const resolvedAnalysis = firstGridSection?.grid ?? analysis
+  const resolvedAnalysisSchema =
+    firstGridSection?.columns.length ? firstGridSection.columns : analysisSchema
+
   return {
-    metadata: mapCrossResumenMetadataDto(dto.metadatos),
-    summaryBlocks: dto.bloquesResumen?.map(mapCrossResumenBlockDto) ?? null,
-    analysisSchema: dto.esquemaAnalisisSistemico
+    metadata,
+    sections,
+    summaryBlocks,
+    analysisSchema: resolvedAnalysisSchema.length
       ? {
-          columns: dto.esquemaAnalisisSistemico.columnas.map(
-            mapCrossDynamicColumnDto
-          )
+          columns: resolvedAnalysisSchema
         }
       : null,
-    analysis: mapCrossAnalysisPaginationDto(dto.analisisSistemico)
+    analysis: resolvedAnalysis
   }
 }

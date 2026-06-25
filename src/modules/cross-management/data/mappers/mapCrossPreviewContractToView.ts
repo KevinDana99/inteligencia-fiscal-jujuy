@@ -1,6 +1,7 @@
 import { CROSS_PREVIEW_INDICATORS } from '../../constants/crossPreviewIndicators'
 import type {
   ICrossAnalysisRow,
+  ICrossAvailableView,
   ICrossDynamicColumn,
   ICrossManagementItem,
   ICrossPaginationData,
@@ -9,11 +10,13 @@ import type {
   ICrossPreviewAnalysisRow,
   ICrossPreviewData,
   ICrossPreviewPlanRow,
+  ICrossPreviewResumenSection,
   ICrossPreviewSummaryBlock,
   ICrossResultItem,
   ICrossResultsListData,
   ICrossResumenBlock,
-  ICrossResumenData
+  ICrossResumenData,
+  ICrossResumenSection
 } from '../models/CrossManagement'
 import {
   mapDynamicRowValue,
@@ -683,6 +686,54 @@ export function mapSummaryBlocksToPreview(
   )
 }
 
+function mapResumenSummarySectionToPreview(
+  section: ICrossResumenSection
+): ICrossPreviewResumenSection {
+  return {
+    id: section.key,
+    title: section.title,
+    type: 'resumen',
+    columns: section.columns,
+    rows:
+      section.summaryRows?.map((row, rowIndex) => ({
+        id: `${section.key}-${rowIndex}`,
+        values: mapDynamicRowValues(row, section.columns)
+      })) ?? []
+  }
+}
+
+function mapResumenGridSectionToPreview(
+  section: ICrossResumenSection
+): ICrossPreviewResumenSection {
+  const columns = ensureCrossPreviewStatusColumn(section.columns)
+  const grid = section.grid ?? {
+    page: 1,
+    itemsPerPage: 20,
+    totalItems: 0,
+    totalPages: 0,
+    rows: []
+  }
+
+  return {
+    id: section.key,
+    title: section.title,
+    type: 'grilla',
+    columns,
+    rows: mapAnalysisRowsToPreview(grid.rows, columns),
+    pagination: resolvePagination(grid)
+  }
+}
+
+export function mapResumenSectionsToPreview(
+  sections: ICrossResumenSection[]
+): ICrossPreviewResumenSection[] {
+  return sections.map((section) =>
+    section.type === 'grilla'
+      ? mapResumenGridSectionToPreview(section)
+      : mapResumenSummarySectionToPreview(section)
+  )
+}
+
 export function mapAnalysisRowsToPreview(
   rows: ICrossAnalysisRow[],
   columns: ICrossDynamicColumn[]
@@ -704,9 +755,14 @@ export function mapAnalysisRowsToPreview(
 }
 
 function resolveRelevantCountLabel(resumen: ICrossResumenData) {
+  const sectionRows = resumen.sections.flatMap(
+    (section) => section.grid?.rows ?? []
+  )
   const count =
     resumen.metadata.relevantCuits ??
-    resumen.analysis.rows.filter((row) => mapRelevanceStatus(row.relevanceStatus) === 'relevante')
+    (sectionRows.length ? sectionRows : resumen.analysis.rows).filter(
+      (row) => mapRelevanceStatus(row.relevanceStatus) === 'relevante'
+    )
       .length
 
   return count === 1 ? '1 relevante' : `${count} relevantes`
@@ -725,12 +781,15 @@ export function mapCrossPreviewContractToView(
   executionId: number,
   planilla: ICrossPlanillaData,
   resumen: ICrossResumenData,
-  execution?: ICrossManagementItem | null
+  execution?: ICrossManagementItem | null,
+  viewsAvailable: ICrossAvailableView[] = execution?.viewsAvailable ?? ['resumen']
 ): ICrossPreviewData {
+  const hasPlanilla = viewsAvailable.includes('planilla')
   const planColumns = planilla.schema?.columns ?? []
   const analysisColumns = ensureCrossPreviewStatusColumn(
     resumen.analysisSchema?.columns ?? []
   )
+  const resumenSections = mapResumenSectionsToPreview(resumen.sections)
   const totalCuits =
     resumen.metadata.totalCuits ||
     execution?.cuitCount ||
@@ -747,11 +806,20 @@ export function mapCrossPreviewContractToView(
     cuitCount: totalCuits,
     date: execution?.date ?? '-',
     status: execution?.status ?? '-',
+    viewsAvailable,
     relevantCountLabel: resolveRelevantCountLabel(resumen),
     indicators: CROSS_PREVIEW_INDICATORS,
-    planColumns,
-    planRows: mapPlanillaRowsToPreview(planilla.rows, planColumns),
-    planPagination: resolvePagination(planilla),
+    planColumns: hasPlanilla ? planColumns : [],
+    planRows: hasPlanilla ? mapPlanillaRowsToPreview(planilla.rows, planColumns) : [],
+    planPagination: hasPlanilla
+      ? resolvePagination(planilla)
+      : {
+          page: 1,
+          itemsPerPage: 20,
+          totalItems: 0,
+          totalPages: 0
+        },
+    resumenSections,
     summaryBlocks: mapSummaryBlocksToPreview(resumen.summaryBlocks),
     analysisColumns,
     analysisRows: mapAnalysisRowsToPreview(resumen.analysis.rows, analysisColumns),

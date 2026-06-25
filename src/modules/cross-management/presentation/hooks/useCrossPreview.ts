@@ -17,7 +17,7 @@ import type { CrossPreviewStatus } from './cross-preview/useCrossPreviewStatus'
 export type { CrossPreviewStatus, CrossPreviewTab }
 
 export function useCrossPreview(cross: ICrossPreviewData) {
-  const tabs = useCrossPreviewTabs()
+  const tabs = useCrossPreviewTabs(cross.viewsAvailable)
   const planilla = useCrossPreviewPlanillaQuery({ cross })
   const resumen = useCrossPreviewResumenQuery({ cross })
   const taxpayerIdByCuit = useMemo(
@@ -37,8 +37,8 @@ export function useCrossPreview(cross: ICrossPreviewData) {
     taxpayerIdByCuit
   })
   const intimationContributors = useMemo(
-    () => groupIntimationExportContributors(planilla.rows),
-    [planilla.rows]
+    () => groupIntimationExportContributors(planilla.rows, resumen.analysisRows),
+    [planilla.rows, resumen.analysisRows]
   )
   const intimationColumnOptions = useMemo(
     () =>
@@ -69,12 +69,15 @@ export function useCrossPreview(cross: ICrossPreviewData) {
     analysisColumns: resumen.analysisColumns,
     analysisRows: resumen.analysisRows,
     applyFilter: resumen.applyFilter,
+    availableTabs: tabs.availableTabs,
     clearFilter: resumen.clearFilter,
     closeFilterModal: resumen.closeFilterModal,
     columnFilters: resumen.columnFilters,
     filterableColumns: resumen.filterableColumns,
+    gridStateBySection: resumen.gridStateBySection,
     intimationColumnOptions,
     intimationContributors,
+    loadingResumenSectionKey: resumen.loadingSectionKey,
     openFilterModal: resumen.openFilterModal,
     planillaColumns: planilla.columns,
     planillaError: planilla.error,
@@ -86,11 +89,14 @@ export function useCrossPreview(cross: ICrossPreviewData) {
     resumenIsLoading: resumen.isLoading,
     resumenPagination: resumen.pagination,
     resumenRows: resumen.analysisRows,
+    resumenSections: resumen.resumenSections,
     resumenSearch: resumen.search,
     setPlanillaPage: planilla.setPage,
     setPlanillaSearch: planilla.setSearch,
     setResumenPage: resumen.setPage,
     setResumenSearch: resumen.setSearch,
+    setResumenSectionPage: resumen.setSectionPage,
+    setResumenSectionSearch: resumen.setSectionSearch,
     summaryBlocks: resumen.summaryBlocks,
     updateTab
   }

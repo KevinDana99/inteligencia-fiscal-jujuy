@@ -10,7 +10,8 @@ const items: ICrossManagementItems = [
     period: '2022-2025',
     cuitCount: 3,
     date: '27/04/2026',
-    status: 'completada'
+    status: 'completada',
+    viewsAvailable: ['resumen', 'planilla']
   },
   {
     id: 'cross-2',
@@ -20,7 +21,8 @@ const items: ICrossManagementItems = [
     period: '2024-2025',
     cuitCount: 1,
     date: '26/04/2026',
-    status: 'completada'
+    status: 'completada',
+    viewsAvailable: ['resumen', 'planilla']
   }
 ];
 

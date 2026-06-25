@@ -144,6 +144,7 @@ export interface ApiBatchAvailableCrossDto {
   granularidad?: string | null;
   periodo?: string | null;
   tipoPeriodo?: string | null;
+  vistasDisponibles?: string[] | null;
 }
 
 export type ApiBatchAvailableCrossesResponseDto =

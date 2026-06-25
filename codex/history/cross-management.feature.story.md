@@ -1,5 +1,33 @@
 # Cross Management Feature Story
 
+## 2026-06-25 Vistas dinamicas de cruces
+
+- `Gestion de Cruces` ahora conserva `vistasDisponibles` desde ejecuciones y catalogo de cruces, usando ese dato para construir tabs y evitar llamadas a Planilla cuando no existe.
+- La preview carga `/resumen` primero y llama `/planilla` solo para ejecuciones con vista disponible.
+- El resumen ahora prefiere `secciones`, renderiza bloques `resumen` y multiples grillas `grilla`, y mantiene paginacion, busqueda y filtros por `seccion.clave`.
+- Los filtros aceptan operadores de numero, texto y fecha, incluyendo operadores sin valor como `esNulo` y `noEsNulo`.
+- Se mantuvo fallback legacy para `bloquesResumen`, `esquemaAnalisisSistemico` y `analisisSistemico`.
+
+### Validation
+
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/eslint src/modules/cross-management/data/models/CrossManagement.ts src/modules/cross-management/data/sources/rest/dtos/ApiCrossManagementDtos.ts src/modules/cross-management/data/sources/rest/mappers/mapCrossManagementDto.ts src/modules/cross-management/data/sources/rest/RestCrossManagementSource.ts src/modules/cross-management/data/actions/queries/getCrossPreviewAction.ts src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.ts src/modules/cross-management/data/utils/crossPreviewFilters.ts src/modules/cross-management/data/sources/mock/MockCrossManagementSource.ts src/modules/cross-management/data/sources/mock/fixtures/crossItems.ts src/modules/cross-management/presentation/hooks/useCrossPreview.ts src/modules/cross-management/presentation/hooks/cross-preview/useCrossPreviewTabs.ts src/modules/cross-management/presentation/hooks/cross-preview/useCrossPreviewTopBar.ts src/modules/cross-management/presentation/hooks/cross-preview/useCrossPreviewPlanillaQuery.ts src/modules/cross-management/presentation/hooks/cross-preview/useCrossPreviewResumenQuery.ts src/modules/cross-management/presentation/components/CrossFilterModal/index.tsx src/modules/cross-management/presentation/components/CrossFilterModal/useCrossFilterModal.ts src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewTopBar.tsx src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewPageContent.tsx src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewResumenSection.tsx src/modules/cross-management/presentation/components/CrossPreviewPage/CrossPreviewAnalysisSection.tsx src/modules/cross-management/presentation/constants/crossPreviewFilterOperators.ts src/modules/cross-management/presentation/constants/crossPreviewLabels.ts src/modules/batch-management/data/models/BatchManagement.ts src/modules/batch-management/data/sources/rest/dtos/BatchManagementDtos.ts src/modules/batch-management/data/sources/rest/mappers/mapBatchDto.ts src/modules/batch-management/data/sources/mock/MockBatchManagementSource.ts src/modules/batch-management/data/sources/rest/mappers/mapBatchDto.test.ts src/modules/batch-management/presentation/utils/batchManagementCross.test.ts src/modules/cross-management/presentation/utils/filterCrossManagementItems.test.ts src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.test.ts`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/jest/bin/jest.js src/modules/cross-management/data/mappers/mapCrossPreviewContractToView.test.ts src/modules/batch-management/data/sources/rest/mappers/mapBatchDto.test.ts src/modules/batch-management/presentation/utils/batchManagementCross.test.ts src/modules/cross-management/presentation/utils/filterCrossManagementItems.test.ts --runInBand`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH ./node_modules/.bin/tsc --noEmit --incremental false`
+- `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node ./node_modules/next/dist/bin/next build` llega al resumen de rutas, pero emite errores preexistentes de `cookies()` durante prerender en `/admin` y `/reproceso`.
+- `curl -I --max-time 8 http://127.0.0.1:3000/gestion-de-cruces/vista-previa-cruce/3` responde `307 /login` por sesion no autenticada.
+
+## 2026-06-25 Intimacion ordenada por ranking
+
+- El listado de contribuyentes del modal de generacion de intimacion ahora se ordena con la secuencia de filas del ranking de analisis sistemico.
+- `groupIntimationExportContributors` conserva la agrupacion de filas de planilla por contribuyente, pero acepta las filas rankeadas como referencia de orden.
+- `useCrossPreview` conecta la planilla con `resumen.analysisRows` para que la preview y la descarga recorran las intimaciones segun el ranking visible.
+- Se agrego una prueba de regresion con filas de planilla desordenadas para validar que el orden final respeta el ranking.
+
+### Validation
+
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/jest/bin/jest.js src/modules/cross-management/presentation/utils/groupIntimationExportContributors.test.ts`
+- `/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node node_modules/eslint/bin/eslint.js src/modules/cross-management/presentation/utils/groupIntimationExportContributors.ts src/modules/cross-management/presentation/hooks/useCrossPreview.ts src/modules/cross-management/presentation/utils/groupIntimationExportContributors.test.ts`
+
 ## 2026-06-22 Columna de estado siempre visible
 
 - La tabla `Ranking` de `/gestion-de-cruces/vista-previa-cruce/[crossId]` ahora normaliza sus columnas para que `estadoRelevancia` exista siempre, incluso si el esquema del backend no la incluye.

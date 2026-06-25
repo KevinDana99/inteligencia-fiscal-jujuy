@@ -10,6 +10,7 @@ export interface ApiCrossExecutionDto {
   periodoFin: string
   cantidadTotalCuits: number
   fechaEjecucion: string
+  vistasDisponibles?: string[] | null
 }
 
 export interface ApiCrossExecutionsListResponseDto {
@@ -63,6 +64,16 @@ export type ApiCrossFilterOperatorDto =
   | 'menorOIgualQue'
   | 'igualA'
   | 'distintoDe'
+  | 'contiene'
+  | 'noContiene'
+  | 'empiezaCon'
+  | 'terminaCon'
+  | 'esNulo'
+  | 'noEsNulo'
+  | 'posteriorA'
+  | 'posteriorOIgualA'
+  | 'anteriorA'
+  | 'anteriorOIgualA'
 
 export type ApiCrossFilterConnectorDto = 'Y' | 'O'
 
@@ -116,11 +127,19 @@ export interface ApiCrossResumenColumnFilterDto {
   condiciones: ApiCrossResumenFilterConditionDto[]
 }
 
+export interface ApiCrossResumenSectionRequestDto {
+  pagina: number
+  itemsPagina: number
+  busqueda: string
+  filtrosColumnas: ApiCrossResumenColumnFilterDto[]
+}
+
 export interface ApiCrossResumenRequestDto {
   pagina: number
   itemsPagina: number
   busqueda: string
   filtrosColumnas: ApiCrossResumenColumnFilterDto[]
+  secciones?: Record<string, ApiCrossResumenSectionRequestDto>
 }
 
 export interface ApiCrossResumenMetadataDto {
@@ -160,11 +179,21 @@ export interface ApiCrossAnalysisPaginationDto {
   filas: ApiCrossAnalysisRowDto[]
 }
 
+export interface ApiCrossResumenSectionDto {
+  clave: string
+  titulo: string
+  tipo: 'resumen' | 'grilla'
+  esquema?: ApiCrossDynamicSchemaDto | null
+  filasResumen?: ApiCrossDynamicValuesRowDto[] | null
+  grilla?: ApiCrossAnalysisPaginationDto | null
+}
+
 export interface ApiCrossResumenResponseDto {
-  metadatos: ApiCrossResumenMetadataDto
-  bloquesResumen: ApiCrossResumenBlockDto[] | null
-  esquemaAnalisisSistemico: ApiCrossDynamicSchemaDto | null
-  analisisSistemico: ApiCrossAnalysisPaginationDto
+  metadatos?: ApiCrossResumenMetadataDto
+  secciones?: ApiCrossResumenSectionDto[] | null
+  bloquesResumen?: ApiCrossResumenBlockDto[] | null
+  esquemaAnalisisSistemico?: ApiCrossDynamicSchemaDto | null
+  analisisSistemico?: ApiCrossAnalysisPaginationDto | null
 }
 
 export interface ApiExecuteCrossRequestDto {

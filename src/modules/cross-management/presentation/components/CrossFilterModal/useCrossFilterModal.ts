@@ -9,6 +9,11 @@ import type {
   ICrossFilterOperator
 } from '../../../data/models/CrossManagement'
 
+const VALUELESS_FILTER_OPERATORS = new Set<ICrossFilterOperator>([
+  'esNulo',
+  'noEsNulo'
+])
+
 export interface ICrossFilterModalProps {
   opened: boolean
   allowedOperators: ICrossFilterOperator[]
@@ -61,7 +66,8 @@ export function useCrossFilterModal({
       ...current,
       primary: {
         ...current.primary,
-        operator
+        operator,
+        value: operator && VALUELESS_FILTER_OPERATORS.has(operator) ? '' : current.primary.value
       }
     }))
   }
@@ -81,7 +87,8 @@ export function useCrossFilterModal({
       ...current,
       secondary: {
         ...current.secondary,
-        operator
+        operator,
+        value: operator && VALUELESS_FILTER_OPERATORS.has(operator) ? '' : current.secondary.value
       }
     }))
   }
