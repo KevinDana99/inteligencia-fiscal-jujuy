@@ -11,6 +11,7 @@ import type {
 } from '../../../data/models/DashboardLayout';
 import { DashboardNavbar } from '../DashboardNavbar';
 import { DashboardSidebar } from '../DashboardSidebar';
+import { RouteNavigationIndicator } from '../RouteNavigationIndicator';
 import classes from '../DashboardLayoutShell/DashboardLayoutShell.module.css';
 
 interface DashboardTemplateProps {
@@ -56,6 +57,7 @@ export function DashboardTemplate({
       <AuthLoginSuccessToastBridge
         displayName={session.user.nombreUsuario}
       />
+      <RouteNavigationIndicator />
 
       <DashboardSidebar
         session={session}
