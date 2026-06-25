@@ -28,7 +28,7 @@ describe('RestUnifiedRegisterSource', () => {
       jsonResponse({
         pagina: 2,
         itemsPagina: 25,
-        totalItems: 92,
+        totalCuits: 92,
         totalPaginas: 4,
         contribuyentes: [
           {
