@@ -1,11 +1,9 @@
 import { Suspense } from 'react'
-import type { Metadata } from 'next'
 import { connection } from 'next/server'
+import { PAGE_METADATA } from '@/constants/metadata'
 import LoginForm from '@/modules/auth/presentation/components/LoginForm'
 
-export const metadata: Metadata = {
-  title: 'IF - Login'
-}
+export const metadata = PAGE_METADATA.login
 
 export default function LoginPage() {
   return (

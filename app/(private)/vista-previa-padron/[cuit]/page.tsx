@@ -1,14 +1,26 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { buildUnifiedRegisterPreviewMetadata } from '@/constants/metadata';
 import UnifiedRegisterPreviewModule from '@/modules/unified-register/preview';
 import { resolveUnifiedRegisterPreviewRouteData } from '@/modules/unified-register/preview/resolvePreviewRouteData';
+
+type UnifiedRegisterPreviewRouteProps = {
+  params: Promise<{ cuit: string }>;
+  searchParams: Promise<{ id?: string }>;
+};
+
+export async function generateMetadata({
+  params
+}: UnifiedRegisterPreviewRouteProps): Promise<Metadata> {
+  const { cuit } = await params;
+
+  return buildUnifiedRegisterPreviewMetadata(cuit);
+}
 
 export default async function UnifiedRegisterPreviewRoute({
   params,
   searchParams
-}: {
-  params: Promise<{ cuit: string }>;
-  searchParams: Promise<{ id?: string }>;
-}) {
+}: UnifiedRegisterPreviewRouteProps) {
   const { cuit } = await params;
   const { id } = await searchParams;
   const decodedCuit = decodeURIComponent(cuit);
