@@ -93,4 +93,55 @@ describe('groupIntimationExportContributors', () => {
       '30-50026913-4'
     ])
   })
+
+  it('orders contributors by ranking when ranking rows only provide CUIT', () => {
+    const secondRankedRow: ICrossPreviewPlanRow = {
+      ...baseRow,
+      id: 'second-ranked-row',
+      taxpayerId: 'a073938e-ce55-4f3f-a3b6-2a49326aa0f1',
+      cuit: '20-35555846-1',
+      businessName: 'TORREZ DANIEL FERNANDO'
+    }
+    const thirdRankedRow: ICrossPreviewPlanRow = {
+      ...baseRow,
+      id: 'third-ranked-row',
+      taxpayerId: '43bf31d5-f8f4-4fa1-bdbd-663ef58ecb38',
+      cuit: '27-13889915-8',
+      businessName: 'TARIFA NIEVES DOMINGA'
+    }
+    const rankingRows: ICrossPreviewAnalysisRow[] = [
+      {
+        id: 'rank-1',
+        cuit: thirdRankedRow.cuit,
+        businessName: thirdRankedRow.businessName,
+        values: {},
+        status: 'relevante'
+      },
+      {
+        id: 'rank-2',
+        cuit: secondRankedRow.cuit,
+        businessName: secondRankedRow.businessName,
+        values: {},
+        status: 'relevante'
+      },
+      {
+        id: 'rank-3',
+        cuit: baseRow.cuit,
+        businessName: baseRow.businessName,
+        values: {},
+        status: 'relevante'
+      }
+    ]
+
+    const contributors = groupIntimationExportContributors(
+      [baseRow, secondRankedRow, thirdRankedRow],
+      rankingRows
+    )
+
+    expect(contributors.map((contributor) => contributor.cuit)).toEqual([
+      '27-13889915-8',
+      '20-35555846-1',
+      '30-50026913-4'
+    ])
+  })
 })

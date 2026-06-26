@@ -30,3 +30,9 @@
 - Se revisó `/gestion-de-cruces/vista-previa-cruce/[crossId]` y se corrigió el marcado de reproceso para enviar el CUIT del contribuyente en el payload del POST.
 - `POST /api/reprocesos` ahora serializa `{ cuit, descripcion }` desde la capa REST de reprocesos, manteniendo `contribuyenteId` para respuestas y desmarcado.
 - Validado con Jest sobre `RestReprocessingSource.test.ts` y ESLint focalizado sobre los archivos modificados.
+
+## 2026-06-26 Orden de intimaciones por ranking
+
+- Se corrigió la agrupación de contribuyentes de `Generar intimación` para ordenar por el ranking aunque la grilla venga identificada por CUIT y la planilla por `taxpayerId`.
+- La resolución de contributors ahora registra aliases por `taxpayerId`, CUIT normalizado e `id`, evitando que el PDF/preview caiga al orden de planilla.
+- Validado con Jest sobre `groupIntimationExportContributors`, `intimationDocumentPayload` e `intimationDocumentGeneration`, más ESLint focalizado.
