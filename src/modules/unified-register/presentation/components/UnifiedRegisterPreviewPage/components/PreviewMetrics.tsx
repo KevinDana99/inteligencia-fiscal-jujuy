@@ -67,6 +67,9 @@ function MetricValue({ widget }: { widget: IUnifiedRegisterDetail['widgets'][num
           {widget.subtitle}
         </Text>
       ) : null}
+      {widget.periodLabel ? (
+        <Text className={classes.metricPeriodLabel}>{widget.periodLabel}</Text>
+      ) : null}
     </>
   );
 }

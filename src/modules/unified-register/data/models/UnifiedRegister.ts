@@ -32,6 +32,7 @@ export interface IUnifiedRegisterWidget {
   tone?: 'blue' | 'green' | 'orange' | 'red';
   subtitle?: string;
   badgeLabel?: string;
+  periodLabel?: string;
   splitValue?: {
     primaryValue: string;
     primaryLabel: string;
@@ -219,6 +220,13 @@ export interface IUnifiedRegisterHeaderAlternateAddress {
   nombre: string;
 }
 
+export interface IUnifiedRegisterHeaderPeriodRange {
+  desde: string | null;
+  hasta: string | null;
+  periodoDesde: number | null;
+  periodoHasta: number | null;
+}
+
 export interface IUnifiedRegisterHeaderRecord {
   cuit: string;
   razonSocial: string | null;
@@ -226,6 +234,8 @@ export interface IUnifiedRegisterHeaderRecord {
   tipoContribuyente: UnifiedRegisterContributorType | null;
   cantidadLotes: number;
   jurisdiccion: string | null;
+  jurisdiccionSede?: string | null;
+  jurisdiccionesExternas?: string | null;
   actividadPrimaria: IUnifiedRegisterHeaderActivity | null;
   actividadSecundaria: IUnifiedRegisterHeaderActivity | null;
   inicioActividad: string | null;
@@ -237,6 +247,13 @@ export interface IUnifiedRegisterHeaderRecord {
   biDeclarada: string | null;
   impuestosDeclarados: string | null;
   deuda: string | null;
+  periodoCalculo?: IUnifiedRegisterHeaderPeriodRange | null;
+  periodosCalculo?: {
+    biDeclarada?: IUnifiedRegisterHeaderPeriodRange | null;
+    impuestosDeclarados?: IUnifiedRegisterHeaderPeriodRange | null;
+    deuda?: IUnifiedRegisterHeaderPeriodRange | null;
+    declaracionesJuradas?: IUnifiedRegisterHeaderPeriodRange | null;
+  } | null;
   declaracionesJuradas: {
     presentadas: number;
     noPresentadas: number;

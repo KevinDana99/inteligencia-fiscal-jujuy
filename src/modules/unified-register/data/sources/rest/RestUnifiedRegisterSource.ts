@@ -151,7 +151,7 @@ export class RestUnifiedRegisterSource implements IUnifiedRegisterSource {
     return {
       pagina: dto.pagina,
       itemsPagina: dto.itemsPagina,
-      totalItems: dto.totalItems ?? dto.contribuyentes.length,
+      totalItems: dto.totalCuits ?? dto.contribuyentes.length,
       totalPaginas: dto.totalPaginas,
       contribuyentes: dto.contribuyentes.map(mapListItemDto)
     };

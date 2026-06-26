@@ -26,16 +26,22 @@ export const FINE_AMOUNT_COLOR: Record<string, string> = {
 };
 
 export const ORDER_STATUS_CLASS_KEYS: Record<string, string> = {
+  Abierta: 'badgeNeutral',
+  'En análisis': 'badgeInfo',
   'En curso': 'badgeWarning',
   Cerrada: 'badgePositive'
 };
 
 export const ORDER_AMOUNT_CLASS_KEYS: Record<string, string> = {
+  Abierta: 'amountDefault',
+  'En análisis': 'amountDefault',
   'En curso': 'amountCritical',
   Cerrada: 'amountDefault'
 };
 
 export const ORDER_AMOUNT_COLOR: Record<string, string> = {
+  Abierta: 'var(--mantine-color-gray-7)',
+  'En análisis': 'var(--mantine-color-gray-7)',
   'En curso': '#DC2626',
   Cerrada: 'var(--mantine-color-gray-7)'
 };

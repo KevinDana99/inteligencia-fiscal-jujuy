@@ -2,6 +2,7 @@ import type {
   IUnifiedRegisterActivityEntry,
   IUnifiedRegisterDetail,
   IUnifiedRegisterHeaderActivity,
+  IUnifiedRegisterHeaderPeriodRange,
   IUnifiedRegisterHeaderRecord,
   IUnifiedRegisterWidget,
 } from "../models/UnifiedRegister";
@@ -86,6 +87,39 @@ function formatHeaderDate(value: string | null | undefined) {
   return `${day}/${month}/${year}`;
 }
 
+function formatHeaderShortDate(value: string | null | undefined) {
+  const formattedValue = formatHeaderDate(value);
+
+  if (!formattedValue) {
+    return "";
+  }
+
+  const [day, month, year] = formattedValue.split("/");
+
+  if (!day || !month || !year || year.length < 2) {
+    return formattedValue;
+  }
+
+  return `${day}/${month}/${year.slice(-2)}`;
+}
+
+function formatWidgetPeriodLabel(
+  period: IUnifiedRegisterHeaderPeriodRange | null | undefined
+) {
+  if (!period?.desde || !period?.hasta) {
+    return "-";
+  }
+
+  const from = formatHeaderShortDate(period.desde);
+  const to = formatHeaderShortDate(period.hasta);
+
+  if (!from || !to) {
+    return "-";
+  }
+
+  return `${from} – ${to}`;
+}
+
 function getHeaderAlternateAddress(
   alternativo: IUnifiedRegisterHeaderRecord["domicilios"]["alternativo"]
 ) {
@@ -115,24 +149,45 @@ function applyHeaderWidgetValues(
   header: IUnifiedRegisterHeaderRecord
 ) {
   return widgets.map((widget) => {
+    const periodLabel =
+      (widget.id === "declared-bi" &&
+        formatWidgetPeriodLabel(header.periodosCalculo?.biDeclarada)) ||
+      (widget.id === "declared-taxes" &&
+        formatWidgetPeriodLabel(header.periodosCalculo?.impuestosDeclarados)) ||
+      (widget.id === "debt" &&
+        formatWidgetPeriodLabel(header.periodosCalculo?.deuda)) ||
+      (widget.id === "returns" &&
+        formatWidgetPeriodLabel(header.periodosCalculo?.declaracionesJuradas)) ||
+      formatWidgetPeriodLabel(header.periodoCalculo);
+
     if (widget.id === "declared-bi") {
-      return { ...widget, value: formatHeaderCurrency(header.biDeclarada) };
+      return {
+        ...widget,
+        value: formatHeaderCurrency(header.biDeclarada),
+        periodLabel,
+      };
     }
 
     if (widget.id === "declared-taxes") {
       return {
         ...widget,
         value: formatHeaderCurrency(header.impuestosDeclarados),
+        periodLabel,
       };
     }
 
     if (widget.id === "debt") {
-      return { ...widget, value: formatHeaderCurrency(header.deuda) };
+      return {
+        ...widget,
+        value: formatHeaderCurrency(header.deuda),
+        periodLabel,
+      };
     }
 
     if (widget.id === "returns") {
       return {
         ...widget,
+        periodLabel,
         splitValue: {
           primaryValue: String(header.declaracionesJuradas.presentadas),
           primaryLabel: "Presentadas",
@@ -175,8 +230,8 @@ export function applyUnifiedRegisterHeaderToDetail(
     riskLevel: header.riesgo,
     startedAt: formatHeaderDate(header.inicioActividad),
     jurisdiction: getNullableText(header.jurisdiccion),
-    headquartersJurisdiction: "",
-    strangeJurisdictions: "",
+    headquartersJurisdiction: getNullableText(header.jurisdiccionSede),
+    strangeJurisdictions: getNullableText(header.jurisdiccionesExternas),
     fiscalAddress: getNullableText(header.domicilios.fiscal),
     commercialAddress: getNullableText(header.domicilios.comercial),
     alternateAddress: getHeaderAlternateAddress(header.domicilios.alternativo),

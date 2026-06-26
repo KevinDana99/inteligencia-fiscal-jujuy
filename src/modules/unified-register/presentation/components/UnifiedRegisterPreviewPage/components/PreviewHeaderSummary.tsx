@@ -36,6 +36,15 @@ export function PreviewHeaderSummary({
   const alternateAddress = formatUnifiedRegisterHeaderText(
     getHeaderAlternateAddress(item, preview)
   );
+  const startedAt = formatUnifiedRegisterHeaderText(item.startedAt);
+  const jurisdiction = formatUnifiedRegisterHeaderText(item.jurisdiction);
+  const headquartersJurisdiction = formatUnifiedRegisterHeaderText(
+    item.headquartersJurisdiction
+  );
+  const strangeJurisdictions = formatUnifiedRegisterHeaderText(
+    item.strangeJurisdictions
+  );
+  const fiscalAddress = formatUnifiedRegisterHeaderText(item.fiscalAddress);
   const riskLevelLabel = formatUnifiedRegisterHeaderText(item.riskLevel);
 
   return (
@@ -78,29 +87,36 @@ export function PreviewHeaderSummary({
           )}
         </div>
         <div className={classes.metaRow}>
-          <Text className={classes.metaText}>
-            <strong>Inicio actividad:</strong>{" "}
-            {formatUnifiedRegisterHeaderText(item.startedAt)}
-          </Text>
-          <Text className={classes.metaText}>
-            <strong>Jurisdicción:</strong>{" "}
-            {formatUnifiedRegisterHeaderText(item.jurisdiction)}
-          </Text>
-          <Text className={classes.metaText}>
-            <strong>Domicilio fiscal:</strong>{" "}
-            {formatUnifiedRegisterHeaderText(item.fiscalAddress)}
-            <strong>Jurisdicción sede:</strong> {item.headquartersJurisdiction}
-          </Text>
-          <Text className={classes.metaText}>
-            <strong>Jurisdicciones extrañas:</strong>{" "}
-            {item.strangeJurisdictions}
-          </Text>
-          <Text className={classes.metaText}>
-            <strong>Domicilio fiscal:</strong> {item.fiscalAddress}
-          </Text>
-          <Text className={classes.metaText}>
-            <strong>Domicilio alternativo:</strong> {alternateAddress}
-          </Text>
+          {startedAt ? (
+            <Text className={classes.metaText}>
+              <strong>Inicio actividad:</strong> {startedAt}
+            </Text>
+          ) : null}
+          {jurisdiction ? (
+            <Text className={classes.metaText}>
+              <strong>Jurisdicción:</strong> {jurisdiction}
+            </Text>
+          ) : null}
+          {headquartersJurisdiction ? (
+            <Text className={classes.metaText}>
+              <strong>Jurisdicción sede:</strong> {headquartersJurisdiction}
+            </Text>
+          ) : null}
+          {strangeJurisdictions ? (
+            <Text className={classes.metaText}>
+              <strong>Jurisdicciones extrañas:</strong> {strangeJurisdictions}
+            </Text>
+          ) : null}
+          {fiscalAddress ? (
+            <Text className={classes.metaText}>
+              <strong>Domicilio fiscal:</strong> {fiscalAddress}
+            </Text>
+          ) : null}
+          {alternateAddress ? (
+            <Text className={classes.metaText}>
+              <strong>Domicilio alternativo:</strong> {alternateAddress}
+            </Text>
+          ) : null}
         </div>
       </div>
       <div

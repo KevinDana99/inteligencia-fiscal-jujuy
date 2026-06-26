@@ -17,7 +17,7 @@ export interface ApiUnifiedRegisterListItemDto {
 export interface ApiUnifiedRegisterListResponseDto {
   pagina: number;
   itemsPagina: number;
-  totalItems?: number;
+  totalCuits?: number;
   totalPaginas: number;
   contribuyentes: ApiUnifiedRegisterListItemDto[];
 }
@@ -32,6 +32,13 @@ export interface ApiUnifiedRegisterHeaderAlternateAddressDto {
   nombre: string;
 }
 
+export interface ApiUnifiedRegisterHeaderPeriodRangeDto {
+  desde: string | null;
+  hasta: string | null;
+  periodoDesde: number | null;
+  periodoHasta: number | null;
+}
+
 export interface ApiUnifiedRegisterHeaderResponseDto {
   cuit: string;
   razonSocial: string | null;
@@ -39,6 +46,8 @@ export interface ApiUnifiedRegisterHeaderResponseDto {
   tipoContribuyente: string | null;
   cantidadLotes: number;
   jurisdiccion?: string | null;
+  jurisdiccionSede?: string | null;
+  jurisdiccionesExternas?: string | null;
   actividadPrimaria: ApiUnifiedRegisterHeaderActivityDto | null;
   actividadSecundaria: ApiUnifiedRegisterHeaderActivityDto | null;
   inicioActividad: string | null;
@@ -50,6 +59,13 @@ export interface ApiUnifiedRegisterHeaderResponseDto {
   biDeclarada: string | null;
   impuestosDeclarados: string | null;
   deuda: string | null;
+  periodoCalculo?: ApiUnifiedRegisterHeaderPeriodRangeDto | null;
+  periodosCalculo?: {
+    biDeclarada?: ApiUnifiedRegisterHeaderPeriodRangeDto | null;
+    impuestosDeclarados?: ApiUnifiedRegisterHeaderPeriodRangeDto | null;
+    deuda?: ApiUnifiedRegisterHeaderPeriodRangeDto | null;
+    declaracionesJuradas?: ApiUnifiedRegisterHeaderPeriodRangeDto | null;
+  } | null;
   declaracionesJuradas: {
     presentadas: number;
     noPresentadas: number;

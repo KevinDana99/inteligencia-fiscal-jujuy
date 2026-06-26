@@ -28,7 +28,7 @@ describe('RestUnifiedRegisterSource', () => {
       jsonResponse({
         pagina: 2,
         itemsPagina: 25,
-        totalItems: 92,
+        totalCuits: 92,
         totalPaginas: 4,
         contribuyentes: [
           {
@@ -141,6 +141,8 @@ describe('RestUnifiedRegisterSource', () => {
       tipoContribuyente: 'Convenio Multilateral',
       cantidadLotes: 2,
       jurisdiccion: 'Jujuy (J.910)',
+      jurisdiccionSede: null,
+      jurisdiccionesExternas: null,
       actividadPrimaria: {
         nombre: 'DESARROLLO DE SOFTWARE',
         numero: '620100'
@@ -159,6 +161,8 @@ describe('RestUnifiedRegisterSource', () => {
       biDeclarada: null,
       impuestosDeclarados: '120.05',
       deuda: null,
+      periodoCalculo: null,
+      periodosCalculo: null,
       declaracionesJuradas: {
         presentadas: 1,
         noPresentadas: 0
