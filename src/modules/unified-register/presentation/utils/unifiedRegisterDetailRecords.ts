@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import type {
   IUnifiedRegisterFine,
   IUnifiedRegisterFineRecord,
@@ -39,12 +40,26 @@ function mapInterventionOrderStatus(value: string | null) {
   );
 }
 
+function formatFineIssuedAt(value: string | null) {
+  const normalizedValue = value?.trim();
+
+  if (!normalizedValue) {
+    return null;
+  }
+
+  const formattedValue = dayjs(normalizedValue);
+
+  return formattedValue.isValid()
+    ? formattedValue.format('DD/MM/YYYY')
+    : normalizedValue;
+}
+
 export function mapFineRecordToViewModel(
   fine: IUnifiedRegisterFineRecord
 ): IUnifiedRegisterFine {
   return {
     id: fine.numero,
-    issuedAt: fine.fecha,
+    issuedAt: formatFineIssuedAt(fine.fecha),
     type: fine.tipo,
     description: fine.descripcion,
     amount: fine.monto,
