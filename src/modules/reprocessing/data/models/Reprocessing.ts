@@ -30,7 +30,7 @@ export interface IReprocessingListData {
 }
 
 export interface IReprocessingMarkPayload {
-  contribuyenteId: string
+  cuit: string
   description?: string | null
 }
 

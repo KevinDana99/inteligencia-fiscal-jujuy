@@ -15,7 +15,7 @@ export async function markReprocessingAction(
   const action = 'markReprocessingAction'
   const METHOD = 'POST'
   const REQUEST = {
-    contribuyenteId: payload.contribuyenteId,
+    cuit: payload.cuit,
     descripcion: payload.description ?? null
   }
 

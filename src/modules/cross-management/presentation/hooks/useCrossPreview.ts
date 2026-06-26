@@ -20,21 +20,8 @@ export function useCrossPreview(cross: ICrossPreviewData) {
   const tabs = useCrossPreviewTabs(cross.viewsAvailable)
   const planilla = useCrossPreviewPlanillaQuery({ cross })
   const resumen = useCrossPreviewResumenQuery({ cross })
-  const taxpayerIdByCuit = useMemo(
-    () => {
-      const rowsWithContributorId = [...cross.planRows, ...planilla.rows].filter(
-        (row) => row.taxpayerId
-      )
-
-      return Object.fromEntries(
-        rowsWithContributorId.map((row) => [row.cuit, row.taxpayerId])
-      )
-    },
-    [cross.planRows, planilla.rows]
-  )
   const status = useCrossPreviewStatus({
-    rows: resumen.analysisRows,
-    taxpayerIdByCuit
+    rows: resumen.analysisRows
   })
   const intimationContributors = useMemo(
     () => groupIntimationExportContributors(planilla.rows, resumen.analysisRows),

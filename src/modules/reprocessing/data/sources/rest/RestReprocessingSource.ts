@@ -54,7 +54,7 @@ export class RestReprocessingSource implements IReprocessingSource {
     payload: IReprocessingMarkPayload
   ): Promise<IReprocessingMarkedSummary> {
     const requestBody: ApiMarkReprocessingRequestDto = {
-      contribuyenteId: payload.contribuyenteId,
+      cuit: payload.cuit.trim(),
       descripcion: payload.description ?? null
     }
 

@@ -25,7 +25,6 @@ export function PreviewModals({
       <SendToReprocessingModal
         opened={preview.activeHeaderModal === 'reprocessing'}
         onClose={preview.closeHeaderModal}
-        contribuyenteId={item.contribuyenteId}
         cuit={item.cuit}
         razonSocial={item.businessName}
         error={preview.reprocessingActionError}

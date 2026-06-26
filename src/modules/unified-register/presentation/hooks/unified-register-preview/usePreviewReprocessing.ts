@@ -60,14 +60,15 @@ export function usePreviewReprocessing({
   const confirmReprocessing = async (payload: IReprocessingMarkPayload) => {
     clearReprocessingError();
     const reprocessingPayload: IReprocessingMarkPayload = {
-      contribuyenteId: contributorId,
+      cuit,
       description: payload.description?.trim() || null
     };
 
     console.log({
       action: 'vista-previa-padron.markReprocessing',
       cuitMostrado: cuit,
-      contribuyenteIdEnviado: reprocessingPayload.contribuyenteId
+      cuitEnviado: reprocessingPayload.cuit,
+      contribuyenteIdActual: contributorId
     });
 
     const result = await markReprocessingAction(reprocessingPayload);

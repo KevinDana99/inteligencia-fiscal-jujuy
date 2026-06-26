@@ -48,9 +48,11 @@ export class MockReprocessingSource implements IReprocessingSource {
   async markReprocessing(
     payload: IReprocessingMarkPayload
   ): Promise<IReprocessingMarkedSummary> {
+    const normalizedCuit = payload.cuit.trim()
+
     return {
-      id: `mock-${payload.contribuyenteId}`,
-      contribuyenteId: payload.contribuyenteId,
+      id: `mock-${normalizedCuit}`,
+      contribuyenteId: `mock-${normalizedCuit}`,
       description: payload.description?.trim() || null,
       isActive: true,
       createdAtUtc: new Date().toISOString()

@@ -12,12 +12,10 @@ export type CrossPreviewStatus = ICrossPreviewAnalysisRow['status']
 
 interface UseCrossPreviewStatusParams {
   rows: ICrossPreviewAnalysisRow[]
-  taxpayerIdByCuit: Record<string, string | null | undefined>
 }
 
 export function useCrossPreviewStatus({
-  rows,
-  taxpayerIdByCuit
+  rows
 }: UseCrossPreviewStatusParams) {
   const [reprocessingActionError, setReprocessingActionError] = useState<
     string | null
@@ -72,20 +70,17 @@ export function useCrossPreviewStatus({
 
     setReprocessingActionError(null)
 
-    const contribuyenteId =
-      pendingReprocessingRow.taxpayerId ??
-      taxpayerIdByCuit[pendingReprocessingRow.cuit] ??
-      null
+    const cuit = pendingReprocessingRow.cuit.trim()
 
-    if (!contribuyenteId) {
+    if (!cuit) {
       const errorMessage =
-        'No se encontró el identificador del contribuyente para marcar el reproceso.'
+        'No se encontró el CUIT del contribuyente para marcar el reproceso.'
       setReprocessingActionError(errorMessage)
       throw new Error(errorMessage)
     }
 
     const result = await markReprocessingAction({
-      contribuyenteId,
+      cuit,
       description: payload.description?.trim() || null
     })
 
@@ -99,7 +94,7 @@ export function useCrossPreviewStatus({
     updateAnalysisStatus(pendingReprocessingRow.cuit, 'reproceso')
     setPendingReprocessingRow(null)
     toast.show(TOAST_DASHBOARD_MESSAGES.SEND_REPROCESSING_ERROR)
-  }, [pendingReprocessingRow, taxpayerIdByCuit, updateAnalysisStatus])
+  }, [pendingReprocessingRow, updateAnalysisStatus])
 
   return {
     closeReprocessingModal,

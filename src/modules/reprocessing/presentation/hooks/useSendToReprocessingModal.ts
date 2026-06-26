@@ -6,7 +6,6 @@ import { buildReprocessingSubtitle } from '../utils'
 
 export interface ISendToReprocessingModalProps {
   opened: boolean
-  contribuyenteId: string
   cuit: string
   razonSocial: string
   error?: string | null
@@ -15,7 +14,6 @@ export interface ISendToReprocessingModalProps {
 }
 
 export function useSendToReprocessingModal({
-  contribuyenteId,
   cuit,
   razonSocial,
   onClose,
@@ -51,7 +49,7 @@ export function useSendToReprocessingModal({
 
     try {
       await onConfirm({
-        contribuyenteId,
+        cuit,
         description: description.trim() || null
       })
       resetState()

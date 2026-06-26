@@ -107,7 +107,6 @@ export function UnifiedRegisterPage({
       <SendToReprocessingModal
         opened={Boolean(selectedReprocessingItem)}
         onClose={closeReprocessingModal}
-        contribuyenteId={selectedReprocessingItem?.contribuyenteId ?? ""}
         cuit={selectedReprocessingItem?.cuit ?? ""}
         razonSocial={selectedReprocessingItem?.businessName ?? ""}
         error={reprocessingActionError}

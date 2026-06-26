@@ -119,7 +119,6 @@ export function CrossPreviewModals({
       <SendToReprocessingModal
         opened={Boolean(pendingReprocessingRow)}
         onClose={onCloseReprocessingModal}
-        contribuyenteId={pendingReprocessingRow?.taxpayerId ?? ''}
         cuit={pendingReprocessingRow?.cuit ?? ''}
         razonSocial={pendingReprocessingRow?.businessName ?? ''}
         error={reprocessingActionError}

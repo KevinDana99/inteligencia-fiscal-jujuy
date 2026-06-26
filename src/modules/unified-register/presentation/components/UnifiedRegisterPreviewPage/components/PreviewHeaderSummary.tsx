@@ -37,7 +37,6 @@ export function PreviewHeaderSummary({
     getHeaderAlternateAddress(item, preview)
   );
   const startedAt = formatUnifiedRegisterHeaderText(item.startedAt);
-  const jurisdiction = formatUnifiedRegisterHeaderText(item.jurisdiction);
   const headquartersJurisdiction = formatUnifiedRegisterHeaderText(
     item.headquartersJurisdiction
   );
@@ -90,11 +89,6 @@ export function PreviewHeaderSummary({
           {startedAt ? (
             <Text className={classes.metaText}>
               <strong>Inicio actividad:</strong> {startedAt}
-            </Text>
-          ) : null}
-          {jurisdiction ? (
-            <Text className={classes.metaText}>
-              <strong>Jurisdicción:</strong> {jurisdiction}
             </Text>
           ) : null}
           {headquartersJurisdiction ? (

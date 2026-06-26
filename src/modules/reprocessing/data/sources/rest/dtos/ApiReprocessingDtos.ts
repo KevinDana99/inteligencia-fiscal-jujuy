@@ -38,7 +38,7 @@ export type ApiListReprocessingResponseDto = {
 }
 
 export type ApiMarkReprocessingRequestDto = {
-  contribuyenteId: string
+  cuit: string
   descripcion?: string | null
 }
 

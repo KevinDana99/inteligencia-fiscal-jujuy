@@ -143,7 +143,7 @@ export function useUnifiedRegisterPageActions() {
       startReprocessingTransition(() => {
         void (async () => {
           const result = await markReprocessingAction({
-            contribuyenteId: selectedReprocessingItem.contribuyenteId,
+            cuit: selectedReprocessingItem.cuit,
             description: payload.description?.trim() || null
           });
 
