@@ -25,7 +25,8 @@ const FINE_STATUS_LABELS: Record<string, string> = {
 
 const FINE_TYPE_LABELS: Record<string, IUnifiedRegisterFine['type']> = {
   DESTINATARIO: 'Destinatario',
-  REMITENTE: 'Remitente'
+  REMITENTE: 'Remitente',
+  TRANSPORTISTA: 'Transportista'
 };
 
 function mapFineStatus(value: string | null) {

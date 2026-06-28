@@ -17,5 +17,12 @@ export function getUnifiedRegisterMercurioTypeBadgeStyle(
     };
   }
 
+  if (type === 'Transportista') {
+    return {
+      background: '#FFF7ED',
+      color: '#D97706'
+    };
+  }
+
   return null;
 }
