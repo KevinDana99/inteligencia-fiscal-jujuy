@@ -49,6 +49,7 @@ export interface IExplorerRegisterExplorePayload {
   filters: IExplorerRegisterExploreFilter[];
   startDate?: string;
   endDate?: string;
+  search?: string | null;
 }
 
 export interface IExplorerRegisterAppliedCriteria {

@@ -24,6 +24,7 @@ export interface IBuildExplorerRegisterPayloadParams {
   temporalRange: IExplorerRegisterTemporalRange;
   page?: number;
   itemsPerPage?: number;
+  search?: string | null;
 }
 
 export interface IBuildExplorerRegisterPayloadResult {
@@ -112,7 +113,8 @@ export function buildExplorerRegisterPayload({
   filterValues,
   temporalRange,
   page = DEFAULT_EXPLORER_REGISTER_QUERY.page,
-  itemsPerPage = DEFAULT_EXPLORER_REGISTER_QUERY.itemsPerPage
+  itemsPerPage = DEFAULT_EXPLORER_REGISTER_QUERY.itemsPerPage,
+  search
 }: IBuildExplorerRegisterPayloadParams): IBuildExplorerRegisterPayloadResult {
   const availableColumnCodes = new Set(
     catalog.availableColumns.map((column) => column.code)
@@ -160,7 +162,8 @@ export function buildExplorerRegisterPayload({
       columns,
       filters,
       startDate: effectiveTemporalRange.startDate,
-      endDate: effectiveTemporalRange.endDate
+      endDate: effectiveTemporalRange.endDate,
+      search: search?.trim() || null
     }
   };
 }

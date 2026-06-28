@@ -25,23 +25,22 @@ export function ExplorerRegisterResultsTable({
 
   return (
     <div className={classes.tableWrap}>
-      <Group className={classes.localToolbar} gap="sm">
+      <Group className={classes.searchToolbar} gap="sm">
         <TextInput
-          value={controller.localSearchValue}
+          value={controller.searchValue}
           onChange={(event) =>
-            controller.setLocalSearchValue(event.currentTarget.value)
+            controller.setSearchValue(event.currentTarget.value)
           }
           placeholder={EXPLORER_REGISTER_TEXTS.resultsSearchPlaceholder}
           leftSection={<IconSearch size={16} />}
-          className={classes.localSearchInput}
+          className={classes.searchInput}
           classNames={{
-            input: classes.localSearchField,
-            section: classes.localSearchSection
+            input: classes.searchField,
+            section: classes.searchSection
           }}
         />
-        <Text className={classes.localResultsCount}>
-          {controller.localSearchResultsCount}{' '}
-          {EXPLORER_REGISTER_TEXTS.localResults}
+        <Text className={classes.resultsCount}>
+          {controller.searchResultsCount} {EXPLORER_REGISTER_TEXTS.results}
         </Text>
       </Group>
       <Table withColumnBorders={false} className={classes.table}>
@@ -104,9 +103,9 @@ export function ExplorerRegisterResultsTable({
             ))
           ) : (
             <Table.Tr>
-              <Table.Td colSpan={columnCount} className={classes.localEmptyCell}>
-                <Text className={classes.localEmptyText}>
-                  {EXPLORER_REGISTER_TEXTS.localEmptyFallback}
+              <Table.Td colSpan={columnCount} className={classes.emptyCell}>
+                <Text className={classes.emptyText}>
+                  {EXPLORER_REGISTER_TEXTS.tableEmptyFallback}
                 </Text>
               </Table.Td>
             </Table.Tr>

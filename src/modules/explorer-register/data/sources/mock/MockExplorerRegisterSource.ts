@@ -22,7 +22,8 @@ export class MockExplorerRegisterSource implements IExplorerRegisterSource {
     const itemsPerPage = payload.itemsPerPage;
     const filteredRows = filterExplorerRegisterMockRows(
       explorerRegisterRowsFixture,
-      payload.filters
+      payload.filters,
+      payload.search
     );
     const start = (page - 1) * itemsPerPage;
     const rows = filteredRows.slice(start, start + itemsPerPage);

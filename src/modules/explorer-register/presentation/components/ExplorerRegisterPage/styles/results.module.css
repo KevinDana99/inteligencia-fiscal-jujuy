@@ -12,18 +12,18 @@
   min-width: max-content;
 }
 
-.localToolbar {
+.searchToolbar {
   min-width: max-content;
   border-bottom: 1px solid var(--mantine-color-gray-2);
   padding: 10px 14px;
   background: var(--mantine-color-white);
 }
 
-.localSearchInput {
+.searchInput {
   width: min(330px, 100%);
 }
 
-.localSearchField {
+.searchField {
   min-height: 34px;
   border-color: var(--mantine-color-gray-2);
   border-radius: 8px;
@@ -31,15 +31,15 @@
   font-size: 13px;
 }
 
-.localSearchField::placeholder {
+.searchField::placeholder {
   color: var(--mantine-color-gray-5);
 }
 
-.localSearchSection {
+.searchSection {
   color: var(--mantine-color-gray-6);
 }
 
-.localResultsCount {
+.resultsCount {
   color: var(--mantine-color-gray-6);
   font-size: 13px;
   font-weight: 600;
@@ -86,11 +86,11 @@
   font-weight: 700;
 }
 
-.localEmptyCell {
+.emptyCell {
   padding: 28px 14px;
 }
 
-.localEmptyText {
+.emptyText {
   color: var(--mantine-color-gray-6);
   font-size: 13px;
   font-weight: 600;

@@ -133,6 +133,34 @@ describe('buildExplorerRegisterPayload', () => {
     });
   });
 
+  it('normalizes the global search value without changing filters or columns', () => {
+    const result = buildExplorerRegisterPayload({
+      catalog,
+      selectedColumnCodes: ['rubro'],
+      filterValues: {
+        rubro: ['Automotor']
+      },
+      temporalRange: {
+        startDate: '2025-01-01',
+        endDate: '2025-12-31'
+      },
+      search: '  volkswagen  '
+    });
+
+    expect(result.error).toBeNull();
+    expect(result.payload).toMatchObject({
+      page: 1,
+      columns: ['rubro'],
+      filters: [
+        {
+          code: 'rubro',
+          values: ['Automotor']
+        }
+      ],
+      search: 'volkswagen'
+    });
+  });
+
   it('omits explicitly inactive switch filters', () => {
     const result = buildExplorerRegisterPayload({
       catalog,

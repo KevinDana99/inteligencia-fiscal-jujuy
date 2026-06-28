@@ -68,6 +68,7 @@ describe('mapExplorerRegisterDto', () => {
       columns: ['rubro'],
       startDate: '2024-01-01',
       endDate: '2024-12-31',
+      search: '  Volkswagen  ',
       filters: [
         {
           code: 'rubro',
@@ -82,12 +83,30 @@ describe('mapExplorerRegisterDto', () => {
       columnas: ['rubro'],
       fechaInicio: '2024-01-01',
       fechaFin: '2024-12-31',
+      busqueda: 'Volkswagen',
       filtros: [
         {
           codigo: 'rubro',
           valores: ['TECNOLOGIA']
         }
       ]
+    });
+  });
+
+  it('omits blank global search from the backend request contract', () => {
+    const request = mapExplorerRegisterExploreRequestDto({
+      page: 1,
+      itemsPerPage: 20,
+      columns: [],
+      filters: [],
+      search: '   '
+    });
+
+    expect(request).toEqual({
+      pagina: 1,
+      itemsPagina: 20,
+      columnas: [],
+      filtros: []
     });
   });
 

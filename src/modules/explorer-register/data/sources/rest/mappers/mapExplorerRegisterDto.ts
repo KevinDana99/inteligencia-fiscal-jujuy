@@ -63,6 +63,8 @@ export function mapExplorerRegisterCatalogDto(
 export function mapExplorerRegisterExploreRequestDto(
   payload: IExplorerRegisterExplorePayload
 ): ApiExplorerRegisterExploreRequestDto {
+  const search = payload.search?.trim();
+
   return {
     pagina: payload.page,
     itemsPagina: payload.itemsPerPage,
@@ -72,7 +74,8 @@ export function mapExplorerRegisterExploreRequestDto(
       valores: filter.values
     })),
     ...(payload.startDate ? { fechaInicio: payload.startDate } : {}),
-    ...(payload.endDate ? { fechaFin: payload.endDate } : {})
+    ...(payload.endDate ? { fechaFin: payload.endDate } : {}),
+    ...(search ? { busqueda: search } : {})
   };
 }
 

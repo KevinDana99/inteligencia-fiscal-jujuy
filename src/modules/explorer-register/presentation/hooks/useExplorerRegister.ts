@@ -5,7 +5,6 @@ import {
   useExplorerRegisterBatchCreation,
   useExplorerRegisterCatalog,
   useExplorerRegisterForm,
-  useExplorerRegisterLocalFilter,
   useExplorerRegisterSearch,
   useExplorerRegisterSelection,
 } from "./explorer-register";
@@ -23,10 +22,9 @@ export function useExplorerRegister(
     selectedColumnCodes: form.selectedColumnCodes,
     temporalRange: form.temporalRange,
   });
-  const localFilter = useExplorerRegisterLocalFilter(search.data?.rows ?? []);
   const selectionState = selection.getSelectionState(
     search.data,
-    localFilter.filteredRows
+    search.data?.rows ?? []
   );
   const batchCreation = useExplorerRegisterBatchCreation(
     selectionState.selectedRows
@@ -35,11 +33,9 @@ export function useExplorerRegister(
   function resetSearchAndSelection() {
     search.resetSearch();
     selection.resetSelection();
-    localFilter.resetLocalSearch();
   }
 
   function runSearch() {
-    localFilter.resetLocalSearch();
     search.search();
   }
 
@@ -95,9 +91,9 @@ export function useExplorerRegister(
     searchStatus: search.status,
     selectedColumnCodes: form.selectedColumnCodes,
     selectedCount: selectionState.selectedCount,
-    localSearchValue: localFilter.searchValue,
-    localSearchResultsCount: selectionState.visibleRows.length,
-    setLocalSearchValue: localFilter.setSearchValue,
+    searchResultsCount: search.data?.totalItems ?? 0,
+    searchValue: search.searchValue,
+    setSearchValue: search.setSearchValue,
     setRowsSelected: selection.setRowsSelected,
     setRowSelected: selection.setRowSelected,
     allVisibleRowsSelected: selectionState.allVisibleRowsSelected,

@@ -1,5 +1,13 @@
 # Explorer Register Feature Story
 
+## 2026-06-28 - Busqueda global backend en Explorar Padron
+
+- El payload interno de exploracion ahora acepta `search` y el mapper REST lo envia al backend como `busqueda`, normalizado con `trim()` y omitido cuando queda vacio.
+- El buscador general de la tabla dejo de filtrar las filas cargadas localmente: ahora actualiza el payload de exploracion, reinicia a pagina 1 y reconsulta el endpoint con debounce corto.
+- La paginacion y el cambio de cantidad por pagina reutilizan `lastPayload`, preservando `busqueda`, filtros, columnas y rango temporal activos.
+- El mock de exploracion aplica la busqueda global por CUIT o razon social antes de paginar para sostener el mismo flujo funcional en modo mock.
+- Se retiro el hook/utilidad de filtro local de filas para evitar una ruta alternativa al contrato de busqueda global del backend.
+
 ## 2026-06-24 - Seleccion por checkbox y filtro local de CUITs
 
 - La tabla de resultados de `/explorar-padron` reemplaza la accion `X` por checkboxes Mantine, con seleccion individual y checkbox de encabezado para seleccionar o deseleccionar los resultados visibles.
@@ -66,6 +74,9 @@
 
 ## Verificacion
 
+- `bun x jest src/modules/explorer-register --runInBand`
+- `bun x eslint src/modules/explorer-register`
+- `bun x tsc --noEmit` queda bloqueado por un fixture ajeno en `src/modules/unified-register/presentation/hooks/useUnifiedRegisterPage/useUnifiedRegisterPageSearch.test.ts`: falta `totalItems` en un objeto `IUnifiedRegisterListData`.
 - `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node node_modules/jest/bin/jest.js src/modules/explorer-register`
 - `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node node_modules/typescript/bin/tsc --noEmit`
 - `PATH=/Users/gastonmorales/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node node_modules/eslint/bin/eslint.js src/modules/explorer-register/presentation/utils/dateExplorerRegisterRange.ts src/modules/explorer-register/presentation/utils/buildExplorerRegisterPayload.ts src/modules/explorer-register/presentation/utils/buildExplorerRegisterPayload.test.ts src/modules/explorer-register/presentation/hooks/explorer-register/useExplorerRegisterForm.ts src/modules/explorer-register/presentation/components/ExplorerRegisterPage/components/ExplorerRegisterTemporalFilters.tsx src/modules/explorer-register/presentation/constants/explorerRegisterPresentation.ts`

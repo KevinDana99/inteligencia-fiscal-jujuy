@@ -38,6 +38,7 @@ export interface ApiExplorerRegisterExploreRequestDto {
   filtros: ApiExplorerRegisterExploreFilterRequestDto[];
   fechaInicio?: string;
   fechaFin?: string;
+  busqueda?: string | null;
 }
 
 export interface ApiExplorerRegisterAppliedCriteriaDto {

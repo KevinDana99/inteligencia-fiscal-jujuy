@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { DEFAULT_EXPLORER_REGISTER_QUERY } from '../../../constants';
 import { exploreExplorerRegisterAction } from '../../../data/actions';
 import type {
@@ -22,6 +22,12 @@ interface UseExplorerRegisterSearchParams {
   temporalRange: IExplorerRegisterTemporalRange;
 }
 
+const SEARCH_DEBOUNCE_MS = 350;
+
+function normalizeSearchValue(value: string) {
+  return value.trim() || null;
+}
+
 export function useExplorerRegisterSearch({
   catalog,
   filterValues,
@@ -35,10 +41,54 @@ export function useExplorerRegisterSearch({
   const [hasSearched, setHasSearched] = useState(false);
   const [lastPayload, setLastPayload] =
     useState<IExplorerRegisterExplorePayload | null>(null);
+  const [searchValue, setSearchValueState] = useState('');
   const [itemsPerPage, setItemsPerPage] = useState(
     DEFAULT_EXPLORER_REGISTER_QUERY.itemsPerPage
   );
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  function clearPendingSearchDebounce() {
+    if (!searchDebounceRef.current) {
+      return;
+    }
+
+    clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = null;
+  }
+
+  function buildSearchPayload({
+    page,
+    nextItemsPerPage = itemsPerPage,
+    nextSearchValue = searchValue
+  }: {
+    page: number;
+    nextItemsPerPage?: number;
+    nextSearchValue?: string;
+  }) {
+    return buildExplorerRegisterPayload({
+      catalog,
+      filterValues,
+      itemsPerPage: nextItemsPerPage,
+      selectedColumnCodes,
+      temporalRange,
+      page,
+      search: normalizeSearchValue(nextSearchValue)
+    });
+  }
+
+  function applySearchResult(
+    result: ReturnType<typeof buildExplorerRegisterPayload>
+  ) {
+    if (!result.payload) {
+      setHasSearched(true);
+      setError(result.error);
+      setData(null);
+      return;
+    }
+
+    applyPayload(result.payload);
+  }
 
   function applyPayload(payload: IExplorerRegisterExplorePayload) {
     setError(null);
@@ -64,26 +114,14 @@ export function useExplorerRegisterSearch({
   }
 
   function search() {
-    const result = buildExplorerRegisterPayload({
-      catalog,
-      filterValues,
-      itemsPerPage,
-      selectedColumnCodes,
-      temporalRange,
-      page: 1
-    });
+    clearPendingSearchDebounce();
+    const result = buildSearchPayload({ page: 1 });
 
-    if (!result.payload) {
-      setHasSearched(true);
-      setError(result.error);
-      setData(null);
-      return;
-    }
-
-    applyPayload(result.payload);
+    applySearchResult(result);
   }
 
   function changePage(page: number) {
+    clearPendingSearchDebounce();
     const payload = lastPayload
       ? {
           ...lastPayload,
@@ -95,7 +133,8 @@ export function useExplorerRegisterSearch({
           itemsPerPage,
           selectedColumnCodes,
           temporalRange,
-          page
+          page,
+          search: normalizeSearchValue(searchValue)
         }).payload;
 
     if (payload) {
@@ -104,6 +143,7 @@ export function useExplorerRegisterSearch({
   }
 
   function changeItemsPerPage(nextItemsPerPage: number) {
+    clearPendingSearchDebounce();
     setItemsPerPage(nextItemsPerPage);
 
     const payload = lastPayload
@@ -118,7 +158,8 @@ export function useExplorerRegisterSearch({
           itemsPerPage: nextItemsPerPage,
           selectedColumnCodes,
           temporalRange,
-          page: 1
+          page: 1,
+          search: normalizeSearchValue(searchValue)
         }).payload;
 
     if (payload) {
@@ -126,13 +167,43 @@ export function useExplorerRegisterSearch({
     }
   }
 
+  function setSearchValue(nextSearchValue: string) {
+    setSearchValueState(nextSearchValue);
+
+    if (!hasSearched) {
+      return;
+    }
+
+    clearPendingSearchDebounce();
+    searchDebounceRef.current = setTimeout(() => {
+      const result = buildSearchPayload({
+        page: 1,
+        nextSearchValue
+      });
+
+      applySearchResult(result);
+      searchDebounceRef.current = null;
+    }, SEARCH_DEBOUNCE_MS);
+  }
+
   function resetSearch() {
+    clearPendingSearchDebounce();
     setData(null);
     setError(null);
     setStatus(undefined);
     setHasSearched(false);
     setLastPayload(null);
+    setSearchValueState('');
   }
+
+  useEffect(
+    () => () => {
+      if (searchDebounceRef.current) {
+        clearTimeout(searchDebounceRef.current);
+      }
+    },
+    []
+  );
 
   return {
     changeItemsPerPage,
@@ -144,6 +215,8 @@ export function useExplorerRegisterSearch({
     isPending,
     resetSearch,
     search,
+    searchValue,
+    setSearchValue,
     status
   };
 }
