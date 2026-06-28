@@ -8,6 +8,10 @@ import type {
 import { UNIFIED_REGISTER_DETAIL_EMPTY_CELL_VALUE } from '../constants/unifiedRegisterDetail';
 
 const INTERVENTION_ORDER_STATUS_LABELS: Record<string, string> = {
+  '1': 'Abierta',
+  '2': 'En análisis',
+  '3': 'En curso',
+  '4': 'Cerrada',
   ABIERTA: 'Abierta',
   EN_ANALISIS: 'En análisis',
   EN_CURSO: 'En curso',
@@ -15,7 +19,14 @@ const INTERVENTION_ORDER_STATUS_LABELS: Record<string, string> = {
 };
 
 const FINE_STATUS_LABELS: Record<string, string> = {
+  ACTIVO: 'En gestión',
   BAJA: 'Impaga'
+};
+
+const FINE_TYPE_LABELS: Record<string, IUnifiedRegisterFine['type']> = {
+  DESTINATARIO: 'Destinatario',
+  REMITENTE: 'Remitente',
+  TRANSPORTISTA: 'Transportista'
 };
 
 function mapFineStatus(value: string | null) {
@@ -40,6 +51,16 @@ function mapInterventionOrderStatus(value: string | null) {
   );
 }
 
+function mapFineType(value: string | null | undefined) {
+  const normalizedValue = value?.trim().toUpperCase();
+
+  if (!normalizedValue) {
+    return null;
+  }
+
+  return FINE_TYPE_LABELS[normalizedValue] ?? null;
+}
+
 function formatFineIssuedAt(value: string | null) {
   const normalizedValue = value?.trim();
 
@@ -60,7 +81,7 @@ export function mapFineRecordToViewModel(
   return {
     id: fine.numero,
     issuedAt: formatFineIssuedAt(fine.fecha),
-    type: fine.tipo,
+    type: mapFineType(fine.tipo),
     description: fine.descripcion,
     amount: fine.monto,
     status: mapFineStatus(fine.estado)

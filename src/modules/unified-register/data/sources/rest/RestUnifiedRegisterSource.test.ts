@@ -271,6 +271,7 @@ describe('RestUnifiedRegisterSource', () => {
           {
             numero: null,
             fecha: null,
+            tipo: null,
             descripcion: null,
             monto: '1500.25',
             estado: null
@@ -293,6 +294,7 @@ describe('RestUnifiedRegisterSource', () => {
         {
           numero: null,
           fecha: null,
+          tipo: null,
           descripcion: null,
           monto: '1500.25',
           estado: null
@@ -314,7 +316,11 @@ describe('RestUnifiedRegisterSource', () => {
         ordenes: [
           {
             numero: '2025-99',
+            origen: null,
+            instruccion: null,
             periodo: null,
+            deuda: null,
+            bi: null,
             motivo: 'Fiscalizacion CM',
             monto: null,
             estado: 'EN_CURSO'
@@ -341,7 +347,11 @@ describe('RestUnifiedRegisterSource', () => {
       ordenes: [
         {
           numero: '2025-99',
+          origen: null,
+          instruccion: null,
           periodo: null,
+          deuda: null,
+          bi: null,
           motivo: 'Fiscalizacion CM',
           monto: null,
           estado: 'EN_CURSO'

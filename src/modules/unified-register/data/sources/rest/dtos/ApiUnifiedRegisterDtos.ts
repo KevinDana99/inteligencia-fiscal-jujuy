@@ -80,6 +80,7 @@ export interface ApiUnifiedRegisterHeaderResponseDto {
 export interface ApiUnifiedRegisterFineResponseDto {
   numero: string | null;
   fecha: string | null;
+  tipo?: string | null;
   descripcion: string | null;
   monto: string | null;
   estado: string | null;
@@ -95,7 +96,11 @@ export interface ApiUnifiedRegisterFinesListResponseDto {
 
 export interface ApiUnifiedRegisterInterventionOrderResponseDto {
   numero: string | null;
+  origen?: string | null;
+  instruccion?: string | null;
   periodo: string | null;
+  deuda?: string | null;
+  bi?: string | null;
   motivo: string | null;
   monto: string | null;
   estado: string | null;
