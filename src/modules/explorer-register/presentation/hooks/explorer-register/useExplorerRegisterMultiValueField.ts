@@ -26,10 +26,6 @@ export function useExplorerRegisterMultiValueField({
   const [searchValue, setSearchValue] = useState('');
   const [isOpen, { close: closeDropdown, open: openDropdown }] =
     useDisclosure(false);
-  const allowedOptionValues = useMemo(
-    () => new Set(options.map((option) => option.value.toUpperCase())),
-    [options]
-  );
   const filteredOptions = useMemo(
     () =>
       filterExplorerRegisterOptionData(options, values, searchValue).slice(
@@ -87,9 +83,7 @@ export function useExplorerRegisterMultiValueField({
     }
 
     if (!allowsCustomValues) {
-      const normalizedValue = nextValue.trim().toUpperCase();
-
-      if (!normalizedValue) {
+      if (!nextValue.trim()) {
         setSearchValue('');
         if (options.length > 0) {
           openDropdown();
@@ -97,11 +91,7 @@ export function useExplorerRegisterMultiValueField({
         return;
       }
 
-      if (!allowedOptionValues.has(normalizedValue)) {
-        return;
-      }
-
-      setSearchValue(normalizedValue);
+      setSearchValue(nextValue);
       if (options.length > 0) {
         openDropdown();
       }

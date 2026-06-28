@@ -14,21 +14,3 @@
   font-weight: 500;
   padding-left: 6px;
 }
-
-.switchClearButton {
-  height: 22px;
-  color: var(--mantine-color-gray-6);
-  font-size: 12px;
-  font-weight: 500;
-  padding-inline: 4px;
-  text-decoration: underline;
-}
-
-.switchClearButton:hover {
-  background: transparent;
-  color: var(--mantine-color-blue-5);
-}
-
-.switchClearButton:disabled {
-  background: transparent;
-}

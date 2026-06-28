@@ -1,5 +1,5 @@
-import { Select, TextInput } from '@mantine/core';
-import { IconChevronDown, IconSearch } from '@tabler/icons-react';
+import { Select } from '@mantine/core';
+import { IconChevronDown } from '@tabler/icons-react';
 import {
   EXPLORER_REGISTER_AGENT_FILTER_OPTIONS,
   EXPLORER_REGISTER_TEXTS
@@ -61,16 +61,13 @@ export function ExplorerRegisterFilterInput({
 
   if (filter.inputType === 'texto') {
     return (
-      <TextInput
-        value={filterValue[0] ?? ''}
+      <ExplorerRegisterMultiValueField
+        values={filterValue}
+        options={[]}
         disabled={disabled}
-        leftSection={<IconSearch size={13} />}
-        leftSectionWidth={30}
         placeholder={EXPLORER_REGISTER_TEXTS.filterSearchPlaceholder}
-        className={classes.filterSelect}
-        onChange={(event) =>
-          controller.updateTextFilterValue(filter.code, event.currentTarget.value)
-        }
+        hint="Ingresá el texto y presioná Enter"
+        onChange={(values) => controller.updateFilterValues(filter.code, values)}
       />
     );
   }

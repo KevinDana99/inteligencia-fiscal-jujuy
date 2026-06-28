@@ -1,4 +1,4 @@
-import { Button, Group, Radio, Text } from '@mantine/core';
+import { Group, Radio, Text } from '@mantine/core';
 import {
   EXPLORER_REGISTER_SWITCH_ACTIVE_VALUE,
   EXPLORER_REGISTER_SWITCH_INACTIVE_VALUE,
@@ -24,7 +24,7 @@ export function SwitchFilterField({
     <div className={classes.switchField}>
       <Text className={layoutClasses.filterLabel}>{filter.name}</Text>
       <Radio.Group
-        value={filterValue[0] ?? null}
+        value={filterValue[0] ?? EXPLORER_REGISTER_SWITCH_INACTIVE_VALUE}
         onChange={(value) =>
           controller.updateFilterValues(filter.code, value ? [value] : [])
         }
@@ -44,15 +44,6 @@ export function SwitchFilterField({
             size="xs"
             disabled={disabled}
           />
-          <Button
-            variant="subtle"
-            size="compact-xs"
-            className={classes.switchClearButton}
-            disabled={disabled}
-            onClick={() => controller.updateFilterValues(filter.code, [])}
-          >
-            {EXPLORER_REGISTER_TEXTS.clearFilter}
-          </Button>
         </Group>
       </Radio.Group>
     </div>

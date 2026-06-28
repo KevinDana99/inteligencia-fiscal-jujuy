@@ -1,5 +1,13 @@
 # Explorer Register Feature Story
 
+## 2026-06-28 - Busqueda parcial en filtro de tipo contribuyente
+
+- El campo multiseleccion de opciones cerradas ahora permite tipear texto parcial para filtrar opciones, manteniendo la restriccion de agregar solo valores existentes.
+- `tipoContribuyente`, `sistemaControl` y los filtros dinamicos de regimen/deuda quedan alineados con la experiencia de `matrizRiesgo`: al escribir texto parcial se filtran las opciones disponibles en el dropdown.
+- Los filtros libres como `domicilio` ahora usan el campo de chips: el texto se agrega como valor al presionar Enter, en lugar de aplicar el filtro en cada tecla.
+- Los filtros tipo switch/checkbox ya no muestran la accion individual `Limpiar`; el control queda visualmente limitado a `Si` o `No`.
+- Se agrego cobertura unitaria para validar busqueda parcial y omision de opciones ya seleccionadas.
+
 ## 2026-06-28 - Busqueda global backend en Explorar Padron
 
 - El payload interno de exploracion ahora acepta `search` y el mapper REST lo envia al backend como `busqueda`, normalizado con `trim()` y omitido cuando queda vacio.

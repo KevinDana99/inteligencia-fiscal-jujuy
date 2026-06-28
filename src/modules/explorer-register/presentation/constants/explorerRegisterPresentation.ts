@@ -17,7 +17,6 @@ export const EXPLORER_REGISTER_TEXTS = {
   columnsTitle: 'Columnas y filtros disponibles',
   filtersTitle: 'Configurar filtros',
   clearFilters: 'Limpiar filtros',
-  clearFilter: 'Limpiar',
   search: 'Buscar',
   resultsSearchPlaceholder: 'Buscar CUIT o razón social...',
   results: 'resultados',

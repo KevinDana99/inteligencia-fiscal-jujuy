@@ -49,11 +49,6 @@ export function useExplorerRegister(
     resetSearchAndSelection();
   }
 
-  function updateTextFilterValue(code: string, value: string) {
-    form.updateTextFilterValue(code, value);
-    resetSearchAndSelection();
-  }
-
   function updateSwitchFilterValue(code: string, checked: boolean) {
     form.updateSwitchFilterValue(code, checked);
     resetSearchAndSelection();
@@ -104,7 +99,6 @@ export function useExplorerRegister(
     updateFilterValues,
     updateSwitchFilterValue,
     updateTemporalRange,
-    updateTextFilterValue,
     visibleRows: selectionState.visibleRows,
   };
 }

@@ -79,10 +79,6 @@ export function useExplorerRegisterForm(catalog: IExplorerRegisterCatalog) {
     }));
   }
 
-  function updateTextFilterValue(code: string, value: string) {
-    updateFilterValues(code, value.trim() ? [value] : []);
-  }
-
   function updateSwitchFilterValue(code: string, checked: boolean) {
     updateFilterValues(
       code,
@@ -117,7 +113,6 @@ export function useExplorerRegisterForm(catalog: IExplorerRegisterCatalog) {
     toggleColumn,
     updateFilterValues,
     updateSwitchFilterValue,
-    updateTemporalRange,
-    updateTextFilterValue
+    updateTemporalRange
   };
 }
