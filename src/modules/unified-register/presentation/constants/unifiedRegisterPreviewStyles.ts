@@ -8,27 +8,24 @@ export const RISK_CLASS_KEYS = {
 } as const satisfies Record<UnifiedRegisterRiskLevel, string>;
 
 export const FINE_STATUS_CLASS_KEYS: Record<string, string> = {
-  Impaga: 'badgeCritical',
-  Pagada: 'badgePositive',
-  'En gestión': 'badgeWarning'
+  ACTIVO: 'badgePositive',
+  ANULADO: 'badgeCritical'
 };
 
 export const FINE_AMOUNT_CLASS_KEYS: Record<string, string> = {
-  Impaga: 'amountCritical',
-  Pagada: 'amountPositive',
-  'En gestión': 'amountWarning'
+  ACTIVO: 'amountDefault',
+  ANULADO: 'amountDefault'
 };
 
 export const FINE_AMOUNT_COLOR: Record<string, string> = {
-  Impaga: '#dc2626',
-  Pagada: '#059669',
-  'En gestión': '#d97706'
+  ACTIVO: 'var(--mantine-color-gray-7)',
+  ANULADO: 'var(--mantine-color-gray-7)'
 };
 
 export const ORDER_STATUS_CLASS_KEYS: Record<string, string> = {
   Abierta: 'badgeNeutral',
   'En análisis': 'badgeInfo',
-  'En curso': 'badgeWarning',
+  'En curso': 'badgeInfo',
   Cerrada: 'badgePositive'
 };
 

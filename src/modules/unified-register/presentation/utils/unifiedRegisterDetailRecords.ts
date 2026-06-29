@@ -19,8 +19,8 @@ const INTERVENTION_ORDER_STATUS_LABELS: Record<string, string> = {
 };
 
 const FINE_STATUS_LABELS: Record<string, string> = {
-  ACTIVO: 'En gestión',
-  BAJA: 'Impaga'
+  ACTIVO: 'ACTIVO',
+  ANULADO: 'ANULADO'
 };
 
 const FINE_TYPE_LABELS: Record<string, IUnifiedRegisterFine['type']> = {
