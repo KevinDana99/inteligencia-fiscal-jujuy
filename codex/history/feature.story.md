@@ -55,6 +55,8 @@
 ## 2026-10-21 Credenciales visibles para login mock
 
 - El formulario precarga las credenciales del analista cuando `NEXT_PUBLIC_USE_MOCK_AUTH=true`.
-- Se agregó una tarjeta visible `Accesos de prueba`, ubicada antes de los campos, con los accesos mock de analista y administrador.
+- El aviso simple debajo del botón muestra las credenciales mock del analista y del administrador.
 - Los valores visibles se leen desde `AUTH_MOCK_USERS`, la misma configuración utilizada por `MockAuthSource`, para evitar divergencias.
 - Los avisos de sesión expirada y recuperación de contraseña ahora comparten un único estado y son mutuamente excluyentes.
+- La habilitación visual del modo mock ahora se resuelve en el Server Component y se pasa como prop al formulario, evitando divergencias entre variables de build y runtime.
+- Se agregó `USE_MOCK_AUTH=true` como bandera server-only prioritaria para que la selección de `MockAuthSource` y la tarjeta del login respondan al entorno runtime de Kubernetes.

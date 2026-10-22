@@ -18,18 +18,19 @@ import {
   IconInfoCircle
 } from '@tabler/icons-react'
 import { AUTH_MOCK_USERS } from '@/lib/auth/constants'
-import { MockCredentialsCard } from './MockCredentialsCard'
 import { useLoginForm } from './useLoginForm'
 import classes from './LoginForm.module.css'
 import Image from 'next/image'
 
-const isMockAuthEnabled = process.env.NEXT_PUBLIC_USE_MOCK_AUTH === 'true'
-
-export default function LoginForm() {
-  return <LoginFormContent />
+interface LoginFormProps {
+  mockAuthEnabled: boolean
 }
 
-function LoginFormContent() {
+export default function LoginForm({ mockAuthEnabled }: LoginFormProps) {
+  return <LoginFormContent mockAuthEnabled={mockAuthEnabled} />
+}
+
+function LoginFormContent({ mockAuthEnabled }: LoginFormProps) {
   const {
     isPending,
     formAction,
@@ -77,8 +78,6 @@ function LoginFormContent() {
           </Text>
         </Stack>
 
-        {isMockAuthEnabled ? <MockCredentialsCard /> : null}
-
         <form
           ref={formRef}
           className={classes.form}
@@ -99,7 +98,7 @@ function LoginFormContent() {
               placeholder='admin@rentas.gob.ar'
               name='correo'
               defaultValue={
-                isMockAuthEnabled ? AUTH_MOCK_USERS.user.email : undefined
+                mockAuthEnabled ? AUTH_MOCK_USERS.user.email : undefined
               }
               onChange={hideRecoveryNotice}
               disabled={isPending}
@@ -121,7 +120,7 @@ function LoginFormContent() {
               placeholder='••••••••'
               name='contrasena'
               defaultValue={
-                isMockAuthEnabled ? AUTH_MOCK_USERS.user.password : undefined
+                mockAuthEnabled ? AUTH_MOCK_USERS.user.password : undefined
               }
               onChange={hideRecoveryNotice}
               disabled={isPending}
@@ -193,11 +192,21 @@ function LoginFormContent() {
 
           <LoginSubmitButton />
 
-          {!isMockAuthEnabled ? (
-            <Text className={classes.credentialsHint}>
-              Usa tus credenciales institucionales para ingresar.
-            </Text>
-          ) : null}
+          <Text className={classes.credentialsHint}>
+            {mockAuthEnabled ? (
+              <>
+                Credenciales de prueba
+                <br />
+                <strong>Analista:</strong> {AUTH_MOCK_USERS.user.email} /{' '}
+                {AUTH_MOCK_USERS.user.password}
+                <br />
+                <strong>Administrador:</strong> {AUTH_MOCK_USERS.admin.email} /{' '}
+                {AUTH_MOCK_USERS.admin.password}
+              </>
+            ) : (
+              'Usa tus credenciales institucionales para ingresar.'
+            )}
+          </Text>
         </form>
       </Paper>
       <Image

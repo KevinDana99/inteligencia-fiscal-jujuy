@@ -15,6 +15,7 @@ Copiá `.env.example` a `.env.local`.
 
 - `NEXT_PUBLIC_USE_MOCK_*=true`: usa las fuentes mock disponibles para desarrollo y despliegue
 - La configuración actual mantiene todos los `NEXT_PUBLIC_USE_MOCK_*` en `true`
+- `USE_MOCK_AUTH=true`: selecciona auth mock en runtime y controla el aviso de credenciales del login
 - `NEXT_PUBLIC_API_BASE_URL`: base URL para la fuente REST
 - `DOCUMENTS_API_BASE_URL`: base URL server-side para documentos/informes; en Kubernetes debe usar el Service interno del backend
 
