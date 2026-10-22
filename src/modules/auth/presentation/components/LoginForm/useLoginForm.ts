@@ -12,17 +12,19 @@ import {
   hasClientCookie
 } from '../../utils/authLoginSuccessToastCookie'
 
+type LoginNotice = 'none' | 'recovery' | 'session-expired'
+
 export function useLoginForm() {
   const formRef = useRef<HTMLFormElement>(null)
-  const [recoveryNoticeVisible, setRecoveryNoticeVisible] = useState(false)
-  const [sessionExpiredNoticeVisible, setSessionExpiredNoticeVisible] =
-    useState(false)
+  const [activeNotice, setActiveNotice] = useState<LoginNotice>('none')
   const [submitAttempted, setSubmitAttempted] = useState(false)
   const [state, formAction, isPending] = useActionState(
     signInAction,
     INITIAL_SIGN_IN_STATE
   )
   const error = state.message
+  const recoveryNoticeVisible = activeNotice === 'recovery'
+  const sessionExpiredNoticeVisible = activeNotice === 'session-expired'
   const hasError =
     state.success === false &&
     submitAttempted &&
@@ -40,27 +42,27 @@ export function useLoginForm() {
       window.location.protocol === 'https:'
     )
     const noticeTimer = window.setTimeout(() => {
-      setSessionExpiredNoticeVisible(true)
+      setActiveNotice((currentNotice) =>
+        currentNotice === 'recovery' ? currentNotice : 'session-expired'
+      )
     }, 0)
 
     return () => window.clearTimeout(noticeTimer)
   }, [])
 
   const handleSubmitAttempt = () => {
-    setRecoveryNoticeVisible(false)
-    setSessionExpiredNoticeVisible(false)
+    setActiveNotice('none')
     setSubmitAttempted(true)
   }
 
   const handleRecoveryNotice = () => {
     formRef.current?.reset()
-    setRecoveryNoticeVisible(true)
+    setActiveNotice('recovery')
     setSubmitAttempted(false)
   }
 
   const hideRecoveryNotice = () => {
-    setRecoveryNoticeVisible(false)
-    setSessionExpiredNoticeVisible(false)
+    setActiveNotice('none')
     setSubmitAttempted(false)
   }
 

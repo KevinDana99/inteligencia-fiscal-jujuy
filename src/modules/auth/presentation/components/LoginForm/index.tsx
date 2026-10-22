@@ -18,6 +18,7 @@ import {
   IconInfoCircle
 } from '@tabler/icons-react'
 import { AUTH_MOCK_USERS } from '@/lib/auth/constants'
+import { MockCredentialsCard } from './MockCredentialsCard'
 import { useLoginForm } from './useLoginForm'
 import classes from './LoginForm.module.css'
 import Image from 'next/image'
@@ -75,6 +76,8 @@ function LoginFormContent() {
             Panel de Administración — Acceso restringido
           </Text>
         </Stack>
+
+        {isMockAuthEnabled ? <MockCredentialsCard /> : null}
 
         <form
           ref={formRef}
@@ -190,21 +193,11 @@ function LoginFormContent() {
 
           <LoginSubmitButton />
 
-          <Text className={classes.credentialsHint}>
-            {isMockAuthEnabled ? (
-              <>
-                Credenciales de prueba
-                <br />
-                <strong>Analista:</strong> {AUTH_MOCK_USERS.user.email} /{' '}
-                {AUTH_MOCK_USERS.user.password}
-                <br />
-                <strong>Administrador:</strong> {AUTH_MOCK_USERS.admin.email} /{' '}
-                {AUTH_MOCK_USERS.admin.password}
-              </>
-            ) : (
-              'Usa tus credenciales institucionales para ingresar.'
-            )}
-          </Text>
+          {!isMockAuthEnabled ? (
+            <Text className={classes.credentialsHint}>
+              Usa tus credenciales institucionales para ingresar.
+            </Text>
+          ) : null}
         </form>
       </Paper>
       <Image

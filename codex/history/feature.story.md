@@ -55,5 +55,6 @@
 ## 2026-10-21 Credenciales visibles para login mock
 
 - El formulario precarga las credenciales del analista cuando `NEXT_PUBLIC_USE_MOCK_AUTH=true`.
-- El pie del formulario muestra los accesos mock de analista y administrador.
+- Se agregó una tarjeta visible `Accesos de prueba`, ubicada antes de los campos, con los accesos mock de analista y administrador.
 - Los valores visibles se leen desde `AUTH_MOCK_USERS`, la misma configuración utilizada por `MockAuthSource`, para evitar divergencias.
+- Los avisos de sesión expirada y recuperación de contraseña ahora comparten un único estado y son mutuamente excluyentes.
