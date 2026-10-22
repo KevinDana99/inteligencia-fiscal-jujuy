@@ -51,3 +51,9 @@
 - Los tipos conocidos se normalizan sin distinguir mayúsculas ni espacios; valores vacíos o desconocidos se convierten en `null`.
 - Se agregaron pruebas unitarias para los tres tipos admitidos y los casos sin valor o no soportados.
 - Validado con Jest focalizado, ESLint y `next build` mediante Bun.
+
+## 2026-10-21 Credenciales visibles para login mock
+
+- El formulario precarga las credenciales del analista cuando `NEXT_PUBLIC_USE_MOCK_AUTH=true`.
+- El pie del formulario muestra los accesos mock de analista y administrador.
+- Los valores visibles se leen desde `AUTH_MOCK_USERS`, la misma configuración utilizada por `MockAuthSource`, para evitar divergencias.

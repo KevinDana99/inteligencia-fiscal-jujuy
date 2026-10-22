@@ -17,6 +17,7 @@ import {
   IconEyeOff,
   IconInfoCircle
 } from '@tabler/icons-react'
+import { AUTH_MOCK_USERS } from '@/lib/auth/constants'
 import { useLoginForm } from './useLoginForm'
 import classes from './LoginForm.module.css'
 import Image from 'next/image'
@@ -94,6 +95,9 @@ function LoginFormContent() {
               aria-label='Email'
               placeholder='admin@rentas.gob.ar'
               name='correo'
+              defaultValue={
+                isMockAuthEnabled ? AUTH_MOCK_USERS.user.email : undefined
+              }
               onChange={hideRecoveryNotice}
               disabled={isPending}
               className={`${classes.textInput} ${hasError ? classes.inputError : ''}`}
@@ -113,6 +117,9 @@ function LoginFormContent() {
               aria-label='Contraseña'
               placeholder='••••••••'
               name='contrasena'
+              defaultValue={
+                isMockAuthEnabled ? AUTH_MOCK_USERS.user.password : undefined
+              }
               onChange={hideRecoveryNotice}
               disabled={isPending}
               visibilityToggleIcon={({ reveal }) =>
@@ -186,8 +193,13 @@ function LoginFormContent() {
           <Text className={classes.credentialsHint}>
             {isMockAuthEnabled ? (
               <>
-                Credenciales de prueba:{' '}
-                <strong>user@plantilla.local / ChangeMe123!</strong>
+                Credenciales de prueba
+                <br />
+                <strong>Analista:</strong> {AUTH_MOCK_USERS.user.email} /{' '}
+                {AUTH_MOCK_USERS.user.password}
+                <br />
+                <strong>Administrador:</strong> {AUTH_MOCK_USERS.admin.email} /{' '}
+                {AUTH_MOCK_USERS.admin.password}
               </>
             ) : (
               'Usa tus credenciales institucionales para ingresar.'
