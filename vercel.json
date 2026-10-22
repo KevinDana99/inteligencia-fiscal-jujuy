@@ -1,6 +1,14 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "env": {
-    "USE_MOCK_AUTH": "true"
+    "USE_MOCK_AUTH": "true",
+    "NEXT_PUBLIC_USE_MOCK_ADMIN_PANEL": "true",
+    "NEXT_PUBLIC_USE_MOCK_BATCH_MANAGEMENT": "true",
+    "NEXT_PUBLIC_USE_MOCK_CROSS_MANAGEMENT": "true",
+    "NEXT_PUBLIC_USE_MOCK_CATALOG_SHOWCASE": "true",
+    "NEXT_PUBLIC_USE_MOCK_DOCUMENTS": "true",
+    "NEXT_PUBLIC_USE_MOCK_EXPLORER_REGISTER": "true",
+    "NEXT_PUBLIC_USE_MOCK_REPROCESSING": "true",
+    "NEXT_PUBLIC_USE_MOCK_UNIFIED_REGISTER": "true"
   }
 }

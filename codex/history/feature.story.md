@@ -65,3 +65,4 @@
 
 - Se agregó `vercel.json` con `USE_MOCK_AUTH=true` para que los despliegues gestionados por Vercel habiliten la fuente mock y muestren las credenciales de prueba.
 - La configuración mantiene la bandera del lado servidor y evita depender de una variable `NEXT_PUBLIC_*` fijada durante el build.
+- Se alinearon en Vercel las banderas mock de los módulos de negocio con la configuración demo del repositorio, evitando combinar una sesión mock con fuentes REST que requieren un backend y token reales.
