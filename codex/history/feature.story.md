@@ -36,3 +36,11 @@
 - Se corrigió la agrupación de contribuyentes de `Generar intimación` para ordenar por el ranking aunque la grilla venga identificada por CUIT y la planilla por `taxpayerId`.
 - La resolución de contributors ahora registra aliases por `taxpayerId`, CUIT normalizado e `id`, evitando que el PDF/preview caiga al orden de planilla.
 - Validado con Jest sobre `groupIntimationExportContributors`, `intimationDocumentPayload` e `intimationDocumentGeneration`, más ESLint focalizado.
+
+## 2026-10-21 Fuentes mock por configuración
+
+- Se activaron todas las banderas `NEXT_PUBLIC_USE_MOCK_*` disponibles en el entorno local, el archivo de ejemplo, Docker, GitLab CI y Kubernetes.
+- Se agregaron al entorno local las banderas de documentos y exploración de padrón que no estaban declaradas.
+- Se actualizó el README para reflejar que la configuración vigente utiliza las fuentes mock disponibles.
+- `configuration-module` conserva su fuente REST porque actualmente no implementa un adaptador mock ni una bandera de selección.
+- Validado con búsqueda cruzada de banderas y `git diff --check`.
