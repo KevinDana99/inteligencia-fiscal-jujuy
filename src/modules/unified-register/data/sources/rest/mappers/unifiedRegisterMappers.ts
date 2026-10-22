@@ -39,6 +39,15 @@ const CONTRIBUTOR_CROSS_LABELS: Record<string, string> = {
 
 const RISK_LEVELS = new Set<UnifiedRegisterRiskLevel>(['A', 'B', 'C', 'D']);
 
+const FINE_TYPES: Record<
+  string,
+  NonNullable<IUnifiedRegisterFineRecord['tipo']>
+> = {
+  DESTINATARIO: 'Destinatario',
+  REMITENTE: 'Remitente',
+  TRANSPORTISTA: 'Transportista'
+};
+
 function formatContributorCrossName(value: string) {
   return (
     CONTRIBUTOR_CROSS_LABELS[value] ??
@@ -190,6 +199,16 @@ function mapRiskLevel(value: string | null | undefined) {
     : null;
 }
 
+function mapFineType(value: string | null | undefined) {
+  const normalizedValue = value?.trim().toUpperCase();
+
+  if (!normalizedValue) {
+    return null;
+  }
+
+  return FINE_TYPES[normalizedValue] ?? null;
+}
+
 export function mapListItemDto(
   dto: ApiUnifiedRegisterListItemDto
 ): IUnifiedRegisterItem {
@@ -237,7 +256,14 @@ export function mapHeaderDto(
 export function mapFineDto(
   dto: ApiUnifiedRegisterFineResponseDto
 ): IUnifiedRegisterFineRecord {
-  return dto;
+  return {
+    numero: dto.numero,
+    fecha: dto.fecha,
+    tipo: mapFineType(dto.tipo),
+    descripcion: dto.descripcion,
+    monto: dto.monto,
+    estado: dto.estado
+  };
 }
 
 export function mapInterventionOrderDto(

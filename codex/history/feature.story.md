@@ -44,3 +44,10 @@
 - Se actualizó el README para reflejar que la configuración vigente utiliza las fuentes mock disponibles.
 - `configuration-module` conserva su fuente REST porque actualmente no implementa un adaptador mock ni una bandera de selección.
 - Validado con búsqueda cruzada de banderas y `git diff --check`.
+
+## 2026-10-21 Normalización del tipo de multa
+
+- Se corrigió el mapper REST del padrón unificado para convertir `tipo` desde el string abierto del DTO al conjunto de valores admitidos por el dominio.
+- Los tipos conocidos se normalizan sin distinguir mayúsculas ni espacios; valores vacíos o desconocidos se convierten en `null`.
+- Se agregaron pruebas unitarias para los tres tipos admitidos y los casos sin valor o no soportados.
+- Validado con Jest focalizado, ESLint y `next build` mediante Bun.
