@@ -60,3 +60,8 @@
 - Los avisos de sesión expirada y recuperación de contraseña ahora comparten un único estado y son mutuamente excluyentes.
 - La habilitación visual del modo mock ahora se resuelve en el Server Component y se pasa como prop al formulario, evitando divergencias entre variables de build y runtime.
 - Se agregó `USE_MOCK_AUTH=true` como bandera server-only prioritaria para que la selección de `MockAuthSource` y la tarjeta del login respondan al entorno runtime de Kubernetes.
+
+## 2026-10-22 Auth mock en despliegues de Vercel
+
+- Se agregó `vercel.json` con `USE_MOCK_AUTH=true` para que los despliegues gestionados por Vercel habiliten la fuente mock y muestren las credenciales de prueba.
+- La configuración mantiene la bandera del lado servidor y evita depender de una variable `NEXT_PUBLIC_*` fijada durante el build.
