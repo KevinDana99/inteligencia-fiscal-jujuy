@@ -59,6 +59,7 @@ const EXPECTED_DETAIL_ROUTE =
 
 function createRouterMock() {
   return {
+    bfcacheId: 'test',
     back: jest.fn(),
     forward: jest.fn(),
     prefetch: prefetchMock,

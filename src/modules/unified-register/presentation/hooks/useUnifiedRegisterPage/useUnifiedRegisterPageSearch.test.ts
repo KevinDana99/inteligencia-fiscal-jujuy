@@ -53,6 +53,7 @@ function createListData(items: IUnifiedRegisterItems): IUnifiedRegisterListData 
   return {
     pagina: 1,
     itemsPagina: 10,
+    totalItems: items.length,
     totalPaginas: 1,
     contribuyentes: items
   };
